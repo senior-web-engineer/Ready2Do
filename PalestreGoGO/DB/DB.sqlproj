@@ -60,10 +60,31 @@
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
+    <Folder Include="security" />
+    <Folder Include="security\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Clienti.sql" />
     <Build Include="dbo\Tables\TipologieClienti.sql" />
     <Build Include="dbo\Tables\TipologieLezioni.sql" />
+    <Build Include="dbo\Tables\ClientiMetadati.sql" />
+    <Build Include="dbo\Tables\AbbonamentiUtenti.sql" />
+    <Build Include="dbo\Tables\TipologieAbbonamenti.sql" />
+    <Build Include="dbo\Tables\Locations.sql" />
+    <Build Include="dbo\Tables\Schedules.sql" />
+    <Build Include="dbo\Tables\Appuntamenti.sql" />
+    <Build Include="dbo\Tables\ClientiImmagini.sql" />
+    <Build Include="security\Tables\Users.sql" />
+    <Build Include="security\security.sql" />
+    <Build Include="security\Tables\UserTokens.sql" />
+    <Build Include="security\Tables\Roles.sql" />
+    <Build Include="security\Tables\RoleClaims.sql" />
+    <Build Include="security\Tables\UserClaims.sql" />
+    <Build Include="security\Tables\UserLogins.sql" />
+    <Build Include="security\Tables\UserRoles.sql" />
+    <Build Include="dbo\Tables\TipologieImmagini.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DB.LOCAL.publish.xml" />
   </ItemGroup>
 </Project>

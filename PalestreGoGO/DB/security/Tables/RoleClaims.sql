@@ -1,0 +1,9 @@
+﻿CREATE TABLE [security].[RoleClaims]
+(
+	[Id]			int IDENTITY(1,1) NOT NULL,
+	[ClaimType]		NVARCHAR(MAX) NULL,
+	[ClaimValue]	NVARCHAR(MAX) NULL,
+	[RoleId]		UNIQUEIDENTIFIER NOT NULL,
+	CONSTRAINT [PK_RoleClaims] PRIMARY KEY CLUSTERED (	[Id] ASC),
+	CONSTRAINT [FK_RoleClaims_Roles_RoleId] FOREIGN KEY([RoleId]) REFERENCES [security].[Roles] ([Id]) ON DELETE CASCADE
+)

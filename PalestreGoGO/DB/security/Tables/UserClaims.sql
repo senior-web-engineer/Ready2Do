@@ -1,0 +1,9 @@
+﻿CREATE TABLE [security].[UserClaims]
+(
+	[Id]			int IDENTITY(1,1) NOT NULL,
+	[ClaimType]		NVARCHAR(MAX) NULL,
+	[ClaimValue]	NVARCHAR(MAX) NULL,
+	[UserId]		UNIQUEIDENTIFIER NOT NULL,
+	CONSTRAINT [PK_UserClaims] PRIMARY KEY CLUSTERED (	[Id] ASC),
+	CONSTRAINT [FK_UserClaims_Users_UserId] FOREIGN KEY([UserId]) REFERENCES [security].[Users] ([Id]) ON DELETE CASCADE
+)
