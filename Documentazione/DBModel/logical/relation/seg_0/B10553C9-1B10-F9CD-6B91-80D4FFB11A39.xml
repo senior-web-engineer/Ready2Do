@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="FK_Clienti_Tipologia" directorySegmentName="seg_0" id="B10553C9-1B10-F9CD-6B91-80D4FFB11A39">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>D54AEB5D-9E6E-96C6-B44A-1E17A8FF7BA4</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<sourcePk>DEEF57DE-2086-51D7-681C-17DF3E146D33</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>true</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>F5E75149-ECCD-8485-C047-96FCC3C1C8C3</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>0C784455-A1FC-53F2-D363-80D815BA0B59</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

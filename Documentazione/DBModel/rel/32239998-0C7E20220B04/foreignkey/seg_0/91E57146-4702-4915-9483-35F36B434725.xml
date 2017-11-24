@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="91E57146-4702-4915-9483-35F36B434725" containerWithKeyObject="A5510F99-A082-B51F-8066-CB8CACB9BCA1" localFKIndex="4264968F-2C39-76DC-AEBC-2F2A3F7BA502" name="FK_AbbonamentiUtenti_TipoAbbonamento">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>FK_AbbonamentiUtenti_TipoAbbonamento</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<importedID>40B35737-023D-8435-9CF2-03CBB6C817BD</importedID>
+<referredTableLongName>PalestreGoGo_dbo.TipologieAbbonamenti</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>471C9C77-18D2-42A9-6D40-4771AD78AA25</referredTableID>
+<keyObject>5E0C2C6A-7CF5-5B4A-38FF-A757C7DCADB9</keyObject>
+<referredKeyID>5E0C2C6A-7CF5-5B4A-38FF-A757C7DCADB9</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>Id</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

@@ -7,6 +7,6 @@
 	[CapienzaMax]	SMALLINT		NULL,
 	
 	CONSTRAINT PK_Locations PRIMARY KEY (Id),
-	CONSTRAINT FK_Locations_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti](Id),
+	CONSTRAINT FK_Locations_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),
 	--INDEX IDX_UQ_IdIdCliente UNIQUE (Id, IdCliente),
 )

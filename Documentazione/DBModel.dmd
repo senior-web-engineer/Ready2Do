@@ -1,0 +1,22 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="DBModel" id="217EED58-EC18-2C3B-E051-D283E26A3474" version="3.5">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 09:42:45 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>217EED58-EC18-2C3B-E051-D283E26A3474</designId>
+<usedDesignStorageDescriptors>
+<designDescr class="oracle.dbtools.crest.model.design.Design$DesignStorageDesc" id="208EE3AD-BC21-2A08-0A80-3A82DB36A225">
+<designStoragePath>C:\</designStoragePath>
+</designDescr>
+<designDescr class="oracle.dbtools.crest.model.design.Design$DesignStorageDesc" id="05719A14-2D21-ECEF-CB5D-A37396971528">
+<designStoragePath>C:\Users\gianluca\Source\Repos\PalestreGoGoUfficial\Documentazione</designStoragePath>
+</designDescr>
+<designDescr class="oracle.dbtools.crest.model.design.Design$DesignStorageDesc" id="A7780644-0302-F793-6589-A0C1F06EDBD3">
+<designStoragePath>C:\Users\gianluca\Source\Repos\PalestreGoGoUfficial\Documentazione</designStoragePath>
+</designDescr>
+<designDescr class="oracle.dbtools.crest.model.design.Design$DesignStorageDesc" id="80AB24AE-D6E5-EB5D-624C-2339C12CC1D7">
+<designStoragePath>C:\Users\gianluca\Source\Repos\PalestreGoGoUfficial\Documentazione</designStoragePath>
+</designDescr>
+</usedDesignStorageDescriptors>
+</OSDM_Design>

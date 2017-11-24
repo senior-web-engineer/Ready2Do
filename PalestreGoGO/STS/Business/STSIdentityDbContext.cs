@@ -31,12 +31,12 @@ namespace Palestregogo.STS.Business
             builder.Entity<AppUser>(entity =>
             {
                 entity.ToTable("Users", IDENTITY_SCHEMA_NAME);
-                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
+                entity.Property(e => e.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
             });
-            builder.Entity<IdentityRole>(entity =>
+            builder.Entity<AppRole>(entity =>
             {
                 entity.ToTable("Roles", IDENTITY_SCHEMA_NAME);
-                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
+                entity.Property(e => e.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
             });
             builder.Entity<IdentityUserRole<Guid>>(entity =>
             {

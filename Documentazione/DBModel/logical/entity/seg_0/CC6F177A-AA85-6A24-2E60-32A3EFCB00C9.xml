@@ -1,0 +1,152 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="CC6F177A-AA85-6A24-2E60-32A3EFCB00C9" name="TipologieLezioni">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>C40DAA08-CBA4-5C2A-1035-3A07D990431D</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="Id" id="0CD62956-C435-2772-3960-A1062E9DAC78">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>CC68A80D-63A8-5B3C-9C69-019CA2EA0A1B</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="IdCliente" id="06FA281D-6370-1289-9649-E353CE5515D4">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>297BF1A8-CA19-81BA-326D-79E4D9AF2428</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<referedAttribute>CFDA6E98-A783-635D-4251-609A0B12DD4E</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Nome" id="AF353A7E-BF48-36FA-4075-7E05876EFBA1">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>CF2F58D7-9C1E-A564-ACB1-820094CD09B6</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Descrizione" id="E6E52E70-D1C1-2AAC-6B86-692BA3D42F9F">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>3EA8BD97-93D8-DABA-AC15-28922395842C</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>500</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>500</dataTypeSize>
+<ownDataTypeParameters>500,500,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Durata" id="ED8057A7-7CE8-3A47-988C-6F60831A2758">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>9048080F-BEF9-C5DB-413E-53F543FA4442</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="MaxPartecipanti" id="67585A58-0FDB-D243-F240-36C3369D4CF5">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>FEECCB31-F157-17DB-94EC-3902B979E29D</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Livello" id="DF7CE71B-A05F-1064-8402-4991485B0A93">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>5F79DD07-F2D4-5D19-1375-B745999B4210</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<usesDefaultValue>true</usesDefaultValue>
+<defaultValue>(0)</defaultValue>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="4CE85F7A-AB8A-8AC5-1215-2CC6D28DBE43" name="PK TipologieLezioni">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>5452DF9C-A2E4-9483-499B-F03E0CB186D0</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>0CD62956-C435-2772-3960-A1062E9DAC78</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

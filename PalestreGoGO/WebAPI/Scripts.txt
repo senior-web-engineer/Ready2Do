@@ -1,0 +1,2 @@
+﻿#Reverse engineering DB, solo schema [dbo]
+dotnet ef dbcontext scaffold "Server=localhost;Database=PalestreGoGo;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -d -c PalestreGoGoDbContext -f --schema dbo -o DBModel -v

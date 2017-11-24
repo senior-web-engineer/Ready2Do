@@ -1,0 +1,117 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="9D9DCAF3-5CF7-0E52-7FC1-4390E9528799" name="Locations">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>F7AE551C-03CD-B1F3-00A1-57D95185DA06</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="Id" id="32D780BE-28A9-19B2-5487-55CF0AAA362E">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>D3FB7884-F12D-F96D-E4DC-ABEAC272CACD</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="IdCliente" id="732AF087-2122-CD57-E289-86D39037EB3E">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>01F67AE8-487C-5ABA-279F-04D642F571C9</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<referedAttribute>CFDA6E98-A783-635D-4251-609A0B12DD4E</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Nome" id="E3F4D4C1-2061-5D89-E300-3A20A5D9A02D">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>F54E5724-3FDE-9BD0-C4F9-489940F8AADF</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Descrizione" id="972BF673-320A-F53D-6CF5-598A3B8D8A93">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>B082965B-E1F3-CD66-24EB-6E5A9EB17DCB</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+</Attribute>
+<Attribute name="CapienzaMax" id="CFBB8825-8EC2-D0B6-6770-2FEED472C1B7">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>59952ACD-3B70-FC23-2CE6-C602675FF56F</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="A6583594-17B0-AB75-F6BD-23A80662041E" name="PK Locations">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>673DEA5B-A74C-EA4B-4747-47D25A57AFAD</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>32D780BE-28A9-19B2-5487-55CF0AAA362E</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

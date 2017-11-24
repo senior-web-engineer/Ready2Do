@@ -42,7 +42,6 @@ namespace Palestregogo.STS.UI
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IEventService _events;
         private readonly AccountService _account;
-        private readonly IEmailSender _emailSender;
         private readonly ILogger<AccountController> _logger;
         private readonly SignInManager<AppUser> _signInManager;
 
@@ -53,56 +52,17 @@ namespace Palestregogo.STS.UI
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             SignInManager<AppUser> signInManager,
-            IEmailSender mailSender,
             UserManager<AppUser> userManager,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _interaction = interaction;
             _events = events;
-            _emailSender = mailSender;
             _signInManager = signInManager;
             _logger = logger;
             _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore);
         }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register(UserRegistrationModel model, string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                var user = new AppUser
-                {
-                    UserName = model.Username,
-                    Email = model.Email,
-                    FirstName = model.Nome,
-                    LastName = model.Cognome,
-                    PhoneNumber = model.Telefono
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    //I nuovi utenti non vengono loggati automaticamente, devono prima confermare l'email
-                    //await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
-                }
-                AddErrors(result);
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
+  
 
         /// <summary>
         /// Show login page
@@ -149,6 +109,7 @@ namespace Palestregogo.STS.UI
                 // validate username/password against in-memory store
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin,
                                                     lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {                    
                     var user = await _userManager.FindByNameAsync(model.Username);

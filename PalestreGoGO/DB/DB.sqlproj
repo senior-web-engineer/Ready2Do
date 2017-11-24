@@ -62,6 +62,8 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="security" />
     <Folder Include="security\Tables" />
+    <Folder Include="Scripts" />
+    <Folder Include="Scripts\Prepop" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Clienti.sql" />
@@ -86,5 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
+    <None Include="Scripts\Prepop\Prepop.Test.TipologieClienti.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
   </ItemGroup>
 </Project>

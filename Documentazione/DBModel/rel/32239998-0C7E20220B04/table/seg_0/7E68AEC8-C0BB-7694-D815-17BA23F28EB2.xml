@@ -1,0 +1,211 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="7E68AEC8-C0BB-7694-D815-17BA23F28EB2" schemaObject="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E" name="Clienti">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>Clienti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="Id" id="8376F2AD-A135-7B05-69B0-49035A327A23">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Id</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Nome" id="F6285077-2749-3130-2CFE-6CD24ACC0BCE">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Nome</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>250</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>250</dataTypeSize>
+<ownDataTypeParameters>250,250,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Descrizione" id="0F3B2855-75D8-3FC8-454D-ADD525CFFE47">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Descrizione</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>1000</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>1000</dataTypeSize>
+<ownDataTypeParameters>1000,1000,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdTipologia" id="180B1433-FD02-A432-80D6-D07559C7B89F">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>IdTipologia</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D54AEB5D-9E6E-96C6-B44A-1E17A8FF7BA4" referredColumn="5F6E31AD-1514-C323-4002-AF09CB3A3246"/>
+</associations>
+</Column>
+<Column name="Indirizzo" id="4C081305-4759-BAAE-A86E-7E7DCBC97B62">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Indirizzo</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>250</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>250</dataTypeSize>
+<ownDataTypeParameters>250,250,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Citta" id="FFCC2524-3202-992D-8EFF-4EEE565E1A9C">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Citta</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ZipOrPostalCode" id="1DFC10C2-E4A4-DBFA-E458-6D093058AE2A">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>ZipOrPostalCode</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>10</dataTypeSize>
+<ownDataTypeParameters>10,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Country" id="6A135D16-B950-22FE-26AF-C006F2658802">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Country</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Latitudine" id="6DAFDF8D-F63C-E98D-DFB9-8B106B1050F6">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Latitudine</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT021</logicalDatatype>
+<dataTypePrecision>53</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>8</dataTypeSize>
+<ownDataTypeParameters>8,53,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Longitudine" id="CA618307-8C2A-5296-8697-3B9CDAE7EACE">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Clienti</sourceObjSchema>
+<sourceObjName>Longitudine</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT021</logicalDatatype>
+<dataTypePrecision>53</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>8</dataTypeSize>
+<ownDataTypeParameters>8,53,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="654DF309-1E9A-ACAB-AC05-1E1A766F6406" name="PK_Clienti">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>PK_Clienti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="8376F2AD-A135-7B05-69B0-49035A327A23"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="239D1E29-3608-F9E9-109F-38A3E0E84465" name="FK_Clienti_Tipologia">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="180B1433-FD02-A432-80D6-D07559C7B89F"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

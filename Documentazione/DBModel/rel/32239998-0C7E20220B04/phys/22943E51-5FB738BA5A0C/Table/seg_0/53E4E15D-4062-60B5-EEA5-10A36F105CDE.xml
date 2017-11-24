@@ -1,0 +1,46 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxySqlServerv2k5 class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.TableProxySqlServerv2k5" name="ClientiTags" directorySegmentName="seg_0" id="53E4E15D-4062-60B5-EEA5-10A36F105CDE">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<schemaObject>5E1B38BA-2BAA-2402-F531-3BCAA09EC60E</schemaObject>
+<database>8FE0F0C0-C1B1-CF8F-655E-BDBCD13AC61F</database>
+<filegroup>49DED747-7A80-6B19-9971-DB9D2E910F26</filegroup>
+<schema>1</schema>
+<columnProxies>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="IdCliente" id="13FF02CD-B7CA-F340-CA0A-FE49690E6953">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Key" id="75BE15DA-6927-E244-A46E-110C9DE4679C">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<collation>SQL_Latin1_General_CP1_CI_AS</collation>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Value" id="A5231A05-41E4-25B0-459F-DB5EBA2D5C3D">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<collation>SQL_Latin1_General_CP1_CI_AS</collation>
+</ColumnProxy>
+</columnProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.FKProxySqlServerv2k5" name="FK_ClientiTags_Clienti" id="35BBE5B6-DE1D-A65B-62E3-8D317682ABE9">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.PKProxySqlServerv2k5" name="PK_ClientiTags" id="9A109896-2FA7-32A7-403A-C0A7DDBA4877">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<clustered>true</clustered>
+<fileGroup>49DED747-7A80-6B19-9971-DB9D2E910F26</fileGroup>
+<recomputeStatistics>NO</recomputeStatistics>
+</PrimaryKey>
+</primaryKeys>
+</TableProxySqlServerv2k5>

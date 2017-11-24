@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="1679BCBD-DE91-60E9-2465-BFAF5A0DDD36" containerWithKeyObject="B33D3082-B87C-5F7A-14AC-A194F83017F0" localFKIndex="95172F59-0A8D-31AA-A72B-7DA799341456" name="FK_Appuntamenti_Schedules">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>FK_Appuntamenti_Schedules</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:06:36 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<importedID>ED9ADFC9-E6E5-E8E2-7F11-6BA5E0463DE3</importedID>
+<referredTableLongName>PalestreGoGo_dbo.Schedules</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>4FDC8AE8-979C-2692-BE56-BF8B4C429603</referredTableID>
+<keyObject>E58998AF-F7B7-60F6-48E6-238A63C15BB8</keyObject>
+<referredKeyID>E58998AF-F7B7-60F6-48E6-238A63C15BB8</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>Id</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

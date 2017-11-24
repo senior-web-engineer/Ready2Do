@@ -1,0 +1,188 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="4FDC8AE8-979C-2692-BE56-BF8B4C429603" schemaObject="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E" name="Schedules">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>Schedules</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="Id" id="1A4EA217-B9DA-5184-1B9E-697930C65E1E">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>Id</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdCliente" id="1D83BF4C-B11A-07AF-833D-96EB9546B2AD">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>IdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="0624C2CC-C23D-EC68-54EB-7DCAC57646F7" referredColumn="8376F2AD-A135-7B05-69B0-49035A327A23"/>
+</associations>
+</Column>
+<Column name="IdTipoLezione" id="2C48609C-4794-D9A4-AA95-D6DCB86433F9">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>IdTipoLezione</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdLocation" id="C0F63465-1F75-2C3C-724B-3918C73D34DF">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>IdLocation</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:06:36 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<importedID>1A19A43A-2D6E-2056-627C-41A983F98770</importedID>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="4BE76361-12A4-D0CC-72A3-BFA9A7D8DFB0" referredColumn="D3FB7884-F12D-F96D-E4DC-ABEAC272CACD"/>
+</associations>
+</Column>
+<Column name="Data" id="923078E4-6E43-ABF9-6E6F-6830B661EACB">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>Data</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>3</dataTypeSize>
+<ownDataTypeParameters>3,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="OraInizio" id="66A47FD8-4714-258C-ABE0-2A184114B76C">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>OraInizio</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT014</logicalDatatype>
+<dataTypePrecision>16</dataTypePrecision>
+<dataTypeScale>7</dataTypeScale>
+<dataTypeSize>5</dataTypeSize>
+<ownDataTypeParameters>5,16,7</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="SeatAvailables" id="9D2ADBB4-F3C3-2FC2-5124-CE95524776DF">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>SeatAvailables</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="timestamp" id="8DF02D8E-4B64-49D7-6322-8142D8D8A394">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Schedules</sourceObjSchema>
+<sourceObjName>timestamp</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT015</logicalDatatype>
+<dataTypePrecision>8</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>8</dataTypeSize>
+<ownDataTypeParameters>8,8,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="E58998AF-F7B7-60F6-48E6-238A63C15BB8" name="PK_Schedules">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>PK_Schedules</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="1A4EA217-B9DA-5184-1B9E-697930C65E1E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="D2D5CCF5-BEBA-FD67-CD14-14AEC9BA7F07" name="FK_Schedules_Clienti">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="1D83BF4C-B11A-07AF-833D-96EB9546B2AD"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="47C73C32-63A7-7BDF-D6C7-C921C4BF30B3" name="FK_Schedules_Locations">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="C0F63465-1F75-2C3C-724B-3918C73D34DF"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,77 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxySqlServerv2k5 class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.TableProxySqlServerv2k5" name="AbbonamentiUtenti" directorySegmentName="seg_0" id="A5510F99-A082-B51F-8066-CB8CACB9BCA1">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<schemaObject>5E1B38BA-2BAA-2402-F531-3BCAA09EC60E</schemaObject>
+<database>8FE0F0C0-C1B1-CF8F-655E-BDBCD13AC61F</database>
+<filegroup>1EB622AA-BA4C-6526-B57C-9FC96D35AB46</filegroup>
+<schema>1</schema>
+<columnProxies>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="StatoPagamento" id="1E0A5A07-4889-1E5D-EB46-DC3DD5D2634B">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="ScadenzaCertificato" id="293E9549-53E0-584B-DDE1-2DC3E7D747CD">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Scadenza" id="4EEB3E9B-9473-BCCF-5EB7-3392C07C0860">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="IdCliente" id="56A6DF5D-7F2D-FA4E-A802-17E0EB9FDD22">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Id" id="9FBFE641-6D17-ED63-46C1-04E4B4D6098E">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<asIdentity>true</asIdentity>
+<identityForReplication>YES</identityForReplication>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="UserId" id="B86E2AB0-3E1C-5F53-C64B-CC2E8A155158">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<collation>SQL_Latin1_General_CP1_CI_AS</collation>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="IngressiResidui" id="C83E3F14-2D59-E42F-3B82-E1D189B33E16">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="IdTipoAbbonamento" id="DF7621D9-E19C-27C9-3D0F-7D03BAF7BF23">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+</columnProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.FKProxySqlServerv2k5" name="FK_AbbonamentiUtenti_TipoAbbonamento" id="4264968F-2C39-76DC-AEBC-2F2A3F7BA502">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ForeignKey>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.FKProxySqlServerv2k5" name="FK_AbbonamentiUtenti_Clienti" id="B1053AD7-2560-40AF-5998-B95B72778686">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.PKProxySqlServerv2k5" name="PK_AbbonamentiUtenti" id="B0F434BD-AAC3-AAA9-7CD8-D50912067E65">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<clustered>true</clustered>
+<fileGroup>49DED747-7A80-6B19-9971-DB9D2E910F26</fileGroup>
+<recomputeStatistics>NO</recomputeStatistics>
+</PrimaryKey>
+</primaryKeys>
+</TableProxySqlServerv2k5>

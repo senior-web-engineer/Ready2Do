@@ -1,0 +1,31 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<DataBaseSqlServerv2k5 class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.DataBaseSqlServerv2k5" name="PalestreGoGo" directorySegmentName="seg_0" id="8FE0F0C0-C1B1-CF8F-655E-BDBCD13AC61F">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjName>PalestreGoGo</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<fileGroups>
+<FileGroup class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.FileGroupSqlServerv2k5" name="PRIMARY" id="1EB622AA-BA4C-6526-B57C-9FC96D35AB46">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<dataFiles>
+<DataFile class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.DataFileSqlServerv2k5" name="DB1_Data.MDF" id="51C600B2-B43C-9754-6D41-01B9D6C35CB3">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<fileName>c:\program files\microsoft sql server\mssql\data\DB1_Data.MDF</fileName>
+</DataFile>
+<DataFile class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.DataFileSqlServerv2k5" name="PalestreGoGo" id="99A49427-E9AE-8635-35B5-260412757B69">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<fileName>C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\PalestreGoGo_Primary.mdf</fileName>
+<growthValue>8192</growthValue>
+<initialSize>1024</initialSize>
+</DataFile>
+</dataFiles>
+</FileGroup>
+</fileGroups>
+</DataBaseSqlServerv2k5>

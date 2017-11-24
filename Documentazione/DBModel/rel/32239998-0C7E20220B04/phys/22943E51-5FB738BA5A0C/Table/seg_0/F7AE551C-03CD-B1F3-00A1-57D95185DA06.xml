@@ -1,0 +1,67 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxySqlServerv2k5 class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.TableProxySqlServerv2k5" name="Locations" directorySegmentName="seg_0" id="F7AE551C-03CD-B1F3-00A1-57D95185DA06">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<schemaObject>5E1B38BA-2BAA-2402-F531-3BCAA09EC60E</schemaObject>
+<database>8FE0F0C0-C1B1-CF8F-655E-BDBCD13AC61F</database>
+<filegroup>1EB622AA-BA4C-6526-B57C-9FC96D35AB46</filegroup>
+<schema>1</schema>
+<columnProxies>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="CapienzaMax" id="59952ACD-3B70-FC23-2CE6-C602675FF56F">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Descrizione" id="B082965B-E1F3-CD66-24EB-6E5A9EB17DCB">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<collation>SQL_Latin1_General_CP1_CI_AS</collation>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="IdCliente" id="C91B5D0F-6279-8C23-EC6D-1C2535A8B4A7">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Id" id="D3FB7884-F12D-F96D-E4DC-ABEAC272CACD">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<asIdentity>true</asIdentity>
+<identityForReplication>YES</identityForReplication>
+</ColumnProxy>
+<ColumnProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.ColumnProxySqlServerv2k5" name="Nome" id="F54E5724-3FDE-9BD0-C4F9-489940F8AADF">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<collation>SQL_Latin1_General_CP1_CI_AS</collation>
+</ColumnProxy>
+</columnProxies>
+<indexProxies>
+<IndexProxy class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.IndexProxySqlServerv2k5" name="IDX_UQ_IdIdCliente" id="E8162F2F-648A-2ECB-5ECC-7307E68A815D">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:06:36 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<fileGroup>1A6BC5A8-9721-194B-A67B-7B2721D5D6B8</fileGroup>
+<recomputeStatistics>OFF</recomputeStatistics>
+</IndexProxy>
+</indexProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.FKProxySqlServerv2k5" name="FK_Locations_Clienti" id="93824C9F-071C-8D5F-183B-13FF1B962C09">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.sqlserver.v2k5.PKProxySqlServerv2k5" name="PK_Locations" id="673DEA5B-A74C-EA4B-4747-47D25A57AFAD">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<clustered>true</clustered>
+<fileGroup>49DED747-7A80-6B19-9971-DB9D2E910F26</fileGroup>
+<recomputeStatistics>NO</recomputeStatistics>
+</PrimaryKey>
+</primaryKeys>
+</TableProxySqlServerv2k5>

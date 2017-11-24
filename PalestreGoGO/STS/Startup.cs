@@ -52,7 +52,6 @@ namespace Palestregogo.STS
                 .AddDefaultTokenProviders();
 
             // Add application services.
-            services.AddTransient<IEmailSender, MessagesService>();
 
             services.AddMvc();
 
@@ -78,6 +77,9 @@ namespace Palestregogo.STS
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseIdentityServer();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");

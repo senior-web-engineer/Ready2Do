@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<SchemaObject class="oracle.dbtools.crest.model.design.relational.SchemaObject" name="PalestreGoGo_dbo" directorySegmentName="seg_0" id="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<importedID>D0883C0A-2ECF-D996-E4E6-FC74FFD4B26D</importedID>
+</SchemaObject>

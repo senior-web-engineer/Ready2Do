@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[AbbonamentiUtenti]
 	[StatoPagamento]			TINYINT			NULL,	--??
 
 	CONSTRAINT PK_AbbonamentiUtenti PRIMARY KEY (Id),
-	CONSTRAINT FK_AbbonamentiUtenti_Clienti FOREIGN KEY(IdCliente) REFERENCES [Clienti](Id),
+	CONSTRAINT FK_AbbonamentiUtenti_Clienti FOREIGN KEY(IdCliente) REFERENCES [Clienti]([Id]),
 	CONSTRAINT FK_AbbonamentiUtenti_TipoAbbonamento FOREIGN KEY (IdTipoAbbonamento) REFERENCES [TipologieAbbonamenti](Id)
 
 )

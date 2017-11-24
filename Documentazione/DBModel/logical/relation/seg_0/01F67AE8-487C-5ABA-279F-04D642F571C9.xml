@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="FK_Locations_Clienti" directorySegmentName="seg_0" id="01F67AE8-487C-5ABA-279F-04D642F571C9">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:08:51 UTC</createdTime>
+<generatorID>F89A6BB6-29C0-8F4D-B0E9-65ACA89ADB79</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<sourcePk>B68CD90F-6E31-A471-B9F0-02DCF78DBF5C</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>0C784455-A1FC-53F2-D363-80D815BA0B59</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>9D9DCAF3-5CF7-0E52-7FC1-4390E9528799</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

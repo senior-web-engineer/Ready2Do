@@ -9,15 +9,23 @@ namespace Palestregogo.STS
 {
     public static class STSConfig
     {
-        public static IConfiguration Configuration { get; set; } 
+        public static IConfiguration Configuration { get; set; }
 
         // scopes define the resources in your system
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
+            //Referenziato tramite lo scope dal client
+            var customProfile = new IdentityResource(
+                name: "customprofile",
+                displayName: "Profilo Completo",
+                claimTypes: new[] { "name", "email" /*INTEGRARE*/}
+                );
+
             return new List<IdentityResource>
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                new IdentityResources.OpenId(),     // Standard OIDC id_token
+                new IdentityResources.Profile(),    // Standard OIDC profile
+                customProfile
             };
         }
 
@@ -25,11 +33,31 @@ namespace Palestregogo.STS
         {
             return new List<ApiResource>
             {
-                new ApiResource("usersManagement", "Gestione Utenti")
+                new ApiResource("palestregogo.api")
+                {
+                    ApiSecrets= new List<Secret>{new Secret("f5d4fe477bd8462777829d1bff33869e34932b7415c760c0461d863eab8a7670".Sha256()) },
+                    Scopes = new List<Scope>
+                    {
+                        new Scope("palestregogo.api.clienti.provisioning", "Provisioning Nuovi Clienti"),
+                        /*Scoper per l'amministrazione delle utenze (dei tenant di cui si è owner)*/
+                        new Scope("palestregogo.api.users.management", "Gestione Utenti")
+                        {
+                            UserClaims = new List<string>
+                            {
+
+                            }
+                        }
+                    }
+                },
+
+
+                new ApiResource("palestregogo.sts", "Gestione Utenti")
                 {
                     Scopes =
                     {
-                        new Scope("usersmanagementscope", "Scope per la gestione degli utenti")
+                        new Scope("palestregogo.sts.write", "Creazione e modifica degli utenti"),
+                        new Scope("palestregogo.sts.read", "Creazione e modifica degli utenti"),
+                        new Scope("palestregogo.sts.assignownership", "Consente di impostare un utente come owner di un cliente"),
                     }
                 }
             };
@@ -41,6 +69,18 @@ namespace Palestregogo.STS
             // client credentials client
             return new List<Client>
             {
+                //Client per il provisioning
+                new Client
+                {
+                    ClientName = "Provisioning Client",
+                    ClientId="provisioning.client",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets = new List<Secret>(){new Secret("b753a50a8966dccb0c99248d2aa1fe2d65a6dca43de88cc1a2".Sha256())},
+                    RequireClientSecret = true,
+                    AllowedScopes = { "alestregogo.sts.assignownership", "palestregogo.api.clienti.provisioning" },
+                    AccessTokenType = AccessTokenType.Jwt
+
+                },
                       new Client
                 {
                     ClientName = "angularclient",

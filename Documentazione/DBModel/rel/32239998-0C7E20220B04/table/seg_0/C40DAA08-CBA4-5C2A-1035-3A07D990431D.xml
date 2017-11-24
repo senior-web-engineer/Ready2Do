@@ -1,0 +1,161 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="C40DAA08-CBA4-5C2A-1035-3A07D990431D" schemaObject="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E" name="TipologieLezioni">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>TipologieLezioni</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="Id" id="CC68A80D-63A8-5B3C-9C69-019CA2EA0A1B">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>Id</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdCliente" id="F4F1785C-D9ED-C929-6BC6-BE3D3A2D0947">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>IdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="A1386BB2-7A6D-59C4-97AF-2C0D93AC45DE" referredColumn="8376F2AD-A135-7B05-69B0-49035A327A23"/>
+</associations>
+</Column>
+<Column name="Nome" id="CF2F58D7-9C1E-A564-ACB1-820094CD09B6">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>Nome</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Descrizione" id="3EA8BD97-93D8-DABA-AC15-28922395842C">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>Descrizione</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>500</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>500</dataTypeSize>
+<ownDataTypeParameters>500,500,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Durata" id="9048080F-BEF9-C5DB-413E-53F543FA4442">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>Durata</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="MaxPartecipanti" id="FEECCB31-F157-17DB-94EC-3902B979E29D">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>MaxPartecipanti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Livello" id="5F79DD07-F2D4-5D19-1375-B745999B4210">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieLezioni</sourceObjSchema>
+<sourceObjName>Livello</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<usesDefaultValue>true</usesDefaultValue>
+<defaultValue>(0)</defaultValue>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="5452DF9C-A2E4-9483-499B-F03E0CB186D0" name="PK_TipologieLezioni">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>PK_TipologieLezioni</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="CC68A80D-63A8-5B3C-9C69-019CA2EA0A1B"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="1E69BA64-8C4E-3FC9-C932-5C9EFB05521F" name="FK_TipologieLezioni_Clienti">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="F4F1785C-D9ED-C929-6BC6-BE3D3A2D0947"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

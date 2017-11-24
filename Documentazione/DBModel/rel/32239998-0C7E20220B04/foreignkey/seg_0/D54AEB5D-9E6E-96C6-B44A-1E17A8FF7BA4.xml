@@ -1,0 +1,19 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="D54AEB5D-9E6E-96C6-B44A-1E17A8FF7BA4" containerWithKeyObject="7E68AEC8-C0BB-7694-D815-17BA23F28EB2" localFKIndex="239D1E29-3608-F9E9-109F-38A3E0E84465" name="FK_Clienti_Tipologia">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>FK_Clienti_Tipologia</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<referredTableLongName>PalestreGoGo_dbo.TipologieClienti</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>342FD511-B470-21DF-0C03-2C21DCF3847D</referredTableID>
+<keyObject>92D3BE07-284B-B1D3-6604-BDE049C7134C</keyObject>
+<referredKeyID>92D3BE07-284B-B1D3-6604-BDE049C7134C</referredKeyID>
+<mandatory>false</mandatory>
+<refColNames>Id</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>PalestreGoGo.DataModel</AssemblyName>
+    <RootNamespace>PalestreGoGo.DataModel</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
+  </ItemGroup>
+
+</Project>

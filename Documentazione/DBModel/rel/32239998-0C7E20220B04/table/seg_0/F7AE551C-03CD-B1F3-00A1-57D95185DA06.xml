@@ -1,0 +1,141 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="F7AE551C-03CD-B1F3-00A1-57D95185DA06" schemaObject="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E" name="Locations">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>Locations</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="Id" id="D3FB7884-F12D-F96D-E4DC-ABEAC272CACD">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Locations</sourceObjSchema>
+<sourceObjName>Id</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdCliente" id="C91B5D0F-6279-8C23-EC6D-1C2535A8B4A7">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Locations</sourceObjSchema>
+<sourceObjName>IdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="F89A6BB6-29C0-8F4D-B0E9-65ACA89ADB79" referredColumn="8376F2AD-A135-7B05-69B0-49035A327A23"/>
+</associations>
+</Column>
+<Column name="Nome" id="F54E5724-3FDE-9BD0-C4F9-489940F8AADF">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Locations</sourceObjSchema>
+<sourceObjName>Nome</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Descrizione" id="B082965B-E1F3-CD66-24EB-6E5A9EB17DCB">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Locations</sourceObjSchema>
+<sourceObjName>Descrizione</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CapienzaMax" id="59952ACD-3B70-FC23-2CE6-C602675FF56F">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>Locations</sourceObjSchema>
+<sourceObjName>CapienzaMax</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="673DEA5B-A74C-EA4B-4747-47D25A57AFAD" name="PK_Locations">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>PK_Locations</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:04 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D3FB7884-F12D-F96D-E4DC-ABEAC272CACD"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="E8162F2F-648A-2ECB-5ECC-7307E68A815D" name="IDX_UQ_IdIdCliente">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>IDX_UQ_IdIdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:06:36 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<importedID>5BF7FA63-0B36-A6B6-E66E-22EA2811CE34</importedID>
+<indexState>Unique Plain Index</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D3FB7884-F12D-F96D-E4DC-ABEAC272CACD"/>
+<colUsage columnID="C91B5D0F-6279-8C23-EC6D-1C2535A8B4A7"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="93824C9F-071C-8D5F-183B-13FF1B962C09" name="FK_Locations_Clienti">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="C91B5D0F-6279-8C23-EC6D-1C2535A8B4A7"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

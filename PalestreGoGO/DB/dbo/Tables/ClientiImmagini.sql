@@ -2,7 +2,7 @@
 (
 	[Id]				INT				NOT NULL IDENTITY(1,1),
 	[IdCliente]			INT				NOT NULL,
-	[IdTipoImmagine]	SMALLINT		NOT NULL,
+	[IdTipoImmagine]	INT				NOT NULL,
 	[Nome]				NVARCHAR(100)	NOT NULL,
 	[Url]				NVARCHAR(1000)	NOT NULL,
 	[Descrizione]		NVARCHAR(1000)	NULL,

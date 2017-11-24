@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<relationalModel class="oracle.dbtools.crest.model.design.relational.RelationalDesign" name="DBApplicativo" id="32239998-1914-CE8D-934F-0C7E20220B04" mainViewID="74C513FC-4F7B-BE3A-6CCA-3D2153AEE2B3">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 11:58:45 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+<selectedRDBMSSite>980FCE9E-D688-BDF0-C89A-C9FB2DCAED45</selectedRDBMSSite>
+<importConnectionStamps>
+<importConnectionStamp class="oracle.dbtools.crest.imports.DBConnectionStamp">
+<connName>SQL Local</connName>
+<connUser>eustema</connUser>
+<connType>2</connType>
+</importConnectionStamp>
+</importConnectionStamps>
+</relationalModel>

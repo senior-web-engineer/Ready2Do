@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="FK_AbbonamentiUtenti_TipoAbbonamento" directorySegmentName="seg_0" id="E42DC01B-BD53-20EC-ED78-A8A8C4822671">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 14:04:37 UTC</createdTime>
+<generatorID>91E57146-4702-4915-9483-35F36B434725</generatorID>
+<ownerDesignName>DBModel</ownerDesignName>
+<engineerTo>
+<item key="32239998-1914-CE8D-934F-0C7E20220B04" value="true"/>
+</engineerTo>
+<sourcePk>0901E63C-E29F-DC5F-13CE-00077927AAD9</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>2EB136CF-6C36-5FF2-88E4-8482CF93F4E4</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>980AD0FE-DFD1-367A-5ABC-BEDC6ABC1959</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

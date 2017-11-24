@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[TipologieImmagini]
 (
-		[Id]			SMALLINT		NOT NULL IDENTITY(1,1),
+		[Id]			INT				NOT NULL IDENTITY(1,1),
 		[Codice]		VARCHAR(5)		NOT NULL,
 		[Nome]			NVARCHAR(100)	NOT NULL,
 		[Descrizione]	NVARCHAR(500)	NOT NULL,

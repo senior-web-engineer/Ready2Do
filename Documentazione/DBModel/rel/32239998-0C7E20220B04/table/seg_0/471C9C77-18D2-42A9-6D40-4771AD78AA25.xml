@@ -1,0 +1,187 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="471C9C77-18D2-42A9-6D40-4771AD78AA25" schemaObject="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E" name="TipologieAbbonamenti">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>TipologieAbbonamenti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="Id" id="DB909775-9EE5-56CE-1A53-F295C71607B7">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>Id</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdCliente" id="75E763F9-B08A-DCDB-A5F4-FAD91D557D9B">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>IdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="E4CCF6DE-ABF6-B107-D98B-9E72C4B44133" referredColumn="8376F2AD-A135-7B05-69B0-49035A327A23"/>
+</associations>
+</Column>
+<Column name="Nome" id="8AFD3F83-59B7-00C9-5213-CF14AAB76823">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>Nome</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>100</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,100,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="DurataMesi" id="3181758D-2737-0988-6231-33E740381BE1">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>DurataMesi</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="NumIngressi" id="F5BB3E32-A24D-9E79-7B52-517360FDC4D5">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>NumIngressi</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Costo" id="EFF5D80E-1D36-95C3-9621-58BB967E214A">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>Costo</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT026</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>2</dataTypeScale>
+<dataTypeSize>9</dataTypeSize>
+<ownDataTypeParameters>9,10,2</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="MaxLivCorsi" id="E385AA47-A5EC-0D73-CF46-F73DBABB1089">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>TipologieAbbonamenti</sourceObjSchema>
+<sourceObjName>MaxLivCorsi</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="5E0C2C6A-7CF5-5B4A-38FF-A757C7DCADB9" name="PK_TipologieAbbonamenti">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>PK_TipologieAbbonamenti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="DB909775-9EE5-56CE-1A53-F295C71607B7"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="329844EC-9BF7-E4D3-50FB-925E7A922E86" name="IDX_UQ_TipologieAbbonamenti_IdIdCliente">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>IDX_UQ_TipologieAbbonamenti_IdIdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:40:03 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<importedID>56F4372A-22D9-E625-715D-6D511C9CA16E</importedID>
+<indexState>Unique Plain Index</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="DB909775-9EE5-56CE-1A53-F295C71607B7"/>
+<colUsage columnID="75E763F9-B08A-DCDB-A5F4-FAD91D557D9B"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="867AC9F3-BDB0-63B8-8095-4C69573CC0D1" name="FK_TipologieAbbonamenti_Clienti">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="75E763F9-B08A-DCDB-A5F4-FAD91D557D9B"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+<tableCheckConstraints itemClass="oracle.dbtools.crest.model.design.constraint.TableLevelConstraint">
+<tableCheckConstraint name="CK_TipologieAbbonamenti" directorySegmentName="seg_0" id="AC58A179-AC42-082C-7D6C-991E73AFC907">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>CK_TipologieAbbonamenti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:05 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<rule>[DurataMesi] IS NOT NULL OR [NumIngressi] IS NOT NULL</rule>
+</tableCheckConstraint>
+</tableCheckConstraints>
+</Table>

@@ -1,0 +1,189 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="A5510F99-A082-B51F-8066-CB8CACB9BCA1" schemaObject="5E1B38BA-2BAA-2402-F531-3BCAA09EC60E" name="AbbonamentiUtenti">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>AbbonamentiUtenti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="Id" id="9FBFE641-6D17-ED63-46C1-04E4B4D6098E">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>Id</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdCliente" id="56A6DF5D-7F2D-FA4E-A802-17E0EB9FDD22">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>IdCliente</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D1A49791-0362-B7AF-04AA-37CCD78917AE" referredColumn="8376F2AD-A135-7B05-69B0-49035A327A23"/>
+</associations>
+</Column>
+<Column name="UserId" id="B86E2AB0-3E1C-5F53-C64B-CC2E8A155158">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>UserId</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypePrecision>450</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>450</dataTypeSize>
+<ownDataTypeParameters>450,450,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IdTipoAbbonamento" id="DF7621D9-E19C-27C9-3D0F-7D03BAF7BF23">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>IdTipoAbbonamento</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>4</dataTypeSize>
+<ownDataTypeParameters>4,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="91E57146-4702-4915-9483-35F36B434725" referredColumn="DB909775-9EE5-56CE-1A53-F295C71607B7"/>
+</associations>
+</Column>
+<Column name="Scadenza" id="4EEB3E9B-9473-BCCF-5EB7-3392C07C0860">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>Scadenza</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>3</dataTypeSize>
+<ownDataTypeParameters>3,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="IngressiResidui" id="C83E3F14-2D59-E42F-3B82-E1D189B33E16">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>IngressiResidui</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT018</logicalDatatype>
+<dataTypePrecision>5</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>2</dataTypeSize>
+<ownDataTypeParameters>2,5,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ScadenzaCertificato" id="293E9549-53E0-584B-DDE1-2DC3E7D747CD">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>ScadenzaCertificato</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT007</logicalDatatype>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>3</dataTypeSize>
+<ownDataTypeParameters>3,10,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="StatoPagamento" id="1E0A5A07-4889-1E5D-EB46-DC3DD5D2634B">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>AbbonamentiUtenti</sourceObjSchema>
+<sourceObjName>StatoPagamento</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT042</logicalDatatype>
+<dataTypePrecision>3</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,3,0</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="B0F434BD-AAC3-AAA9-7CD8-D50912067E65" name="PK_AbbonamentiUtenti">
+<sourceConnName>SQL Local</sourceConnName>
+<sourceObjSchema>dbo</sourceObjSchema>
+<sourceObjName>PK_AbbonamentiUtenti</sourceObjName>
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:02 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="9FBFE641-6D17-ED63-46C1-04E4B4D6098E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="B1053AD7-2560-40AF-5998-B95B72778686" name="FK_AbbonamentiUtenti_Clienti">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 12:32:06 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="56A6DF5D-7F2D-FA4E-A802-17E0EB9FDD22"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="4264968F-2C39-76DC-AEBC-2F2A3F7BA502" name="FK_AbbonamentiUtenti_TipoAbbonamento">
+<createdBy>gianluca</createdBy>
+<createdTime>2017-11-09 13:59:32 UTC</createdTime>
+<ownerDesignName>DBModel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="DF7621D9-E19C-27C9-3D0F-7D03BAF7BF23"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

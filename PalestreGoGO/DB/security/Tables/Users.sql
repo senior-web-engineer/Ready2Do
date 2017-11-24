@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [security].[Users]
 (
-	[Id]					UNIQUEIDENTIFIER NOT NULL,
+	[Id]					UNIQUEIDENTIFIER NOT NULL DEFAULT(NEWID()),
 	[AccessFailedCount]		INT				NOT NULL,
 	[ConcurrencyStamp]		NVARCHAR(MAX)	NULL,
 	[Email]					NVARCHAR(256)	NULL,
@@ -18,5 +18,6 @@
 	[UserName]				NVARCHAR(256) NULL,
 	[FirstName]				NVARCHAR(MAX)	NULL,
 	[LastName]				NVARCHAR(MAX) NULL,
+	[CreationToken]			NVARCHAR(MAX) NULL,
 	CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED (Id)
 )

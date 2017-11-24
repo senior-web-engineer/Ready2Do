@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using FluentValidation.AspNetCore;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using PalestreGoGo.DataAccess;
+using PalestreGoGo.IdentityModel;
+using PalestreGoGo.WebAPI.Services;
+using PalestreGoGo.WebAPI.Utils;
+using PalestreGoGo.WebAPI.ViewModel.Mappers;
+using Swashbuckle.AspNetCore.Swagger;
 
-namespace WebAPI
+namespace PalestreGoGo.WebAPI
 {
     public class Startup
     {
@@ -20,10 +25,88 @@ namespace WebAPI
 
         public IConfiguration Configuration { get; }
 
+
+        protected void SetupRoles()
+        {
+            
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"));
+            });
+
+            services.AddDataAccessRepositories(opt =>
+            {
+                opt.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+            });
+
+            //services.AddDbContext<PalestreGoGoDbContext>(options =>
+            //{
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            //});
+
+
+            services.AddIdentity<AppUser, AppRole>(cfg =>
+            {
+                cfg.Password.RequiredLength = 4;
+                cfg.Password.RequireLowercase = false;
+                cfg.Password.RequireUppercase = false;
+                cfg.Password.RequireDigit = false;
+                cfg.Password.RequireNonAlphanumeric = false;
+
+                //Richiediamo la conferma dell'email
+                // Per ora disabilitato, dobbiamo implementare il servizio EmailSender prima di abilitarla
+                cfg.SignIn.RequireConfirmedEmail = true;
+
+                cfg.User.RequireUniqueEmail = true; //In caso di utente con registrazione locale e Google?
+            })
+             .AddEntityFrameworkStores<AppIdentityDbContext>()
+             .AddDefaultTokenProviders();
+
+            services.AddTransient<IUserConfirmationService, UserConfirmationService>();
+            services.AddTransient<IUsersManagementService, UsersManagementService>();
+
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = Configuration["STS:Issuer"];
+                    options.ApiName = "palestregogo.api";
+                    options.RequireHttpsMetadata = false; //Disabilitare per la produzione
+                });
+
+            services.AddAuthorization(options =>
+            {
+                //options.AddPolicy("tipologiche.edit",
+                //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeTipologicheEdit, Configuration["STS:Issuer"])));
+                options.AddPolicy("UsersManagement",
+                    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
+                options.AddPolicy("ProvisioningPolicy",
+                    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
+            });
+
+            Mapper.Initialize(x =>
+            {
+                x.AddProfile<DomainToViewModelMappingProfile>();
+            });
+
+
+            services.AddMvc()
+                //Utilizziamo FluentValidation invece dei DataAnnotation per la validazione dei viewmodel
+                .AddFluentValidation(config =>
+                {
+                    //Registriamo i Validators definiti nell'asembly corrente
+                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
+                });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,8 +116,17 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAuthentication();
+
+            app.SetupUsersAndRoles(); 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             app.UseMvc();
+            
         }
     }
 }
