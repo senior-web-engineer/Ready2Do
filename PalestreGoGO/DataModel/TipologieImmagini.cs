@@ -13,7 +13,7 @@ namespace PalestreGoGo.DataModel
         }
 
         [Required]
-        [StringLength(5)]
+        [StringLength(10)]
         public string Codice { get; set; }
         [Required]
         [StringLength(100)]

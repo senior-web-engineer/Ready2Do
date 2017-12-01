@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace PalestreGoGo.DataModel
 {
-    public partial class ClientiMetadati 
-    {        
+    public class ClientiUtenti
+    {
         public int IdCliente { get; set; }
 
-        [StringLength(100)]
-        public string Key { get; set; }
-        [Required]
-        public string Value { get; set; }
+        public Guid IdUtente { get; set; }
+
+        public DateTime DataCreazione { get; set; }
 
         [ForeignKey("IdCliente")]
         [InverseProperty("ClientiMetadati")]

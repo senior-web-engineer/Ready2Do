@@ -53,7 +53,11 @@ namespace PalestreGoGo.DataModel
         [StringLength(500)]
         public string ProvisioningToken { get; set; }
         [Column(TypeName = "datetime2(2)")]
-        public DateTime? DataProvisioning { get; set; }
+        public DateTime? DataProvisioning { get; set; }       
+        [Required]
+        [StringLength(100)]
+        public string UrlRoute { get; set; }        
+        public string OrarioApertura { get; set; }
 
         [ForeignKey("IdTipologia")]
         [InverseProperty("Clienti")]
@@ -65,6 +69,8 @@ namespace PalestreGoGo.DataModel
         [InverseProperty("IdClienteNavigation")]
         public ICollection<ClientiMetadati> ClientiMetadati { get; set; }
         [InverseProperty("IdClienteNavigation")]
+        public ICollection<ClientiUtenti> ClientiUtenti { get; set; }
+        [InverseProperty("IdClienteNavigation")]
         public ICollection<Locations> Locations { get; set; }
         [InverseProperty("IdClienteNavigation")]
         public ICollection<Schedules> Schedules { get; set; }
@@ -72,5 +78,8 @@ namespace PalestreGoGo.DataModel
         public ICollection<TipologieAbbonamenti> TipologieAbbonamenti { get; set; }
         [InverseProperty("IdClienteNavigation")]
         public ICollection<TipologieLezioni> TipologieLezioni { get; set; }
+        [InverseProperty("Cliente")]
+        public ICollection<Appuntamenti> Appuntamenti { get; set; }
+
     }
 }

@@ -56,7 +56,7 @@ namespace PalestreGoGo.WebAPI.Services
 
         public Task<AppUser> GetUserByUsernameAsync(string username)
         {
-            return this._userManager.FindByEmailAsync(email);
+            return this._userManager.FindByNameAsync(username);
         }
 
         public async Task<Guid> RegisterOwnerAsync(AppUser user, string password, string idCliente)

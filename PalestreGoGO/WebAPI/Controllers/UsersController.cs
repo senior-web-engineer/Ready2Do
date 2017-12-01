@@ -14,6 +14,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 
     [Produces("application/json")]
     [Route("api/users")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         //private readonly UserManager<AppUser> _userManager;
@@ -32,35 +33,8 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
 
-        // Spostata la logica nel servizio UserManagementService, invocata dal controller dei Clienti
-
-        //[HttpPost]
-        //public async Task<IActionResult> RegisterUser([FromBody]NuovoUtenteViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return new BadRequestResult();
-        //    }
-        //    var user = new AppUser(model.Email, model.Nome, model.Cognome, model.Telefono, model.CorrelationToken);
-        //    var result = await _userManager.CreateAsync(user, model.Password);
-        //    if (!result.Succeeded)
-        //    {
-        //        return StatusCode((int)HttpStatusCode.InternalServerError);
-        //    }
-        //    _logger.LogDebug($"User with email: {user.Email} persisted");
-        //    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-        //    // Send an email with this link
-        //    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        //    _logger.LogTrace($"RegisterUser-> generated code [{code}]for user: {user.UserName}");
-        //    await _confirmUserService.EnqueueConfirmationMailRequest(new ConfirmationMailQueueMessage(user.UserName, code, user.CreationToken));
-        //    //Rileggiamo l'utente appena creato per recuperarne l'Id
-        //    user = await _userManager.FindByNameAsync(user.UserName);
-        //    _logger.LogInformation("Created a new account with password.");
-        //    //Ritorniamo l'Id
-        //    return new OkObjectResult(user.Id);
-        //}
-
         [HttpPost("{email}/confirmation")]
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail([FromRoute]string email, [FromBody]string code)
         {
             _logger.LogTrace($"ConfirmEmail -> Received request for user: [{email ?? "NULL"}], code: [{code ?? "NULL"}]");
@@ -76,8 +50,9 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             var user = await _userManagementService.GetUserByMailAsync(email);
             //Provisioning
-            _clientiProvisioner.ProvisionCliente(user.CreationToken);
+            await _clientiProvisioner.ProvisionClienteAsync(user.CreationToken, user.Id);
             return new OkResult();
         }
+
     }
 }

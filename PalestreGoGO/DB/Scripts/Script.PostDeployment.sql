@@ -9,4 +9,6 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
-.r .\Prepop\Prepop.Test.TipologieClienti.sql
+:r .\Prepop\Prepop.Test.TipologieClienti.sql
+:r .\Prepop\Prepop.Test.TipologieImmagini.sql
+:r .\Prepop\Prepop.Test.Clienti.sql

@@ -2,7 +2,7 @@
 (
 	[Id]					INT					NOT NULL	IDENTITY(1,1),
 	[IdCliente]				INT					NOT NULL,
-	[UserId]				NVARCHAR(450)		NOT NULL,
+	[UserId]				UNIQUEIDENTIFIER	NOT NULL,
 	[ScheduleId]			INT					NOT NULL,
 	[DataPrenotazione]		DATETIME2			NOT NULL,
 	[DataCancellazione]		DATETIME2			NULL,

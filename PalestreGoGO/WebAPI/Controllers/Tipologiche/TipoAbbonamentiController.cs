@@ -16,14 +16,14 @@ using System.Threading.Tasks;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/{idCliente}/tipologiche/tipolezioni")]
+    [Route("api/{idCliente}/tipologiche/tipoabbonamenti")]
     [Authorize]
-    public class TipoLezioniController : ControllerBase
+    public class TipoAbbonamentiController : Controller
     {
-        private readonly ILogger<TipoLezioniController> _logger;
-        private readonly ITipologieLezioniRepository _repository;
+        private readonly ILogger<TipoAbbonamentiController> _logger;
+        private readonly ITipologieAbbonamentiRepository _repository;
 
-        public TipoLezioniController(ITipologieLezioniRepository repository, ILogger<TipoLezioniController> logger)
+        public TipoAbbonamentiController(ITipologieAbbonamentiRepository repository, ILogger<TipoAbbonamentiController> logger)
         {
             this._logger = logger;
             this._repository = repository;
@@ -37,31 +37,31 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
-            var tipoLezioni = _repository.GetAll(idCliente);
-            var result = Mapper.Map<IEnumerable<TipologieLezioni>,IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
+            var tipoAbbonamenti = _repository.GetAll(idCliente);
+            var result = Mapper.Map<IEnumerable<TipologieAbbonamenti>,IEnumerable<TipologieAbbonamentiViewModel>>(tipoAbbonamenti);
             return new OkObjectResult(result);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
+        public IActionResult GetOne([FromRoute]int idCliente, [FromQuery]int id)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
-            var tipoLezione = _repository.GetSingle(idCliente, id);
-            if((tipoLezione == null) || (tipoLezione.IdCliente != idCliente))
+            var tipoAbbonamento = _repository.GetSingle(idCliente, id);
+            if((tipoAbbonamento == null) || (tipoAbbonamento.IdCliente != idCliente))
             {
                 return BadRequest();
             }
-            var result = Mapper.Map<TipologieLezioni, TipologieLezioniViewModel>(tipoLezione);
+            var result = Mapper.Map<TipologieAbbonamenti, TipologieAbbonamentiViewModel>(tipoAbbonamento);
             return new OkObjectResult(result);
         }
 
 
         [HttpPost()]
-        public IActionResult Create([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public IActionResult Create([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
         {
             
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
@@ -73,14 +73,14 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
+            var m = Mapper.Map<TipologieAbbonamentiViewModel, TipologieAbbonamenti>(model);
             m.IdCliente = idCliente;
             _repository.Add(idCliente, m);
             return CreatedAtAction("GetOne", m.Id);
         }
 
         [HttpPut()]
-        public IActionResult Modify([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public IActionResult Modify([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -91,18 +91,17 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
+            var m = Mapper.Map<TipologieAbbonamentiViewModel, TipologieAbbonamenti>(model);
             var oldEntity = _repository.GetSingle(idCliente, m.Id);
             if(oldEntity == null)
             {
                 return BadRequest();
             }
-            oldEntity.Descrizione = model.Descrizione;
-            oldEntity.Durata = model.Durata;
-            oldEntity.Livello = model.Livello;
-            oldEntity.MaxPartecipanti = model.MaxPartecipanti;
+            oldEntity.Costo = model.Costo;
+            oldEntity.DurataMesi = model.DurataMesi;
+            oldEntity.MaxLivCorsi = model.MaxLivCorsi;
             oldEntity.Nome = model.Nome;
-            oldEntity.LimiteCancellazioneMinuti = model.LimiteCancellazioneMinuti;
+            oldEntity.NumIngressi = model.NumIngressi;
             _repository.Update(idCliente, oldEntity);            
             return Ok();
         }

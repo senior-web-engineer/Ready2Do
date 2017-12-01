@@ -8,7 +8,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{4097d866-92ef-4628-a8d9-28cf44f60a8a}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql140DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -85,10 +85,14 @@
     <Build Include="security\Tables\UserLogins.sql" />
     <Build Include="security\Tables\UserRoles.sql" />
     <Build Include="dbo\Tables\TipologieImmagini.sql" />
+    <None Include="Scripts\Prepop\Prepop.Test.TipologieImmagini.sql" />
+    <Build Include="dbo\Tables\ClientiUtenti.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
     <None Include="Scripts\Prepop\Prepop.Test.TipologieClienti.sql" />
+    <None Include="DB.AZURE.publish.xml" />
+    <None Include="Scripts\Prepop\Prepop.Test.Clienti.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

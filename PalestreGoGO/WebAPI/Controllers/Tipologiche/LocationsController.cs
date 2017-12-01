@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,14 +16,15 @@ using System.Threading.Tasks;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/{idCliente}/tipologiche/tipolezioni")]
+    [Route("api/{idCliente}/tipologiche/locations")]
     [Authorize]
-    public class TipoLezioniController : ControllerBase
+    public class LocationsController: ControllerBase
     {
-        private readonly ILogger<TipoLezioniController> _logger;
-        private readonly ITipologieLezioniRepository _repository;
 
-        public TipoLezioniController(ITipologieLezioniRepository repository, ILogger<TipoLezioniController> logger)
+        private readonly ILogger<LocationsController> _logger;
+        private readonly ILocationsRepository _repository;
+
+        public LocationsController(ILocationsRepository repository, ILogger<LocationsController> logger)
         {
             this._logger = logger;
             this._repository = repository;
@@ -37,8 +38,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
-            var tipoLezioni = _repository.GetAll(idCliente);
-            var result = Mapper.Map<IEnumerable<TipologieLezioni>,IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
+            var locations = _repository.GetAll(idCliente);
+            var result = Mapper.Map<IEnumerable<Locations>, IEnumerable<LocationViewModel>>(locations);
             return new OkObjectResult(result);
         }
 
@@ -50,20 +51,20 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
-            var tipoLezione = _repository.GetSingle(idCliente, id);
-            if((tipoLezione == null) || (tipoLezione.IdCliente != idCliente))
+            var location = _repository.GetSingle(idCliente, id);
+            if ((location == null) || (location.IdCliente != idCliente))
             {
                 return BadRequest();
             }
-            var result = Mapper.Map<TipologieLezioni, TipologieLezioniViewModel>(tipoLezione);
+            var result = Mapper.Map<Locations, LocationViewModel>(location);
             return new OkObjectResult(result);
         }
 
 
         [HttpPost()]
-        public IActionResult Create([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public IActionResult Create([FromRoute]int idCliente, [FromBody] LocationViewModel model)
         {
-            
+
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
@@ -73,14 +74,14 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
+            var m = Mapper.Map<LocationViewModel, Locations>(model);
             m.IdCliente = idCliente;
             _repository.Add(idCliente, m);
             return CreatedAtAction("GetOne", m.Id);
         }
 
         [HttpPut()]
-        public IActionResult Modify([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public IActionResult Modify([FromRoute]int idCliente, [FromBody] LocationViewModel model)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -91,19 +92,16 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
+            var m = Mapper.Map<LocationViewModel, Locations>(model);
             var oldEntity = _repository.GetSingle(idCliente, m.Id);
-            if(oldEntity == null)
+            if (oldEntity == null)
             {
                 return BadRequest();
             }
-            oldEntity.Descrizione = model.Descrizione;
-            oldEntity.Durata = model.Durata;
-            oldEntity.Livello = model.Livello;
-            oldEntity.MaxPartecipanti = model.MaxPartecipanti;
+            oldEntity.CapienzaMax = model.CapienzaMax;
             oldEntity.Nome = model.Nome;
-            oldEntity.LimiteCancellazioneMinuti = model.LimiteCancellazioneMinuti;
-            _repository.Update(idCliente, oldEntity);            
+            oldEntity.Descrizione = model.Descrizione;
+            _repository.Update(idCliente, oldEntity);
             return Ok();
         }
 

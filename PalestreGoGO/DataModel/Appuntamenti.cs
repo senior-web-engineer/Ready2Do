@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PalestreGoGo.DataModel
 {
-    public partial class Appuntamenti : BaseMultitenantEntity
+    public partial class Appuntamenti 
     {
-        [Required]
-        public string UserId { get; set; }
+        public int Id { get; set; }
+        public int IdCliente { get; set; }        
+        public Guid UserId { get; set; }
         public int ScheduleId { get; set; }
         public DateTime DataPrenotazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
@@ -21,5 +22,9 @@ namespace PalestreGoGo.DataModel
         [ForeignKey("ScheduleId")]
         [InverseProperty("Appuntamenti")]
         public Schedules Schedule { get; set; }
+
+        [ForeignKey("IdCliente")]
+        [InverseProperty("Clienti")]
+        public Clienti Cliente { get; set; }
     }
 }

@@ -41,11 +41,7 @@ namespace Palestregogo.STS
                         new Scope("palestregogo.api.clienti.provisioning", "Provisioning Nuovi Clienti"),
                         /*Scoper per l'amministrazione delle utenze (dei tenant di cui si è owner)*/
                         new Scope("palestregogo.api.users.management", "Gestione Utenti")
-                        {
-                            UserClaims = new List<string>
-                            {
-
-                            }
+                        {                           
                         }
                     }
                 },
@@ -81,40 +77,51 @@ namespace Palestregogo.STS
                     AccessTokenType = AccessTokenType.Jwt
 
                 },
-                      new Client
+                new Client
                 {
-                    ClientName = "angularclient",
-                    ClientId = "angularclient",
-                    AccessTokenType = AccessTokenType.Reference,
-                    AccessTokenLifetime = 300,// 330 seconds, default 60 minutes
-                    IdentityTokenLifetime = 20,
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
-                    RedirectUris = new List<string>{
-                        "https://localhost:44387/"
-                    },
-                    PostLogoutRedirectUris = new List<string>
-                    {
-                        "https://localhost:44387/unauthorized",
-                        "https://localhost:44387"
-                    },
-                    AllowedCorsOrigins = new List<string>
-                    {
-                        "https://localhost:44387",
-                        "http://localhost:44386"
-                    },
-                    AllowedScopes = new List<string>
-                    {
-                        "openid",
-                        //"dataEventRecords",
-                        //"dataeventrecordsscope",
-                        //"securedFiles",
-                        //"securedfilesscope",
-                        "role",
-                        "profile",
-                        "email"
-                    }
+                    ClientName = "Test Client",
+                    ClientId="tests.client",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets = new List<Secret>(){new Secret("01c33638af65289f0f998e439b744b91eedd20fe059095747b".Sha256())},
+                    RequireClientSecret = true,
+                    AllowedScopes = { "alestregogo.sts.assignownership", "palestregogo.api.clienti.provisioning" },
+                    AccessTokenType = AccessTokenType.Jwt
+
                 }
+                //      new Client
+                //{
+                //    ClientName = "angularclient",
+                //    ClientId = "angularclient",
+                //    AccessTokenType = AccessTokenType.Reference,
+                //    AccessTokenLifetime = 300,// 330 seconds, default 60 minutes
+                //    IdentityTokenLifetime = 20,
+                //    AllowedGrantTypes = GrantTypes.Implicit,
+                //    AllowAccessTokensViaBrowser = true,
+                //    RedirectUris = new List<string>{
+                //        "https://localhost:44387/"
+                //    },
+                //    PostLogoutRedirectUris = new List<string>
+                //    {
+                //        "https://localhost:44387/unauthorized",
+                //        "https://localhost:44387"
+                //    },
+                //    AllowedCorsOrigins = new List<string>
+                //    {
+                //        "https://localhost:44387",
+                //        "http://localhost:44386"
+                //    },
+                //    AllowedScopes = new List<string>
+                //    {
+                //        "openid",
+                //        //"dataEventRecords",
+                //        //"dataeventrecordsscope",
+                //        //"securedFiles",
+                //        //"securedfilesscope",
+                //        "role",
+                //        "profile",
+                //        "email"
+                //    }
+                //}
             };
         }
     }

@@ -12,7 +12,7 @@ namespace PalestreGoGo.DataAccess
     public class MultitenantEntityBaseRepository<T> : IMultitenantEntityRepository<int, T, int>
         where T : BaseMultitenantEntity
     {
-        private PalestreGoGoDbContext _context;
+        protected PalestreGoGoDbContext _context;
 
         public MultitenantEntityBaseRepository(PalestreGoGoDbContext context)
         {

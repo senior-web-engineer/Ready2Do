@@ -34,9 +34,8 @@ namespace PalestreGoGo.WebAPI.Utils
 
         public static bool CanEditTipologiche(this ClaimsPrincipal principal, int idCliente)
         {
-            return true;
             if (principal == null) return false;
-            if (principal.IsGlobalAdmin()) return false;
+            if (principal.IsGlobalAdmin()) return true;
             IEnumerable<int> clienti = principal.StructureOwned();
             if (clienti.Contains(idCliente)) return true;
             clienti = principal.StructureManaged();

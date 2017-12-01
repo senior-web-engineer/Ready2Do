@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <!--Aggiunto per xUnit altrimenti non vede i test (??)-->
+    <RuntimeFrameworkVersion>2.0.3</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,14 +15,16 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.7.145" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\..\DataModel\DataModel.csproj" />
     <ProjectReference Include="..\..\WebAPI\WebAPI.csproj" />
+    <ProjectReference Include="..\Tests.Utils\Tests.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,4 +33,7 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
 </Project>

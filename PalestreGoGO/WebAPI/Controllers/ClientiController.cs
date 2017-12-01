@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
@@ -11,7 +13,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti")]
-    //[Authorize(Policy ="AdminResources")]
+    [Authorize()]
     public class ClientiController : ControllerBase
     {
         private readonly ILogger<ClientiController> _logger;
@@ -27,25 +29,28 @@ namespace PalestreGoGo.WebAPI.Controllers
             _userManagementService = userManagementService;
         }
 
-        [HttpGet]
-        public IActionResult GetCliente([FromQuery(Name ="id")] int idCliente)
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCliente([FromRoute(Name ="id")] int idCliente)
         {
-            return null;
+            var cliente = await _repository.GetAsync(idCliente);
+
+            return Ok(Mapper.Map<ClienteViewModel>(cliente));
         }
 
         /// <summary>
         /// Registrazione di un Nuovo Cliente CONTESTUALMENTE ad un nuovo Utente
         /// </summary>
-        /// <param name="cliente"></param>
-        /// <param name="newUser"></param>
+        /// <param name="newCliente"></param>
         /// <returns></returns>
         [HttpPost()]
+        [AllowAnonymous]
         public async Task<IActionResult> NuovoCliente([FromBody]NuovoClienteViewModel newCliente) {
-            if((newCliente == null) || (newCliente == null))
+            if(newCliente == null)
             {
                 return new BadRequestResult();
             }
-            if (!this.ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return new BadRequestResult();
             }
@@ -67,11 +72,10 @@ namespace PalestreGoGo.WebAPI.Controllers
                 RagioneSociale = newCliente.RagioneSociale,
                 ZipOrPostalCode = newCliente.ZipOrPostalCode
             };
-            await _repository.AddAsync(cliente);
-            await _repository.CommitAsync();
+            await _repository.AddAsync(cliente);            
 
             //Step 2 - Creiamo l'utente Owner
-            AppUser user = new AppUser()
+            var user = new AppUser()
             {
                 UserName = newCliente.NuovoUtente.Email,
                 FirstName = newCliente.NuovoUtente.Nome,
@@ -85,14 +89,10 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
-        //[HttpPut]
-        //[Authorize(Policy ="ProvisioningPolicy")]
-        //public IActionResult ProvisioningCliente(int idCliente, Guid owner, string token)
-        //{
-        //    var cliente = _dbContext.Clienti.Single(c => c.Id == idCliente && c.IdUserOwner == owner && c.ProvisioningToken.Equals(token));
-        //    if (cliente == null) return BadRequest();
-            
-        //    throw new NotImplementedException();
-        //}
+        [HttpPost("{idCliente}/follow")]
+        public async Task<IActionResult> Follow([FromRoute] int idCliente)
+        {
+            _repository
+        }
     }
 }

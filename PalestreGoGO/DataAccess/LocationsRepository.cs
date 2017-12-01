@@ -9,49 +9,49 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class TipologieLezioniRepository : ITipologieLezioniRepository
+    public class LocationsRepository : ILocationsRepository
     {
         private readonly PalestreGoGoDbContext _context;
 
-        public TipologieLezioniRepository(PalestreGoGoDbContext context) 
+        public LocationsRepository(PalestreGoGoDbContext context) 
         {
             this._context = context;
         }
 
-        public virtual IEnumerable<TipologieLezioni> GetAll(int idTenant)
+        public virtual IEnumerable<Locations> GetAll(int idTenant)
         {
-            return _context.Set<TipologieLezioni>().Where(e => e.IdCliente.Equals(idTenant)).AsNoTracking();
+            return _context.Set<Locations>().Where(e => e.IdCliente.Equals(idTenant));
         }
 
         public virtual int Count(int idTenant)
         {
-            return _context.Set<TipologieLezioni>().Count(e => e.IdCliente == idTenant);
+            return _context.Set<Locations>().Count(e => e.IdCliente == idTenant);
         }
 
-        public TipologieLezioni GetSingle(int idTenant, int itemKey)
+        public Locations GetSingle(int idTenant, int itemKey)
         {
-            return _context.Set<TipologieLezioni>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant)).AsNoTracking(); ;
+            return _context.Set<Locations>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant));
         }
 
-        public void Add(int idTenant, TipologieLezioni entity)
+        public void Add(int idTenant, Locations entity)
         {
             if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
-            _context.Set<TipologieLezioni>().Add(entity);
+            _context.Set<Locations>().Add(entity);
             _context.SaveChanges();
         }
 
-        public void Update(int idTenant, TipologieLezioni entity)
+        public void Update(int idTenant, Locations entity)
         {
             //Attenzione! Non verifichiamo il tenant
             if(entity.IdCliente != idTenant) throw new ArgumentException("idTenant not valid"); 
-            EntityEntry dbEntityEntry = _context.Entry<TipologieLezioni>(entity);
+            EntityEntry dbEntityEntry = _context.Entry<Locations>(entity);
             dbEntityEntry.State = EntityState.Modified;
             _context.SaveChanges();
         }
 
         public virtual void Delete(int idTenant, int entityKey)
         {
-            var entity = _context.TipologieLezioni.Where(tl => tl.IdCliente.Equals(idTenant) && tl.Id.Equals(entityKey)).Single();
+            var entity = _context.Locations.Single(tl => tl.IdCliente.Equals(idTenant) && tl.Id.Equals(entityKey));
             var entry = _context.Entry(entity);
             entry.State = EntityState.Deleted;
             _context.SaveChanges();

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.WebAPI.Utils;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 
 namespace Tests.WebAPI
@@ -23,6 +24,7 @@ namespace Tests.WebAPI
         static Utils()
         {
             Config = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
         }
@@ -49,7 +51,8 @@ namespace Tests.WebAPI
             return new ClaimsPrincipal(new ClaimsIdentity(claims, "TESTAUTH"));
         }
 
-        public static ClaimsPrincipal GetAnonymousUser() { 
+        public static ClaimsPrincipal GetAnonymousUser()
+        {
             return new ClaimsPrincipal();
         }
     }

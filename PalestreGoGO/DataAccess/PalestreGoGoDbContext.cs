@@ -22,13 +22,13 @@ namespace PalestreGoGo.DataAccess
         public virtual DbSet<Clienti> Clienti { get; set; }
         public virtual DbSet<ClientiImmagini> ClientiImmagini { get; set; }
         public virtual DbSet<ClientiMetadati> ClientiMetadati { get; set; }
+        public virtual DbSet<ClientiUtenti> ClientiUtenti { get; set; }
         public virtual DbSet<Locations> Locations { get; set; }
         public virtual DbSet<Schedules> Schedules { get; set; }
         public virtual DbSet<TipologieAbbonamenti> TipologieAbbonamenti { get; set; }
         public virtual DbSet<TipologieClienti> TipologieClienti { get; set; }
         public virtual DbSet<TipologieImmagini> TipologieImmagini { get; set; }
         public virtual DbSet<TipologieLezioni> TipologieLezioni { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -59,6 +59,12 @@ namespace PalestreGoGo.DataAccess
                     .HasForeignKey(d => d.ScheduleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Appuntamenti_Schedules");
+
+                entity.HasOne(d => d.Cliente)
+                                 .WithMany(p => p.Appuntamenti)
+                                 .HasForeignKey(d => d.IdCliente)
+                                 .OnDelete(DeleteBehavior.ClientSetNull)
+                                 .HasConstraintName("FK_Appuntamenti_Clienti");
             });
 
             modelBuilder.Entity<Clienti>(entity =>
@@ -92,7 +98,18 @@ namespace PalestreGoGo.DataAccess
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ClientiImmagini_TipologiaImmagini");
             });
+            modelBuilder.Entity<ClientiUtenti>(entity =>
+            {
+                entity.Property(e => e.DataCreazione).HasDefaultValueSql("(sysdatetime())");
 
+                entity.HasKey(e => new {e.IdCliente, e.IdUtente});
+
+                entity.HasOne(d => d.IdClienteNavigation)
+                    .WithMany(p => p.ClientiUtenti)
+                    .HasForeignKey(d => d.IdCliente)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ClientiUtenti_Clienti");
+            });
             modelBuilder.Entity<ClientiMetadati>(entity =>
             {
                 entity.HasKey(e => new { e.IdCliente, e.Key });
