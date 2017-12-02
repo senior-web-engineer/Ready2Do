@@ -16,17 +16,20 @@ namespace PalestreGoGo.WebAPI.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserConfirmationService _confirmUserService;
         private readonly ILogger<UsersManagementService> _logger;
-        private readonly IClientiRepository _repositoryClienti;
+        //private readonly IClientiRepository _repositoryClienti;
+        private readonly IClientiProvisioner _clientiProvisioner;
 
         public UsersManagementService(UserManager<AppUser> userManager,
                                       IUserConfirmationService confirmService,
                                       ILogger<UsersManagementService> logger,
-                                      IClientiRepository repositoryClienti)
+                                      //IClientiRepository repositoryClienti,
+                                      IClientiProvisioner clientiProvisioner)
         {
+            this._logger = logger;
             this._userManager = userManager;
             this._confirmUserService = confirmService;
-            this._repositoryClienti = repositoryClienti;
-            this._logger = logger;
+            //this._repositoryClienti = repositoryClienti;
+            this._clientiProvisioner = clientiProvisioner;
         }
 
         public async Task<bool> ConfirmUserAsync(string username, string code)
@@ -36,16 +39,16 @@ namespace PalestreGoGo.WebAPI.Services
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (!result.Succeeded)
             {
-                _logger.LogWarning($"ConfirmMail -> Failed validation for user: {username} with code: [{code}]");
+                _logger.LogWarning($"ConfirmUserAsync -> Failed validation for user: {username} with code: [{code}]");
                 return false;
             }
             var claims = await _userManager.GetClaimsAsync(user);
             //Se è un owner ==> facciamo il provisioning del cliente
             if (claims.Any(c => c.Type.Equals(Constants.ClaimStructureOwned)))
             {
-                
+                await _clientiProvisioner.ProvisionClienteAsync(user.CreationToken, user.Id);
             }
-            _logger.LogInformation($"ConfirmMail -> Successfully validated user {username}");
+            _logger.LogInformation($"ConfirmUserAsync -> Successfully validated user {username}");
             return true;
         }
 
@@ -57,6 +60,11 @@ namespace PalestreGoGo.WebAPI.Services
         public Task<AppUser> GetUserByUsernameAsync(string username)
         {
             return this._userManager.FindByNameAsync(username);
+        }
+
+        public Task<AppUser> GetUserByIdAsync(Guid userId)
+        {
+            return this._userManager.FindByIdAsync(userId.ToString());
         }
 
         public async Task<Guid> RegisterOwnerAsync(AppUser user, string password, string idCliente)

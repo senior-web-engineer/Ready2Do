@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PalestreGoGo.DataModel;
-using PalestreGoGo.DataModel.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,19 +77,19 @@ namespace PalestreGoGo.DataAccess
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ClientiImmagini>> GetImages(int idCliente)
+        public IEnumerable<ClientiImmagini> GetImages(int idCliente)
         {
             return _context.ClientiImmagini.Where(ci => ci.IdCliente.Equals(idCliente)).AsNoTracking();
         }
 
-        public async Task<IEnumerable<ClientiImmagini>> GetImages(int idCliente, TipologieImmagini tipo)
+        public IEnumerable<ClientiImmagini> GetImages(int idCliente, TipologieImmagini tipo)
         {
             if (tipo == null) throw new ArgumentNullException(nameof(tipo));
             return _context.ClientiImmagini.Where(ci => ci.IdCliente.Equals(idCliente) && ci.IdTipoImmagine.Equals(tipo.Id)).AsNoTracking();
         }
         #endregion
 
-        #region Followers
+        #region Followers (UtentiClienti)
         public async Task AddUtenteFollowerAsync(int idCliente, Guid idUtente)
         {
             var entity = new ClientiUtenti()
@@ -111,10 +110,17 @@ namespace PalestreGoGo.DataAccess
             await _context.SaveChangesAsync();     
         }
 
-        public async Task<IEnumerable<ClientiUtenti>> GetAllFollowers(int idCliente)
+        public  IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente)
         {
             return _context.ClientiUtenti.Where(cu => cu.IdCliente.Equals(idCliente));
         }
+
+        public async Task<ClientiUtenti> GetFollowerAsync(int idCliente, Guid idUtente)
+        {
+            return await _context.ClientiUtenti.Where(cu => cu.IdCliente.Equals(idCliente) && cu.IdUtente.Equals(idUtente)).SingleOrDefaultAsync();
+        }
+
         #endregion
+
     }
 }

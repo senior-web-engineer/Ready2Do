@@ -15,6 +15,14 @@ namespace PalestreGoGo.WebAPI.Utils
             if (principal.Claims.Any(c => c.Type.Equals(Constants.ClaimRole) && c.Value.Equals(Constants.RoleGlobalAdmin))) return true;
             return false;
         }
+        public static Guid? UserId(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            Guid result;
+            string userId = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimUserId))?.Value;
+            if (Guid.TryParse(userId, out result)) return result;
+            return null;
+        }
 
         /*Ritorna una lista di IdClienti per cui il principal è l'owner*/
         public static IEnumerable<int> StructureOwned(this ClaimsPrincipal principal)
@@ -54,5 +62,16 @@ namespace PalestreGoGo.WebAPI.Utils
             return false;
         }
 
+        public static bool CanManageStructure(this ClaimsPrincipal principal, int idCliente)
+        {
+            if (principal == null) return false;
+            if (principal.IsGlobalAdmin()) return true;
+            IEnumerable<int> clienti = principal.StructureOwned();
+            if (clienti.Contains(idCliente)) return true;
+            clienti = principal.StructureManaged();
+            if (clienti.Contains(idCliente)) return true;
+            return false;
+
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace PalestreGoGo.DataModel.Utils
+﻿namespace PalestreGoGo.DataModel
 {
     public class Constants
     {

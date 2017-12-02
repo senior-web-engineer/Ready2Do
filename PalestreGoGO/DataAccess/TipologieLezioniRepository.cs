@@ -30,7 +30,7 @@ namespace PalestreGoGo.DataAccess
 
         public TipologieLezioni GetSingle(int idTenant, int itemKey)
         {
-            return _context.Set<TipologieLezioni>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant)).AsNoTracking(); ;
+            return _context.Set<TipologieLezioni>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant));
         }
 
         public void Add(int idTenant, TipologieLezioni entity)

@@ -32,10 +32,17 @@ namespace PalestreGoGo.DataModel
         [ForeignKey("IdCliente")]
         [InverseProperty("Schedules")]
         public Clienti IdClienteNavigation { get; set; }
+
         [ForeignKey("IdLocation")]
         [InverseProperty("Schedules")]
         public Locations IdLocationNavigation { get; set; }
+
         [InverseProperty("Schedule")]
         public ICollection<Appuntamenti> Appuntamenti { get; set; }
+
+        [ForeignKey("IdTipoLezione")]
+        [InverseProperty("Schedules")]
+        public TipologieLezioni TipoLezione { get; set; }
+
     }
 }

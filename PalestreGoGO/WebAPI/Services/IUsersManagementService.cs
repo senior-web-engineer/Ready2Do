@@ -15,5 +15,7 @@ namespace PalestreGoGo.WebAPI.Services
         Task<AppUser> GetUserByMailAsync(string email);
 
         Task<AppUser> GetUserByUsernameAsync(string username);
+
+        Task<AppUser> GetUserByIdAsync(Guid id);
     }
 }

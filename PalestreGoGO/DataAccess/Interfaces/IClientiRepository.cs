@@ -19,14 +19,18 @@ namespace PalestreGoGo.DataAccess
         #region Immagini
         Task AddImagesAsync(int idCliente, IEnumerable<ClientiImmagini> immagine);
         Task DeleteImage(int idCliente, int idImmagine);
-        Task<IEnumerable<ClientiImmagini>> GetImages(int idCliente);
-        Task<IEnumerable<ClientiImmagini>> GetImages(int idCliente, TipologieImmagini tipoImmagine);
+        IEnumerable<ClientiImmagini> GetImages(int idCliente);
+        IEnumerable<ClientiImmagini> GetImages(int idCliente, TipologieImmagini tipoImmagine);
         #endregion
 
         #region Followers
         Task AddUtenteFollowerAsync(int idCliente, Guid idUtente);
         Task RemoveUtenteFollowerAsync(int idCliente, Guid idUtente);
-        Task<IEnumerable<ClientiUtenti>> GetAllFollowers(int idCliente);
+        IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente);
+        Task<ClientiUtenti> GetFollowerAsync(int idCliente, Guid idUtente);
+        #endregion
+
+        #region Abbonamenti
         #endregion
     }
 

@@ -17,4 +17,5 @@
 	CONSTRAINT PK_Schedules PRIMARY KEY (Id),
 	CONSTRAINT FK_Schedules_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),
 	CONSTRAINT FK_Schedules_Locations FOREIGN KEY (IdLocation) REFERENCES [Locations](Id),
+	CONSTRAINT FK_Schedules_TipoLezioni FOREIGN KEY (IdTipoLezione) REFERENCES [TipologieLezioni](Id)
 )

@@ -20,5 +20,8 @@ namespace PalestreGoGo.DataModel
         [ForeignKey("IdCliente")]
         [InverseProperty("TipologieLezioni")]
         public Clienti IdClienteNavigation { get; set; }
+
+        [InverseProperty("TipoLezione")]
+        public ICollection<Schedules> Schedules { get; set; }
     }
 }

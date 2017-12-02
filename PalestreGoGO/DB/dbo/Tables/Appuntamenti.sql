@@ -7,7 +7,7 @@
 	[DataPrenotazione]		DATETIME2			NOT NULL,
 	[DataCancellazione]		DATETIME2			NULL,
 	[Note]					NVARCHAR(1000)		NULL,
-	[Nominativo]			NVARCHAR(200)		NULL,
+	[Nominativo]			NVARCHAR(200)		NULL,	/* ??? */
 	[IsGuest]				BIT					NOT NULL,
 	CONSTRAINT PK_Appuntamenti PRIMARY KEY (Id),
 	CONSTRAINT FK_Appuntamenti_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),

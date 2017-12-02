@@ -145,6 +145,13 @@ namespace PalestreGoGo.DataAccess
                     .HasForeignKey(d => d.IdLocation)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Schedules_Locations");
+
+                entity.HasOne(d => d.TipoLezione)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.IdTipoLezione)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Schedules_TipoLezioni");
+
             });
 
             modelBuilder.Entity<TipologieAbbonamenti>(entity =>

@@ -8,6 +8,11 @@ namespace PalestreGoGo.DataAccess.Interfaces
 {
     public interface IAppuntamentiRepository
     {
-        Task AddAppuntamentoAsync(Appuntamenti appuntamento);
+        Task<int> AddAppuntamentoAsync(int idCliente, Appuntamenti appuntamento);
+
+        Task CancelAppuntamentoAsync(int idCliente, int idAppuntamento);
+
+        IEnumerable<Appuntamenti> GetAppuntamentiForSchedule(int idCliente, int idSchedule);
+
     }
 }

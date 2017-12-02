@@ -11,7 +11,7 @@ namespace PalestreGoGo.WebAPI
         public const string ClaimRole = "role";
         public const string ClaimStructureOwned = "structure_owned";
         public const string ClaimStructureManaged = "structure_managed";
-        
+        public const string ClaimUserId = "uid";
         #endregion
 
         #region SCOPES

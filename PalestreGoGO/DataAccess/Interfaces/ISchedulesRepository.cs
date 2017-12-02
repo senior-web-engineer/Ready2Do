@@ -8,11 +8,15 @@ namespace PalestreGoGo.DataAccess
 {
     public interface ISchedulesRepository
     {
-        Task AddScheduleAsync(int idCliente, Schedules schedule);
+        Task<int> AddScheduleAsync(int idCliente, Schedules schedule);
 
         Task RemoveScheduleAsync(int idCliente, int idSchedule);
 
-        Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime startDate, DateTime endDate);
-        
+        Task<Schedules> GetScheduleAsync(int idCliente, int idSchedule);
+
+        IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate);
+
+        Task UpdateSchedule(int idCliente, Schedules entity);
+
     }
 }
