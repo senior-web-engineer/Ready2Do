@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\..\DataModel\DataModel.csproj" />
+    <ProjectReference Include="..\..\WebAPIModel\WebAPIModel.csproj" />
     <ProjectReference Include="..\..\WebAPI\WebAPI.csproj" />
     <ProjectReference Include="..\Tests.Utils\Tests.Utils.csproj" />
   </ItemGroup>

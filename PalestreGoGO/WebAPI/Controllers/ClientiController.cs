@@ -6,9 +6,8 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
-using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPIModel;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers

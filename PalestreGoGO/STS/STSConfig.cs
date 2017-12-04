@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityServer4;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,8 @@ namespace Palestregogo.STS
                         /*Scoper per l'amministrazione delle utenze (dei tenant di cui si è owner)*/
                         new Scope("palestregogo.api.users.management", "Gestione Utenti")
                         {                           
-                        }
+                        },
+                        new Scope("palestregogo.api", "Accesso completo alle API")
                     }
                 },
 
@@ -68,14 +70,26 @@ namespace Palestregogo.STS
                 //Client per il provisioning
                 new Client
                 {
-                    ClientName = "Provisioning Client",
-                    ClientId="provisioning.client",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientName = "Web Client",
+                    ClientId="palestregogo_web",
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowOfflineAccess = true, //Enable Refresh Token (??)
                     ClientSecrets = new List<Secret>(){new Secret("b753a50a8966dccb0c99248d2aa1fe2d65a6dca43de88cc1a2".Sha256())},
                     RequireClientSecret = true,
-                    AllowedScopes = { "alestregogo.sts.assignownership", "palestregogo.api.clienti.provisioning" },
-                    AccessTokenType = AccessTokenType.Jwt
-
+                    AllowedScopes = { "palestregogo.api",
+                                      IdentityServerConstants.StandardScopes.OpenId,
+                                      IdentityServerConstants.StandardScopes.Email,
+                                      IdentityServerConstants.StandardScopes.Profile,
+                                      IdentityServerConstants.StandardScopes.OfflineAccess
+                    },
+                    AccessTokenType = AccessTokenType.Jwt,
+                    RedirectUris = {"http://localhost:18071/signin-oidc", "https://localhost:44320/signin-oidc" },
+                    AllowedCorsOrigins = new List<string>
+                    {
+                        "https://localhost:44320/",
+                        "http://localhost:18071"
+                    },
+                    AllowAccessTokensViaBrowser = true, //permit transmit access tokens via the browser channel
                 },
                 new Client
                 {
@@ -84,9 +98,8 @@ namespace Palestregogo.STS
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     ClientSecrets = new List<Secret>(){new Secret("01c33638af65289f0f998e439b744b91eedd20fe059095747b".Sha256())},
                     RequireClientSecret = true,
-                    AllowedScopes = { "alestregogo.sts.assignownership", "palestregogo.api.clienti.provisioning" },
-                    AccessTokenType = AccessTokenType.Jwt
-
+                    AllowedScopes = { "palestregogo.sts.assignownership", "openid", "role", "profile", "email", "offline_access"},
+                    AccessTokenType = AccessTokenType.Jwt,
                 }
                 //      new Client
                 //{

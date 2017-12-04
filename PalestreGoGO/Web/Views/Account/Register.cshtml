@@ -1,0 +1,102 @@
+﻿@model PalestreGoGo.WebAPIModel.NuovoClienteViewModel
+
+
+<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+    <h4>Registrazione nuovo Cliente</h4>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="Nome"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="Nome" />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="RagioneSociale"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="RagioneSociale" />
+            <span asp-validation-for="RagioneSociale" class="text-danger"></span>
+        </div>        
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="Email"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>        
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="NumTelefono"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="NumTelefono" />
+            <span asp-validation-for="NumTelefono" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="Indirizzo"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="Indirizzo" />
+            <span asp-validation-for="Indirizzo" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="Citta"></label>
+        <div class="col-md-2">
+            <input class="form-control" asp-for="Citta" />
+            <span asp-validation-for="Citta" class="text-danger"></span>
+        </div>
+        <label class="col-md-2 control-label" asp-for="ZipOrPostalCode"></label>
+        <div class="col-md-2">
+            <input class="form-control" asp-for="ZipOrPostalCode" />
+            <span asp-validation-for="ZipOrPostalCode" class="text-danger"></span>
+        </div>
+        <label class="col-md-2 control-label" asp-for="Country"></label>
+        <div class="col-md-2">
+            <input class="form-control" asp-for="Country" />
+            <span asp-validation-for="Country" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="NuovoUtente.Email"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="NuovoUtente.Email" />
+            <span asp-validation-for="NuovoUtente.Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="NuovoUtente.Cognome"></label>
+        <div class="col-md-4">
+            <input class="form-control" asp-for="NuovoUtente.Cognome" />
+            <span asp-validation-for="NuovoUtente.Cognome" class="text-danger"></span>
+        </div>
+        <label class="col-md-2 control-label" asp-for="NuovoUtente.Nome"></label>
+        <div class="col-md-4">
+            <input class="form-control" asp-for="NuovoUtente.Nome" />
+            <span asp-validation-for="NuovoUtente.Nome" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="NuovoUtente.Telefono"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="NuovoUtente.Telefono" />
+            <span asp-validation-for="NuovoUtente.Telefono" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label" asp-for="NuovoUtente.Password"></label>
+        <div class="col-md-10">
+            <input class="form-control" asp-for="NuovoUtente.Password" type="password" />
+            <span asp-validation-for="NuovoUtente.Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Register</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

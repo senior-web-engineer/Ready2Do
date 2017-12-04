@@ -16,6 +16,7 @@ namespace PalestreGoGo.DataModel
             Schedules = new HashSet<Schedules>();
             TipologieAbbonamenti = new HashSet<TipologieAbbonamenti>();
             TipologieLezioni = new HashSet<TipologieLezioni>();
+            UrlRoute = "";
         }
 
         [Required]

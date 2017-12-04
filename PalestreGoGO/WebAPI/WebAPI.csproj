@@ -43,5 +43,6 @@
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\DataModel\DataModel.csproj" />
     <ProjectReference Include="..\IdentityModel\IdentityModel.csproj" />
+    <ProjectReference Include="..\WebAPIModel\WebAPIModel.csproj" />
   </ItemGroup>
 </Project>

@@ -67,6 +67,7 @@ namespace PalestreGoGo.WebAPI
              .AddEntityFrameworkStores<AppIdentityDbContext>()
              .AddDefaultTokenProviders();
 
+            services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
             services.AddTransient<IUserConfirmationService, UserConfirmationService>();
             services.AddTransient<IUsersManagementService, UsersManagementService>();
 
@@ -94,6 +95,7 @@ namespace PalestreGoGo.WebAPI
                 x.AddProfile<DomainToViewModelMappingProfile>();
             });
 
+            services.AddCors();
 
             services.AddMvc()
                 //Utilizziamo FluentValidation invece dei DataAnnotation per la validazione dei viewmodel
@@ -125,6 +127,7 @@ namespace PalestreGoGo.WebAPI
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
+            //app.UseCors()
             app.UseMvc();
             
         }

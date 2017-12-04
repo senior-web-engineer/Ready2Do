@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using PalestreGoGo.WebAPIModel;
 
 namespace PalestreGoGo.WebAPI.ViewModel.Validators
 {

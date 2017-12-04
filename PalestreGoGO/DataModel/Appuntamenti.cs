@@ -24,7 +24,7 @@ namespace PalestreGoGo.DataModel
         public Schedules Schedule { get; set; }
 
         [ForeignKey("IdCliente")]
-        [InverseProperty("Clienti")]
+        [InverseProperty("Appuntamenti")]
         public Clienti Cliente { get; set; }
     }
 }

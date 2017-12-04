@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
-using PalestreGoGo.WebAPI.ViewModel;
-using AutoMapper;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
+using PalestreGoGo.WebAPIModel;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {

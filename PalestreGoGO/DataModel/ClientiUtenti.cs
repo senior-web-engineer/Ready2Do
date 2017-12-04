@@ -15,7 +15,7 @@ namespace PalestreGoGo.DataModel
         public DateTime DataCreazione { get; set; }
 
         [ForeignKey("IdCliente")]
-        [InverseProperty("ClientiMetadati")]
+        [InverseProperty("ClientiUtenti")]
         public Clienti IdClienteNavigation { get; set; }
     }
 }

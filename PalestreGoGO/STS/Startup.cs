@@ -44,7 +44,7 @@ namespace Palestregogo.STS
 
                 //Richiediamo la conferma dell'email
                 // Per ora disabilitato, dobbiamo implementare il servizio EmailSender prima di abilitarla
-                cfg.SignIn.RequireConfirmedEmail = false;
+                cfg.SignIn.RequireConfirmedEmail = true;
 
                 cfg.User.RequireUniqueEmail = true; //In caso di utente con registrazione locale e Google?
             })

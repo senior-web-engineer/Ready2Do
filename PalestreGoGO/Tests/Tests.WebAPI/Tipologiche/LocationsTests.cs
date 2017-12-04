@@ -5,6 +5,7 @@ using Moq;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

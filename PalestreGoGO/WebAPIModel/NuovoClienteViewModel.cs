@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace PalestreGoGo.WebAPI.ViewModel
+namespace PalestreGoGo.WebAPIModel
 {
     public class NuovoClienteViewModel
     {

@@ -7,6 +7,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPIModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

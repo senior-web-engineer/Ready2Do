@@ -5,13 +5,10 @@ using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
-using PalestreGoGo.WebAPI.ViewModel;
-using System;
+using PalestreGoGo.WebAPIModel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
