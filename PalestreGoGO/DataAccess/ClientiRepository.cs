@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,12 @@ namespace PalestreGoGo.DataAccess
     public class ClientiRepository : IClientiRepository
     {
         private readonly PalestreGoGoDbContext _context;
+        private readonly ILogger<ClientiRepository> _logger;
 
-        public ClientiRepository(PalestreGoGoDbContext context)
+        public ClientiRepository(PalestreGoGoDbContext context, ILogger<ClientiRepository> logger)
         {
             this._context = context;
+            this._logger = logger;
         }
 
         public async Task<int> AddAsync(Clienti cliente)

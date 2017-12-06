@@ -27,13 +27,13 @@ namespace PalestreGoGo.DataAccess
             if (abbonamento.IdCliente != idCliente) throw new ArgumentException("Invalid Tenant");
             _context.AbbonamentiUtenti.Add(abbonamento);
             await _context.SaveChangesAsync();
-            return abbonamento.Id;
+            return abbonamento.Id.Value;
         }
 
         public async Task UpdateAbbonamentoAsync(int idCliente, AbbonamentiUtenti abbonamento)
         {
             if (abbonamento.IdCliente != idCliente) throw new ArgumentException("Invalid Tenant");
-            _context.AbbonamentiUtenti.Add(abbonamento);
+            _context.AbbonamentiUtenti.Update(abbonamento);
             await _context.SaveChangesAsync();
         }
 

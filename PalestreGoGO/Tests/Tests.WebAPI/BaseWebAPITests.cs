@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
+using Moq;
 using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using System;
+using System.Security.Claims;
 using Xunit.Abstractions;
 
 namespace Tests.WebAPI
@@ -28,6 +31,7 @@ namespace Tests.WebAPI
             InitAutoMapper();
             this.output = output;
         }
+
 
         public virtual void Dispose()
         {

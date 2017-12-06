@@ -132,7 +132,7 @@ namespace PalestreGoGo.DataAccess
 
             modelBuilder.Entity<Schedules>(entity =>
             {
-                entity.Property(e => e.Timestamp).IsRowVersion();
+                //entity.Property(e => e.Timestamp).IsRowVersion();
 
                 entity.HasOne(d => d.IdClienteNavigation)
                     .WithMany(p => p.Schedules)

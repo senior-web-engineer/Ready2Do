@@ -64,18 +64,8 @@ namespace PalestreGoGo.DataAccess
             {
                 try
                 {
-                    var appuntamento = _context.Appuntamenti.Single(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idAppuntamento));
-                    appuntamento.DataCancellazione = DateTime.Now;
-                    //Riaccreditiamo l'ingresso
-                    if (!appuntamento.IsGuest)
-                    {
-                        var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(appuntamento.UserId));
-                        // Avoid overflow
-                        if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
-                        {
-                            abbonamento.IngressiResidui++;
-                        }
-                    }
+                    var appuntamento = await _context.Appuntamenti.SingleAsync(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idAppuntamento));
+                    await CancellaAppuntamentoAsync(_context, idCliente, appuntamento);
                     var schedule = await _context.Schedules.SingleAsync(s => s.Id.Equals(appuntamento.ScheduleId));
                     schedule.PostiDisponibili++;
                     await _context.SaveChangesAsync();
@@ -83,9 +73,24 @@ namespace PalestreGoGo.DataAccess
                 }
                 catch (Exception exc)
                 {
-                    _logger.LogError(exc, $"Errore durante la cancellazione dell'appuntamento. IdCliente: {idCliente}, IdAppuntamento:{idAppuntamento}");
+                    _logger?.LogError(exc, $"Errore durante la cancellazione dell'appuntamento. IdCliente: {idCliente}, IdAppuntamento:{idAppuntamento}");
                     trans.Rollback();
                     throw;
+                }
+            }
+        }
+
+        internal static async Task CancellaAppuntamentoAsync(PalestreGoGoDbContext context, int idCliente, Appuntamenti appuntamento)
+        {
+            appuntamento.DataCancellazione = DateTime.Now;
+            //Riaccreditiamo l'ingresso
+            if (!appuntamento.IsGuest)
+            {
+                var abbonamento = await context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(appuntamento.UserId));
+                // Avoid overflow
+                if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
+                {
+                    abbonamento.IngressiResidui++;
                 }
             }
         }

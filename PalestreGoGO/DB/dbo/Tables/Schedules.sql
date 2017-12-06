@@ -12,7 +12,7 @@
 	[DataCancellazione]		DATETIME2		NULL,		-- Valorizzata se la classe è stata cancellata dalla palestra
 	[UserIdOwner]			NVARCHAR(450)	NULL,	-- Utente titolare della classe (se valorizzato è l'unico che può editare la classe)
 	[Note]					NVARCHAR(1000)	NULL,
-	timestamp,
+	--timestamp,
 
 	CONSTRAINT PK_Schedules PRIMARY KEY (Id),
 	CONSTRAINT FK_Schedules_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),

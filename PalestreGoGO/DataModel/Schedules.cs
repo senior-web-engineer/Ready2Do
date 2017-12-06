@@ -26,8 +26,8 @@ namespace PalestreGoGo.DataModel
         public string UserIdOwner { get; set; }
         [StringLength(1000)]
         public string Note { get; set; }
-        [Column("timestamp")]
-        public byte[] Timestamp { get; set; }
+        //[Column("timestamp")]
+        //public byte[] Timestamp { get; set; }
 
         [ForeignKey("IdCliente")]
         [InverseProperty("Schedules")]

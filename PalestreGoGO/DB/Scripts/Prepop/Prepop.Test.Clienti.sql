@@ -39,3 +39,19 @@ INSERT INTO [dbo].[TipologieLezioni] ([Id], [IdCliente], [Nome], [Descrizione], 
 		  (3, 2, 'Zumba', 'Zumba per tutti', 50, 10, 120, 150),
 		  (4, 2, 'Funzionale', 'Funzionale per tutti', 50, 15, 120, 100)
 SET IDENTITY_INSERT [TipologieLezioni]  OFF
+
+
+SET IDENTITY_INSERT [TipologieAbbonamenti]  ON 
+INSERT INTO [dbo].[TipologieAbbonamenti]([Id], [IdCliente], [Nome], [DurataMesi], [NumIngressi], [Costo],[MaxLivCorsi])
+    VALUES(1, 1, 'Trimestrale (Liv. 200)', 3, 100, 120, 200),
+		  (2, 1, '20 Ingressi', 9999, 20, 200, 1000),
+		  (3, 2, 'Mensile (Liv. 1000)', 1, 100, 75, 1000)
+SET IDENTITY_INSERT [TipologieAbbonamenti]  OFF
+
+
+SET IDENTITY_INSERT [Locations]  ON 
+INSERT INTO [dbo].[Locations]([Id], [IdCliente], [Nome], [Descrizione], [CapienzaMax])
+    VALUES(1, 1, 'Sala Blu', 'Desc Sala Blu', 25),
+		  (2, 1, 'Sala Rossa', 'Desv Sala Rossa', 50),
+		  (3, 2, 'Sala YOGA', 'Sala per corsi di Yoga', 30)
+SET IDENTITY_INSERT [Locations]  OFF

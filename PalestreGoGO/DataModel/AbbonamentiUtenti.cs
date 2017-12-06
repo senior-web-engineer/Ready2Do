@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PalestreGoGo.DataModel
 {
-    public partial class AbbonamentiUtenti: BaseMultitenantEntity
+    public partial class AbbonamentiUtenti //: BaseMultitenantEntity
     {
-        [Required]
-        [StringLength(450)]
-        public string UserId { get; set; }
+        public int? Id { get; set; }
+        public int IdCliente { get; set; }
+        public Guid UserId { get; set; }
         public int IdTipoAbbonamento { get; set; }
         [Column(TypeName = "date")]
         public DateTime DataInizioValidita { get; set; }

@@ -42,6 +42,12 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                 .ForMember(d => d.Nome, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(d => d.Cognome, opt => opt.MapFrom(src => src.LastName))
                 .ForMember(d => d.Email, opt => opt.MapFrom(src => src.Email));
+
+            CreateMap<AbbonamentiUtenti, AbbonamentoViewModel>()
+                .ReverseMap()
+                .ForPath(x => x.IdTipoAbbonamentoNavigation, x => x.Ignore())
+                .ForPath(x => x.IdClienteNavigation, x => x.Ignore());
+
         }
 
     }

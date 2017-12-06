@@ -16,19 +16,16 @@ namespace PalestreGoGo.WebAPI.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserConfirmationService _confirmUserService;
         private readonly ILogger<UsersManagementService> _logger;
-        //private readonly IClientiRepository _repositoryClienti;
         private readonly IClientiProvisioner _clientiProvisioner;
 
         public UsersManagementService(UserManager<AppUser> userManager,
                                       IUserConfirmationService confirmService,
                                       ILogger<UsersManagementService> logger,
-                                      //IClientiRepository repositoryClienti,
                                       IClientiProvisioner clientiProvisioner)
         {
             this._logger = logger;
             this._userManager = userManager;
             this._confirmUserService = confirmService;
-            //this._repositoryClienti = repositoryClienti;
             this._clientiProvisioner = clientiProvisioner;
         }
 

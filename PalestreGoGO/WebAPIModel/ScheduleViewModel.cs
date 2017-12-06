@@ -7,6 +7,8 @@ namespace PalestreGoGo.WebAPIModel
 {
     public class ScheduleViewModel
     {
+        public int? Id { get; set; }
+        public int IdCliente { get; set; }
         public int IdTipoLezione { get; set; }
         public int IdLocation { get; set; }
         public DateTime Data { get; set; }

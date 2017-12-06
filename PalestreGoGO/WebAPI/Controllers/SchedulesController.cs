@@ -79,5 +79,14 @@ namespace PalestreGoGo.WebAPI.Controllers
             await _repository.RemoveScheduleAsync(idCliente, idSchedule);
             return Ok();
         }
+
+        [HttpPut()]
+        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleViewModel schedule)
+        {
+            if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
+            var entity = Mapper.Map<ScheduleViewModel, Schedules>(schedule);
+            await _repository.UpdateSchedule(idCliente, entity);
+            return Ok();
+        }
     }
 }

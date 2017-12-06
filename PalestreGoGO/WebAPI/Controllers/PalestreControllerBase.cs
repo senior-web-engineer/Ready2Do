@@ -9,7 +9,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     public class PalestreControllerBase: ControllerBase
     {
-        protected ClaimsPrincipal GetCurrentUser()
+        public virtual ClaimsPrincipal GetCurrentUser()
         {
             return this.User;
         }

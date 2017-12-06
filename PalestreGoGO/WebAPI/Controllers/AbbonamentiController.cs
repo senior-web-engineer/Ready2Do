@@ -10,17 +10,19 @@ using PalestreGoGo.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using PalestreGoGo.DataModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/abbonamenti")]
+    [Authorize]
     public class AbbonamentiController : PalestreControllerBase
     {
         private readonly IAbbonamentiRepository _repository;
-        private readonly ILogger<IAbbonamentiRepository> _logger;
+        private readonly ILogger<AbbonamentiController> _logger;
 
-        public AbbonamentiController(IAbbonamentiRepository repository, ILogger<IAbbonamentiRepository> logger)
+        public AbbonamentiController(IAbbonamentiRepository repository, ILogger<AbbonamentiController> logger)
         {
             _logger = logger;
             _repository = repository;
