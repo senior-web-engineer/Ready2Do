@@ -18,4 +18,12 @@
     <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebAPIModel\WebAPIModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\js\NewFolder\" />
+  </ItemGroup>
+
 </Project>

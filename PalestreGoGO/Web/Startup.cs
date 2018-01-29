@@ -29,7 +29,7 @@ namespace Web
             services.AddOptions();
             //services.Configure<STSConfig>(Configuration);
             services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
-
+            services.Configure<ApplicationConfigurations>(Configuration.GetSection("ApplicationConfigurations"));
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication(options =>
             {

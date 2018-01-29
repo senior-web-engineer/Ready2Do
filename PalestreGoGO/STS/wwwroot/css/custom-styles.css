@@ -1,0 +1,36 @@
+﻿/* Link di registrazione nella NavBar*/
+/*.cs_navitem-registration {
+    color: red;
+    font-weight: 500;
+}*/
+
+#navLinkRegistration {
+    color: red;
+    font-weight: 500;
+}
+
+#navLinkLogin {
+    border-color: #03a9f4;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: 500;
+}
+
+.custom-fullscreen {
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-image: url("/img/banner/banner-6.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.input-field {
+    margin-top: 25px;
+}
+
+#lblTipologiaCliente {
+    top: -15px;
+    left: 15px;
+}

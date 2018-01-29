@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PalestreGoGo.DataModel
 {
-    public partial class TipologieClienti : BaseEntity
+    public partial class TipologiaCliente : BaseEntity
     {
-        public TipologieClienti()
+        public TipologiaCliente()
         {
             Clienti = new HashSet<Clienti>();
         }

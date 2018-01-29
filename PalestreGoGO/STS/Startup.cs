@@ -29,6 +29,9 @@ namespace Palestregogo.STS
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
+
             services.AddDbContext<STSIdentityDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -77,6 +80,8 @@ namespace Palestregogo.STS
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseStaticFiles();
 
             app.UseIdentityServer();
 

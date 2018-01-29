@@ -1,87 +1,146 @@
 ﻿@model LoginViewModel
 
-<div class="login-page">
-    <div class="page-header">
-        <h1>Login</h1>
-    </div>
-
-    @Html.Partial("_ValidationSummary")
-
-    <div class="row">
-
-        @if (Model.EnableLocalLogin)
-        {
-            <div class="col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Local Login</h3>
+@*fullscreen-banner*@
+<section class="section-padding banner-wrapper banner-6 tp-banner fullscreen-container">
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="card-wrapper"></div>
+            <div class="card-wrapper">
+                <h1 class="title">Login</h1>
+                <form>
+                    <div class="input-container">
+                        <input type="text" id="username" required="required" />
+                        <label for="username">Username</label>
+                        <div class="bar"></div>
                     </div>
-                    <div class="panel-body">
+                    <div class="input-container">
+                        <input type="password" id="password" required="required" />
+                        <label for="password">Password</label>
+                        <div class="bar"></div>
+                    </div>
+                    <div class="button-container">
+                        <a href="#." class="btn btn-lg btn-block waves-effect waves-light">Login</a>
+                    </div>
+                    <div class="footer"><a href="#">Password dimenticata?</a></div>
+                </form>
+            </div>           
+        </div>
+    </div>
+</section>
 
-                        <form asp-route="Login">
-                            <input type="hidden" asp-for="ReturnUrl" />
 
-                            <fieldset>
-                                <div class="form-group">
-                                    <label asp-for="Username"></label>
-                                    <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Password"></label>
-                                    <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
-                                </div>
-                                @if (Model.AllowRememberLogin)
-                                {
-                                    <div class="form-group login-remember">
-                                        <label asp-for="RememberLogin">
-                                            <input asp-for="RememberLogin">
-                                            <strong>Remember My Login</strong>
-                                        </label>
+@*<div class="login-page">
+        <div class="page-header">
+            <h1>Login</h1>
+        </div>
+        @Html.Partial("_ValidationSummary")
+        <div class="row">
+            @if (Model.EnableLocalLogin)
+            {
+                <div class="col-sm-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Local Login</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form asp-route="Login">
+                                <input type="hidden" asp-for="ReturnUrl" />
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label asp-for="Username"></label>
+                                        <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
                                     </div>
+                                    <div class="form-group">
+                                        <label asp-for="Password"></label>
+                                        <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
+                                    </div>
+                                    @if (Model.AllowRememberLogin)
+                                    {
+                                        <div class="form-group login-remember">
+                                            <label asp-for="RememberLogin">
+                                                <input asp-for="RememberLogin">
+                                                <strong>Remember My Login</strong>
+                                            </label>
+                                        </div>
+                                    }
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" name="button" value="login">Login</button>
+                                        <button class="btn btn-default" name="button" value="cancel">Cancel</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.VisibleExternalProviders.Any())
+            {
+                <div class="col-md-6 col-sm-6 external-providers">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">External Login</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-inline">
+                                @foreach (var provider in Model.VisibleExternalProviders)
+                                {
+                                    <li>
+                                        <a class="btn btn-default"
+                                           asp-action="ExternalLogin"
+                                           asp-route-provider="@provider.AuthenticationScheme"
+                                           asp-route-returnUrl="@Model.ReturnUrl">
+                                            @provider.DisplayName
+                                        </a>
+                                    </li>
                                 }
-                                <div class="form-group">
-                                    <button class="btn btn-primary" name="button" value="login">Login</button>
-                                    <button class="btn btn-default" name="button" value="cancel">Cancel</button>
-                                </div>
-                            </fieldset>
-                        </form>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-
-        @if (Model.VisibleExternalProviders.Any())
-        {
-            <div class="col-md-6 col-sm-6 external-providers">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">External Login</h3>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="list-inline">
-                            @foreach (var provider in Model.VisibleExternalProviders)
-                            {
-                                <li>
-                                    <a class="btn btn-default"
-                                       asp-action="ExternalLogin"
-                                       asp-route-provider="@provider.AuthenticationScheme"
-                                       asp-route-returnUrl="@Model.ReturnUrl">
-                                        @provider.DisplayName
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    </div>
+            }
+            @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
+            {
+                <div class="alert alert-warning">
+                    <strong>Invalid login request</strong>
+                    There are no login schemes configured for this client.
                 </div>
-            </div>
-        }
+            }
+        </div>
+    </div>*@
 
-        @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
-        {
-            <div class="alert alert-warning">
-                <strong>Invalid login request</strong>
-                There are no login schemes configured for this client.
+@*<!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-position">
+            <img src="assets/img/logo-colored.png" alt="logo">
+            <div class="progress">
+                <div class="indeterminate"></div>
             </div>
-        }
+        </div>
     </div>
-</div>
+    <!-- End Preloader -->*@
+
+@section Scripts {
+    <!-- jQuery -->
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/jquery.easing.min.js"></script>
+    <script src="~/js/jquery.sticky.min.js"></script>
+    <script src="~/js/smoothscroll.min.js"></script>
+    <script src="~/js/jquery.stellar.min.js"></script>
+    <script src="~/js/imagesloaded.js"></script>
+    <script src="~/js/animated-headline.js"></script>
+    <script src="~/js/scripts.js"></script>
+
+    @*<script>
+        $('.toggle').on('click', function () {
+            $('.login-wrapper').stop().addClass('active');
+        });
+
+        $('.close').on('click', function () {
+            $('.login-wrapper').stop().removeClass('active');
+        });*@
+
+    </script>
+}

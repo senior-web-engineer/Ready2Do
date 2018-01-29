@@ -2,31 +2,25 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using IdentityServer4.Test;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
-using Microsoft.AspNetCore.Authorization;
-using Palestregogo.STS.Model;
-using Palestregogo.STS.Model.Identity;
-using Palestregogo.STS.UI.Services;
-using Palestregogo.STS.UI.Model;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Palestregogo.STS.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Palestregogo.STS.Filters;
+using Palestregogo.STS.Model.Identity;
+using Palestregogo.STS.Services;
+using Palestregogo.STS.UI.Model;
+using Palestregogo.STS.UI.Services;
+using PalestreGoGo.WebAPIModel;
+using System;
+using System.Threading.Tasks;
 
 namespace Palestregogo.STS.UI
 {
@@ -44,6 +38,7 @@ namespace Palestregogo.STS.UI
         private readonly AccountService _account;
         private readonly ILogger<AccountController> _logger;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly WebAPIConfig _apiOptions;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -53,14 +48,16 @@ namespace Palestregogo.STS.UI
             IEventService events,
             SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            IOptions<WebAPIConfig> apiOptions)
         {
             _userManager = userManager;
             _interaction = interaction;
             _events = events;
             _signInManager = signInManager;
             _logger = logger;
-            _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore);
+            _apiOptions = apiOptions.Value;
+            _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore, apiOptions);
         }
   
 
@@ -205,6 +202,42 @@ namespace Palestregogo.STS.UI
             return View("LoggedOut", vm);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Register(string redirectUrl)
+        {
+            
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegistrationInputModel model)
+        {
+            //TODO: Implementare.
+            if (!ModelState.IsValid)
+            {
+                var vm = _account.BuildRegisterViewModelAsync(model);
+                return View(model);
+            }
+
+            var apiModel = new NuovoClienteViewModel();
+            //Trasformare ed integrare i dati 
+            //apiModel.xxxx
+            var result = await WebAPIClient.NuovoClienteAsync(apiModel, _apiOptions.BaseAddress);
+            if (result)
+            {
+                return RedirectToAction("MailToConfirm");
+            }
+            else
+            {
+                //Dobbiamo gestire meglio gli errori lato API!
+                ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
+            }
+            //Se ok ==> redirect
+            return View();
+
+        }
 
         #region Helpers
 

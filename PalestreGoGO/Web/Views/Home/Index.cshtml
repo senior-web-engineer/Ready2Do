@@ -1,106 +1,410 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.Extensions.Options;
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+
+@{
+    ViewData["Title"] = "Palestre GoGo!";
 }
+<section id="home" class="banner-wrapper parallax-bg banner-12 overlay dark-5 valign-wrapper height-650"
+         data-stellar-background-ratio="0.5"
+         style="background-position: 0% -11px;">
+    <div class="valign-cell">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="intro-title text-capitalize white-text">We Build digital product</h1>
+                <span class="sub-intro white-text">Specialising in customer experiences &amp; brand development, we combine digital craftsmanship with innovative thinking to deliver disruptive digital solutions on a worldwide scale.</span>
+                <a href="@OptionsApplicationConfiguration.Value.RegistrationUrl" class="btn btn-lg  mt-30">Registrati</a>
+            </div>
+        </div>
+    </div>
+</section>
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-        <li data-target="#myCarousel" data-slide-to="3"></li>
-    </ol>
-    <div class="carousel-inner" role="listbox">
-        <div class="item active">
-            <img src="~/images/banner1.svg" alt="ASP.NET" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    Learn how to build ASP.NET apps that can run anywhere.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525028&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
-        </div>
-        <div class="item">
-            <img src="~/images/banner2.svg" alt="Visual Studio" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    There are powerful new features in Visual Studio for building modern web apps.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525030&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
-        </div>
-        <div class="item">
-            <img src="~/images/banner3.svg" alt="Package Management" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    Bring in libraries from NuGet and npm, and automate tasks using Grunt or Gulp.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525029&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
-        </div>
-        <div class="item">
-            <img src="~/images/banner4.svg" alt="Microsoft Azure" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    Learn how Microsoft's Azure cloud platform allows you to build, deploy, and scale web apps.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525027&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
-        </div>
-    </div>
-    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
-</div>
 
-<div class="row">
-    <div class="col-md-3">
-        <h2>Application uses</h2>
-        <ul>
-            <li>Sample pages using ASP.NET Core MVC</li>
-            <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
-        </ul>
+<section id="weDo" class="padding-top-110">
+    <div class="container">
+
+        <div class="text-center mb-80 wow fadeInUp">
+            <h2 class="section-title text-uppercase">What We Do</h2>
+            <p class="section-sub">Quisque non erat mi. Etiam congue et augue sed tempus. Aenean sed ipsum luctus, scelerisque ipsum nec, iaculis justo. Sed at vestibulum purus, sit amet viverra diam nulla ac nisi rhoncus.</p>
+        </div>
+
+
+        <div class="row no-gutter">
+            <div class="col-md-3 col-sm-6">
+                <div class="featured-box brand-bg text-center z-depth-1">
+                    <div class="featured-wrapper">
+                        <div class="intro-header">
+                            <i class="material-icons white-text">&#xE53B;</i>
+                            <h2 class="white-text">Creative Artist</h2>
+                        </div>
+
+                        <div class="content white-text">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis repellat quo vitae tempora.</p>
+                        </div>
+                    </div><!-- /.featured-wrapper -->
+                </div><!-- /.featured-box  -->
+            </div><!-- /.col-md-3 -->
+
+            <div class="col-md-3 col-sm-6">
+                <div class="featured-box pink text-center z-depth-1">
+                    <div class="featured-wrapper">
+                        <div class="intro-header">
+                            <i class="material-icons white-text">&#xE051;</i>
+                            <h2 class="white-text">Web Design</h2>
+                        </div>
+
+                        <div class="content white-text">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis repellat quo vitae tempora.</p>
+                        </div>
+                    </div><!-- /.featured-wrapper -->
+                </div><!-- /.featured-box  -->
+            </div><!-- /.col-md-3 -->
+
+
+            <div class="col-md-3 col-sm-6">
+                <div class="featured-box brand-bg text-center z-depth-1">
+                    <div class="featured-wrapper">
+                        <div class="intro-header">
+                            <i class="material-icons white-text">&#xE323;</i>
+                            <h2 class="white-text">App Design</h2>
+                        </div>
+
+                        <div class="content white-text">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis repellat quo vitae tempora.</p>
+                        </div>
+                    </div><!-- /.featured-wrapper -->
+                </div><!-- /.featured-box  -->
+            </div><!-- /.col-md-3 -->
+
+            <div class="col-md-3 col-sm-6">
+                <div class="featured-box pink text-center z-depth-1">
+                    <div class="featured-wrapper">
+                        <div class="intro-header">
+                            <i class="material-icons white-text">&#xE0B9;</i>
+                            <h2 class="white-text">Product Research</h2>
+                        </div>
+
+                        <div class="content white-text">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis repellat quo vitae tempora.</p>
+                        </div>
+                    </div><!-- /.featured-wrapper -->
+                </div><!-- /.featured-box  -->
+            </div><!-- /.col-md-3 -->
+        </div><!-- /.row -->
+
+        <div class="row padding-top-100">
+            <div class="col-md-7">
+                <h2 class="text-bold mb-30">Creative Artist</h2>
+
+                <p>Quickly procrastinate functionalized human capital with equity invested experiences. Rapidiously provide access to extensible solutions after pandemic supply chains. Credibly supply resource sucking channels before areas Dynamically harness cooperative partnerships rather than just in time total linkage. Dramatically syndicate plug and play <a href="#">professional with focused</a>. Credibly supply resource sucking channels before areas.</p>
+
+                <p>Lorem ipsum dolor sit amet cr adipiscing elit. In maximus ligula semper <a href="#">metus pellentesque</a> mattis.</p>
+            </div>
+
+            <div class="col-md-5">
+                <img src="~/img/mockup/ipad-2.png" class="img-responsive " alt="Image">
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+    <div class="mocup-wrapper text-center wow fadeInUp">
+        <img src="~/img/mockup/landscap-mockup.jpg" alt="image">
     </div>
-    <div class="col-md-3">
-        <h2>How to</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=398600">Add a Controller and View</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699315">Manage User Secrets using Secret Manager.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699316">Use logging to log a message.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699317">Add packages using NuGet.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699319">Target development, staging or production environment.</a></li>
-        </ul>
+
+</section>
+
+<section id="features" class="section-padding">
+    <div class="container">
+
+        <div class="text-center mb-80 wow fadeInUp">
+            <h2 class="section-title text-uppercase">Awesome Features</h2>
+            <p class="section-sub">Quisque non erat mi. Etiam congue et augue sed tempus. Aenean sed ipsum luctus, scelerisque ipsum nec, iaculis justo. Sed at vestibulum purus, sit amet viverra diam nulla ac nisi rhoncus.</p>
+        </div>
+
+        <div class="row equal-height-row">
+            <div class="col-md-4 mb-30">
+                <div class="featured-item hover-outline brand-hover radius-4 equal-height-column">
+                    <div class="icon">
+                        <i class="material-icons colored brand-icon">&#xE0B7;</i>
+                    </div>
+                    <div class="desc">
+                        <h2>Creative Design</h2>
+                        <p>Porttitor communicate pandemic data rather than enabled niche markets neque rather than enabled niche markets neque pulvinar.</p>
+                    </div>
+                </div><!-- /.featured-item -->
+            </div><!-- /.col-md-4 -->
+
+            <div class="col-md-4 mb-30">
+                <div class="featured-item hover-outline brand-hover radius-4 equal-height-column">
+                    <div class="icon">
+                        <i class="material-icons colored brand-icon">&#xE912;</i>
+                    </div>
+                    <div class="desc">
+                        <h2>Fully Responsive</h2>
+                        <p>Porttitor communicate pandemic data rather than enabled niche markets neque rather than enabled niche markets neque pulvinar.</p>
+                    </div>
+                </div><!-- /.featured-item -->
+            </div><!-- /.col-md-4 -->
+
+            <div class="col-md-4 mb-30">
+                <div class="featured-item hover-outline brand-hover radius-4 equal-height-column">
+                    <div class="icon">
+                        <i class="material-icons colored brand-icon">&#xE8B8;</i>
+                    </div>
+                    <div class="desc">
+                        <h2>Flexible Page Builder</h2>
+                        <p>Porttitor communicate pandemic data rather than enabled niche markets neque rather than enabled niche markets neque pulvinar.</p>
+                    </div>
+                </div><!-- /.featured-item -->
+            </div><!-- /.col-md-4 -->
+
+            <div class="col-md-4">
+                <div class="featured-item hover-outline brand-hover radius-4 equal-height-column">
+                    <div class="icon">
+                        <i class="material-icons colored brand-icon">&#xE323;</i>
+                    </div>
+                    <div class="desc">
+                        <h2>Mobile Applicaion Design</h2>
+                        <p>Porttitor communicate pandemic data rather than enabled niche markets neque rather than enabled niche markets neque pulvinar.</p>
+                    </div>
+                </div><!-- /.featured-item -->
+            </div><!-- /.col-md-4 -->
+
+            <div class="col-md-4">
+                <div class="featured-item hover-outline brand-hover radius-4 equal-height-column">
+                    <div class="icon">
+                        <i class="material-icons colored brand-icon">&#xE412;</i>
+                    </div>
+                    <div class="desc">
+                        <h2>Professional Photography</h2>
+                        <p>Porttitor communicate pandemic data rather than enabled niche markets neque rather than enabled niche markets neque pulvinar.</p>
+                    </div>
+                </div><!-- /.featured-item -->
+            </div><!-- /.col-md-4 -->
+
+            <div class="col-md-4">
+                <div class="featured-item hover-outline brand-hover radius-4 equal-height-column">
+                    <div class="icon">
+                        <i class="material-icons colored brand-icon">&#xE02C;</i>
+                    </div>
+                    <div class="desc">
+                        <h2>Moting Graphics Design</h2>
+                        <p>Porttitor communicate pandemic data rather than enabled niche markets neque rather than enabled niche markets neque pulvinar.</p>
+                    </div>
+                </div><!-- /.featured-item -->
+            </div><!-- /.col-md-4 -->
+        </div><!-- /.row -->
+
+    </div><!-- /.container -->
+</section>
+
+<section class="content-promo-box banner padding-top-100 padding-bottom-120 gray-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <h2 class="font-30 text-extrabold mb-30 text-uppercase">materialize is a creative template</h2>
+
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit</p>
+
+                <a href="#" class="btn pink btn-lg waves-effect waves-light"> Buy Now</a>
+            </div>
+
+        </div>
     </div>
-    <div class="col-md-3">
-        <h2>Overview</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=518008">Conceptual overview of what is ASP.NET Core</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699320">Fundamentals of ASP.NET Core such as Startup and middleware.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=398602">Working with Data</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=398603">Security</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699321">Client side development</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699322">Develop on different platforms</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699323">Read more on the documentation site</a></li>
-        </ul>
+</section>
+
+
+<section id="contact" class="section-padding contact-form-wrapper">
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-8">
+                <form name="contact-form" id="contactForm" class="clearfix" action="sendemail.php" method="POST">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-field">
+                                <input type="text" name="name" class="validate" id="name">
+                                <label for="name">Name</label>
+                            </div>
+
+                        </div><!-- /.col-md-6 -->
+
+                        <div class="col-md-6">
+                            <div class="input-field">
+                                <label class="sr-only" for="email">Email</label>
+                                <input id="email" type="email" name="email" class="validate">
+                                <label for="email" data-error="wrong" data-success="right">Email</label>
+                            </div>
+                        </div><!-- /.col-md-6 -->
+                    </div><!-- /.row -->
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-field">
+                                <input id="phone" type="tel" name="phone" class="validate">
+                                <label for="phone">Phone Number</label>
+                            </div>
+                        </div><!-- /.col-md-6 -->
+
+                        <div class="col-md-6">
+                            <div class="input-field">
+                                <input id="website" type="text" name="website" class="validate">
+                                <label for="website">Your Website</label>
+                            </div>
+                        </div><!-- /.col-md-6 -->
+                    </div><!-- /.row -->
+
+                    <div class="input-field">
+                        <textarea name="message" id="message" class="materialize-textarea"></textarea>
+                        <label for="message">Message</label>
+                    </div>
+
+                    <button type="submit" name="submit" class="waves-effect waves-light btn pink right mt-30">Send Message</button>
+                </form>
+            </div><!-- /.col-md-8 -->
+
+            <div class="col-md-4 contact-info">
+
+                <address>
+                    <i class="material-icons brand-color">&#xE8B4;</i>
+                    <div class="address">
+                        1355 Market Street, Suite 900<br>
+                        San Francisco, CA 94103
+
+                        <hr>
+
+                        <p>
+                            Hoffman Parkway, P.O Box 154 Mountain View.<br>
+                            United States of America.
+                        </p>
+                    </div>
+
+                    <i class="material-icons brand-color">&#xE61C;</i>
+                    <div class="phone">
+                        <p>
+                            Fax: (123) 456-7890<br>
+                            Phone: (123) 456-7890
+                        </p>
+                    </div>
+
+                    <i class="material-icons brand-color">&#xE0B7;</i>
+                    <div class="mail">
+                        <p>
+                            <a href="mailto:#">first.last@example.com</a><br>
+                            <a href="#">www.yourdomain.com</a>
+                        </p>
+                    </div>
+                </address>
+            </div><!-- /.col-md-4 -->
+        </div><!-- /.row -->
     </div>
-    <div class="col-md-3">
-        <h2>Run &amp; Deploy</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=517851">Run your app</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=517853">Run tools such as EF migrations and more</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=398609">Publish to Microsoft Azure Web Apps</a></li>
-        </ul>
-    </div>
-</div>
+</section>
+
+
+
+<footer class="footer footer-two">
+    <div class="primary-footer brand-bg">
+        <div class="container">
+
+            <a href="#top" class="page-scroll btn-floating btn-large pink back-top waves-effect waves-light wow fadeInUp" data-section="#top">
+                <i class="material-icons">&#xE316;</i>
+            </a>
+
+            <div class="row">
+                <div class="col-md-12 text-center wow fadeInUp">
+                    <div class="footer-logo">
+                        <img src="~/img/logo-white.png" alt="">
+                    </div>
+
+                    <ul class="social-link tt-animate ltr">
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-tumblr"></i></a></li>
+                        <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                    </ul>
+                </div><!-- /.col-md-12 -->
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+    </div><!-- /.primary-footer -->
+
+    <div class="secondary-footer brand-bg darken-2">
+        <div class="container">
+            <span class="copy-text">Copyright &copy; 2016 <a href="#">Materialize</a> &nbsp;  | &nbsp;  All Rights Reserved &nbsp;  | &nbsp;  Designed By <a href="#">TrendyTheme</a></span>
+        </div><!-- /.container -->
+    </div><!-- /.secondary-footer -->
+</footer>
+
+
+@section Scripts{
+
+
+    <!-- jQuery -->
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/bootstrap-tabcollapse.min.js"></script>
+    <script src="~/js/jquery.easing.min.js"></script>
+    <script src="~/js/jquery.sticky.min.js"></script>
+    <script src="~/js/smoothscroll.min.js"></script>
+    <script src="~/js/smooth-menu.js"></script>
+    <script src="~/js/jquery.stellar.min.js"></script>
+    <script src="~/js/imagesloaded.js"></script>
+    <script src="~/js/jquery.inview.min.js"></script>
+    <script src="~/js/jquery.shuffle.min.js"></script>
+    <script src="~/js/wow.min.js"></script>
+    <script src="~/owl.carousel/owl.carousel.min.js"></script>
+    <script src="~/flexSlider/jquery.flexslider-min.js"></script>
+    <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="~/js/scripts.js"></script>
+
+    <script>
+        new WOW({
+            mobile: false
+        }).init();
+    </script>
+
+    <!-- RS5.0 Core JS Files -->
+    <script src="~/revolution/js/jquery.themepunch.tools.min.js"></script>
+    <script src="~/revolution/js/jquery.themepunch.revolution.min.js"></script>
+
+    <!-- RS5.0 Init  -->
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery(".materialize-parallax").revolution({
+                sliderType: "standard",
+                sliderLayout: "fullscreen",
+                delay: 9000,
+                navigation: {
+                    keyboardNavigation: "off",
+                    keyboard_direction: "horizontal",
+                    mouseScrollNavigation: "off",
+                    onHoverStop: "off",
+                    touch: {
+                        touchenabled: "on",
+                        swipe_threshold: 75,
+                        swipe_min_touches: 1,
+                        swipe_direction: "horizontal",
+                        drag_block_vertical: false
+                    }
+                },
+                fullScreenOffsetContainer: ".tt-nav",
+                responsiveLevels: [1240, 1024, 778, 480],
+                parallax: {
+                    type: "mouse",
+                    origo: "slidercenter",
+                    speed: 2000,
+                    levels: [2, 3, 4, 5, 6, 7, 12, 16, 10, 50],
+                    disable_onmobile: "on"
+                },
+
+            });
+        });
+    </script>
+
+}

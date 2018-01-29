@@ -31,7 +31,7 @@ namespace PalestreGoGo.WebAPIModel
         public string Descrizione { get; set; }
 
         [JsonProperty("tipoCliente")]
-        public TipologieClientiViewModel Tipologia { get; set; }
+        public TipologiaClienteViewModel Tipologia { get; set; }
 
         [JsonProperty("indirizzo")]
         public IndirizzoViewModel Indrizzo { get; set; }

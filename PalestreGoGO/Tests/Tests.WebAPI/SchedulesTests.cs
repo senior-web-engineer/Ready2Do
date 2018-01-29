@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PalestreGoGo.DataAccess;
+using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ namespace Tests.WebAPI
     public class SchedulesFixture
     {
         public ScheduleViewModel Entity;
+        public PalestreGoGoDbContext DbContext;
     }
 
     public class SchedulesTests : BaseWebApiTests, IClassFixture<SchedulesFixture>
@@ -29,14 +32,15 @@ namespace Tests.WebAPI
         public SchedulesTests(ITestOutputHelper output, SchedulesFixture fixture) : base(output)
         {
             _fixture = fixture;
+            _fixture.DbContext = Utils.BuildDbContext();
+
         }
 
         private Mock<SchedulesController> SetupController(ClaimsPrincipal principal)
         {
             var loggerMock = new Mock<ILogger<SchedulesController>>();
             var loggerRepoMock = new Mock<ILogger<SchedulesRepository>>();
-            var dbCtx = Utils.BuildDbContext();
-            var repo = new SchedulesRepository(dbCtx,loggerRepoMock.Object);
+            var repo = new SchedulesRepository(_fixture.DbContext, loggerRepoMock.Object);
             var controllerMocked = new Mock<SchedulesController>(loggerMock.Object, repo);
             controllerMocked.CallBase = true;
             controllerMocked.Setup(x => x.GetCurrentUser()).Returns(principal);
@@ -103,6 +107,34 @@ namespace Tests.WebAPI
             var result = await controller.Object.GetSchedule(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             okResult.Value.Should().BeEquivalentTo(_fixture.Entity);
+        }
+
+        [Fact, TestOrder(5)]
+        public async Task Delete_Schedule_with_appointments()
+        {
+            var abbonamento = _fixture.DbContext.AbbonamentiUtenti.First(a => a.IdCliente == Utils.ID_CLIENTE_TEST_1 &&
+                                                                            a.UserId == Utils.USERID_DUMMY);
+            abbonamento.IngressiResidui.Should().BePositive();
+            short ingressiResiduiPre = abbonamento.IngressiResidui.Value;
+
+            _fixture.DbContext.Appuntamenti.Add(new Appuntamenti()
+            {
+                DataPrenotazione = DateTime.Now,
+                IdCliente = Utils.ID_CLIENTE_TEST_1,
+                IsGuest = false,
+                ScheduleId = _fixture.Entity.Id.Value,
+                UserId = Utils.USERID_DUMMY
+            });
+            await _fixture.DbContext.SaveChangesAsync();
+            
+            var user = Utils.GetGlobalAdminUser();
+            var controller = SetupController(user).Object;
+            await controller.DeleteSchedule(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id.Value);
+            //Rileggiamo l'abbonamento
+            abbonamento = _fixture.DbContext.AbbonamentiUtenti.First(a => a.IdCliente == Utils.ID_CLIENTE_TEST_1 &&
+                                                                            a.UserId == Utils.USERID_DUMMY);
+            abbonamento.IngressiResidui.Should().Be(++ingressiResiduiPre);
+
         }
     }
 }

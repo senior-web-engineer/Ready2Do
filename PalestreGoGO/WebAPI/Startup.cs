@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation.AspNetCore;
 using IdentityServer4.AccessTokenValidation;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PalestreGoGo.DataAccess;
+using PalestreGoGo.DataAccess.Interfaces;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
@@ -29,6 +31,19 @@ namespace PalestreGoGo.WebAPI
         protected void SetupRoles()
         {
             
+        }
+
+        private void RegisterRepositories(IServiceCollection services)
+        {
+            services.AddTransient<IAbbonamentiRepository, AbbonamentiRepository>();
+            services.AddTransient<IAppuntamentiRepository, AppuntamentiRepository>();
+            services.AddTransient<IClientiRepository, ClientiRepository>();
+            services.AddTransient<ILocationsRepository, LocationsRepository>();
+            services.AddTransient<ISchedulesRepository, SchedulesRepository>();
+            services.AddTransient<ITipologieAbbonamentiRepository, TipologieAbbonamentiRepository>();
+            services.AddTransient<ITipologieClientiRepository, TipologieClientiRepository>();
+            services.AddTransient<ITipologieLezioniRepository, TipologieLezioniRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -70,7 +85,7 @@ namespace PalestreGoGo.WebAPI
             services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
             services.AddTransient<IUserConfirmationService, UserConfirmationService>();
             services.AddTransient<IUsersManagementService, UsersManagementService>();
-
+            RegisterRepositories(services);
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
@@ -96,7 +111,6 @@ namespace PalestreGoGo.WebAPI
             });
 
             services.AddCors();
-
             services.AddMvc()
                 //Utilizziamo FluentValidation invece dei DataAnnotation per la validazione dei viewmodel
                 .AddFluentValidation(config =>
@@ -114,9 +128,12 @@ namespace PalestreGoGo.WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //Disable Application Insights
+            var config = app.ApplicationServices.GetService<TelemetryConfiguration>();
+            if (config != null) config.DisableTelemetry = true;
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();                
             }
             app.UseAuthentication();
 

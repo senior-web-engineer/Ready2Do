@@ -26,7 +26,7 @@ namespace PalestreGoGo.DataAccess
         public virtual DbSet<Locations> Locations { get; set; }
         public virtual DbSet<Schedules> Schedules { get; set; }
         public virtual DbSet<TipologieAbbonamenti> TipologieAbbonamenti { get; set; }
-        public virtual DbSet<TipologieClienti> TipologieClienti { get; set; }
+        public virtual DbSet<TipologiaCliente> TipologieClienti { get; set; }
         public virtual DbSet<TipologieImmagini> TipologieImmagini { get; set; }
         public virtual DbSet<TipologieLezioni> TipologieLezioni { get; set; }
 
@@ -163,7 +163,7 @@ namespace PalestreGoGo.DataAccess
                     .HasConstraintName("FK_TipologieAbbonamenti_Clienti");
             });
 
-            modelBuilder.Entity<TipologieClienti>(entity =>
+            modelBuilder.Entity<TipologiaCliente>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
             });

@@ -62,7 +62,7 @@ namespace PalestreGoGo.DataModel
 
         [ForeignKey("IdTipologia")]
         [InverseProperty("Clienti")]
-        public TipologieClienti IdTipologiaNavigation { get; set; }
+        public TipologiaCliente IdTipologiaNavigation { get; set; }
         [InverseProperty("IdClienteNavigation")]
         public ICollection<AbbonamentiUtenti> AbbonamentiUtenti { get; set; }
         [InverseProperty("IdClienteNavigation")]

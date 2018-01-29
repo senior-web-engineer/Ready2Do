@@ -13,7 +13,7 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
     {
         public DomainToViewModelMappingProfile()
         {
-            CreateMap<TipologieClienti, TipologieClientiViewModel>();
+            CreateMap<TipologiaCliente, TipologiaClienteViewModel>();
             CreateMap<TipologieImmagini, TipologieImmaginiViewModel>();
             CreateMap<TipologieLezioni, TipologieLezioniViewModel>()
                 .ReverseMap()

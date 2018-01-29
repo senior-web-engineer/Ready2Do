@@ -8,7 +8,12 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Options;
+using Palestregogo.STS.Model;
+using Palestregogo.STS.Services;
 using Palestregogo.STS.UI.Model;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,17 +25,21 @@ namespace Palestregogo.STS.UI.Services
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
+        private readonly WebAPIConfig _apiOptions;
 
         public AccountService(
             IIdentityServerInteractionService interaction,
             IHttpContextAccessor httpContextAccessor,
             IAuthenticationSchemeProvider schemeProvider,
-            IClientStore clientStore)
+            IClientStore clientStore,
+            IOptions<WebAPIConfig> apiOptions)
         {
             _interaction = interaction;
             _httpContextAccessor = httpContextAccessor;
             _schemeProvider = schemeProvider;
             _clientStore = clientStore;
+            _apiOptions = apiOptions.Value;
+
         }
 
         public async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
@@ -44,7 +53,7 @@ namespace Palestregogo.STS.UI.Services
                     EnableLocalLogin = false,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
-                    ExternalProviders = new ExternalProvider[] {new ExternalProvider { AuthenticationScheme = context.IdP } }
+                    ExternalProviders = new ExternalProvider[] { new ExternalProvider { AuthenticationScheme = context.IdP } }
                 };
             }
 
@@ -153,6 +162,38 @@ namespace Palestregogo.STS.UI.Services
             }
 
             return vm;
+        }
+
+        public async Task<RegistrationViewModel> BuildRegisterViewModelAsync(string returnUrl)
+        {
+            var allTipologie = await WebAPIClient
+                                    .GetTipologiClientiAsync(_apiOptions.BaseAddress);
+            var vm = new RegistrationViewModel()
+            {
+                ReturnUrl = returnUrl,
+                TipologieClienti = allTipologie
+                                        .Select(i => new SelectListItem()
+                                        {
+                                            Value = i.Id.ToString(),
+                                            Text = i.Nome
+                                        })
+            };
+            return vm;
+        }
+        public async Task<RegistrationViewModel> BuildRegisterViewModelAsync(RegistrationInputModel model)
+        {
+            var result = await BuildRegisterViewModelAsync(model.ReturnUrl);
+            result.Cognome = model.Cognome;
+            result.Email = model.Email;
+            result.EmailStruttura = model.EmailStruttura;
+            result.IdTipologia = model.IdTipologia;
+            result.Indirizzo = model.Indirizzo;
+            result.Nome = model.Nome;
+            result.NomeStruttura = model.NomeStruttura;
+            result.RagioneSociale = model.RagioneSociale;
+            result.ReturnUrl = model.ReturnUrl;
+            result.Telefono = model.Telefono;
+            return result;
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
-    public class TipologieClientiViewModel
+    public class TipologiaClienteViewModel
     {
         public short Id { get; set; }
         public string Nome { get; set; }
