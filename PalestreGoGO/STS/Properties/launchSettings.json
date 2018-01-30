@@ -19,7 +19,6 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "SENDGRID_API_KEY": "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",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:40021/"

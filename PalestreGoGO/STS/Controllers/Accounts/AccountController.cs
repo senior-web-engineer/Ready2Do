@@ -202,42 +202,43 @@ namespace Palestregogo.STS.UI
             return View("LoggedOut", vm);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Register(string redirectUrl)
-        {
+        //[HttpGet]
+        //public async Task<IActionResult> Register(string redirectUrl)
+        //{
+
+        //    var vm = await _account.BuildRegisterViewModelAsync(redirectUrl);
+        //    return View(vm);
+        //}
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Register(RegistrationInputModel model)
+        //{
+        //    //TODO: Implementare.
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var vm = _account.BuildRegisterViewModelAsync(model);
+        //        return View(model);
+        //    }
+
+        //    var apiModel = new NuovoClienteViewModel();
             
+        //    //Trasformare ed integrare i dati 
+        //    //apiModel.xxxx
+        //    var result = await WebAPIClient.NuovoClienteAsync(apiModel, _apiOptions.BaseAddress);
+        //    if (result)
+        //    {
+        //        return RedirectToAction("MailToConfirm");
+        //    }
+        //    else
+        //    {
+        //        //Dobbiamo gestire meglio gli errori lato API!
+        //        ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
+        //    }
+        //    //Se ok ==> redirect
+        //    return View();
 
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegistrationInputModel model)
-        {
-            //TODO: Implementare.
-            if (!ModelState.IsValid)
-            {
-                var vm = _account.BuildRegisterViewModelAsync(model);
-                return View(model);
-            }
-
-            var apiModel = new NuovoClienteViewModel();
-            //Trasformare ed integrare i dati 
-            //apiModel.xxxx
-            var result = await WebAPIClient.NuovoClienteAsync(apiModel, _apiOptions.BaseAddress);
-            if (result)
-            {
-                return RedirectToAction("MailToConfirm");
-            }
-            else
-            {
-                //Dobbiamo gestire meglio gli errori lato API!
-                ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
-            }
-            //Se ok ==> redirect
-            return View();
-
-        }
+        //}
 
         #region Helpers
 

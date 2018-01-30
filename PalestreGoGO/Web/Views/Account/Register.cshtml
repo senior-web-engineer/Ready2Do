@@ -1,102 +1,198 @@
-﻿@model PalestreGoGo.WebAPIModel.NuovoClienteViewModel
+﻿@using Microsoft.Extensions.Options;
 
+@model RegistrationViewModel
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-    <h4>Registrazione nuovo Cliente</h4>
-    <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="Nome"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="Nome" />
-            <span asp-validation-for="Nome" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="RagioneSociale"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="RagioneSociale" />
-            <span asp-validation-for="RagioneSociale" class="text-danger"></span>
-        </div>        
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="Email"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="Email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>        
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="NumTelefono"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="NumTelefono" />
-            <span asp-validation-for="NumTelefono" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="Indirizzo"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="Indirizzo" />
-            <span asp-validation-for="Indirizzo" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="Citta"></label>
-        <div class="col-md-2">
-            <input class="form-control" asp-for="Citta" />
-            <span asp-validation-for="Citta" class="text-danger"></span>
-        </div>
-        <label class="col-md-2 control-label" asp-for="ZipOrPostalCode"></label>
-        <div class="col-md-2">
-            <input class="form-control" asp-for="ZipOrPostalCode" />
-            <span asp-validation-for="ZipOrPostalCode" class="text-danger"></span>
-        </div>
-        <label class="col-md-2 control-label" asp-for="Country"></label>
-        <div class="col-md-2">
-            <input class="form-control" asp-for="Country" />
-            <span asp-validation-for="Country" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="NuovoUtente.Email"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="NuovoUtente.Email" />
-            <span asp-validation-for="NuovoUtente.Email" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="NuovoUtente.Cognome"></label>
-        <div class="col-md-4">
-            <input class="form-control" asp-for="NuovoUtente.Cognome" />
-            <span asp-validation-for="NuovoUtente.Cognome" class="text-danger"></span>
-        </div>
-        <label class="col-md-2 control-label" asp-for="NuovoUtente.Nome"></label>
-        <div class="col-md-4">
-            <input class="form-control" asp-for="NuovoUtente.Nome" />
-            <span asp-validation-for="NuovoUtente.Nome" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="NuovoUtente.Telefono"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="NuovoUtente.Telefono" />
-            <span asp-validation-for="NuovoUtente.Telefono" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label" asp-for="NuovoUtente.Password"></label>
-        <div class="col-md-10">
-            <input class="form-control" asp-for="NuovoUtente.Password" type="password" />
-            <span asp-validation-for="NuovoUtente.Password" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Register</button>
-        </div>
-    </div>
-</form>
+@inject IOptions<GoogleAPIConfig> OptionsGoogleAPIConfig
 
-@section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<section class="section">
+    @*banner-6*@
+    <div class="container">
+        <div class="text-center mb-20">
+            <h3 class="section-title text-uppercase">Registra <strong>gratuitamente</strong> la tua struttura</h3>
+            @*<p class="section-sub">
+                    Compila la form sottostante ed inizia ad utilizzare gratuitamente le fantastiche funzionalità offerte da PalestreGoGo per la gestione
+                    delle prenotazioni ai tuoi eventi.
+                </p>*@
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <form asp-controller="Account" asp-action="Register" method="POST">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="text" asp-for="Nome" class="validate">
+                                <label asp-for="Nome"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="text" asp-for="Cognome" class="validate">
+                                <label asp-for="Cognome"></label>
+                            </div>
+                        </div>
+                    </div><!-- /.row -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="email" asp-for="Email" class="validate">
+                                <label asp-for="Email"></label>
+                                @*<label asp-for="Email" data-error="wrong" data-success="right"></label>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="password" asp-for="Password" class="validate">
+                                <label asp-for="Password">Password</label>
+                                @*<label for="password" data-error="wrong" data-success="right">Password</label>*@
+                            </div>
+                        </div><!-- /.col-sm-6 -->
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="password" asp-for="PasswordConfirm" class="validate">
+                                <label asp-for="PasswordConfirm"></label>
+                                @*<label for="passwordConfirm" data-error="wrong" data-success="right">Conferma Password</label>*@
+                            </div>
+                        </div><!-- /.col-sm-6 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="text" asp-for="NomeStruttura" class="validate">
+                                <label asp-for="NomeStruttura"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col-sm-12">
+                            <select asp-for="IdTipologia" asp-items="Model.TipologieClienti" class="validate">
+                                <option disabled selected>Selezionare un categoria</option>
+                            </select>
+                            <label id="lblTipologiaCliente" for="IdTipologia" class="customSelectLabel">Tipologia di Struttura</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="text" asp-for="RagioneSociale" class="validate">
+                                <label for="RagioneSociale">Ragione Sociale</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="email" asp-for="EmailStruttura" class="validate">
+                                <label for="EmailStruttura">Email Struttura</label>
+                            </div>
+                        </div>
+                    </div><!-- /.row -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="text" asp-for="Indirizzo" class="validate">
+                                <label asp-for="Indirizzo"></label>
+                            </div>
+                        </div><!-- /.col-sm-6 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="tel" asp-for="Telefono" class="validate">
+                                <label asp-for="Telefono"></label>
+                            </div>
+                        </div><!-- /.col-sm-6 -->
+                    </div>
+                    <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Send Message</button>
+                </form>
+            </div><!-- /.col-sm-8 -->
+            <div class="col-sm-2"></div>
+        </div><!-- /.row -->
+    </div>
+</section>
+
+@section Scripts{
+    <!-- jQuery -->
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/bootstrap-tabcollapse.min.js"></script>
+    <script src="~/js/jquery.easing.min.js"></script>
+    <script src="~/js/jquery.sticky.min.js"></script>
+    <script src="~/js/smoothscroll.min.js"></script>
+    <script src="~/js/jquery.stellar.min.js"></script>
+    <script src="~/js/jquery.inview.min.js"></script>
+    <script src="~/owl.carousel/owl.carousel.min.js"></script>
+    <script src="~/flexSlider/jquery.flexslider-min.js"></script>
+    <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>
+    @*<script src="https://maps.googleapis.com/maps/api/js"></script>*@
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsGoogleAPIConfig.Value.GoogleMapsAPIKey&libraries=places"></script>
+    <script src="~/js/scripts.js"></script>
+
+    <!-- Google Map Customization  -->
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+
+            //Init Select element
+            //$('select').material_select();
+            //set your google maps parameters
+            //var $latitude = 40.716304, //Visit http://www.latlong.net/convert-address-to-lat-long.html for generate your Lat. Long.
+            //    $longitude = -73.995763,
+            //    $map_zoom = 16 /* ZOOM SETTING */
+
+            ////google map custom marker icon
+            //var $marker_url = 'assets/img/pin.png';
+
+            ////we define here the style of the map
+            //var style = [{
+            //    "stylers": [{
+            //        "hue": "#03a9f4"
+            //    }, {
+            //        "saturation": 10
+            //    }, {
+            //        "gamma": 2.15
+            //    }, {
+            //        "lightness": 12
+            //    }]
+            //}];
+
+            ////set google map options
+            //var map_options = {
+            //    center: new google.maps.LatLng($latitude, $longitude),
+            //    zoom: $map_zoom,
+            //    panControl: true,
+            //    zoomControl: true,
+            //    mapTypeControl: true,
+            //    streetViewControl: true,
+            //    mapTypeId: google.maps.MapTypeId.ROADMAP,
+            //    scrollwheel: false,
+            //    styles: style
+            //}
+            ////inizialize the map
+            //var map = new google.maps.Map(document.getElementById('myMap'), map_options);
+            ////add a custom marker to the map
+            //var marker = new google.maps.Marker({
+            //    position: new google.maps.LatLng($latitude, $longitude),
+            //    map: map,
+            //    visible: true,
+            //    icon: $marker_url
+            //});
+
+            //var contentString = '<div id="mapcontent">' + '<p>materialize, 1355 Market Street, San Francisco.</p></div>';
+            //var infowindow = new google.maps.InfoWindow({
+            //    maxWidth: 320,
+            //    content: contentString
+            //});
+
+            //google.maps.event.addListener(marker, 'click', function() {
+            //    infowindow.open(map, marker);
+            //});
+        });
+    </script>
+  @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
 }

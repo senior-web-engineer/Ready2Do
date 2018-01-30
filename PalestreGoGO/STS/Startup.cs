@@ -54,7 +54,6 @@ namespace Palestregogo.STS
                 .AddEntityFrameworkStores<STSIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
-            // Add application services.
 
             services.AddMvc();
 

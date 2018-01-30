@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
+using Web.Services;
 
 namespace Web
 {
@@ -30,6 +31,11 @@ namespace Web
             //services.Configure<STSConfig>(Configuration);
             services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
             services.Configure<ApplicationConfigurations>(Configuration.GetSection("ApplicationConfigurations"));
+            services.Configure<GoogleAPIConfig>(Configuration.GetSection("GoogleAPIConfig"));
+
+            // Add application services.
+            services.AddTransient<AccountServices, AccountServices>();
+
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication(options =>
             {

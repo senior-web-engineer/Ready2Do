@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Web.Utils;
+using Web.Models;
+using Web.Services;
 
 namespace Web.Controllers
 {
@@ -18,22 +20,25 @@ namespace Web.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IConfiguration _configuration;
         private readonly WebAPIConfig _apiOptions;
+        private readonly AccountServices _account;
 
-        public AccountController(ILogger<AccountController> logger, IConfiguration configuration, IOptions<WebAPIConfig> apiOptions)
+        public AccountController(ILogger<AccountController> logger, IConfiguration configuration, IOptions<WebAPIConfig> apiOptions, AccountServices account)
         {
             _logger = logger;
             _configuration = configuration;
             _apiOptions = apiOptions.Value;
+            _account = account;
         }
         
         //
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public async Task<IActionResult> Register(string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            //ViewData["ReturnUrl"] = returnUrl;
+            var vm = await _account.BuildRegisterViewModelAsync(returnUrl);
+            return View(vm);
         }
 
         //
@@ -41,12 +46,14 @@ namespace Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(NuovoClienteViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(RegistrationInputModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await WebAPIClient.NuovoClienteAsync(model, _apiOptions.BaseAddress);
+                var apiModel = new NuovoClienteViewModel();
+                //TODO: Convertire da VM a APIModel
+                var result = await WebAPIClient.NuovoClienteAsync(apiModel, _apiOptions.BaseAddress);
                 if (result)
                 {
                     return RedirectToAction("MailToConfirm");

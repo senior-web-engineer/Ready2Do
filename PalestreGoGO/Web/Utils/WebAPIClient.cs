@@ -41,5 +41,17 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<ClienteViewModel>(responseString, _serializerSettings);
             return result;
         }
+
+        public async static Task<IEnumerable<TipologiaClienteViewModel>> GetTipologiClientiAsync(string baseUrl)
+        {
+            Uri uri = new Uri($"{baseUrl}api/clienti/tipologie");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            //NOTA: Forziamo la deserializzazione al tipo "locale" e non quello originale nell'assemblu WebApiDataModel
+            var result = JsonConvert.DeserializeObject<IEnumerable<TipologiaClienteViewModel>>(responseString, _serializerSettings);
+            return result;
+        }
     }
 }

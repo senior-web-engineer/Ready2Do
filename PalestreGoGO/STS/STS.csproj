@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>palestregogo.sts</AssemblyName>
     <RootNamespace>Palestregogo.STS</RootNamespace>
+    <UserSecretsId>3959df88-d08a-4d9c-93a8-be8f5d1dac2d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
