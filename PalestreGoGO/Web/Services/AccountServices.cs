@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Configuration;
 using Web.Models;
 using Web.Utils;
 
@@ -12,20 +13,20 @@ namespace Web.Services
     public class AccountServices
     {
         //private readonly IClientStore _clientStore;
-        private readonly WebAPIConfig _apiOptions;
+        private readonly AppConfig _appConfig;
 
         public AccountServices(
             //IClientStore clientStore,
-            IOptions<WebAPIConfig> apiOptions)
+            IOptions<AppConfig> config)
         {
             //_clientStore = clientStore;
-            _apiOptions = apiOptions.Value;
+            _appConfig = config.Value;
 
         }
         public async Task<RegistrationViewModel> BuildRegisterViewModelAsync(string returnUrl)
         {
             var allTipologie = await WebAPIClient
-                                    .GetTipologiClientiAsync(_apiOptions.BaseAddress);
+                                    .GetTipologiClientiAsync(_appConfig.WebAPI.BaseAddress);
             var vm = new RegistrationViewModel()
             {
                 ReturnUrl = returnUrl,

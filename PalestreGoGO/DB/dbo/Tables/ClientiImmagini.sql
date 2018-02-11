@@ -4,8 +4,10 @@
 	[IdCliente]			INT				NOT NULL,
 	[IdTipoImmagine]	INT				NOT NULL,
 	[Nome]				NVARCHAR(100)	NOT NULL,
+	[Alt]				NVARCHAR(100)	NULL,
 	[Url]				NVARCHAR(1000)	NOT NULL,
 	[Descrizione]		NVARCHAR(1000)	NULL,
+	[Ordinamento]		INT				NOT NULL CONSTRAINT DEF_ClientiImg_Order DEFAULT(0),
 
 	CONSTRAINT PK_ClientiImmagini PRIMARY KEY (Id),
 	CONSTRAINT FK_ClientiImmagini_Clienti FOREIGN KEY (IdCliente) REFERENCES [dbo].[Clienti]([Id]),

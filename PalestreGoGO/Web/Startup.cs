@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Web.Services;
+using Web.Configuration;
 
 namespace Web
 {
@@ -29,9 +30,11 @@ namespace Web
 
             services.AddOptions();
             //services.Configure<STSConfig>(Configuration);
-            services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
-            services.Configure<ApplicationConfigurations>(Configuration.GetSection("ApplicationConfigurations"));
-            services.Configure<GoogleAPIConfig>(Configuration.GetSection("GoogleAPIConfig"));
+            //services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
+            //services.Configure<ApplicationConfigurations>(Configuration.GetSection("ApplicationConfigurations"));
+            //services.Configure<GoogleAPIConfig>(Configuration.GetSection("GoogleAPIConfig"));
+
+            services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
 
             // Add application services.
             services.AddTransient<AccountServices, AccountServices>();
@@ -49,12 +52,12 @@ namespace Web
             {
                 options.SignInScheme =
                     CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = Configuration["STSConfig:Authority"];
-                options.RequireHttpsMetadata = bool.Parse(Configuration["STSConfig:RequireHttpsMetadata"]);
-                options.ClientId = Configuration["STSConfig:ClientId"];
-                options.ClientSecret = Configuration["STSConfig:ClientSecret"];
-                options.ResponseType = Configuration["STSConfig:ResponseType"];
-                var scopes = Configuration.GetSection("STSConfig:Scopes").GetChildren().Select(x => x.Value);
+                options.Authority = Configuration["AppConfig:STS:Authority"];
+                options.RequireHttpsMetadata = bool.Parse(Configuration["AppConfig:STS:RequireHttpsMetadata"]);
+                options.ClientId = Configuration["AppConfig:STS:ClientId"];
+                options.ClientSecret = Configuration["AppConfig:STS:ClientSecret"];
+                options.ResponseType = Configuration["AppConfig:STS:ResponseType"];
+                var scopes = Configuration.GetSection("AppConfig:STS:Scopes").GetChildren().Select(x => x.Value);
                 foreach (var s in scopes)
                 {
                     options.Scope.Add(s);
@@ -90,6 +93,11 @@ namespace Web
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "clienti",
+                    template: "{cliente:required}/{controller=Clienti}/{action=Index}/{id?}"                    
+                    );
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

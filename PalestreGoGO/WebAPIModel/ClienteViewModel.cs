@@ -40,8 +40,16 @@ namespace PalestreGoGo.WebAPIModel
         public string OrarioApertura { get; set; }
 
         [JsonProperty("urlImgHome")]
-        public string UrlImmagineHome { get; set; } 
+        public ImmagineViewModel ImmagineHome { get; set; }
 
-        //public string 
+        [JsonProperty("securityToken")]
+        public string SecurityToken { get; set; }
+
+        [JsonProperty("storageContainer")]
+        public string StorageContainer { get; set; }
+
+        [JsonProperty("images")]
+        public List<ImmagineViewModel> Immagini { get; set; }
+        
     }
 }

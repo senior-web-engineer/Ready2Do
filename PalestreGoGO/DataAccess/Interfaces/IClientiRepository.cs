@@ -13,6 +13,8 @@ namespace PalestreGoGo.DataAccess
         Task ConfermaProvisioningAsync(string provisioningToken, Guid userId);
 
         Task<Clienti> GetAsync(int idCliente);
+        Task<Clienti> GetByUrlAsync(string urlRoute);
+        Task<Clienti> GetByTokenAsync(string urlRoute);
 
         Task UpdateAsync(Clienti cliente);
 

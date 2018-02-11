@@ -30,11 +30,29 @@ namespace PalestreGoGo.WebAPI.Controllers
             _userManagementService = userManagementService;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCliente([FromRoute(Name ="id")] int idCliente)
         {
             var cliente = await _repository.GetAsync(idCliente);
+
+            return Ok(Mapper.Map<ClienteViewModel>(cliente));
+        }
+
+        [HttpGet("{urlroute}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCliente([FromRoute(Name = "urlroute")] string urlRoute)
+        {
+            var cliente = await _repository.GetByUrlAsync(urlRoute);
+
+            return Ok(Mapper.Map<ClienteViewModel>(cliente));
+        }
+
+        [HttpGet("token/{securityToken}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetClienteByToken([FromRoute(Name = "securityToken")] string securityToken)
+        {
+            var cliente = await _repository.GetByTokenAsync(securityToken);
 
             return Ok(Mapper.Map<ClienteViewModel>(cliente));
         }
@@ -69,7 +87,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 Indirizzo = newCliente.Indirizzo,
                 Nome = newCliente.Nome,
                 NumTelefono = newCliente.NumTelefono,
-                ProvisioningToken = token,
+                SecurityToken = token,
                 RagioneSociale = newCliente.RagioneSociale,
                 ZipOrPostalCode = newCliente.ZipOrPostalCode
             };

@@ -11,6 +11,10 @@ namespace PalestreGoGo.DataModel
         [Required]
         [StringLength(100)]
         public string Nome { get; set; }
+
+        [StringLength(100)]
+        public string Alt { get; set; }
+
         [Required]
         [StringLength(1000)]
         public string Url { get; set; }

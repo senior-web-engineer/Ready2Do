@@ -52,13 +52,14 @@ namespace PalestreGoGo.DataModel
         public Guid IdUserOwner { get; set; }
         [Required]
         [StringLength(500)]
-        public string ProvisioningToken { get; set; }
+        public string SecurityToken { get; set; }
         [Column(TypeName = "datetime2(2)")]
         public DateTime? DataProvisioning { get; set; }       
         [Required]
-        [StringLength(100)]
+        [StringLength(205)]
         public string UrlRoute { get; set; }        
         public string OrarioApertura { get; set; }
+        public string StorageContainer { get; set; }
 
         [ForeignKey("IdTipologia")]
         [InverseProperty("Clienti")]

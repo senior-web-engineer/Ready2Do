@@ -1,9 +1,12 @@
 ﻿@using Microsoft.Extensions.Options;
+@using Web.Configuration;
 
 @model RegistrationViewModel
+@inject IOptions<AppConfig> OptionsApplicationConfiguration
 
-@inject IOptions<GoogleAPIConfig> OptionsGoogleAPIConfig
-
+@{ 
+    Layout = "_LayoutLanding";
+}
 <section class="section">
     @*banner-6*@
     <div class="container">
@@ -68,7 +71,7 @@
                     </div>
                     <div class="row">
                         <div class="input-field col-sm-12">
-                            <select asp-for="IdTipologia" asp-items="Model.TipologieClienti" class="validate">
+                            <select asp-for="IdTipologia" asp-items="Model.TipologieClienti" class="active">
                                 <option disabled selected>Selezionare un categoria</option>
                             </select>
                             <label id="lblTipologiaCliente" for="IdTipologia" class="customSelectLabel">Tipologia di Struttura</label>
@@ -93,7 +96,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="input-field">
-                                <input type="text" asp-for="Indirizzo" class="validate">
+                                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" class="autocomplete" placeholder="">
                                 <label asp-for="Indirizzo"></label>
                             </div>
                         </div><!-- /.col-sm-6 -->
@@ -106,12 +109,20 @@
                             </div>
                         </div><!-- /.col-sm-6 -->
                     </div>
-                    <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Send Message</button>
+                    <div class="text-center">
+                        <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Registrati</button>
+                    </div>
+                    <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
+                    <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
+                    <input id="inputCitta" type="hidden" asp-for="Citta" />
+                    <input id="inputCountry" type="hidden" asp-for="Country" />
+                    <input id="inputCAP" type="hidden" asp-for="CAP" />
                 </form>
             </div><!-- /.col-sm-8 -->
             <div class="col-sm-2"></div>
         </div><!-- /.row -->
     </div>
+
 </section>
 
 @section Scripts{
@@ -120,79 +131,84 @@
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/materialize/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
-    <script src="~/js/bootstrap-tabcollapse.min.js"></script>
-    <script src="~/js/jquery.easing.min.js"></script>
-    <script src="~/js/jquery.sticky.min.js"></script>
-    <script src="~/js/smoothscroll.min.js"></script>
-    <script src="~/js/jquery.stellar.min.js"></script>
-    <script src="~/js/jquery.inview.min.js"></script>
-    <script src="~/owl.carousel/owl.carousel.min.js"></script>
-    <script src="~/flexSlider/jquery.flexslider-min.js"></script>
-    <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="~/js/autocompleteajax.js"></script>
+    @*<script src="~/js/bootstrap-tabcollapse.min.js"></script>*@
+    @*<script src="~/js/jquery.easing.min.js"></script>
+        <script src="~/js/jquery.sticky.min.js"></script>
+        <script src="~/js/smoothscroll.min.js"></script>
+        <script src="~/js/jquery.stellar.min.js"></script>
+        <script src="~/js/jquery.inview.min.js"></script>
+        <script src="~/owl.carousel/owl.carousel.min.js"></script>
+        <script src="~/flexSlider/jquery.flexslider-min.js"></script>
+        <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>*@
     @*<script src="https://maps.googleapis.com/maps/api/js"></script>*@
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsGoogleAPIConfig.Value.GoogleMapsAPIKey&libraries=places"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsApplicationConfiguration.Value.GoogleAPI.GoogleMapsAPIKey&libraries=places&language=it"></script>
     <script src="~/js/scripts.js"></script>
 
     <!-- Google Map Customization  -->
     <script type="text/javascript">
         jQuery(document).ready(function () {
 
-            //Init Select element
-            //$('select').material_select();
-            //set your google maps parameters
-            //var $latitude = 40.716304, //Visit http://www.latlong.net/convert-address-to-lat-long.html for generate your Lat. Long.
-            //    $longitude = -73.995763,
-            //    $map_zoom = 16 /* ZOOM SETTING */
+            $('select').material_select();
 
-            ////google map custom marker icon
-            //var $marker_url = 'assets/img/pin.png';
+            /// GOOGLE AUTOCOMPLETE ///
+            var input = document.getElementById('addressAutocomplete');
+            var options = {
+                type: ['(address)'],
+                componentRestrictions: { country: 'it' }
+            };
 
-            ////we define here the style of the map
-            //var style = [{
-            //    "stylers": [{
-            //        "hue": "#03a9f4"
-            //    }, {
-            //        "saturation": 10
-            //    }, {
-            //        "gamma": 2.15
-            //    }, {
-            //        "lightness": 12
-            //    }]
-            //}];
+            autocomplete = new google.maps.places.Autocomplete(input, options);
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace();
+                document.getElementById('inputLatitudine').value = place.geometry.location.lat();
+                document.getElementById('inputLongitudine').value = place.geometry.location.lng();
 
-            ////set google map options
-            //var map_options = {
-            //    center: new google.maps.LatLng($latitude, $longitude),
-            //    zoom: $map_zoom,
-            //    panControl: true,
-            //    zoomControl: true,
-            //    mapTypeControl: true,
-            //    streetViewControl: true,
-            //    mapTypeId: google.maps.MapTypeId.ROADMAP,
-            //    scrollwheel: false,
-            //    styles: style
+                var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
+                if (tmp) {
+                    document.getElementById('inputCAP').value = tmp.long_name;
+                }
+                tmp = place.address_components.find(function (c) { return c.types[0] === "locality"; });
+                if (tmp) {
+                    document.getElementById('inputCountry').value = tmp.long_name;
+                }
+                tmp = place.address_components.find(function (c) { return c.types[0] === "administrative_area_level_1"; });
+                if (tmp) {
+                    document.getElementById('inputCitta').value = tmp.long_name;
+                }
+            });
+
+
+            //var $street_select = $('.js-street-select');
+            //var $street_preloader = $('.js-street-preloader');
+            //var initial_address;
+
+            //function getStreetAutocompleteObject() {
+            //    return {
+            //        ajax: {
+            //            url: $street_select.attr('data-url'),
+            //            method: 'post',
+            //            dataType: 'json',
+            //            //beforeSend: function () {
+            //            //    if (!$street_preloader.hasClass('active')) {
+            //            //        $street_preloader.addClass('active');
+            //            //    }
+            //            //},
+            //            error: null
+            //        },
+            //        //callback: function (res) {
+            //        //    if ($street_preloader.hasClass('active')) {
+            //        //        $street_preloader.removeClass('active');
+            //        //    }
+            //        //},
+            //        minLength: 3,
+            //        delay: 200
+            //    };
             //}
-            ////inizialize the map
-            //var map = new google.maps.Map(document.getElementById('myMap'), map_options);
-            ////add a custom marker to the map
-            //var marker = new google.maps.Marker({
-            //    position: new google.maps.LatLng($latitude, $longitude),
-            //    map: map,
-            //    visible: true,
-            //    icon: $marker_url
-            //});
 
-            //var contentString = '<div id="mapcontent">' + '<p>materialize, 1355 Market Street, San Francisco.</p></div>';
-            //var infowindow = new google.maps.InfoWindow({
-            //    maxWidth: 320,
-            //    content: contentString
-            //});
-
-            //google.maps.event.addListener(marker, 'click', function() {
-            //    infowindow.open(map, marker);
-            //});
+            //$('#addressAutocomplete').autocompleteajax()
         });
     </script>
-  @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
 }

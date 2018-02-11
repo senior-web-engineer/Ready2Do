@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Options;
-@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@using Web.Configuration;
 
+@inject IOptions<AppConfig> OptionsApplicationConfiguration
 <!--header start-->
 <header id="header" class="tt-nav">
 
@@ -29,11 +30,11 @@
                         <a href="#contact" data-scroll>Contatti</a>
                     </li>
                     @if (!User.Identity.IsAuthenticated)
-                    {
-                        <li>
-                            <a id="navLinkRegistration" href="@OptionsApplicationConfiguration.Value.LoginUrl">Entra</a>
-                        </li>
-                    }
+        {
+            <li>
+                <a id="navLinkRegistration" href="@OptionsApplicationConfiguration.Value.LoginUrl">Entra</a>
+            </li>
+}
                 </ul>
                 <!-- onepage menu end-->
 

@@ -42,6 +42,30 @@ namespace Web.Utils
             return result;
         }
 
+        public async static Task<ClienteViewModel> GetClienteAsync(string urlRoute, string baseUrl)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}api/clienti/{urlRoute}");
+            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ClienteViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
+        public async static Task<ClienteViewModel> GetClienteFromTokenAsync(string securityToken, string baseUrl)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}api/clienti/token/{securityToken}");
+            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ClienteViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
         public async static Task<IEnumerable<TipologiaClienteViewModel>> GetTipologiClientiAsync(string baseUrl)
         {
             Uri uri = new Uri($"{baseUrl}api/clienti/tipologie");

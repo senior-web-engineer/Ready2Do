@@ -75,7 +75,19 @@ namespace PalestreGoGo.DataAccess
 
                 entity.Property(e => e.NumTelefono).IsUnicode(false);
 
-                entity.Property(e => e.ProvisioningToken).HasDefaultValueSql("(CONVERT([nvarchar](100),newid()))");
+                entity.Property(e => e.SecurityToken).HasDefaultValueSql("(CONVERT([nvarchar](100),newid()))");
+
+                entity.HasIndex(e => new { e.Email })
+                    .HasName("[UQ_Clienti_Email]")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.UrlRoute })
+                    .HasName("[UQ_Clienti_UrlRoute]")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.SecurityToken })
+                    .HasName("[UQ_Clienti_SecurityToken]")
+                    .IsUnique();
 
                 entity.HasOne(d => d.IdTipologiaNavigation)
                     .WithMany(p => p.Clienti)
@@ -102,7 +114,7 @@ namespace PalestreGoGo.DataAccess
             {
                 entity.Property(e => e.DataCreazione).HasDefaultValueSql("(sysdatetime())");
 
-                entity.HasKey(e => new {e.IdCliente, e.IdUtente});
+                entity.HasKey(e => new { e.IdCliente, e.IdUtente });
 
                 entity.HasOne(d => d.IdClienteNavigation)
                     .WithMany(p => p.ClientiUtenti)

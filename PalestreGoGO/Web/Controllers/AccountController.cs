@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Web.Utils;
 using Web.Models;
 using Web.Services;
+using Web.Configuration;
 
 namespace Web.Controllers
 {
@@ -18,15 +19,13 @@ namespace Web.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
-        private readonly IConfiguration _configuration;
-        private readonly WebAPIConfig _apiOptions;
+        private readonly AppConfig _appConfig;
         private readonly AccountServices _account;
 
-        public AccountController(ILogger<AccountController> logger, IConfiguration configuration, IOptions<WebAPIConfig> apiOptions, AccountServices account)
+        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account)
         {
             _logger = logger;
-            _configuration = configuration;
-            _apiOptions = apiOptions.Value;
+            _appConfig = apiOptions.Value;
             _account = account;
         }
         
@@ -51,9 +50,30 @@ namespace Web.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var apiModel = new NuovoClienteViewModel();
+                /* Creiamo il l'utenza*/
+                  var apiModel = new NuovoClienteViewModel()
+                {
+                    Citta = model.Citta,
+                    Coordinate = model.Latitudine.HasValue && model.Longitudine.HasValue ?  new CoordinateViewModel(model.Latitudine.Value, model.Longitudine.Value) : null,
+                    Country = model.Country,
+                    Email = model.Email,
+                    IdTipologia = model.IdTipologia,
+                    Indirizzo = model.Indirizzo,
+                    Nome = model.Nome,
+                    Cognome = model.Cognome,
+                    NumTelefono = model.Telefono,
+                    RagioneSociale = model.RagioneSociale,
+                    NuovoUtente = new NuovoUtenteViewModel()
+                    {
+                        Cognome = model.Cognome,
+                        Email = model.Email,
+                        Nome = model.Nome,
+                        Password = model.Password,
+                        Telefono = model.Telefono
+                    }                    
+                };
                 //TODO: Convertire da VM a APIModel
-                var result = await WebAPIClient.NuovoClienteAsync(apiModel, _apiOptions.BaseAddress);
+                var result = await WebAPIClient.NuovoClienteAsync(apiModel, _appConfig.WebAPI.BaseAddress);
                 if (result)
                 {
                     return RedirectToAction("MailToConfirm");

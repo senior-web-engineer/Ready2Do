@@ -1,0 +1,23 @@
+.cst_vcenter {
+	display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.top_bar_height{
+	min-height: 55px;
+}
+
+.menu_cliente {
+	/*margin-bottom: -50px;*/
+	margin-top:  20px;
+}
+
+#submenuAdmin {
+	margin-left: 60px;
+	/*margin-top: -35px;	*/
+}
+
+.menuzord-menu>li>a {
+    line-height: 50px;
+}

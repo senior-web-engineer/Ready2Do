@@ -1,5 +1,104 @@
-﻿@model PalestreGoGo.WebAPIModel.ClienteViewModel;
+﻿
+@model ClienteHomeViewModel;
 
 @{
-    ViewData["Title"] = $"Home Page Cliente {Model.Nome}";
+    //ViewData["Title"] = Model.Nome;
+    Layout = "_LayoutClienti";
+}
+
+@section Header{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
+
+}
+
+<head>
+    <!-- HEADER SITO -->
+    <div></div>
+    <!-- NAVBAR + LOGIN/LOGOUT -->
+    <div></div>
+</head>
+<section id="clientHeroes" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-80">
+            <h2 class="section-title text-uppercase">@Model.Nome</h2>
+        </div>
+    </div>
+</section>
+
+<section id="banner1">
+    <div class="container">
+        <div class="row center-align">
+            <div class="adsbanner"></div>
+        </div>
+    </div>
+</section>
+
+<section id="slideshow" class="padding-top-110">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 rev_slider_wrapper">
+                <div class="rev_slider tp-overflow-hidden">
+                    <div id="slider1" class="rev_slider" data-version="5.0">
+                        <ul>
+                            @foreach (var i in Model.Images)
+                        {
+                            <li data-transition="fade">
+                                <img class="rev-slidebg" src="@i.Url" alt="@i.Alt" data-bgfit="cover" data-bgrepeat="no-repeat" data-no-retina>/>
+                                @*<p class="flex-caption">@i.Caption</p>*@
+                            </li>
+                    }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts{
+    <!-- jQuery -->
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/bootstrap-tabcollapse.min.js"></script>
+    <script src="~/js/jquery.easing.min.js"></script>
+    <script src="~/js/jquery.sticky.min.js"></script>
+    <script src="~/js/smoothscroll.min.js"></script>
+    <script src="~/js/smooth-menu.js"></script>
+    <script src="~/js/jquery.stellar.min.js"></script>
+    <script src="~/js/imagesloaded.js"></script>
+    <script src="~/js/jquery.inview.min.js"></script>
+    <script src="~/js/jquery.shuffle.min.js"></script>
+    <script src="~/js/wow.min.js"></script>
+    <script src="~/owl.carousel/owl.carousel.min.js"></script>
+    <script src="~/flexSlider/jquery.flexslider-min.js"></script>
+    <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="~/js/scripts.js"></script>
+    <script src="~/revolution/js/jquery.themepunch.tools.min.js"></script>
+    <script src="~/revolution/js/jquery.themepunch.revolution.min.js"></script>
+
+
+    @*<script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
+    <script src="~/fullcalendar-3.8.2/locale/it.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            //$('.flexslider').flexslider({
+            //    animation: "slide",
+            //    //   smoothHeight: true,
+            //    itemWidth: 350
+            //});
+
+            jQuery("#slider1").revolution({
+                sliderType: "standard",
+                sliderLayout: "auto",
+                delay: 4000,
+                navigation: {
+                    arrows: { enable: true }
+                },
+                gridwidth: 1230,
+                gridheight: 720
+            });
+        });
+    </script>
 }

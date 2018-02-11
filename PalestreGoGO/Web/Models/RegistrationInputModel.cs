@@ -32,7 +32,7 @@ namespace Web.Models
         public string NomeStruttura { get; set; }
 
         [Display(Name = "Categoria")]
-        public int IdTipologia { get; set; }
+        public short IdTipologia { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -54,5 +54,11 @@ namespace Web.Models
 
         public string ReturnUrl { get; set; }
 
+        public bool EsitoLookup { get; set; }
+        public float? Latitudine { get; set; }
+        public float? Longitudine { get; set; }
+        public string Citta { get; set; }
+        public string Country { get; set; }
+        public string CAP { get; set; }
     }
 }

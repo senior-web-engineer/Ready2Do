@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,18 +22,80 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<int> AddAsync(Clienti cliente)
         {
+            cliente.UrlRoute = await this.internalCreateUrlRoute(cliente.Nome);
             await _context.Clienti.AddAsync(cliente);
             await _context.SaveChangesAsync();
             return cliente.Id;        
         }
 
+        private async Task<string> internalCreateUrlRoute(string nomeCliente)
+        {
+            var encodedNomeCliente = Uri.EscapeDataString(nomeCliente);
+            string result = null;
+            using(var cmd = _context.Database.GetDbConnection().CreateCommand())
+            {
+                cmd.CommandText = "CreateUrlRoute";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.Add(new SqlParameter("@pNomeClienteUrlEncoded", encodedNomeCliente));
+                await _context.Database.OpenConnectionAsync();
+                result = (string) await cmd.ExecuteScalarAsync();
+            }
+            return result;
+        }
+
         public async Task ConfermaProvisioningAsync(string provisioningToken, Guid userId)
         {
-            var user = _context.Set<Clienti>().First(c => c.ProvisioningToken.Equals(provisioningToken, StringComparison.InvariantCulture));
+            var user = _context.Set<Clienti>().First(c => c.SecurityToken.Equals(provisioningToken, StringComparison.InvariantCulture));
             if (user == null) throw new ArgumentException(nameof(provisioningToken));
             user.DataProvisioning = DateTime.Now;
             user.IdUserOwner = userId;
             await _context.SaveChangesAsync();
+        }
+
+        public Task<Clienti> GetByUrlAsync(string urlRoute)
+        {
+            var cliente = _context
+                            .Clienti
+                            .AsNoTracking()
+                            .Include(c => c.IdTipologiaNavigation)
+                            .Include(c => c.ClientiMetadati)
+                            .Where(c => (c.UrlRoute.Equals(urlRoute)))
+                            .Single();
+
+            //Leggiamo anche le immagini
+            var immagini = _context.ClientiImmagini
+                            .AsNoTracking()
+                            .Include(ci => ci.IdTipoImmagineNavigation)
+                            .Where(ci => ci.IdCliente.Equals(cliente.Id) &&
+                                        (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                            .ToList();
+            cliente.ClientiImmagini = immagini;
+
+            return Task.FromResult(cliente);
+        }
+
+        public Task<Clienti> GetByTokenAsync(string securityToken)
+        {
+            var cliente = _context
+                            .Clienti
+                            .AsNoTracking()
+                            .Include(c => c.IdTipologiaNavigation)
+                            .Include(c => c.ClientiMetadati)
+                            .Where(c => (c.SecurityToken.Equals(securityToken)))
+                            .Single();
+
+            //Leggiamo anche le immagini
+            var immagini = _context.ClientiImmagini
+                            .AsNoTracking()
+                            .Include(ci => ci.IdTipoImmagineNavigation)
+                            .Where(ci => ci.IdCliente.Equals(cliente.Id) &&
+                                        (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                            .ToList();
+            cliente.ClientiImmagini = immagini;
+
+            return Task.FromResult(cliente);
         }
 
         public Task<Clienti> GetAsync(int idCliente)

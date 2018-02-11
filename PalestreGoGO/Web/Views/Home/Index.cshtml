@@ -1,8 +1,11 @@
 ﻿@using Microsoft.Extensions.Options;
-@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@using Web.Configuration;
+
+@inject IOptions<AppConfig> OptionsApplicationConfiguration
 
 @{
     ViewData["Title"] = "Palestre GoGo!";
+    Layout = "_LayoutLanding";
 }
 <section id="home" class="banner-wrapper parallax-bg banner-12 overlay dark-5 valign-wrapper height-650"
          data-stellar-background-ratio="0.5"
@@ -363,7 +366,7 @@
     <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>
     <script src="~/js/scripts.js"></script>
 
-    <script>
+    @*<script>
         new WOW({
             mobile: false
         }).init();
@@ -405,6 +408,6 @@
 
             });
         });
-    </script>
+    </script>*@
 
 }

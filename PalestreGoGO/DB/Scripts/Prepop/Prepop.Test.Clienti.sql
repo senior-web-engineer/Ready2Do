@@ -8,7 +8,7 @@ DECLARE @tokenCliente2		VARCHAR(50) = '{3B9C594B-C81E-496C-9288-E10504D762DA}'
 SET IDENTITY_INSERT [Clienti] ON 
 
 INSERT INTO [Clienti] (Id, Nome, RagioneSociale, Email, NumTelefono, Descrizione, IdTipologia, Indirizzo, Citta, ZipOrPostalCode, Country, 
-						Latitudine, Longitudine, DataCreazione, IdUserOwner, ProvisioningToken, DataProvisioning, UrlRoute, OrarioApertura)
+						Latitudine, Longitudine, DataCreazione, IdUserOwner, SecurityToken, DataProvisioning, UrlRoute, OrarioApertura)
 VALUES (1, 'Cliente Test 1', 'Cliente 1 - RagioneSociale Sociale', 'cliente1@test.tst', '06000010101', 'Cliente di test 1', 0, 'Via Trionfale 1000', 'Roma',
 						'00135', 'Italy', 0.0001, 0.0002, GETDATE(), @idOwnerCliente1, @tokenCliente1,  GETDATE(), 'cliente1', 'Sempre aperto'),
 	   (2, 'Cliente Test 2', 'Cliente 2 - RagioneSociale Sociale', 'cliente2@test.tst', '062222222', 'Cliente di test 2', 0, 'Via Cassia 2345', 'Roma',
