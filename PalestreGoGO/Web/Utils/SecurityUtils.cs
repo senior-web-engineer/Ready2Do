@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Web.Models;
 
 namespace Web.Utils
 {
@@ -78,6 +80,30 @@ namespace Web.Utils
 
             }
             return plaintext;
+        }
+
+    }
+
+    public static class ClaimsPrinciapalExtensions
+    {
+        public static UserType GetUserTypeForCliente(this ClaimsPrincipal principal, int idCliente)
+        {
+            if (principal == null) return UserType.Anonymous;
+            if (!principal.Identity.IsAuthenticated) return UserType.Anonymous; // Se non autenticato ==> 
+            UserType result = UserType.Anonymous;
+            //Valutiamo il cliam USERS_MANAGED per determinare se l'utente corrente è un Admin per il cliente
+            foreach (var c in principal.Claims.Where(c => c.Type.Equals(Constants.ClaimType_Users_Managed)))
+            {
+                foreach(var cliente in c.Value.Split(','))
+                {
+                    if (int.Parse(cliente).Equals(idCliente))
+                    {
+                        result = UserType.Admin;
+                    }
+                }
+            }
+            //TODO: AGGIUNGERE GESTIONE GLOBAL ADMIN
+            return result;
         }
     }
 }

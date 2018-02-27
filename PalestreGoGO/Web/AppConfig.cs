@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Web.Configuration
-{   
+{
     public class AppConfig
     {
         public string RegistrationUrl { get; set; }
         public string LoginUrl { get; set; }
+        public string LogoutUrl { get; set; }
         public string EncryptKey { get; set; }
         public int SASTokenDuration { get; set; }
         public WebAPIConfig WebAPI { get; set; }
@@ -41,12 +42,12 @@ namespace Web.Configuration
     {
         public class StorageConfig
         {
-            public string StorageAccountName { get; set; }
-            public string StorageAccountKey { get; set; }
+            public string AccountName { get; set; }
+            public string AccountKey { get; set; }
             public string ConnectionString { get; set; }
-
+            public string BlobStorageBaseUrl { get; set; }
         }
-
+        public string SendGridAPIKey { get; set; }
         public StorageConfig Storage { get; set; }
     }
 }

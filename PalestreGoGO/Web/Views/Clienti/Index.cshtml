@@ -1,22 +1,20 @@
-﻿
-@model ClienteHomeViewModel;
-
+﻿@model ClienteHomeViewModel;
 @{
-    //ViewData["Title"] = Model.Nome;
+    ViewData["Title"] = Model.Nome;
     Layout = "_LayoutClienti";
 }
 
 @section Header{
+    <!-- RS5.0 Main Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="~/revolution/css/settings.css">
+    <!-- RS5.0 Layers and Navigation Styles -->
+    <link rel="stylesheet" type="text/css" href="~/revolution/css/layers.css">
+    <link rel="stylesheet" type="text/css" href="~/revolution/css/navigation.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
-
 }
 
-<head>
-    <!-- HEADER SITO -->
-    <div></div>
-    <!-- NAVBAR + LOGIN/LOGOUT -->
-    <div></div>
-</head>
+@Html.Partial("_MenuCliente", Model.IdCliente);
+
 <section id="clientHeroes" class="section-padding">
     <div class="container">
         <div class="text-center mb-80">
@@ -36,25 +34,60 @@
 <section id="slideshow" class="padding-top-110">
     <div class="container">
         <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8 rev_slider_wrapper">
+            <div class="col12 rev_slider_wrapper">
                 <div class="rev_slider tp-overflow-hidden">
                     <div id="slider1" class="rev_slider" data-version="5.0">
                         <ul>
                             @foreach (var i in Model.Images)
-                        {
-                            <li data-transition="fade">
-                                <img class="rev-slidebg" src="@i.Url" alt="@i.Alt" data-bgfit="cover" data-bgrepeat="no-repeat" data-no-retina>/>
-                                @*<p class="flex-caption">@i.Caption</p>*@
-                            </li>
-                    }
+                            {
+                                <li data-transition="fade">
+                                    <img class="rev-slidebg" src="@i.Url" alt="@i.Alt" data-bgfit="cover" data-bgrepeat="no-repeat" data-no-retina>
+                                    @*<p class="flex-caption">@i.Caption</p>*@
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
+</section>
+
+<section id="descCliente" class="padding-top-10 mt-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-1 col-md2">&nbsp;</div>
+            <div class="col-sm10 col-md8">
+                <h1>@Model.Nome</h1>
+                <h3>
+                    @Model.Descrizione
+                </h3>
+            </div>
+            <div class="col-sm-1 col-md2">&nbsp;</div>
+        </div>
     </div>
 </section>
+
+
+<section id="banner1">
+    <div class="container">
+        <div class="row center-align">
+            <div class="adsbanner"></div>
+        </div>
+    </div>
+</section>
+
+<section id="whereare">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <img class="img-responsive" src="https://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Clabel:cliente1%7C41.878536,12.447341&size=640x350&scale=2&maptype=roadmap&zoom=14&key=AIzaSyBjZvh85esWdEiJEd-QNXW_ZSPNumarNIU" />
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+</section>
+
 @section Scripts{
     <!-- jQuery -->
     <script src="~/js/jquery-2.1.3.min.js"></script>
@@ -80,7 +113,7 @@
 
 
     @*<script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
-    <script src="~/fullcalendar-3.8.2/locale/it.js"></script>*@
+        <script src="~/fullcalendar-3.8.2/locale/it.js"></script>*@
     <script>
         $(document).ready(function () {
             //$('.flexslider').flexslider({

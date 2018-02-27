@@ -1,0 +1,126 @@
+﻿@model EventoViewModel;
+@{
+    Layout = "~/Views/Shared/_LayoutClienti.cshtml";
+}
+<head>
+    @section Header{
+        <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+        @*<link href="~/css/solved-by-flexbox-grid.css" rel="stylesheet">*@
+        @*<link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.css" rel="stylesheet" />
+        <link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.date.css" rel="stylesheet" />
+        <link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.time.css" rel="stylesheet" />*@
+
+        <style type="text/css">
+            #formEditProfile .input-field {
+                margin-top: 0px;
+            }
+        </style>
+    }
+</head>
+@Html.Partial("_MenuCliente", Model.IdCliente);
+
+<h2>EditEvento</h2>
+
+<section id="editEvento">
+    <div class="container">
+        <form asp-action="EditEvento" method="post">
+            <input id="idEvento" type="hidden" asp-for="@Model.Id" />
+            <div class="row">
+                <div class="input-field col-6">
+                    <input id="dataEvento" type="text" asp-for="@Model.Data" class="datepicker" />
+                    <label for="dataEvento">Data Evento</label>
+                </div>
+                <div class="input-field col-6">
+                    <input id="oraEvento" type="text" asp-for="@Model.OraInizio" class="timepicker" />
+                    <label for="oraEvento">Ora Inizio</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field">
+                    <select asp-for="IdTipoLezione" asp-items="ViewBag.TipologieLezioni"></select>
+                    <label>Tipo Lezione</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field">
+                    <input id="istruttore" type="text" asp-for="@Model.PostiDisponibili" />
+                    <label for="istruttore">Posti disponibili</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field">
+                    <input id="istruttore" type="text" asp-for="@Model.Istruttore" />
+                    <label for="istruttore">Istruttore</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field">
+                    <textarea id="note" asp-for="@Model.Note" class="materialize-textarea"></textarea>
+                    <label for="note">Note</label>
+                </div>
+            </div>
+            <div class="row">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    Salva
+                    <i class="material-icons save">salva</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts{
+    <!-- jQuery -->
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src='~/js/moment.min.js'></script>
+    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.js"></script>
+    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.time.js"></script>
+    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.date.js"></script>
+
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/bootstrap-tabcollapse.min.js"></script>
+    <script src="~/js/jquery.easing.min.js"></script>
+    <script src="~/js/jquery.sticky.min.js"></script>
+    <script src="~/js/smoothscroll.min.js"></script>
+    <script src="~/js/smooth-menu.js"></script>
+    <script src="~/js/jquery.stellar.min.js"></script>
+    <script src="~/js/imagesloaded.js"></script>
+    <script src="~/js/jquery.inview.min.js"></script>
+    <script src="~/js/jquery.shuffle.min.js"></script>
+    @*<script src="~/js/wow.min.js"></script>
+        <script src="~/owl.carousel/owl.carousel.min.js"></script>
+        <script src="~/flexSlider/jquery.flexslider-min.js"></script>
+        <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>*@
+    <script src="~/js/scripts.js"></script>
+    @*<script src="~/revolution/js/jquery.themepunch.tools.min.js"></script>
+        <script src="~/revolution/js/jquery.themepunch.revolution.min.js"></script>*@
+
+    <script>
+        $(document).ready(function () {
+            $('select').material_select();
+            $('.timepicker').pickatime({
+                default: 'now', // Set default time: 'now', '1:30AM', '16:30'
+                fromnow: 0,       // set default time to * milliseconds from now (using with default = 'now')
+                twelvehour: true, // Use AM/PM or 24-hour format
+                donetext: 'OK', // text for done-button
+                cleartext: 'Clear', // text for clear-button
+                canceltext: 'Cancel', // Text for cancel-button
+                autoclose: true, // automatic close timepicker
+                ampmclickable: false, // make AM PM clickable
+                aftershow: function () { } //Function for after opening timepicker
+            });
+            $('.datepicker').pickadate({
+                selectMonths: true, // Creates a dropdown to control month
+                selectYears: 15, // Creates a dropdown of 15 years to control year,
+                today: 'Today',
+                clear: 'Clear',
+                close: 'Ok',
+                closeOnSelect: false // Close upon selecting a date,
+            });
+        });
+
+
+    </script>
+}

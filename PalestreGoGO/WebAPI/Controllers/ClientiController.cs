@@ -127,6 +127,11 @@ namespace PalestreGoGo.WebAPI.Controllers
             return new OkResult();
         }
 
+        public async Task<IActionResult> AssociaImmagine(ImmagineViewModel immagine)
+        {
+            return Ok();
+        }
+
         /// <summary>
         /// Aggiunge l'utente chiamante (estrapolato dal Token) come Follower del cliente (estrapolato dalla route)
         /// </summary>

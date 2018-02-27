@@ -10,7 +10,6 @@
     <title>@ViewData["Title"]</title>
 
     <!--  favicon -->
-    <!-- TODO: Creare la Favicon e le Apple-Touch-Icon personalizzate-->
     <link rel="shortcut icon" href="~/img/ico/favicon.png">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/img/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/img/ico/apple-touch-icon-114-precomposed.png">
@@ -22,15 +21,11 @@
     <link href="~/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <!-- Material Icons CSS -->
     <link href="~/fonts/iconfont/material-icons.css" rel="stylesheet">
-    <!-- magnific-popup -->
-    <link href="~/magnific-popup/magnific-popup.css" rel="stylesheet">
-    <!-- owl.carousel -->
-    <link href="~/owl.carousel/assets/owl.carousel.css" rel="stylesheet">
-    <link href="~/owl.carousel/assets/owl.theme.default.min.css" rel="stylesheet">
     <!-- flexslider -->
-    <link href="~/flexSlider/flexslider.css" rel="stylesheet">
+    @*<link href="~/flexSlider/flexslider.css" rel="stylesheet">*@
     <!-- materialize -->
-    <link href="~/materialize/css/materialize.min.css" rel="stylesheet">
+    @*<link href="~/materialize/css/materialize.min.css" rel="stylesheet">*@
+    <link href="~/materialize-v1.0.0-alpha.4/css/materialize.min.css" rel="stylesheet">
     <!-- Bootstrap -->
     <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- shortcodes -->
@@ -38,28 +33,28 @@
     <!-- Style CSS -->
     <link href="~/css/style.css" rel="stylesheet">
     <!-- Custom Style CSS -->
-    <link href="~/css/custom-styles.css" rel="stylesheet">
-
-    <!-- RS5.0 Main Stylesheet -->
-    <link rel="stylesheet" type="text/css" href="~/revolution/css/settings.css">
-    <!-- RS5.0 Layers and Navigation Styles -->
-    <link rel="stylesheet" type="text/css" href="~/revolution/css/layers.css">
-    <link rel="stylesheet" type="text/css" href="~/revolution/css/navigation.css">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- Custom Style CSS -->
     <link href="~/css/clienti.css" rel="stylesheet">
     @RenderSection("Header", required: false)
 </head>
 <body id="top" data-spy="scroll" data-target="#materialize-menu" data-offset="100">
-    @Html.Partial("_NavBar.cshtml")
-
+    <!-- TOP BAR: Header Sito -->
+    <div class="top-bar visible-md visible-lg top_bar_height">
+        <div class="header-sticky ">
+            <!-- style="min-height: 50px;" -->
+            <div class="container">
+                <div class="row mt-10">
+                    <div class="col s2">&nbsp;</div>
+                    <div class="col s2">
+                        <img src="~/img/logo.png">
+                    </div>
+                    <div class="col s5 center-align">
+                        <h1>PalestreGoGo</h1>
+                    </div>
+                    <div class="col s2">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @RenderBody()
 

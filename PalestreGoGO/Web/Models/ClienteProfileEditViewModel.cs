@@ -7,13 +7,28 @@ namespace Web.Models
 {
     public class ClienteProfileEditViewModel
     {
-        public ClienteProfileEditViewModel()
+        public class GalleryEditViewModel
         {
-            GalleryImages = new List<ImageViewModel>();
+            public GalleryEditViewModel()
+            {
+                Images = new List<ImageViewModel>();
+            }
+
+            public List<ImageViewModel> Images { get; set; }
+
+            public string ContainerUrl { get; set; }
+            public string SASToken { get; set; }
+
         }
 
-        public string SASToken { get; set; }
+        public ClienteProfileEditViewModel()
+        {
+            GalleryVM = new GalleryEditViewModel();
+            OrarioAperturaVM = new OrarioAperturaViewModel();
+        }
+
+        public GalleryEditViewModel GalleryVM { get; set; }
         
-        public List<ImageViewModel> GalleryImages {get;set;}
+        public OrarioAperturaViewModel OrarioAperturaVM { get; set; }
     }
 }

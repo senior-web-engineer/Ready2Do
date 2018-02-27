@@ -1,9 +1,3 @@
-.cst_vcenter {
-	display: inline-block;
-    vertical-align: middle;
-    float: none;
-}
-
 .top_bar_height{
 	min-height: 55px;
 }
@@ -19,5 +13,12 @@
 }
 
 .menuzord-menu>li>a {
-    line-height: 50px;
+    line-height: 30px;
+}
+
+.clientHeroes{
+	min-height: 160px;
+	max-height: 160px;
+	height: 160px;
+	background-color: red;
 }

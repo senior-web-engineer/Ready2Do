@@ -14,7 +14,7 @@ namespace Web.Utils
     {
         public static String GetSasForBlob(AzureConfig config, string blobUri, string verb, int validity=15)
         {
-            var credentials = new StorageCredentials(config.Storage.StorageAccountName, config.Storage.StorageAccountKey);
+            var credentials = new StorageCredentials(config.Storage.AccountName, config.Storage.AccountKey);
             CloudBlockBlob blob = new CloudBlockBlob(new Uri(blobUri), credentials);
             var permission = verb == "DELETE" ? SharedAccessBlobPermissions.Delete: SharedAccessBlobPermissions.Write;
 

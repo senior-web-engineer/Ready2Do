@@ -2,210 +2,272 @@
 @{
     Layout = "_LayoutClienti";
 }
-
-@section Header{
-    <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
-
-    <script type="text/template" id="qq-template">
-        <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here">
-            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
-                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
-            </div>
-            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
-                <span class="qq-upload-drop-area-text-selector"></span>
-            </div>
-            <div class="qq-upload-button-selector qq-upload-button">
-                <div>Upload a file</div>
-            </div>
-            <span class="qq-drop-processing-selector qq-drop-processing">
-                <span>Processing dropped files...</span>
-                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
-            </span>
-            <ul class="qq-upload-list-selector qq-upload-list" role="region" aria-live="polite" aria-relevant="additions removals">
-                <li>
-                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
-                    <div class="qq-progress-bar-container-selector qq-progress-bar-container">
-                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
-                    </div>
-                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
-                    <div class="qq-thumbnail-wrapper">
-                        <img class="qq-thumbnail-selector" qq-max-size="120" qq-server-scale>
-                    </div>
-                    <button type="button" class="qq-upload-cancel-selector qq-upload-cancel">X</button>
-                    <button type="button" class="qq-upload-retry-selector qq-upload-retry">
-                        <span class="qq-btn qq-retry-icon" aria-label="Retry"></span>
-                        Retry
-                    </button>
-
-                    <div class="qq-file-info">
-                        <div class="qq-file-name">
-                            <span class="qq-upload-file-selector qq-upload-file"></span>
-                            <span class="qq-edit-filename-icon-selector qq-btn qq-edit-filename-icon" aria-label="Edit filename"></span>
-                        </div>
-                        <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
-                        <span class="qq-upload-size-selector qq-upload-size"></span>
-                        <button type="button" class="qq-btn qq-upload-delete-selector qq-upload-delete">
-                            <span class="qq-btn qq-delete-icon" aria-label="Delete"></span>
-                        </button>
-                        <button type="button" class="qq-btn qq-upload-pause-selector qq-upload-pause">
-                            <span class="qq-btn qq-pause-icon" aria-label="Pause"></span>
-                        </button>
-                        <button type="button" class="qq-btn qq-upload-continue-selector qq-upload-continue">
-                            <span class="qq-btn qq-continue-icon" aria-label="Continue"></span>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-
-            <dialog class="qq-alert-dialog-selector">
-                <div class="qq-dialog-message-selector"></div>
-                <div class="qq-dialog-buttons">
-                    <button type="button" class="qq-cancel-button-selector">Close</button>
-                </div>px
-            </dialog>
-
-            <dialog class="qq-confirm-dialog-selector">
-                <div class="qq-dialog-message-selector"></div>
-                <div class="qq-dialog-buttons">
-                    <button type="button" class="qq-cancel-button-selector">No</button>
-                    <button type="button" class="qq-ok-button-selector">Yes</button>
-                </div>
-            </dialog>
-
-            <dialog class="qq-prompt-dialog-selector">
-                <div class="qq-dialog-message-selector"></div>
-                <input type="text">
-                <div class="qq-dialog-buttons">
-                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
-                    <button type="button" class="qq-ok-button-selector">Ok</button>
-                </div>
-            </dialog>
-        </div>
-    </script>
-
-}
+<head>
+    @section Header{
+        <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+        <link href="~/css/solved-by-flexbox-grid.css" rel="stylesheet">
+        <style type="text/css">
+            #formEditProfile .input-field {
+                margin-top: 0px;
+            }
+        </style>
+    }
+</head>
 <!-- Non dovrebbe esserci NavBar in questa pagina-->
 <!-- Primo banner pubblicitario -->
 <section id="banner1"></section>
 
-<!-- Gestione gallery -->
-<section id="galleryEdit" class="section">
+@*@Html.Partial("_GalleryEdit", Model.GalleryVM)*@
+<section id="galleryEdit">
     <div class="container">
-        <h2>Modifica Gallery</h2>
-        <ul >
-            @foreach (var img in Model.GalleryImages)
-    {
-        <li class="collection-item avatar">
-            <div style="width: 70px; height: 70px; display:inline-block">
-                <img src="@img.Url" alt="@img.Alt" style="max-width: 70px; max-height: 70px" />
-            </div>
-            <span class="title">@img.Caption</span>
-            <div class="secondary-content">
-                <a href="" style="display:block; height: 35px; padding-right: 20%">Elimina</a>
-                <a href="" style="display:block; height: 35px; padding-right: 20%">Aggiorna</a>
-            </div>
-        </li>
-}
-            @foreach (var img in Model.GalleryImages)
-    {
-        <li class="collection-item avatar">
-            <div style="width: 70px; height: 70px; display:inline-block">
-                <img src="@img.Url" alt="@img.Alt" style="max-width: 70px; max-height: 70px" />
-            </div>
-            <span class="title">@img.Caption</span>
-            <div class="secondary-content">
-                <a href="" style="display:block; height: 35px; padding-right: 20%">Elimina</a>
-                <a href="" style="display:block; height: 35px; padding-right: 20%">Aggiorna</a>
-            </div>
-        </li>
-}
-            @foreach (var img in Model.GalleryImages)
-    {
-        <li class="collection-item avatar">
-            <div style="width: 70px; height: 70px; display:inline-block">
-                <img src="@img.Url" alt="@img.Alt" style="max-width: 70px; max-height: 0px" />
-            </div>
-            <span class="title">@img.Caption</span>
-            <div class="secondary-content">
-                <a href="" style="display:block; height: 25px; padding-right: 20%">Elimina</a>
-                <a href="" style="display:block; height: 25px; padding-right: 20%">Aggiorna</a>
-            </div>
-        </li>
-}
-            @foreach (var img in Model.GalleryImages)
-    {
-        <li class="collection-item avatar">
-            <div style="width: 70px; height: 70px; display:inline-block">
-                <img src="@img.Url" alt="@img.Alt" style="max-width: 70px; max-height: 70px" />
-            </div>
-            <span class="title">@img.Caption</span>
-            <div class="secondary-content">
-                <a href="" style="display:block; height: 25px; padding-right: 20%">Elimina</a>
-                <a href="" style="display:block; height: 25px; padding-right: 20%">Aggiorna</a>
-            </div>
-        </li>
-}
-            @foreach (var img in Model.GalleryImages)
-    {
-        <li class="collection-item avatar">
-            <div style="width: 70px; height: 70px; display:inline-block">
-                <img src="@img.Url" alt="@img.Alt" style="max-width: 70px; max-height: 70px" />
-            </div>
-            <span class="title">@img.Caption</span>
-            <div class="secondary-content">
-                <a href="" style="display:block; height: 25px; padding-right: 20%">Elimina</a>
-                <a href="" style="display:block; height: 25px; padding-right: 20%">Aggiorna</a>
-            </div>
-        </li>
-}
-
-        </ul>
-</div>
-    @*<div id="uploader"></div>*@
-    @*@foreach (var img in Model.GalleryImages)
+        @{Dictionary<string, string> parms;}
+        @for (int row = 1; row <= 3; row++)
         {
-    *@
-    @*<div class=" row galleryEdit__item">
-            <div class="col-md-2">
-                <img src="@img.Url" alt="@img.Alt" />
-            </div>
-            <div class="col-md-8">
-                <input type="text" value="@img.Caption" />
-            </div>
-            <div class="col-md-2">
-                <a href="" style="display:block">Elimina</a>
-                <a href="" style="display:block">Aggiorna</a>
-            </div>
-        </div>*@
-    @*<figure>
-            <img src="@img.Url" alt="@img.Alt" />
-            <figcaption>@img.Caption</figcaption>
-        </figure>*@
-    @*}*@
+            <div class="row">
+                @for (int col = 0; col < 3; col++)
+                {
+                    int idx = (col * 3) + row;
+                    parms = new Dictionary<string, string> { { "imageOrder", idx.ToString() } };
 
-    </ul>
+                    <div class="col-md-4">
+                        @if (Model.GalleryVM.Images.Any(i => i.Ordinamento == idx))
+                        {
+                            <div class="gallery_item_container">
+                                <div class="thumb_container">
+                                    <span class="valign_helper" />
+                                    <img class="thumb_image" src="@Model.GalleryVM.Images.Where(i => i.Ordinamento == idx).Single().Url" />
+                                </div>
+                                <a asp-controller="Clienti" asp-action="DeleteImage" asp-all-route-data="parms" style="display:inline">Elimina</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="gallery_item_container">
+                                <div class="thumb_container">
+                                    <span class="valign_helper" />
+                                    <img class="thumb_image" src="~/img/no-image-available.png" />
+                                </div>
+                                <input type="file" accept="image/*" style="display:inline" onchange="uploadFile(this, @idx)" />
+                            </div>
+                        }
+                        <!-- Img 1 -->
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    <!-- 3-->
+</section>
+
+<section id="editProfile">
+    <div class="container">
+        <form asp-action="ProfileEdit" method="post" id="formEditProfile">
+            <div class="row">
+                <div class="col-md-2">Giorno</div>
+                <div class="col-md-2">Mattina</div>
+                <div class="col-md-2">Pomeriggio</div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row" id="orarioLunedi">
+                <div class="col-md-2 input-field">Lunedì</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Lunedi.IsContinuato" />
+                    <label for="lunediContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="lunediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Lunedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioLunedi')" />
+                    <label for="lunediChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+            <div class="row" id="orarioMartedi">
+                <div class="col-md-2 input-field">Martedì</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="martediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Martedi.IsContinuato" />
+                    <label for="martediContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="martediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Martedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioMartedi')" />
+                    <label for="martediChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+            <div class="row" id="orarioMercoledi">
+                <div class="col-md-2 input-field">Mercoledì</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="mercolediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Mercoledi.IsContinuato" />
+                    <label for="mercolediContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="mercolediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Mercoledi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioMercoledi')" />
+                    <label for="mercolediChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+            <div class="row" id="orarioGiovedi">
+                <div class="col-md-2 input-field">Giovedì</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="giovediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Giovedi.IsContinuato" />
+                    <label for="giovediContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="giovediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Giovedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioGiovedi')" />
+                    <label for="giovediChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+            <div class="row" id="orarioVenerdi">
+                <div class="col-md-2 input-field">Venerdì</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="venerdiContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Venerdi.IsContinuato" />
+                    <label for="venerdiContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="venerdiChiuso" type="checkbox" asp-for="OrarioAperturaVM.Venerdi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioVenerdi')" />
+                    <label for="venerdiChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+            <div class="row" id="orarioSabato">
+                <div class="col-md-2 input-field">Sabato</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" />
+                    <label for="sabatoContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="sabatoChiuso" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsChiuso" onchange="checkChiusoChanged(this, 'orarioSabato')" />
+                    <label for="sabatoChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+            <div class="row" id="orarioDomenica">
+                <div class="col-md-2 input-field">Domenica</div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio" />
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine" />
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" />
+                    <label for="domenicaContinuativo">Orario Continuato</label>
+                </div>
+                <div class="col-md-2 input-field">
+                    <input id="domenicaChiuso" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsChiuso" onchange="checkChiusoChanged(this, 'orarioDomenica')" />
+                    <label for="domenicaChiuso">Chiuso tutto il giorno</label>
+                </div>
+            </div>
+        </form>
+    </div>
 </section>
 
 <!-- Secondo banner pubblicitario -->
-<section id="banne2"></section>
+<section id="banner2"></section>
 
 @section Scripts{
     <script src="~/js/jquery-2.1.3.min.js"></script>
     <script src='~/js/moment.min.js'></script>
+    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.js"></script>
+    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.time.js"></script>
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/materialize/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
     <script src="~/js/scripts.js"></script>
 
     <script src="~/azure.fine-uploader/azure.fine-uploader.core.min.js"></script>
-    <script src="~/azure.fine-uploader/azure.jquery.fine-uploader.min.js"></script>
-
+    @*<script src="~/azure.fine-uploader/azure.jquery.fine-uploader.min.js"></script>*@
     <script>
-        jQuery(document).ready(function () {
-            // Some options to pass to the uploader are discussed on the next page
-            var uploader = new qq.azure.FineUploader({
-                element: document.getElementById("uploader")
-            })
+        function uploadFile(file, idx) {
+            uploaders[0].addFiles(file, { fileOrder: idx });
         }
+
+        function checkChiusoChanged(check, divParent) {
+            if (check.checked) {
+                $("#" + divParent + " :input").attr("disabled", true);
+            } else {
+                $("#" + divParent + " :input").attr("disabled", false);
+            }
+            check.disabled = false;
+        }
+
+        var uploaders = [];
+
+        jQuery(document).ready(function () {
+            $('.timepicker').pickatime({
+                default: 'now', // Set default time: 'now', '1:30AM', '16:30'
+                fromnow: 0,       // set default time to * milliseconds from now (using with default = 'now')
+                twelvehour: true, // Use AM/PM or 24-hour format
+                donetext: 'OK', // text for done-button
+                cleartext: 'Clear', // text for clear-button
+                canceltext: 'Cancel', // Text for cancel-button
+                autoclose: true, // automatic close timepicker
+                ampmclickable: false, // make AM PM clickable
+                aftershow: function () { } //Function for after opening timepicker
+            });
+        });
+
+        uploaders.push(new qq.azure.FineUploaderBasic({
+            autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+            debug: true,
+            request: {
+                endpoint: "@Model.GalleryVM.ContainerUrl"
+            },
+            signature: {
+                endpoint: "/api/FileUpload",
+                customHeaders: {
+                    "X-PalestreGoGO-SASToken": "@Html.Raw(Model.GalleryVM.SASToken)"
+                }
+            },
+            uploadSuccess: {
+                endpoint: "/api/FileUpload",
+                customHeaders: {
+                    "X-PalestreGoGO-SASToken": "@Html.Raw(Model.GalleryVM.SASToken)"
+                }
+            }
+        }));
     </script>
 }

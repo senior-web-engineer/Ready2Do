@@ -13,6 +13,8 @@ using Web.Configuration;
 using Newtonsoft.Json;
 using System.Text;
 using Web.Models.Utils;
+using System.Globalization;
+using PalestreGoGo.WebAPIModel;
 
 namespace Web.Controllers
 {
@@ -35,6 +37,8 @@ namespace Web.Controllers
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute)
         {
             var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
+            ViewData["ReturnUrl"] = Request.Path.ToString();
+            //ViewData["UserRole"] = User.GetUserRoleForCliente(cliente.IdCliente);
             return View(cliente.MapToHomeViewModel());
         }
 
@@ -43,28 +47,79 @@ namespace Web.Controllers
             //var cliente = WebAPIClient.GetClienteAsync()
             return View();
         }
+        [HttpGet("{cliente}/eventi/new")]
+        public async Task<IActionResult> NewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "date")] string dataEvento, [FromQuery(Name = "time")] string oraEvento)
+        {
+            var vm = new EventoViewModel();
+            DateTime dataParsed;
+            TimeSpan timeParsed;
+            if (!string.IsNullOrWhiteSpace(dataEvento) && DateTime.TryParseExact(dataEvento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dataParsed))
+            {
+                vm.Data = dataParsed;
+            }
+            if (!string.IsNullOrWhiteSpace(oraEvento) && TimeSpan.TryParseExact(oraEvento, "c", CultureInfo.InvariantCulture, out timeParsed))
+            {
+                vm.OraInizio = timeParsed;
+            }
+            return View("EditEvento", vm);
+        }
+
+        [HttpPost("{cliente}/eventi/new")]
+        public async Task<IActionResult> NewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromBody] EventoViewModel evento)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("EditEvento", evento);
+            }
+            var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
+            //TODO: Salvare l'evento
+            ScheduleViewModel vm = new ScheduleViewModel()
+            {
+                CancellabileFinoAl = evento.CancellabileFinoAl.Value,
+                Data = evento.Data.Value,
+                IdCliente = cliente.IdCliente,
+                IdLocation = -1,
+                Istruttore = evento.Istruttore,
+                Note = evento.Note,
+                OraInizio = evento.OraInizio.Value,
+                PostiDisponibili = evento.PostiDisponibili,
+                IdTipoLezione = evento.IdTipoLezione.Value,
+                Id = evento.Id
+            };
+
+            return Ok();
+        }
+
+        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            return await ProfileEdit(urlRoute);
+        }
 
         [HttpGet]
         public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute)
         {
             var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
             var vm = new ClienteProfileEditViewModel();
-            vm.SASToken = this.GenerateAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            vm.GalleryVM.SASToken = this.GenerateAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            vm.GalleryVM.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+                                                _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+                                                cliente.StorageContainer);
             if (cliente.Immagini != null)
             {
                 foreach (var img in cliente.Immagini)
                 {
-                    vm.GalleryImages.Add(new ImageViewModel()
+                    vm.GalleryVM.Images.Add(new ImageViewModel()
                     {
                         Id = img.Id,
                         Alt = img.Alt,
                         Caption = img.Nome,
-                        Url = img.Url
+                        Url = img.Url,
+                        Ordinamento = img.Ordinamento
                     });
                 }
             }
             //TODO: Completare popolamento VM
-            return View(vm);
+            return View("ProfileEdit", vm);
         }
 
 
@@ -85,7 +140,8 @@ namespace Web.Controllers
             };
             string json = JsonConvert.SerializeObject(token, Formatting.None);
             //Cifriamo il json ottenuto
-            return SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
+            var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
+            return result;
         }
         #endregion
     }

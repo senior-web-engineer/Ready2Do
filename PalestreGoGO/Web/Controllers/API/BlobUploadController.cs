@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Web.Controllers.API
 {
     [Produces("application/json")]
     [Route("api/FileUpload")]
+    [Authorize]
     public class BlobUploadController : ControllerBase
     {
         private readonly AppConfig _appConfig;
@@ -33,6 +35,7 @@ namespace Web.Controllers.API
 
 
         [HttpGet]
+        [Produces("text/plain")] //Necessario altrimenti ritorna JSON e FineUploader costruisce male l'URL per azure
         //Accesso anonimo ma verifichiamo l'header custom
         [AllowAnonymous]
         public async Task<IActionResult> GetBlobSAS([FromQuery]string _method, [FromQuery]string bloburi, [FromQuery] string qqtimestamp)
@@ -86,6 +89,24 @@ namespace Web.Controllers.API
             var sas = AzureStorageUtils.GetSasForBlob(_appConfig.Azure, bloburi, _method);
             //TODO: Costruire il token SAS, vedere la documentazione del componente di UPLOAD
             return Ok(sas);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FileUploaded(string blob, string uuid, string name, string container, int fileOrder)
+        {
+            string reqBody;
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                reqBody = await reader.ReadToEndAsync();
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteFile()
+        {
+            return Ok();
         }
     }
 }

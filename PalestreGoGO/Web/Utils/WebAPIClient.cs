@@ -77,5 +77,11 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<IEnumerable<TipologiaClienteViewModel>>(responseString, _serializerSettings);
             return result;
         }
+
+        //public async static Task AddSchedule()
+        //{
+
+        //    return;
+        //}
     }
 }

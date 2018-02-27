@@ -7,6 +7,7 @@
 }
 
 <div>
+    <input type="button" value="Nuovo Evento" onclick="onNewEventoClick(this)"/>
     <div id="calendar">
 
     </div>
@@ -26,13 +27,43 @@
     <script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
     <script src="~/fullcalendar-3.8.2/locale/it.js"></script>
     <script>
+        function onNewEventoClick(src) {
+            alert('Nuovo evento clicked.' + src);
+            addEvento(null);
+        }
+
+        //date: momentjs
+        function addEvento(date) {
+            var url = "../eventi/new";
+            if (date) {
+                url = url + "?date=" + date.format("YYYY-MM-DD") + "&time=" + (date.hasTime() ? date.format("HH:mm") : "");
+            } 
+            window.open(url, "_self");
+        }
+
         $(document).ready(function () {
             // page is now ready, initialize the calendar...
             $('#calendar').fullCalendar({
                 // put your options and callbacks here
                 lang: "it",
                 weekends: true,
-                defaultView: "agendaWeek"
+                defaultView: "agendaWeek",
+                dayClick: function (date, jsEvent, view) {
+                    alert('Clicked on: ' + date.format());
+                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                    alert('Current view: ' + view.name);
+                    addEvento(date);
+                    // change the day's background color just for fun
+                    $(this).css('background-color', 'red');
+                },
+                eventClick: function (calEvent, jsEvent, view) {
+                    alert('Event: ' + calEvent.title);
+                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                    alert('View: ' + view.name);
+
+                    // change the border color just for fun
+                    $(this).css('border-color', 'red');
+                }
             })
         });
     </script>

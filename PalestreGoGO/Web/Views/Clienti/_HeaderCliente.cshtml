@@ -1,11 +1,12 @@
 ﻿@using Microsoft.Extensions.Options;
-@using Microsoft.AspNetCore.Http.Extensions;
 @using Web.Configuration;
 
 @inject IOptions<AppConfig> OptionsApplicationConfiguration
 
-<header>
-    <div class="container mt-20">
+<header class="">
+    <!-- class="tt-nav mt-20"> -->
+    <!--<div class="header-sticky light-header"> -->
+    <div class="container mt-10">
         <div class="row">
             <div class="col-12">
                 <div id="materialize-menu" class="menuzord menuzord-responsive">
@@ -22,12 +23,16 @@
                         }
                         else
                         {
-                            <li><a href='@string.Format("{0}?returnurl{1}",OptionsApplicationConfiguration.Value.LoginUrl,Context.Request.GetEncodedUrl())'>Logon</a></li>
+                            <li><a href="@OptionsApplicationConfiguration.Value.LoginUrl">Signin</a></li>
                         }
+
                     </ul>
                 </div>
             </div>
         </div>
+        <!-- NAVBAR + LOGIN/LOGOUT
+            <div>NAVBAR + LOGIN e LOGOUT</div> -->
     </div>
+    <!-- </div> -->
     <div class="divider"></div>
 </header>

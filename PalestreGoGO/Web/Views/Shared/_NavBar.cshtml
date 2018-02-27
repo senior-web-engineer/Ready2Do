@@ -30,11 +30,11 @@
                         <a href="#contact" data-scroll>Contatti</a>
                     </li>
                     @if (!User.Identity.IsAuthenticated)
-        {
-            <li>
-                <a id="navLinkRegistration" href="@OptionsApplicationConfiguration.Value.LoginUrl">Entra</a>
-            </li>
-}
+                    {
+                        <li>
+                            <a id="navLinkRegistration" href="@string.Format("{0}?returnUrl={1}", OptionsApplicationConfiguration.Value.LoginUrl, ViewBag.ReturnUrl)">Entra</a>
+                        </li>
+                    }
                 </ul>
                 <!-- onepage menu end-->
 

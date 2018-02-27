@@ -21,6 +21,8 @@ namespace PalestreGoGo.DataModel
         [StringLength(1000)]
         public string Descrizione { get; set; }
 
+        public int Ordinamento { get; set; }
+
         [ForeignKey("IdCliente")]
         [InverseProperty("ClientiImmagini")]
         public Clienti IdClienteNavigation { get; set; }

@@ -1,0 +1,24 @@
+<html>
+<head>
+	<style type="text/css">
+	.box {
+		min-height: 200px;
+		min-width: 500px;		
+		background-color: red;
+	}
+	@supports (display: grid) {
+		.grid_support{
+			background-color: green;
+			}
+	}
+
+	</style>
+</head>
+
+<body>
+	<div class="box grid_support">
+		Is supported?
+	</div>
+
+</body>
+</html>

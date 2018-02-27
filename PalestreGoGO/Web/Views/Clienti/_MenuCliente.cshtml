@@ -1,0 +1,39 @@
+﻿@using Microsoft.Extensions.Options;
+@using Microsoft.AspNetCore.Http.Extensions;
+@using Web.Configuration;
+@using Web.Utils;
+
+@* Il model della view è l'IdCliente *@
+@model int;
+
+@inject IOptions<AppConfig> OptionsApplicationConfiguration
+
+<header>
+    <div class="container mt-20">
+        <div class="row">
+            <div class="col-12">
+                <div id="materialize-menu" class="menuzord menuzord-responsive">
+                    @if (User.Identity.IsAuthenticated && (User.GetUserTypeForCliente(Model) == UserType.Admin))
+                    {
+                        <ul class="menuzord-menu pull-left">
+                            <li><a asp-action="ProfileEdit">Profilo</a></li>
+                            <li><a asp-action="CalendarEdit">Calendari</a></li>
+                            @*<li><a href="javascript:void(0)">Utenti</a></li>*@
+                        </ul>
+                    }
+                    <ul class="menuzord-menu pull-right">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li><a href="@OptionsApplicationConfiguration.Value.LogoutUrl">Logout</a></li>
+                        }
+                        else
+                        {
+                            <li><a href='@string.Format("{0}?returnurl={1}",OptionsApplicationConfiguration.Value.LoginUrl,Context.Request.GetEncodedUrl())'>Logon</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="divider"></div>
+</header>
