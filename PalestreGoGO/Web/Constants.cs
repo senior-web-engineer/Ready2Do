@@ -10,5 +10,7 @@ namespace Web
 
         public const string ClaimType_Users_Managed = "UsersManaged";
 
+        public const string CUSTOM_HEADER_TOKEN_AUTH = "X-PalestreGoGO-AUTHToken";
+
     }
 }

@@ -1,0 +1,116 @@
+﻿@model SchedulerViewModel;
+
+@{
+    Layout = "_LayoutClienti";
+}
+
+@*<input type="hidden" id="token" value="@ViewBag.AuthToken"/>*@
+<div class="container">
+    <!-- TABS SALE-->
+    <div class="row">
+        <div class="col s12">
+            <ul id="tabsContainer" class="tabs">
+                @foreach (var s in Model.Sale)
+                {
+                    <li class="tab col s3">
+                        <a target="_self" asp-action="Index" asp-route-lid="@s.Id" class='@(Model.IdActiveLocation.HasValue && Model.IdActiveLocation.Value.Equals(s.Id) ? "active": "")'>
+                            @(s.Nome)
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div>
+        <input type="button" value="Nuovo Evento" onclick="onNewEventoClick(this)" />
+        <div id="calendar">
+
+        </div>
+    </div>
+</div>
+@section Header{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
+    <style>
+        .fc-time-grid .fc-slats td {
+            height: 3em;
+        }
+    </style>
+}
+
+
+@section Scripts{
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src='~/js/moment.min.js'></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    @*<script src="~/materialize/js/materialize.min.js"></script>*@
+    <script src="~/materialize-v1.0.0-alpha.4/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/scripts.js"></script>
+    <script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
+    <script src="~/fullcalendar-3.8.2/locale/it.js"></script>
+    <script>
+        // Init Tabs
+        var instance = M.Tabs.init(document.getElementById('tabsContainer'), {});
+
+
+        function onNewEventoClick(src) {
+            alert('Nuovo evento clicked.' + src);
+            addEvento(null);
+        }
+
+        //date: momentjs
+        function addEvento(date) {
+            var idActive = '@(Model.IdActiveLocation.HasValue?Model.IdActiveLocation.ToString():"")';
+            var url = "eventi/new?lid=" + idActive;
+            if (date) {
+                url = url + "&date=" + date.format("YYYY-MM-DD") + "&time=" + (date.hasTime() ? date.format("HH:mm") : "");
+            }
+            //window.open(url, "_self");
+            window.location = url;
+        }
+
+        // Aggiungiamo l'header custom con il token ad ogni richiesta Ajax
+        $.ajaxSetup({
+            headers: {
+   //             'X-PalestreGoGO-AUTHToken': document.getElementById('token').value
+                'X-PalestreGoGO-AUTHToken':'@Html.Raw(ViewBag.AuthToken)'
+            }
+        });
+
+        $(document).ready(function () {
+
+            // page is now ready, initialize the calendar...
+            $('#calendar').fullCalendar({
+                // put your options and callbacks here
+                lang: "it",
+                weekends: true,
+                defaultView: "agendaWeek",
+                slotDuration: "01:00:00",
+                agendaEventMinHeight: 120,
+                events: {
+                    url: 'eventi/feeds',
+                    type: 'GET',
+                    data: {
+                        lid: '@(Model.IdActiveLocation)'
+                    }
+                },
+                dayClick: function (date, jsEvent, view) {
+                    alert('Clicked on: ' + date.format());
+                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                    alert('Current view: ' + view.name);
+                    addEvento(date);
+                    // change the day's background color just for fun
+                    $(this).css('background-color', 'red');
+                },
+                eventClick: function (calEvent, jsEvent, view) {
+                    alert('Event: ' + calEvent.title);
+                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                    alert('View: ' + view.name);
+
+                    // change the border color just for fun
+                    $(this).css('border-color', 'red');
+                }
+            })
+        });
+    </script>
+}

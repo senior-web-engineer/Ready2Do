@@ -24,7 +24,6 @@ namespace Web.Controllers.API
     {
         private readonly AppConfig _appConfig;
         private readonly ILogger<BlobUploadController> _logger;
-        private const string CUSTOM_HEADER_TOKEN_SAS = "X-PalestreGoGO-SASToken";
 
         public BlobUploadController(ILogger<BlobUploadController> logger,
                                     IOptions<AppConfig> apiOptions)
@@ -46,11 +45,11 @@ namespace Web.Controllers.API
             {
                 return BadRequest();
             }
-            if (!HttpContext.Request.Headers.ContainsKey(CUSTOM_HEADER_TOKEN_SAS))
+            if (!HttpContext.Request.Headers.ContainsKey(Constants.CUSTOM_HEADER_TOKEN_AUTH))
             {
                 return BadRequest();
             }
-            var header = HttpContext.Request.Headers[CUSTOM_HEADER_TOKEN_SAS];
+            var header = HttpContext.Request.Headers[Constants.CUSTOM_HEADER_TOKEN_AUTH];
             var headerValue = header.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(headerValue))
             {
@@ -66,7 +65,7 @@ namespace Web.Controllers.API
             }
             
             //TODO: Implementare la verifica dei dati contenuti nel token
-            if(DateTime.Now.Subtract(token.CreationTime).TotalMinutes > _appConfig.SASTokenDuration)
+            if(DateTime.Now.Subtract(token.CreationTime).TotalMinutes > _appConfig.AuthTokenDuration)
             {
                 _logger.LogWarning("SASToken scaduto. {0}", token);
                 return Unauthorized();

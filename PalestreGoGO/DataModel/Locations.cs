@@ -23,7 +23,7 @@ namespace PalestreGoGo.DataModel
         [ForeignKey("IdCliente")]
         [InverseProperty("Locations")]
         public Clienti IdClienteNavigation { get; set; }
-        [InverseProperty("IdLocationNavigation")]
+        [InverseProperty("Location")]
         public ICollection<Schedules> Schedules { get; set; }
     }
 }

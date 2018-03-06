@@ -11,6 +11,9 @@ namespace PalestreGoGo.DataModel
         {
             Appuntamenti = new HashSet<Appuntamenti>();
         }
+        [Required]
+        [StringLength(100)]
+        public string Title { get; set; }
 
         public int IdTipoLezione { get; set; }
         public int IdLocation { get; set; }
@@ -31,18 +34,18 @@ namespace PalestreGoGo.DataModel
 
         [ForeignKey("IdCliente")]
         [InverseProperty("Schedules")]
-        public Clienti IdClienteNavigation { get; set; }
+        public Clienti Cliente { get; set; }
 
         [ForeignKey("IdLocation")]
         [InverseProperty("Schedules")]
-        public Locations IdLocationNavigation { get; set; }
+        public Locations Location { get; set; }
 
         [InverseProperty("Schedule")]
         public ICollection<Appuntamenti> Appuntamenti { get; set; }
 
         [ForeignKey("IdTipoLezione")]
         [InverseProperty("Schedules")]
-        public TipologieLezioni TipoLezione { get; set; }
+        public TipologieLezioni TipologiaLezione { get; set; }
 
     }
 }

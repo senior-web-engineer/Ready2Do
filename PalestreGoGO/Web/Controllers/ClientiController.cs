@@ -15,6 +15,7 @@ using System.Text;
 using Web.Models.Utils;
 using System.Globalization;
 using PalestreGoGo.WebAPIModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Web.Controllers
 {
@@ -42,54 +43,8 @@ namespace Web.Controllers
             return View(cliente.MapToHomeViewModel());
         }
 
-        public IActionResult CalendarEdit(/*[FromRoute(Name ="id")]int idCliente*/ [FromRoute(Name = "cliente")]string cliente)
-        {
-            //var cliente = WebAPIClient.GetClienteAsync()
-            return View();
-        }
-        [HttpGet("{cliente}/eventi/new")]
-        public async Task<IActionResult> NewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "date")] string dataEvento, [FromQuery(Name = "time")] string oraEvento)
-        {
-            var vm = new EventoViewModel();
-            DateTime dataParsed;
-            TimeSpan timeParsed;
-            if (!string.IsNullOrWhiteSpace(dataEvento) && DateTime.TryParseExact(dataEvento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dataParsed))
-            {
-                vm.Data = dataParsed;
-            }
-            if (!string.IsNullOrWhiteSpace(oraEvento) && TimeSpan.TryParseExact(oraEvento, "c", CultureInfo.InvariantCulture, out timeParsed))
-            {
-                vm.OraInizio = timeParsed;
-            }
-            return View("EditEvento", vm);
-        }
-
-        [HttpPost("{cliente}/eventi/new")]
-        public async Task<IActionResult> NewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromBody] EventoViewModel evento)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View("EditEvento", evento);
-            }
-            var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
-            //TODO: Salvare l'evento
-            ScheduleViewModel vm = new ScheduleViewModel()
-            {
-                CancellabileFinoAl = evento.CancellabileFinoAl.Value,
-                Data = evento.Data.Value,
-                IdCliente = cliente.IdCliente,
-                IdLocation = -1,
-                Istruttore = evento.Istruttore,
-                Note = evento.Note,
-                OraInizio = evento.OraInizio.Value,
-                PostiDisponibili = evento.PostiDisponibili,
-                IdTipoLezione = evento.IdTipoLezione.Value,
-                Id = evento.Id
-            };
-
-            return Ok();
-        }
-
+   
+       
         public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute)
         {
             return await ProfileEdit(urlRoute);

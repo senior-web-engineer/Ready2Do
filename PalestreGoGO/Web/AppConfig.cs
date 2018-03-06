@@ -7,11 +7,16 @@ namespace Web.Configuration
 {
     public class AppConfig
     {
+        public AppConfig()
+        {
+            AuthTokenDuration = 30; //Per default 30 minuti
+        }
+
         public string RegistrationUrl { get; set; }
         public string LoginUrl { get; set; }
         public string LogoutUrl { get; set; }
         public string EncryptKey { get; set; }
-        public int SASTokenDuration { get; set; }
+        public int AuthTokenDuration { get; set; }
         public WebAPIConfig WebAPI { get; set; }
         public STSConfig STS { get; set; }
         public GoogleAPIConfig GoogleAPI { get; set; }

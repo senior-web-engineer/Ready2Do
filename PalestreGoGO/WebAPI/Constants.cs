@@ -7,6 +7,11 @@ namespace PalestreGoGo.WebAPI
 {
     public static class Constants
     {
+        #region FORMATS
+        public const string DATETIME_QUERYSTRING_FORMAT = "yyyyMMddTHHmmss";
+
+        #endregion
+
         #region CLAIMS
         public const string ClaimRole = "role";
         public const string ClaimStructureOwned = "structure_owned";

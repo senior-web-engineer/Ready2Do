@@ -1,14 +1,14 @@
 ﻿@model EventoViewModel;
 @{
-    Layout = "~/Views/Shared/_LayoutClienti.cshtml";
+    Layout = "_LayoutClienti.cshtml";
 }
 <head>
     @section Header{
         <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
         @*<link href="~/css/solved-by-flexbox-grid.css" rel="stylesheet">*@
         @*<link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.css" rel="stylesheet" />
-        <link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.date.css" rel="stylesheet" />
-        <link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.time.css" rel="stylesheet" />*@
+            <link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.date.css" rel="stylesheet" />
+            <link href="~/pickadate.js-3.5.6/lib/compressed/themes/default.time.css" rel="stylesheet" />*@
 
         <style type="text/css">
             #formEditProfile .input-field {
@@ -23,8 +23,14 @@
 
 <section id="editEvento">
     <div class="container">
-        <form asp-action="EditEvento" method="post">
+        <form asp-route="routeNewEvento" method="post">
             <input id="idEvento" type="hidden" asp-for="@Model.Id" />
+            <div class="row">
+                <div class="input-field">
+                    <input id="title" type="text" asp-for="@Model.Title" />
+                    <label for="title">Nome Evento</label>
+                </div>
+            </div>
             <div class="row">
                 <div class="input-field col-6">
                     <input id="dataEvento" type="text" asp-for="@Model.Data" class="datepicker" />
@@ -43,8 +49,18 @@
             </div>
             <div class="row">
                 <div class="input-field">
-                    <input id="istruttore" type="text" asp-for="@Model.PostiDisponibili" />
-                    <label for="istruttore">Posti disponibili</label>
+                    <input type="text" asp-for="@Model.PostiDisponibili" />
+                    <label>Posti disponibili</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col-6">
+                    <input id="dataCancellazione" type="text" asp-for="@Model.Data" class="datepicker" />
+                    <label for="dataCancellazione">Data Massima Cancellazione</label>
+                </div>
+                <div class="input-field col-6">
+                    <input id="oraCancellazione" type="text" asp-for="@Model.OraInizio" class="timepicker" />
+                    <label for="oraCancellazione">Ora Massima Cancellazione</label>
                 </div>
             </div>
             <div class="row">
@@ -73,12 +89,13 @@
     <!-- jQuery -->
     <script src="~/js/jquery-2.1.3.min.js"></script>
     <script src='~/js/moment.min.js'></script>
-    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.js"></script>
-    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.time.js"></script>
-    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.date.js"></script>
+    @*<script src="~/pickadate.js-3.5.6/lib/compressed/picker.js"></script>
+        <script src="~/pickadate.js-3.5.6/lib/compressed/picker.time.js"></script>
+        <script src="~/pickadate.js-3.5.6/lib/compressed/picker.date.js"></script>*@
 
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    <script src="~/materialize/js/materialize.min.js"></script>
+    @*<script src="~/materialize/js/materialize.min.js"></script>*@
+    <script src="~/materialize-v1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
     <script src="~/js/bootstrap-tabcollapse.min.js"></script>
     <script src="~/js/jquery.easing.min.js"></script>
@@ -99,28 +116,34 @@
 
     <script>
         $(document).ready(function () {
-            $('select').material_select();
-            $('.timepicker').pickatime({
-                default: 'now', // Set default time: 'now', '1:30AM', '16:30'
-                fromnow: 0,       // set default time to * milliseconds from now (using with default = 'now')
-                twelvehour: true, // Use AM/PM or 24-hour format
-                donetext: 'OK', // text for done-button
-                cleartext: 'Clear', // text for clear-button
-                canceltext: 'Cancel', // Text for cancel-button
-                autoclose: true, // automatic close timepicker
-                ampmclickable: false, // make AM PM clickable
-                aftershow: function () { } //Function for after opening timepicker
+            $('select').formSelect();
+            //$('.datepicker').datepicker();
+            $('.timepicker').timepicker();
+
+            var elemDataEvento = document.getElementById('dataEvento');
+            var elemDataCancellazione = document.getElementById('dataCancellazione');
+
+            var datePickDataEvento = M.Datepicker.init(elemDataEvento, {
+                format: "yyyy-mm-dd",
+                defaultDate: "@(Model.Data.HasValue ? Model.Data.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))",
+                setDefaultDate: true,
+                i18n : {
+                    months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                    monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+                    weekdays: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+                    weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven','Sab', 'Dom'],
+                    weekdaysAbbrev: ['D', 'L', 'M', 'M', 'G', 'V', 'S']
+                }
             });
-            $('.datepicker').pickadate({
-                selectMonths: true, // Creates a dropdown to control month
-                selectYears: 15, // Creates a dropdown of 15 years to control year,
-                today: 'Today',
-                clear: 'Clear',
-                close: 'Ok',
-                closeOnSelect: false // Close upon selecting a date,
-            });
+
+            var datePickDataCanc = M.Datepicker.init(elemDataCancellazione, @ViewBag.DataCancellazionePickerOptions );
+
+            //var datePickDataEvento = M.Datepicker.getInstance(document.getElementById("dataEvento"));
+            //var datePickDataCanc = M.Datepicker.getInstance(document.getElementById("dataCancellazione"));
+            var timePickOraEvento = M.Datepicker.getInstance(document.getElementById("oraEvento"));
+            var timePickOraCanc = M.Datepicker.getInstance(document.getElementById("oraCancellazione"));
+
+            datePickDataEvento.d
         });
-
-
     </script>
 }

@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Web.Services;
 using Web.Configuration;
-
+using Microsoft.AspNetCore.Mvc.Razor;
+using Web.Utils;
+//using 
 namespace Web
 {
     public class Startup
@@ -67,6 +69,11 @@ namespace Web
                 options.SaveTokens = true;
             });
             services.AddMvc();
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationExpanders.Add(new SharedViewsLocationExpander());
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,6 +2,7 @@
 (
 	[Id]					INT				NOT NULL	IDENTITY(1,1),
 	[IdCliente]				INT				NOT NULL,
+	[Title]					NVARCHAR(100)	NOT NULL,
 	[IdTipoLezione]			INT				NOT NULL,
 	[IdLocation]			INT				NOT NULL,
 	[Data]					DATE			NOT NULL,

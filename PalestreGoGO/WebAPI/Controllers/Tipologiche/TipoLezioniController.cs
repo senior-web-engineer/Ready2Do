@@ -17,8 +17,8 @@ using System.Threading.Tasks;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/{idCliente}/tipologiche/tipolezioni")]
-    [Authorize]
+    [Route("api/{idCliente:int}/tipologiche/tipolezioni")]
+    //[Authorize]
     public class TipoLezioniController : ControllerBase
     {
         private readonly ILogger<TipoLezioniController> _logger;
@@ -33,11 +33,12 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpGet()]
         public IActionResult GetAll([FromRoute]int idCliente)
         {
-            bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
-            }
+            //TODO: Rivedere la gestione della security
+            //bool authorized = GetCurrentUser().CanReadTipologiche(idCliente);
+            //if (!authorized)
+            //{
+            //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
+            //}
             var tipoLezioni = _repository.GetAll(idCliente);
             var result = Mapper.Map<IEnumerable<TipologieLezioni>,IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
             return new OkObjectResult(result);
@@ -46,7 +47,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
         {
-            bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
+            bool authorized = GetCurrentUser().CanReadTipologiche(idCliente);
             if (!authorized)
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);

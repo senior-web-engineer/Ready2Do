@@ -74,7 +74,7 @@ namespace PalestreGoGo.DataModel
         public ICollection<ClientiUtenti> ClientiUtenti { get; set; }
         [InverseProperty("IdClienteNavigation")]
         public ICollection<Locations> Locations { get; set; }
-        [InverseProperty("IdClienteNavigation")]
+        [InverseProperty("Cliente")]
         public ICollection<Schedules> Schedules { get; set; }
         [InverseProperty("IdClienteNavigation")]
         public ICollection<TipologieAbbonamenti> TipologieAbbonamenti { get; set; }

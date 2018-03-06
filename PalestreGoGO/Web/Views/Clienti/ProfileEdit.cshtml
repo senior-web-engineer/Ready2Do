@@ -259,13 +259,13 @@
             signature: {
                 endpoint: "/api/FileUpload",
                 customHeaders: {
-                    "X-PalestreGoGO-SASToken": "@Html.Raw(Model.GalleryVM.SASToken)"
+                    "X-PalestreGoGO-AUTHToken": "@Html.Raw(Model.GalleryVM.SASToken)"
                 }
             },
             uploadSuccess: {
                 endpoint: "/api/FileUpload",
                 customHeaders: {
-                    "X-PalestreGoGO-SASToken": "@Html.Raw(Model.GalleryVM.SASToken)"
+                    "X-PalestreGoGO-AUTHToken": "@Html.Raw(Model.GalleryVM.SASToken)"
                 }
             }
         }));

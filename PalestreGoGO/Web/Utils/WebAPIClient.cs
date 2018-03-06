@@ -23,7 +23,6 @@ namespace Web.Utils
         public async static Task<bool> NuovoClienteAsync(NuovoClienteViewModel cliente, string baseUrl)
         {
             Uri uri = new Uri($"{baseUrl}api/clienti");
-            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/clienti");
             var content = new StringContent(JsonConvert.SerializeObject(cliente), Encoding.UTF8, "application/json");
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.PostAsync(uri, content);
@@ -78,10 +77,56 @@ namespace Web.Utils
             return result;
         }
 
-        //public async static Task AddSchedule()
-        //{
+        public async static Task<IEnumerable<Models.LocationViewModel>> GetLocationsAsync(int idCliente, string baseUrl)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}api/{idCliente}/tipologiche/locations");
+            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<Models.LocationViewModel>>(responseString, _serializerSettings);
+            return result;
+        }
 
-        //    return;
-        //}
+
+        public async static Task<IEnumerable<Models.TipologieLezioniViewModel>> GetTipologieLezioniClienteAsync(string baseUrl, int idCliente)
+        {
+            Uri uri = new Uri($"{baseUrl}api/{idCliente}/tipologiche/tipolezioni");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            //NOTA: Forziamo la deserializzazione al tipo "locale" e non quello originale nell'assembly WebApiDataModel
+            var result = JsonConvert.DeserializeObject<IEnumerable<Models.TipologieLezioniViewModel>>(responseString, _serializerSettings);
+            return result;
+        }
+        public async static Task<IEnumerable<ScheduleDetailsViewModel>> GetSchedulesAsync(string baseUrl, int idCliente, DateTime start, DateTime end, int? idLocation)
+        {
+            Uri uri = new Uri($"{baseUrl}api/clienti/{idCliente}/schedules?sd={start.ToString("yyyyMMddTHHmmss")}&ed={end.ToString("yyyyMMddTHHmmss")}&lid={idLocation}");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<ScheduleDetailsViewModel>>(responseString, _serializerSettings);
+            return result;
+        }
+
+        public async static Task AddSchedule(string idCliente, string baseUrl, ScheduleViewModel schedule)
+        {
+            Uri uri = new Uri($"{baseUrl}api/clienti/{idCliente}/schedules");
+            var content = new StringContent(JsonConvert.SerializeObject(schedule), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response;
+            if (schedule.Id.HasValue && schedule.Id.Value > 0)
+            {
+                response = await client.PostAsync(uri, content);
+            }
+            else
+            {
+                response = await client.PutAsync(uri, content);
+            }
+            
+        }
     }
 }

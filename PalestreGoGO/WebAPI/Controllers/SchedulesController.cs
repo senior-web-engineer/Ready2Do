@@ -8,18 +8,19 @@ using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/clienti/{idCliente}/schedulers")]
-    [Authorize]
+    [Route("api/clienti/{idCliente:int}/schedules")]
+    //[Authorize]
     public class SchedulesController : PalestreControllerBase
     {
         private readonly ILogger<SchedulesController> _logger;
         private readonly ISchedulesRepository _repository;
-
+        
         public SchedulesController(ILogger<SchedulesController> logger, ISchedulesRepository repository)
         {
             _logger = logger;
@@ -62,13 +63,32 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// </remarks>
         /// <param name="idCliente"></param>
         /// <param name="id"></param>
+        /// <param name="startDate">stringa in formto "yyyyMMddTHHmmss"</param>
+        /// <param name="endDate">stringa in formto "yyyyMMddTHHmmss"</param>
         /// <returns></returns>
         [HttpGet()]
         [AllowAnonymous]
-        public IActionResult GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] DateTime startDate, [FromQuery(Name ="ed")]DateTime endDate )
+        public IActionResult GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start, [FromQuery(Name ="ed")]string end, [FromQuery(Name ="lid")]int? idLocation)
         {
-            var schedule = _repository.GetSchedules(idCliente, startDate, endDate);
-            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleViewModel>>(schedule);
+            DateTime startDate, endDate;
+            IEnumerable<Schedules> schedule;
+            if (!DateTime.TryParseExact(start,Constants.DATETIME_QUERYSTRING_FORMAT,CultureInfo.InvariantCulture, DateTimeStyles.None,out startDate))
+            {
+                return BadRequest();
+            }
+            if (!DateTime.TryParseExact(end, Constants.DATETIME_QUERYSTRING_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
+            {
+                return BadRequest();
+            }
+            if (idLocation.HasValue)
+            {
+                schedule = _repository.GetSchedules(idCliente, startDate, endDate,idLocation.Value);
+            }
+            else
+            {
+                schedule = _repository.GetSchedules(idCliente, startDate, endDate);
+            }
+            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailsViewModel>>(schedule);
             return Ok(result);
         }
 

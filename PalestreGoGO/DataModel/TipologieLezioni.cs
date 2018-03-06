@@ -21,7 +21,7 @@ namespace PalestreGoGo.DataModel
         [InverseProperty("TipologieLezioni")]
         public Clienti IdClienteNavigation { get; set; }
 
-        [InverseProperty("TipoLezione")]
+        [InverseProperty("TipologiaLezione")]
         public ICollection<Schedules> Schedules { get; set; }
     }
 }

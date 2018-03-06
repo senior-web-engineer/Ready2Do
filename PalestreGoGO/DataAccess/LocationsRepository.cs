@@ -13,7 +13,7 @@ namespace PalestreGoGo.DataAccess
     {
         private readonly PalestreGoGoDbContext _context;
 
-        public LocationsRepository(PalestreGoGoDbContext context) 
+        public LocationsRepository(PalestreGoGoDbContext context)
         {
             this._context = context;
         }
@@ -43,7 +43,7 @@ namespace PalestreGoGo.DataAccess
         public void Update(int idTenant, Locations entity)
         {
             //Attenzione! Non verifichiamo il tenant
-            if(entity.IdCliente != idTenant) throw new ArgumentException("idTenant not valid"); 
+            if (entity.IdCliente != idTenant) throw new ArgumentException("idTenant not valid");
             EntityEntry dbEntityEntry = _context.Entry<Locations>(entity);
             dbEntityEntry.State = EntityState.Modified;
             _context.SaveChanges();
@@ -55,6 +55,6 @@ namespace PalestreGoGo.DataAccess
             var entry = _context.Entry(entity);
             entry.State = EntityState.Deleted;
             _context.SaveChanges();
-        }        
+        }
     }
 }

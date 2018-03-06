@@ -15,7 +15,7 @@ namespace PalestreGoGo.DataAccess
         Task<Schedules> GetScheduleAsync(int idCliente, int idSchedule);
 
         IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate);
-
+        IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate, int idLocation);
         Task UpdateSchedule(int idCliente, Schedules entity);
 
     }

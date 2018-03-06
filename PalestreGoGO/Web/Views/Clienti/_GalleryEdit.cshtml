@@ -104,12 +104,12 @@
                 },
                 signature: {
                     endpoint: "api/FileUpload",
-                    customHeaders: "X-PalestreGoGO-SASToken: " + @Model.SASToken
+                    customHeaders: "X-PalestreGoGO-AUTHToken: " + @Model.SASToken
                 },
                 uploadSuccess: {
                     endpoint: "api/FileUpload",
                     customHeaders: {
-                        "X-PalestreGoGO-SASToken": "@Model.SASToken"
+                        "X-PalestreGoGO-AUTHToken": "@Model.SASToken"
                     },
                     params{
                         "imgOrder": @img.

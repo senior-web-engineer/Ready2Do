@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
+    
     public class EventoInputViewModel
     {
         public int IdCliente { get; set; }
 
         public int? Id { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string Title { get; set; }
 
         [Required]
         public int? IdTipoLezione { get; set; }
@@ -36,8 +41,25 @@ namespace Web.Models
     }
 
     public class EventoViewModel : EventoInputViewModel
-    {       
+    {
+        public EventoViewModel()
+        {
+            DataEventoOptions = new DatePickerOptionJSModel()
+            {
+                DefaultDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                MinDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                SetDefaultDate = true
+            };
+            DataCancellazioneOptions = new DatePickerOptionJSModel()
+            {
+                DefaultDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                MinDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                SetDefaultDate = true
+            };
+        }
         public IEnumerable<SelectListItem> TipologieLezioni { get; set; }
 
+        public DatePickerOptionJSModel DataEventoOptions { get; set; }
+        public DatePickerOptionJSModel DataCancellazioneOptions { get; set; }
     }
 }

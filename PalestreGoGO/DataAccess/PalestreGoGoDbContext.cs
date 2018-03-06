@@ -146,19 +146,19 @@ namespace PalestreGoGo.DataAccess
             {
                 //entity.Property(e => e.Timestamp).IsRowVersion();
 
-                entity.HasOne(d => d.IdClienteNavigation)
+                entity.HasOne(d => d.Cliente)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.IdCliente)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Schedules_Clienti");
 
-                entity.HasOne(d => d.IdLocationNavigation)
+                entity.HasOne(d => d.Location)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.IdLocation)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Schedules_Locations");
 
-                entity.HasOne(d => d.TipoLezione)
+                entity.HasOne(d => d.TipologiaLezione)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.IdTipoLezione)
                     .OnDelete(DeleteBehavior.ClientSetNull)

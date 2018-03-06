@@ -42,5 +42,6 @@ namespace Web.Models.Utils
                 Url = img.Url
             };
         }
+        
     }
 }

@@ -37,12 +37,26 @@ namespace PalestreGoGo.DataAccess
 
         public IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate)
         {
-            var result = _context.Schedules.Where(s => (s.IdCliente.Equals(idCliente) &&
+            var result = _context.Schedules
+                                    .Include(s=>s.TipologiaLezione)
+                                    .Include(s=>s.Location)
+                                    .Where(s => (s.IdCliente.Equals(idCliente) &&
                                            (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) >= startDate) &&
                                            (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) <= endDate)));
             return result;
         }
 
+        public IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate, int idLocation)
+        {
+            var result = _context.Schedules
+                                    .Include(s => s.TipologiaLezione)
+                                    .Include(s => s.Location)
+                                    .Where(s => (s.IdCliente.Equals(idCliente) &&
+                                                 s.IdLocation.Equals(idLocation) &&
+                                               (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) >= startDate) &&
+                                               (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) <= endDate)));
+            return result;
+        }
         public async Task RemoveScheduleAsync(int idCliente, int idSchedule)
         {
             var entity = _context.Schedules

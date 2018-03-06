@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
+    public class AuthTokenModel
+    {
+        [JsonProperty(PropertyName = "cr")]
+        public string ClientRoute { get; set; }
+
+        [JsonProperty(PropertyName = "cid")]
+        public int IdCliente { get; set; }
+
+        [JsonProperty(PropertyName = "ct")]
+        public DateTime CreationTime { get; set; }
+    }
+
     public class SASTokenModel
     {
         [JsonProperty(PropertyName ="st")]

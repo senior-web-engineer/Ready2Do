@@ -48,9 +48,11 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
 
             CreateMap<Schedules, ScheduleViewModel>()
                 .ReverseMap()
-                .ForPath(x => x.IdClienteNavigation, x => x.Ignore());
+                .ForPath(x => x.Cliente, x => x.Ignore());
 
-            CreateMap<Schedules, ScheduleDetailsViewModel>();
+            CreateMap<Schedules, ScheduleDetailsViewModel>()
+                .ReverseMap();
+//                .ForPath(x => x.TipologiaLezione, opt => opt.MapFrom(src => src.TipologiaLezione));
 
             CreateMap<AppUser, ClienteUtenteViewModel>()
                 .ForMember(d => d.Nome, opt => opt.MapFrom(src => src.FirstName))

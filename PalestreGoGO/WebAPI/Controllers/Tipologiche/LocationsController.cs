@@ -13,8 +13,8 @@ using System.Security.Claims;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/{idCliente}/tipologiche/locations")]
-    [Authorize]
+    [Route("api/{idCliente:int}/tipologiche/locations")]
+    //[Authorize]
     public class LocationsController: ControllerBase
     {
 
@@ -30,11 +30,11 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpGet()]
         public IActionResult GetAll([FromRoute]int idCliente)
         {
-            bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
-            }
+            //bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
+            //if (!authorized)
+            //{
+            //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
+            //}
             var locations = _repository.GetAll(idCliente);
             var result = Mapper.Map<IEnumerable<Locations>, IEnumerable<LocationViewModel>>(locations);
             return new OkObjectResult(result);
