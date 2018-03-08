@@ -10,32 +10,50 @@ namespace Web.Models
     
     public class EventoInputViewModel
     {
-        public int IdCliente { get; set; }
-
         public int? Id { get; set; }
 
         [Required]
         [MaxLength(100)]
+        [Display(Name = "Nome evento")]
         public string Title { get; set; }
 
         [Required]
+        [Display(Name = "Tipo Lezione")]
         public int? IdTipoLezione { get; set; }
 
-        public int? IdLocation { get; set; }
         [Required]
+        [Display(Name ="Sala")]
+        public int? IdLocation { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name ="Data Evento")]
         public DateTime? Data { get; set; }
 
         [Required]
+        [DataType(DataType.Time)]
+        [Display(Name = "Ora Evento")]
         public TimeSpan? OraInizio { get; set; }
 
+        [Display(Name = "Istruttore")]
+        [MaxLength(150)]
         public string Istruttore { get; set; }
 
         [Required]
+        [Display(Name = "Posti Disponibili")]
         public int PostiDisponibili { get; set; }
 
         [Required]
-        public DateTime? CancellabileFinoAl { get; set; }
+        [Display(Name = "Cancellabile fino al giorno")]
+        [DataType(DataType.Date)]
+        public DateTime? DataCancellazioneMax { get; set; }
 
+        [Required]
+        [Display(Name = "Cancellabile fino all'ora")]
+        [DataType(DataType.Time)]
+        public TimeSpan? OraCancellazioneMax { get; set; }
+
+        [MaxLength(100)]
         public string Note { get; set; }
 
     }
@@ -46,18 +64,17 @@ namespace Web.Models
         {
             DataEventoOptions = new DatePickerOptionJSModel()
             {
-                DefaultDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                MinDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                DefaultDate = DateTime.Now,
+                MinDate = DateTime.Now,
                 SetDefaultDate = true
             };
             DataCancellazioneOptions = new DatePickerOptionJSModel()
             {
-                DefaultDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                MinDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                DefaultDate = DateTime.Now,
+                MinDate = DateTime.Now,
                 SetDefaultDate = true
             };
         }
-        public IEnumerable<SelectListItem> TipologieLezioni { get; set; }
 
         public DatePickerOptionJSModel DataEventoOptions { get; set; }
         public DatePickerOptionJSModel DataCancellazioneOptions { get; set; }

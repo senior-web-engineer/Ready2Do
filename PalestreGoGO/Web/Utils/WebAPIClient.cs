@@ -112,7 +112,18 @@ namespace Web.Utils
             return result;
         }
 
-        public async static Task AddSchedule(string idCliente, string baseUrl, ScheduleViewModel schedule)
+        public async static Task<ScheduleDetailsViewModel> GetScheduleAsync(string baseUrl, int idCliente, int idEvento)
+        {
+            Uri uri = new Uri($"{baseUrl}api/clienti/{idCliente}/schedules/{idEvento}");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ScheduleDetailsViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
+        public async static Task SaveSchedule(int idCliente, string baseUrl, ScheduleViewModel schedule)
         {
             Uri uri = new Uri($"{baseUrl}api/clienti/{idCliente}/schedules");
             var content = new StringContent(JsonConvert.SerializeObject(schedule), Encoding.UTF8, "application/json");
@@ -120,13 +131,13 @@ namespace Web.Utils
             HttpResponseMessage response;
             if (schedule.Id.HasValue && schedule.Id.Value > 0)
             {
-                response = await client.PostAsync(uri, content);
+                response = await client.PutAsync(uri, content);
             }
             else
             {
-                response = await client.PutAsync(uri, content);
+                response = await client.PostAsync(uri, content);
             }
-            
+            response.EnsureSuccessStatusCode();
         }
     }
 }

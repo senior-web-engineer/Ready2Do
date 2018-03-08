@@ -42,7 +42,7 @@ namespace Web.Controllers.API
             {
                 return BadRequest();
             }
-            if(!int.TryParse(lid, out idLocation))
+            if(int.TryParse(lid, out idLocation))
             {
                 idLocationNullable = idLocation;
             }

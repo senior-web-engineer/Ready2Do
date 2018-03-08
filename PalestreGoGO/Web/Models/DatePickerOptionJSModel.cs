@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,11 +17,14 @@ namespace Web.Models
             ShowClearBtn = false;
         }
         public string Format { get; set; }
-        public string DefaultDate { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? DefaultDate { get; set; }
         public bool SetDefaultDate { get; set; }
         public int FirstDay { get; set; }
-        public string MinDate { get; set; }
-        public string MaxDate { get; set; }
+        [JsonProperty(NullValueHandling =NullValueHandling.Ignore)]
+        public DateTime? MinDate { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? MaxDate { get; set; }
         public bool ShowClearBtn { get; set; }
         public DatePickerInternationalizationOptions I18n { get; set; }
     }
