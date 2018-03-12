@@ -15,6 +15,7 @@ namespace PalestreGoGo.DataAccess
         Task<Clienti> GetAsync(int idCliente);
         Task<Clienti> GetByUrlAsync(string urlRoute);
         Task<Clienti> GetByTokenAsync(string urlRoute);
+        Task<Clienti> GetByIdUserOwner(Guid idOwner, bool includeImages = false);
 
         Task UpdateAsync(Clienti cliente);
 

@@ -18,11 +18,14 @@ namespace Web.Models
         public string Email { get; set; }
         public string NumTelefono { get; set; }
         public string Descrizione { get; set; }
-        //public TipologiaClienteViewModel Tipologia { get; set; }
+
         public string Indrizzo { get; set; }
-        public string OrarioApertura { get; set; }
+        public OrarioAperturaViewModel OrarioApertura { get; set; }
+
         public ImageViewModel ImmagineHome { get; set; }
+
         public List<ImageViewModel> Images { get; set; }
 
+        public List<LocationViewModel> Locations { get; set; }
     }
 }

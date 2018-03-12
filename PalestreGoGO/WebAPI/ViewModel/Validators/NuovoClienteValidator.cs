@@ -13,8 +13,10 @@ namespace PalestreGoGo.WebAPI.ViewModel.Validators
             RuleFor(c => c.NumTelefono).NotEmpty().MaximumLength(50);
             RuleFor(c => c.Indirizzo).NotEmpty().MaximumLength(250);
             RuleFor(c => c.Citta).NotEmpty().MaximumLength(100);
-            RuleFor(c => c.ZipOrPostalCode).NotEmpty().MaximumLength(10);
-            RuleFor(c => c.Country).NotEmpty().MaximumLength(100);
+            RuleFor(c => c.ZipOrPostalCode).MaximumLength(10);
+            RuleFor(c => c.Country).MaximumLength(100);
+            //RuleFor(c => c.ZipOrPostalCode).NotEmpty().MaximumLength(10);
+            //RuleFor(c => c.Country).NotEmpty().MaximumLength(100);
             RuleFor(c => c.Coordinate).NotNull();
             RuleFor(c => c.NuovoUtente).NotNull();
         }

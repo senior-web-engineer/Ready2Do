@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Model;
+using PalestreGoGo.WebAPI.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,15 +30,15 @@ namespace PalestreGoGo.WebAPI.Services
             this._clientiProvisioner = clientiProvisioner;
         }
 
-        public async Task<bool> ConfirmUserAsync(string username, string code)
+        public async Task<UserConfirmationViewModel> ConfirmUserAsync(string username, string code)
         {
             var user = await _userManager.FindByNameAsync(username);
-            if (user == null) return false;
+            if (user == null) return new UserConfirmationViewModel(false);
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (!result.Succeeded)
             {
                 _logger.LogWarning($"ConfirmUserAsync -> Failed validation for user: {username} with code: [{code}]");
-                return false;
+                return new UserConfirmationViewModel(false);
             }
             var claims = await _userManager.GetClaimsAsync(user);
             //Se è un owner ==> facciamo il provisioning del cliente
@@ -46,7 +47,8 @@ namespace PalestreGoGo.WebAPI.Services
                 await _clientiProvisioner.ProvisionClienteAsync(user.CreationToken, user.Id);
             }
             _logger.LogInformation($"ConfirmUserAsync -> Successfully validated user {username}");
-            return true;
+
+            return new UserConfirmationViewModel(user.Id);
         }
 
         public Task<AppUser> GetUserByMailAsync(string email)

@@ -21,6 +21,7 @@ namespace PalestreGoGo.WebAPI.Services
             //1. Aggiorniamo lo stato sul DB
             await _repositoryClienti.ConfermaProvisioningAsync(provisioningToken,userId);
             //2. Altro??
+            // Aggiungere le immagini di default e gli altri eventuali oggetti di default
         }
     }
 }

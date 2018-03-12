@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using System;
@@ -25,20 +26,20 @@ namespace PalestreGoGo.DataAccess
             cliente.UrlRoute = await this.internalCreateUrlRoute(cliente.Nome);
             await _context.Clienti.AddAsync(cliente);
             await _context.SaveChangesAsync();
-            return cliente.Id;        
+            return cliente.Id;
         }
 
         private async Task<string> internalCreateUrlRoute(string nomeCliente)
         {
             var encodedNomeCliente = Uri.EscapeDataString(nomeCliente);
             string result = null;
-            using(var cmd = _context.Database.GetDbConnection().CreateCommand())
+            using (var cmd = _context.Database.GetDbConnection().CreateCommand())
             {
                 cmd.CommandText = "CreateUrlRoute";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@pNomeClienteUrlEncoded", encodedNomeCliente));
                 await _context.Database.OpenConnectionAsync();
-                result = (string) await cmd.ExecuteScalarAsync();
+                result = (string)await cmd.ExecuteScalarAsync();
             }
             return result;
         }
@@ -98,6 +99,30 @@ namespace PalestreGoGo.DataAccess
             return Task.FromResult(cliente);
         }
 
+        public Task<Clienti> GetByIdUserOwner(Guid idOwner, bool includeImages = false)
+        {
+            var cliente = _context
+                            .Clienti
+                            .AsNoTracking()
+                            .Include(c => c.IdTipologiaNavigation)
+                            .Include(c => c.ClientiMetadati)
+                            .Where(c => (c.IdUserOwner.Equals(idOwner)))
+                            .Single();
+            if (includeImages)
+            {
+                //Leggiamo anche le immagini
+                var immagini = _context.ClientiImmagini
+                                .AsNoTracking()
+                                .Include(ci => ci.IdTipoImmagineNavigation)
+                                .Where(ci => ci.IdCliente.Equals(cliente.Id) &&
+                                            (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
+                                             ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                                .ToList();
+                cliente.ClientiImmagini = immagini;
+            }
+            return Task.FromResult(cliente);
+        }
+
         public Task<Clienti> GetAsync(int idCliente)
         {
             var cliente = _context
@@ -112,7 +137,7 @@ namespace PalestreGoGo.DataAccess
             var immagini = _context.ClientiImmagini
                             .AsNoTracking()
                             .Include(ci => ci.IdTipoImmagineNavigation)
-                            .Where(ci => ci.IdCliente.Equals(idCliente) && 
+                            .Where(ci => ci.IdCliente.Equals(idCliente) &&
                                         (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
                                          ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
                             .ToList();
@@ -121,10 +146,14 @@ namespace PalestreGoGo.DataAccess
             return Task.FromResult(cliente);
         }
 
-        public Task UpdateAsync(Clienti cliente)
+        public async Task UpdateAsync(Clienti cliente)
         {
-            throw new NotImplementedException();
+            if (cliente == null) { throw new ArgumentNullException(nameof(cliente)); }
+            EntityEntry dbEntityEntry = _context.Entry<Clienti>(cliente);
+            dbEntityEntry.State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
+
 
         #region Immagini
         public async Task AddImagesAsync(int idCliente, IEnumerable<ClientiImmagini> immagini)
@@ -173,10 +202,10 @@ namespace PalestreGoGo.DataAccess
             if (entity == null) throw new ArgumentException("Invalid Tenant or Id");
             var entry = _context.Entry(entity);
             entry.State = EntityState.Deleted;
-            await _context.SaveChangesAsync();     
+            await _context.SaveChangesAsync();
         }
 
-        public  IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente)
+        public IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente)
         {
             return _context.ClientiUtenti.Where(cu => cu.IdCliente.Equals(idCliente));
         }

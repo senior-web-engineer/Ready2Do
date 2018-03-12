@@ -39,10 +39,10 @@ namespace PalestreGoGo.DataModel
         [Required]
         [StringLength(100)]
         public string Citta { get; set; }
-        [Required]
+
         [StringLength(10)]
         public string ZipOrPostalCode { get; set; }
-        [Required]
+
         [StringLength(100)]
         public string Country { get; set; }
         public double? Latitudine { get; set; }

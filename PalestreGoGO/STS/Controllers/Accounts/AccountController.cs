@@ -38,7 +38,7 @@ namespace Palestregogo.STS.UI
         private readonly AccountService _account;
         private readonly ILogger<AccountController> _logger;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly WebAPIConfig _apiOptions;
+        private readonly ApplicationConfiguration _appConfig;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -49,15 +49,15 @@ namespace Palestregogo.STS.UI
             SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
             ILogger<AccountController> logger,
-            IOptions<WebAPIConfig> apiOptions)
+            IOptions<ApplicationConfiguration> appConfig)
         {
             _userManager = userManager;
             _interaction = interaction;
             _events = events;
             _signInManager = signInManager;
             _logger = logger;
-            _apiOptions = apiOptions.Value;
-            _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore, apiOptions);
+            _appConfig = appConfig.Value;
+            _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore, appConfig);
         }
   
 
@@ -69,7 +69,7 @@ namespace Palestregogo.STS.UI
         {
             // build a model so we know what to show on the login page
             var vm = await _account.BuildLoginViewModelAsync(returnUrl);
-          
+            ViewData["RegistrationUrl"] = _appConfig.RegistrationUrl;
             return View(vm);
         }
 
@@ -97,7 +97,7 @@ namespace Palestregogo.STS.UI
                 else //Verificare
                 {
                     // since we don't have a valid context, then we just go back to the home page
-                    return Redirect("~/");
+                    return Redirect(_appConfig.HomeUrl);
                 }
             }
 
@@ -141,7 +141,7 @@ namespace Palestregogo.STS.UI
 
                 ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
             }
-
+            ViewData["RegistrationUrl"] = _appConfig.RegistrationUrl;
             // something went wrong, show form with error
             var vm = await _account.BuildLoginViewModelAsync(model);
             return View(vm);
@@ -200,6 +200,12 @@ namespace Palestregogo.STS.UI
             }
 
             return View("LoggedOut", vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PasswordRecovery()
+        {
+            return View();
         }
 
         //[HttpGet]

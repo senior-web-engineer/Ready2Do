@@ -27,12 +27,14 @@
                             <div class="input-field">
                                 <input type="text" asp-for="Nome" class="validate">
                                 <label asp-for="Nome"></label>
+                                <span asp-validation-for="Nome"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="input-field">
                                 <input type="text" asp-for="Cognome" class="validate">
                                 <label asp-for="Cognome"></label>
+                                <span asp-validation-for="Cognome"></span>
                             </div>
                         </div>
                     </div><!-- /.row -->
@@ -41,7 +43,7 @@
                             <div class="input-field">
                                 <input type="email" asp-for="Email" class="validate">
                                 <label asp-for="Email"></label>
-                                @*<label asp-for="Email" data-error="wrong" data-success="right"></label>*@
+                                <span asp-validation-for="Email"></span>
                             </div>
                         </div>
                     </div>
@@ -50,14 +52,14 @@
                             <div class="input-field">
                                 <input type="password" asp-for="Password" class="validate">
                                 <label asp-for="Password">Password</label>
-                                @*<label for="password" data-error="wrong" data-success="right">Password</label>*@
+                                <span asp-validation-for="Password"></span>
                             </div>
                         </div><!-- /.col-sm-6 -->
                         <div class="col-sm-6">
                             <div class="input-field">
                                 <input type="password" asp-for="PasswordConfirm" class="validate">
                                 <label asp-for="PasswordConfirm"></label>
-                                @*<label for="passwordConfirm" data-error="wrong" data-success="right">Conferma Password</label>*@
+                                <span asp-validation-for="PasswordConfirm"></span>
                             </div>
                         </div><!-- /.col-sm-6 -->
                     </div>
@@ -66,6 +68,7 @@
                             <div class="input-field">
                                 <input type="text" asp-for="NomeStruttura" class="validate">
                                 <label asp-for="NomeStruttura"></label>
+                                <span asp-validation-for="NomeStruttura"></span>
                             </div>
                         </div>
                     </div>
@@ -75,13 +78,15 @@
                                 <option disabled selected>Selezionare un categoria</option>
                             </select>
                             <label id="lblTipologiaCliente" for="IdTipologia" class="customSelectLabel">Tipologia di Struttura</label>
+                            <span asp-validation-for="IdTipologia"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="input-field">
                                 <input type="text" asp-for="RagioneSociale" class="validate">
-                                <label for="RagioneSociale">Ragione Sociale</label>
+                                <label asp-for="RagioneSociale">Ragione Sociale</label>
+                                <span asp-validation-for="RagioneSociale"></span>
                             </div>
                         </div>
                     </div>
@@ -89,7 +94,8 @@
                         <div class="col-sm-12">
                             <div class="input-field">
                                 <input type="email" asp-for="EmailStruttura" class="validate">
-                                <label for="EmailStruttura">Email Struttura</label>
+                                <label asp-for="EmailStruttura">Email Struttura</label>
+                                <span asp-validation-for="EmailStruttura"></span>
                             </div>
                         </div>
                     </div><!-- /.row -->
@@ -98,6 +104,7 @@
                             <div class="input-field">
                                 <input id="addressAutocomplete" type="text" asp-for="Indirizzo" class="autocomplete" placeholder="">
                                 <label asp-for="Indirizzo"></label>
+                                <span asp-validation-for="Indirizzo"></span>
                             </div>
                         </div><!-- /.col-sm-6 -->
                     </div>
@@ -106,6 +113,7 @@
                             <div class="input-field">
                                 <input type="tel" asp-for="Telefono" class="validate">
                                 <label asp-for="Telefono"></label>
+                                <span asp-validation-for="Telefono"></span>
                             </div>
                         </div><!-- /.col-sm-6 -->
                     </div>

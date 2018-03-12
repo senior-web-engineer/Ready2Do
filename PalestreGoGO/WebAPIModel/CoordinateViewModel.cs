@@ -13,11 +13,10 @@ namespace PalestreGoGo.WebAPIModel
         {
 
         }
-
-        public CoordinateViewModel( float latitudine, float longitudine)
+         public CoordinateViewModel( float latitudine, float longitudine)
         {
-            this.Latitudine = latitudine;
-            this.Longitudine = longitudine;
+            Latitudine = latitudine;
+            Longitudine = longitudine;
         }
 
         [JsonProperty("lat")]

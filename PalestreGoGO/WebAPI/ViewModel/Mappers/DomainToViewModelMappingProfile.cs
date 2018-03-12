@@ -33,18 +33,31 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
 
             CreateMap<Clienti, ClienteViewModel>()
                 .ForMember(d => d.IdCliente, opt => opt.MapFrom(src => src.Id))
-                .ForPath(d => d.Indrizzo.Citta, opt => opt.MapFrom(src => src.Citta))
-                .ForPath(d => d.Indrizzo.Citta, opt => opt.MapFrom(src => src.Citta))
-                .ForPath(d => d.Indrizzo.Coordinate.Latitudine, opt => opt.MapFrom(src => src.Latitudine))
-                .ForPath(d => d.Indrizzo.Coordinate.Longitudine, opt => opt.MapFrom(src => src.Longitudine))
-                .ForPath(d => d.Indrizzo.PostalCode, opt => opt.MapFrom(src => src.ZipOrPostalCode))
-                .ForPath(d => d.Indrizzo.Country, opt => opt.MapFrom(src => src.Country))
+                .ForPath(d => d.Indirizzo.Citta, opt => opt.MapFrom(src => src.Citta))
+                .ForPath(d => d.Indirizzo.Coordinate.Latitudine, opt => opt.MapFrom(src => src.Latitudine))
+                .ForPath(d => d.Indirizzo.Coordinate.Longitudine, opt => opt.MapFrom(src => src.Longitudine))
+                .ForPath(d => d.Indirizzo.PostalCode, opt => opt.MapFrom(src => src.ZipOrPostalCode))
+                .ForPath(d => d.Indirizzo.Country, opt => opt.MapFrom(src => src.Country))
                 .ForMember(d => d.ImmagineHome, opt =>
                                     opt.MapFrom(src => Mapper.Map<ClientiImmagini, ImmagineViewModel>(
                                     src.ClientiImmagini.Where(i => i.IdTipoImmagine.Equals(TIPOIMMAGINE_SFONDO)).FirstOrDefault())))
                 .ForMember(d => d.OrarioApertura, opt => opt.MapFrom(src => src.ClientiMetadati.Count > 0 ? src.ClientiMetadati.Where(md => md.Key.Equals(DataModel.Constants.METADATI_KEY_ORARIO_APERTURA)) : null))
-                .ForMember(d => d.Immagini, opt => opt.MapFrom(src => Mapper.Map<ICollection<ClientiImmagini>, ICollection<ImmagineViewModel>>(src.ClientiImmagini)));
+                .ForMember(d => d.OrarioApertura, opt => opt.Ignore()); //Skip mapping orario apertura, la facciamo a mano
 
+
+            CreateMap<Clienti, ClienteWithImagesViewModel>()
+                .ForMember(d => d.IdCliente, opt => opt.MapFrom(src => src.Id))
+                .ForPath(d => d.Indirizzo.Citta, opt => opt.MapFrom(src => src.Citta))
+                .ForPath(d => d.Indirizzo.Coordinate.Latitudine, opt => opt.MapFrom(src => src.Latitudine))
+                .ForPath(d => d.Indirizzo.Coordinate.Longitudine, opt => opt.MapFrom(src => src.Longitudine))
+                .ForPath(d => d.Indirizzo.PostalCode, opt => opt.MapFrom(src => src.ZipOrPostalCode))
+                .ForPath(d => d.Indirizzo.Country, opt => opt.MapFrom(src => src.Country))
+                .ForMember(d => d.ImmagineHome, opt =>
+                                    opt.MapFrom(src => Mapper.Map<ClientiImmagini, ImmagineViewModel>(
+                                    src.ClientiImmagini.Where(i => i.IdTipoImmagine.Equals(TIPOIMMAGINE_SFONDO)).FirstOrDefault())))
+                .ForMember(d => d.OrarioApertura, opt => opt.MapFrom(src => src.ClientiMetadati.Count > 0 ? src.ClientiMetadati.Where(md => md.Key.Equals(DataModel.Constants.METADATI_KEY_ORARIO_APERTURA)) : null))
+                .ForMember(d => d.Immagini, opt => opt.MapFrom(src => Mapper.Map<ICollection<ClientiImmagini>, ICollection<ImmagineViewModel>>(src.ClientiImmagini)))
+                .ForMember(d => d.OrarioApertura, opt => opt.Ignore()); //Skip mapping orario apertura, la facciamo a mano
 
             CreateMap<Schedules, ScheduleViewModel>()
                 .ReverseMap()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,9 +16,11 @@ namespace Web.Models
         [Required]
         [MaxLength(100)]
         public string Cognome { get; set; }
+
         [Required]
         [EmailAddress]
         [MaxLength(256)]
+        [Remote("CheckEmail","Account")]
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
@@ -55,10 +58,18 @@ namespace Web.Models
         public string ReturnUrl { get; set; }
 
         public bool EsitoLookup { get; set; }
-        public float? Latitudine { get; set; }
-        public float? Longitudine { get; set; }
+
+        [Required(ErrorMessage ="Indirizzo non valido")]
+        public string Latitudine { get; set; }
+
+        [Required(ErrorMessage = "Indirizzo non valido")]
+        public string Longitudine { get; set; }
+
+        [Required(ErrorMessage = "Indirizzo non valido")]
         public string Citta { get; set; }
+
         public string Country { get; set; }
+
         public string CAP { get; set; }
     }
 }

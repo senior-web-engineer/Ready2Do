@@ -32,15 +32,16 @@ namespace Web
         {
 
             services.AddOptions();
-            //services.Configure<STSConfig>(Configuration);
-            //services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
-            //services.Configure<ApplicationConfigurations>(Configuration.GetSection("ApplicationConfigurations"));
-            //services.Configure<GoogleAPIConfig>(Configuration.GetSection("GoogleAPIConfig"));
-
             services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
 
             // Add application services.
             services.AddTransient<AccountServices, AccountServices>();
+
+            //TODO: CONFIGURARE DPAPI PER USARE UN CERTIFICATO SU AZURE (STORAGE O VAULT)
+            // vedi: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/implementation/key-storage-providers#azure-and-redis
+            //services.AddDataProtection()
+            //    .PersistKeysToAzureBlobStorage(new Uri("<blob URI including SAS token>"));
+
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication(options =>
@@ -95,10 +96,9 @@ namespace Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            
             app.UseAuthentication();
-
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

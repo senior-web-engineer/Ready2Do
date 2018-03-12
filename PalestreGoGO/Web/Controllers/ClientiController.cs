@@ -38,7 +38,12 @@ namespace Web.Controllers
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute)
         {
             var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
+            var locations = await WebAPIClient.GetLocationsAsync(cliente.IdCliente, _appConfig.WebAPI.BaseAddress);
+
             ViewData["ReturnUrl"] = Request.Path.ToString();
+            ViewData["Sale"] = locations;
+            ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
+            ViewData["ClienteRoute"] = urlRoute;
             //ViewData["UserRole"] = User.GetUserRoleForCliente(cliente.IdCliente);
             return View(cliente.MapToHomeViewModel());
         }
@@ -55,7 +60,7 @@ namespace Web.Controllers
         {
             var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
             var vm = new ClienteProfileEditViewModel();
-            vm.GalleryVM.SASToken = this.GenerateAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            vm.GalleryVM.SASToken = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
             vm.GalleryVM.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                                 _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                                 cliente.StorageContainer);
@@ -85,13 +90,27 @@ namespace Web.Controllers
         /// <param name="secuirtyToken"></param>
         /// <param name="storageContainer"></param>
         /// <returns></returns>
-        private string GenerateAuthenticationToken(string secuirtyToken, string storageContainer)
+        private string GenerateSASAuthenticationToken(string secuirtyToken, string storageContainer)
         {
             var token = new SASTokenModel()
             {
                 SecurityToken = secuirtyToken,
                 ContainerName = storageContainer,
                 CreationTime = DateTime.Now
+            };
+            string json = JsonConvert.SerializeObject(token, Formatting.None);
+            //Cifriamo il json ottenuto
+            var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
+            return result;
+        }
+
+        private string GenerateAuthenticationToken(string clientRouteUrl, int idCliente)
+        {
+            var token = new AuthTokenModel()
+            {
+                ClientRoute = clientRouteUrl,
+                CreationTime = DateTime.Now,
+                IdCliente = idCliente
             };
             string json = JsonConvert.SerializeObject(token, Formatting.None);
             //Cifriamo il json ottenuto

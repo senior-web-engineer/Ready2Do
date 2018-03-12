@@ -41,7 +41,7 @@ namespace Web.Utils
             return result;
         }
 
-        public async static Task<ClienteViewModel> GetClienteAsync(string urlRoute, string baseUrl)
+        public async static Task<ClienteWithImagesViewModel> GetClienteAsync(string urlRoute, string baseUrl)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}api/clienti/{urlRoute}");
@@ -49,11 +49,11 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteViewModel>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
             return result;
         }
 
-        public async static Task<ClienteViewModel> GetClienteFromTokenAsync(string securityToken, string baseUrl)
+        public async static Task<ClienteWithImagesViewModel> GetClienteFromTokenAsync(string securityToken, string baseUrl)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}api/clienti/token/{securityToken}");
@@ -61,7 +61,7 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteViewModel>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
             return result;
         }
 
@@ -138,6 +138,15 @@ namespace Web.Utils
                 response = await client.PostAsync(uri, content);
             }
             response.EnsureSuccessStatusCode();
+        }
+
+        public async static Task<string> ConfermaAccount(string email, string code, string baseUrl)
+        {
+            Uri uri = new Uri($"{baseUrl}api/clienti/confirmation?email={email}&code={code}");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.PostAsync(uri, null);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

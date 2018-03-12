@@ -16,9 +16,12 @@
                     @if (User.Identity.IsAuthenticated && (User.GetUserTypeForCliente(Model) == UserType.Admin))
                     {
                         <ul class="menuzord-menu pull-left">
-                            <li><a asp-action="ProfileEdit">Profilo</a></li>
                             <li><a asp-action="CalendarEdit">Calendari</a></li>
-                            @*<li><a href="javascript:void(0)">Utenti</a></li>*@
+                            <li><a asp-action="ProfileEdit">Profilo</a></li>
+                            <li><a asp-action="GalleryEdit">Gallery</a></li>
+                            <li><a asp-action="SaleEdit">Sale</a></li>
+                            <li><a asp-action="LezioniEdit">Lezioni</a></li>
+                            <li><a asp-action="UtentiEdit">Utenti</a></li>
                         </ul>
                     }
                     <ul class="menuzord-menu pull-right">

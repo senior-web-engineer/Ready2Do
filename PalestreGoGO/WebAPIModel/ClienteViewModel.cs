@@ -34,10 +34,7 @@ namespace PalestreGoGo.WebAPIModel
         public TipologiaClienteViewModel Tipologia { get; set; }
 
         [JsonProperty("indirizzo")]
-        public IndirizzoViewModel Indrizzo { get; set; }
-
-        [JsonProperty("orarioApertura")]
-        public string OrarioApertura { get; set; }
+        public IndirizzoViewModel Indirizzo { get; set; }
 
         [JsonProperty("urlImgHome")]
         public ImmagineViewModel ImmagineHome { get; set; }
@@ -48,8 +45,16 @@ namespace PalestreGoGo.WebAPIModel
         [JsonProperty("storageContainer")]
         public string StorageContainer { get; set; }
 
+        
+        [JsonProperty("orarioApertura")]
+        public OrarioAperturaViewModel OrarioApertura { get; set; }        
+    }
+
+    public class ClienteWithImagesViewModel: ClienteViewModel
+    {
         [JsonProperty("images")]
         public List<ImmagineViewModel> Immagini { get; set; }
-        
+
     }
+
 }

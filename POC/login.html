@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!--  favicon -->
+    <!-- TODO: Creare la Favicon e le Apple-Touch-Icon personalizzate-->
+    <link rel="shortcut icon" href="~/img/ico/favicon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/img/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/img/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/img/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="~/img/ico/apple-touch-icon-57-precomposed.png">
+
+    <!-- <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,500,700,900' rel='stylesheet' type='text/css'> -->
+    <!-- FontAwesome CSS -->
+    <!-- <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script> -->
+
+    <!-- MATERIALIZE 1.0.0 ALPHA 4-->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+    .tt-nav {
+        width: 100%;
+        z-index: 1000;
+        position: relative;
+        display: block;
+    }
+
+    .header-sticky {
+        /*box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);*/
+        /* box-shadow: 0 4px rgba(0, 0, 0, 0.08), 0 6px rgba(0, 0, 0, 0.08);*/
+        box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.08);
+    }
+    .menuzord{
+        padding-top: 2rem;
+    }
+
+    .password-recovery{
+        font-size: 0.7rem;
+        margin-top: -12px;
+    }
+
+    /*RIDEFINIAMO LA CLASSE input-field per ridurre lo spazio sopra e sotto*/
+    .input-field {
+        position: relative;
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+    .login-box {
+        margin-top: 2rem;
+        border: 1px;        
+        border-style: solid;
+        border-color: rgba(0,0,0,0.20);
+        border-radius: 15px;
+    }
+
+    .register-link{
+        margin-top: -10px;
+        text-decoration: underline;
+    }
+
+    .login-button {
+        width: 75%;
+    }
+/* Padding e Marginig */
+.pl-5{
+    padding-left: 5px;
+}
+
+.pr-5 {
+    padding-right: 5px;
+}
+
+.plr-20 {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.plr-50 {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+</style>
+</head>
+<body class="grey lighten-3">
+    <!--header start-->
+    <header class="tt-nav grey lighten-5">
+        <div class="header-sticky">
+            <div class="container">
+                <div class="menuzord">
+                    <a class="logo-brand">
+                        <img class="retina" src="assets/img/logo.png" alt="" />
+                    </a>               
+                </div>
+            </div>
+        </div>
+    </header> 
+
+    <section class="">
+        <div class="container">
+            <div class="row">
+                <div class="col s10 m8 xl6 offset-s1 offset-m2 offset-xl3 login-box white">
+                    <h3 class="title center-align blue-text text-lighten-1">Accedi a PGoGo</h3>
+                    <form>
+                        <div class="row">
+                            <div class="input-field col s10 offset-s1">
+                                <input type="text" required="required" />
+                                <label for="username">Username</label>
+                                <span for-validation />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s10 offset-s1">
+                                <input type="password" required="required" />
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="col s10 offset-s1">
+                                <a href="#" class="password-recovery right grey-text"><b>Password dimenticata?</b></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col col s10 offset-s1 center-align">
+                                <button type="submit" class="login-button btn waves-effect blue lighten-1"><b>Login</b></button>
+
+                                <!-- <a href="#." class="btn btn-lg btn-block waves-effect waves-light right blue lighten-1"><b>Annulla</b></a> -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col col s10 offset-s1 center-align">
+                                <span>Non hai ancora un account? </span>
+                                <a href="#" class="red-text text-darken-2 register-link"><b>Registrati</b></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

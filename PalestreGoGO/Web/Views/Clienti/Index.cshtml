@@ -11,6 +11,12 @@
     <link rel="stylesheet" type="text/css" href="~/revolution/css/layers.css">
     <link rel="stylesheet" type="text/css" href="~/revolution/css/navigation.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
+
+    <style>
+        .fc-time-grid .fc-slats td {
+            height: 3em;
+        }
+    </style>
 }
 
 @Html.Partial("_MenuCliente", Model.IdCliente);
@@ -76,6 +82,33 @@
     </div>
 </section>
 
+<section id="calendars">
+    <div class="container">
+        <!-- TABS SALE-->
+        <div class="row">
+            <div class="col s12">
+                <ul id="tabsContainer" class="tabs tabs-fixed-width">
+                    @foreach (var s in ViewBag.Sale)
+                    {
+                        <li class="tab col s3">
+                            <a href='@(String.Format("#calendar-{0}",s.Id))'>@s.Nome</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <!-- Un DIV per ciascuna sala con il calendario per quella sala -->
+            @foreach (var s in ViewBag.Sale)
+            {
+                <div id="@(String.Format("calendar-container-{0}",s.Id))">
+                    <div id='@(String.Format("calendar-{0}",s.Id))'>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
 <section id="whereare">
     <div class="container">
         <div class="row">
@@ -91,8 +124,12 @@
 @section Scripts{
     <!-- jQuery -->
     <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src='~/js/moment.min.js'></script>
+
+
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    <script src="~/materialize/js/materialize.min.js"></script>
+    @*<script src="~/materialize/js/materialize.min.js"></script>*@
+    <script src="~/materialize-v1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
     <script src="~/js/bootstrap-tabcollapse.min.js"></script>
     <script src="~/js/jquery.easing.min.js"></script>
@@ -112,16 +149,33 @@
     <script src="~/revolution/js/jquery.themepunch.revolution.min.js"></script>
 
 
-    @*<script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
-        <script src="~/fullcalendar-3.8.2/locale/it.js"></script>*@
+    <script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
+    <script src="~/fullcalendar-3.8.2/locale/it.js"></script>
     <script>
-        $(document).ready(function () {
-            //$('.flexslider').flexslider({
-            //    animation: "slide",
-            //    //   smoothHeight: true,
-            //    itemWidth: 350
-            //});
+        var instance = M.Tabs.init(document.getElementById('tabsContainer'), {
+            onShow: onTabShow
+        });
 
+        function onTabShow(tab) {
+            /*NOTA: il calendario nel tab ha dei problemi con il resize della finestra.
+                    Credo che il problema si dovuto più al tab che al calendario (nel senso che togliendolo dal tab non dovrebbe dare problemi).
+                    L'unico modo che ho torvato per farlo funzionare è scatenare un evento di resize della window in modo esplicito (credo non funzioni su IE).
+                    L'invocazione del metodo render così come l'impostazione dell'aspectRatio non producono effetti!
+                    Una miglioria potrebbe essere quella di usare un solo calendario, fuori dal tab, e caricare i dati dinamicamente al cambio tab. In questo 
+                    modo si alleggerirebbe la pagina (non caricando gli eventi che non sono visibili).
+            */
+           // $(tab.id).fullCalendar('render');
+            //$(tab.id).fullCalendar('option', 'aspectRatio', 2);
+            window.dispatchEvent(new Event('resize'));
+        }
+                $.ajaxSetup({
+            headers: {
+   //             'X-PalestreGoGO-AUTHToken': document.getElementById('token').value
+                'X-PalestreGoGO-AUTHToken':'@Html.Raw(ViewBag.AuthToken)'
+            }
+        });
+
+        $(document).ready(function () {
             jQuery("#slider1").revolution({
                 sliderType: "standard",
                 sliderLayout: "auto",
@@ -132,6 +186,25 @@
                 gridwidth: 1230,
                 gridheight: 720
             });
+             @foreach (var s in ViewBag.Sale)
+             {
+                <text>
+                $('@(String.Format("#calendar-{0}", s.Id))').fullCalendar({
+                    lang: "it",
+                    weekends: true,
+                    defaultView: "agendaWeek",
+                    slotDuration: "01:00:00",
+                    allDaySlot: false,
+                    aspectRatio: 2,
+                    agendaEventMinHeight: 120,
+                    events: {
+                        url: '@(string.Format("/{0}/eventi/feeds", ViewBag.ClienteRoute))',
+                        type: 'GET',
+                        data: { lid: '@s.Id' }
+                    },
+                });
+                </text>
+            }
         });
     </script>
 }

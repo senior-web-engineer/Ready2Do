@@ -25,20 +25,20 @@ namespace Palestregogo.STS.UI.Services
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly WebAPIConfig _apiOptions;
+        private readonly ApplicationConfiguration _appConfig;
 
         public AccountService(
             IIdentityServerInteractionService interaction,
             IHttpContextAccessor httpContextAccessor,
             IAuthenticationSchemeProvider schemeProvider,
             IClientStore clientStore,
-            IOptions<WebAPIConfig> apiOptions)
+            IOptions<ApplicationConfiguration> appConfig)
         {
             _interaction = interaction;
             _httpContextAccessor = httpContextAccessor;
             _schemeProvider = schemeProvider;
             _clientStore = clientStore;
-            _apiOptions = apiOptions.Value;
+            _appConfig = appConfig.Value;
 
         }
 

@@ -15,7 +15,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti/{idCliente:int}/schedules")]
-    //[Authorize]
+    [Authorize]
     public class SchedulesController : PalestreControllerBase
     {
         private readonly ILogger<SchedulesController> _logger;
@@ -41,7 +41,9 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// Ritorna i dettagli di uno Schedule
         /// </summary>
         /// <remarks>
-        /// 
+        /// ATTENZIONE! Al momento ritorna tutti i dettagli dello schedule. 
+        /// Per motivi di sicurezza, alcuni dati potrebbero essere resi visibili solo agli utenti autorizzato (owner, backend, ecc...)
+        /// In questo caso bisogna limitare il dati ritornati in base ai claims
         /// </remarks>
         /// <param name="idCliente"></param>
         /// <param name="id"></param>
@@ -56,7 +58,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Ritorna i dettagli di uno Schedule
+        /// Ritorna gli Schedules per un range temporale
         /// </summary>
         /// <remarks>
         /// 
@@ -80,6 +82,12 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
+            /*Limitiamo il range temporale per cui ritornare gli schedules a 60 giorni*/
+            if(endDate.Subtract(startDate).TotalDays > 60)
+            {
+                return BadRequest();
+            }
+
             if (idLocation.HasValue)
             {
                 schedule = _repository.GetSchedules(idCliente, startDate, endDate,idLocation.Value);

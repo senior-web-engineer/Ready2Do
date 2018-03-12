@@ -30,7 +30,7 @@ namespace Palestregogo.STS
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.Configure<WebAPIConfig>(Configuration.GetSection("WebAPIConfig"));
+            services.Configure<ApplicationConfiguration>(Configuration.GetSection("ApplicationConfiguration"));
 
             services.AddDbContext<STSIdentityDbContext>(options =>
             {

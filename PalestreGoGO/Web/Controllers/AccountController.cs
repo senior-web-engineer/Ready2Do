@@ -12,6 +12,9 @@ using Web.Utils;
 using Web.Models;
 using Web.Services;
 using Web.Configuration;
+using System.Globalization;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net;
 
 namespace Web.Controllers
 {
@@ -28,7 +31,7 @@ namespace Web.Controllers
             _appConfig = apiOptions.Value;
             _account = account;
         }
-        
+
         //
         // GET: /Account/Register
         [HttpGet]
@@ -50,11 +53,12 @@ namespace Web.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
+
                 /* Creiamo il l'utenza*/
-                  var apiModel = new NuovoClienteViewModel()
+                var apiModel = new NuovoClienteViewModel()
                 {
                     Citta = model.Citta,
-                    Coordinate = model.Latitudine.HasValue && model.Longitudine.HasValue ?  new CoordinateViewModel(model.Latitudine.Value, model.Longitudine.Value) : null,
+                    ZipOrPostalCode = model.CAP,
                     Country = model.Country,
                     Email = model.Email,
                     IdTipologia = model.IdTipologia,
@@ -70,23 +74,33 @@ namespace Web.Controllers
                         Nome = model.Nome,
                         Password = model.Password,
                         Telefono = model.Telefono
-                    }                    
+                    }
                 };
-                //TODO: Convertire da VM a APIModel
-                var result = await WebAPIClient.NuovoClienteAsync(apiModel, _appConfig.WebAPI.BaseAddress);
-                if (result)
+                //Parsing coordinate
+                //NOTA: dato che usando direttamente il itpo float nem ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
+                if(float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
+                    float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
                 {
-                    return RedirectToAction("MailToConfirm");
+                    apiModel.Coordinate = new CoordinateViewModel(latitudine, longitudine);
+                    var result = await WebAPIClient.NuovoClienteAsync(apiModel, _appConfig.WebAPI.BaseAddress);
+                        if (result)
+                    {
+                        return RedirectToAction("MailToConfirm");
+                    }
+                    else
+                    {
+                        //Dobbiamo gestire meglio gli errori lato API!
+                        ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
+                    }
                 }
                 else
                 {
-                    //Dobbiamo gestire meglio gli errori lato API!
-                    ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
+                    ModelState.AddModelError(string.Empty, "Coordinate non valide");
                 }
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return View(await _account.BuildRegisterViewModelAsync(model));
         }
 
         [HttpGet]
@@ -96,16 +110,21 @@ namespace Web.Controllers
             return View();
         }
 
-        ////
-        //// POST: /Account/LogOff
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> LogOff()
-        //{
-        //    await _signInManager.SignOutAsync();
-        //    _logger.LogInformation(4, "User logged out.");
-        //    return RedirectToAction(nameof(HomeController.Index), "Home");
-        //}
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfermaAccount(string email, string code)
+        {
+            try
+            {
+                var url = await WebAPIClient.ConfermaAccount(email, WebUtility.UrlEncode(code), _appConfig.WebAPI.BaseAddress);
+
+                return RedirectToAction("Index", "Clienti", url);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
     }
 }

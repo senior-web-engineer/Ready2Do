@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\fonts\material-icons\" />
     <Folder Include="wwwroot\js\NewFolder\" />
   </ItemGroup>
 

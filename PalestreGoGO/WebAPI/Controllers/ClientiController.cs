@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
@@ -22,7 +24,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IUsersManagementService _userManagementService;
 
         public ClientiController(ILogger<ClientiController> logger,
-                                 IUsersManagementService userManagementService, 
+                                 IUsersManagementService userManagementService,
                                  IClientiRepository repository)
         {
             _logger = logger;
@@ -32,11 +34,15 @@ namespace PalestreGoGo.WebAPI.Controllers
 
         [HttpGet("{id:int}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetCliente([FromRoute(Name ="id")] int idCliente)
+        public async Task<IActionResult> GetCliente([FromRoute(Name = "id")] int idCliente)
         {
             var cliente = await _repository.GetAsync(idCliente);
-
-            return Ok(Mapper.Map<ClienteViewModel>(cliente));
+            var result = Mapper.Map<ClienteWithImagesViewModel>(cliente);
+            if (!string.IsNullOrWhiteSpace(cliente.OrarioApertura))
+            {
+                result.OrarioApertura = JsonConvert.DeserializeObject<OrarioAperturaViewModel>(cliente.OrarioApertura);
+            }
+            return Ok(result);
         }
 
         [HttpGet("{urlroute}")]
@@ -44,8 +50,12 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetCliente([FromRoute(Name = "urlroute")] string urlRoute)
         {
             var cliente = await _repository.GetByUrlAsync(urlRoute);
-
-            return Ok(Mapper.Map<ClienteViewModel>(cliente));
+            var result = Mapper.Map<ClienteWithImagesViewModel>(cliente);
+            if (!string.IsNullOrWhiteSpace(cliente.OrarioApertura))
+            {
+                result.OrarioApertura = JsonConvert.DeserializeObject<OrarioAperturaViewModel>(cliente.OrarioApertura);
+            }
+            return Ok(result);
         }
 
         [HttpGet("token/{securityToken}")]
@@ -53,8 +63,12 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetClienteByToken([FromRoute(Name = "securityToken")] string securityToken)
         {
             var cliente = await _repository.GetByTokenAsync(securityToken);
-
-            return Ok(Mapper.Map<ClienteViewModel>(cliente));
+            var result = Mapper.Map<ClienteWithImagesViewModel>(cliente);
+            if (!string.IsNullOrWhiteSpace(cliente.OrarioApertura))
+            {
+                result.OrarioApertura = JsonConvert.DeserializeObject<OrarioAperturaViewModel>(cliente.OrarioApertura);
+            }
+            return Ok(result);
         }
 
         /// <summary>
@@ -64,8 +78,9 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost()]
         [AllowAnonymous]
-        public async Task<IActionResult> NuovoCliente([FromBody]NuovoClienteViewModel newCliente) {
-            if(newCliente == null)
+        public async Task<IActionResult> NuovoCliente([FromBody]NuovoClienteViewModel newCliente)
+        {
+            if (newCliente == null)
             {
                 return new BadRequestResult();
             }
@@ -89,9 +104,10 @@ namespace PalestreGoGo.WebAPI.Controllers
                 NumTelefono = newCliente.NumTelefono,
                 SecurityToken = token,
                 RagioneSociale = newCliente.RagioneSociale,
-                ZipOrPostalCode = newCliente.ZipOrPostalCode
+                ZipOrPostalCode = newCliente.ZipOrPostalCode,
+                StorageContainer = token
             };
-            await _repository.AddAsync(cliente);            
+            await _repository.AddAsync(cliente);
 
             //Step 2 - Creiamo l'utente Owner
             var user = new AppUser()
@@ -108,6 +124,38 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpPut("{idCliente:int}")]
+        public async Task<IActionResult> ClienteSalvaProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteViewModel cliente)
+        {
+            if (cliente == null) { return BadRequest(); }
+            if (idCliente != cliente.IdCliente) { return BadRequest(); }
+            if (!ClaimsPrincipal.Current.CanManageStructure(idCliente)) { return Unauthorized(); }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var existing = await _repository.GetAsync(cliente.IdCliente);
+
+            existing.Descrizione = cliente.Descrizione;
+            existing.Citta = cliente.Indirizzo.Citta;
+            existing.Latitudine = cliente.Indirizzo.Coordinate.Latitudine;
+            existing.Longitudine = cliente.Indirizzo.Coordinate.Longitudine;
+            existing.Country = cliente.Indirizzo.Country;
+            existing.Indirizzo = cliente.Indirizzo.Indirizzo;
+            existing.Nome = cliente.Nome;
+            existing.NumTelefono = cliente.NumTelefono;
+            existing.RagioneSociale = cliente.RagioneSociale;
+            existing.ZipOrPostalCode = cliente.Indirizzo.PostalCode;
+            await _repository.UpdateAsync(existing);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="code"></param>
+        /// <returns>Ritorna l'url della homepage del cliente appena confermatp in caso di esito positivo</returns>
         [HttpPost("confirmation")]
         [AllowAnonymous]
         public async Task<IActionResult> ConfermaCliente([FromQuery]string email, [FromQuery]string code)
@@ -117,20 +165,21 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            bool esito = await _userManagementService.ConfirmUserAsync(email, code);
-            if (!esito)
+            var esitoConfirmation = await _userManagementService.ConfirmUserAsync(email, code);
+            if (!esitoConfirmation.Esito)
             {
                 _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");
                 return BadRequest();
             }
+            var cliente = await _repository.GetByIdUserOwner(esitoConfirmation.IdUserOwner);
             //TODO: Ritornare un CreatedAt con l'url del cliente?
-            return new OkResult();
+            return Created(new Uri(cliente.UrlRoute, UriKind.Relative), null);
         }
 
-        public async Task<IActionResult> AssociaImmagine(ImmagineViewModel immagine)
-        {
-            return Ok();
-        }
+        //public async Task<IActionResult> AssociaImmagine(ImmagineViewModel immagine)
+        //{
+        //    return Ok();
+        //}
 
         /// <summary>
         /// Aggiunge l'utente chiamante (estrapolato dal Token) come Follower del cliente (estrapolato dalla route)
