@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PalestreGoGo.DataAccess;
+using PalestreGoGo.DataModel;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
@@ -16,7 +18,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti")]
-    [Authorize()]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClientiController : PalestreControllerBase
     {
         private readonly ILogger<ClientiController> _logger;
@@ -149,6 +151,48 @@ namespace PalestreGoGo.WebAPI.Controllers
             await _repository.UpdateAsync(existing);
             return Ok();
         }
+
+
+        [HttpPost("{idCliente:int}/gallery")]
+        public async Task<IActionResult> ClienteAddImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineViewModel immagine)
+        {
+            if (immagine == null) { return BadRequest(); }
+            if (immagine.Id.HasValue) { return BadRequest(); } //Non deve avere un Id essendo una nuova immagine
+            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+            if (!ModelState.IsValid){return BadRequest();}
+            var images = new ClientiImmagini[]{
+                new ClientiImmagini()
+                {
+                    IdCliente = idCliente,
+                    IdTipoImmagine = Constants.TIPOIMMAGINE_SFONDO,
+                    Alt = immagine.Alt,
+                    Descrizione = immagine.Descrizione,
+                    Nome = immagine.Nome,
+                    Ordinamento = immagine.Ordinamento,
+                    Url = immagine.Url
+                }
+            };
+            await _repository.AddImagesAsync(idCliente, images);
+            return Ok();
+        }
+
+        [HttpPut("{idCliente:int}/gallery/{idImage}")]
+        public async Task<IActionResult> ClienteUpdateImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name ="idImage")] int idImage, [FromBody] ImmagineViewModel immagine)
+        {
+            if (immagine == null) { return BadRequest(); }
+            if (!immagine.Id.HasValue || !immagine.Id.Value.Equals(idImage)) { return BadRequest(); } //Deve avere un Id essendo una immagine esistente
+            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+            if (!ModelState.IsValid) { return BadRequest(); }
+            var existing = _repository.GetImage(idCliente, idImage);            
+            existing.Alt = immagine.Alt;
+            existing.Descrizione = immagine.Descrizione;
+            existing.Nome = immagine.Nome;
+            existing.Ordinamento = immagine.Ordinamento;
+                    existing.Url = immagine.Url;
+            await _repository.UpdateImageAsync(idCliente, existing);
+            return Ok();
+        }
+
 
         /// <summary>
         /// 

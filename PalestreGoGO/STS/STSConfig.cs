@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Palestregogo.STS
@@ -19,7 +20,7 @@ namespace Palestregogo.STS
             var customProfile = new IdentityResource(
                 name: "customprofile",
                 displayName: "Profilo Completo",
-                claimTypes: new[] { "name", "email" /*INTEGRARE*/}
+                claimTypes: new[] { "name", "email", "role", Constants.CLAIMTYPE_STRUCTURE_OWNED, Constants.CLAIMTYPE_STRUCTURE_MANAGED }
                 );
 
             return new List<IdentityResource>
@@ -34,16 +35,16 @@ namespace Palestregogo.STS
         {
             return new List<ApiResource>
             {
-                new ApiResource("palestregogo.api")
+                new ApiResource("palestregogo.api", "palestregogo", new string[]{ Constants.CLAIMTYPE_STRUCTURE_MANAGED, Constants.CLAIMTYPE_STRUCTURE_OWNED })
                 {
                     ApiSecrets= new List<Secret>{new Secret("f5d4fe477bd8462777829d1bff33869e34932b7415c760c0461d863eab8a7670".Sha256()) },
                     Scopes = new List<Scope>
                     {
-                        new Scope("palestregogo.api.clienti.provisioning", "Provisioning Nuovi Clienti"),
-                        /*Scoper per l'amministrazione delle utenze (dei tenant di cui si è owner)*/
-                        new Scope("palestregogo.api.users.management", "Gestione Utenti")
-                        {                           
-                        },
+                        //new Scope("palestregogo.api.clienti.provisioning", "Provisioning Nuovi Clienti"),
+                        ///*Scoper per l'amministrazione delle utenze (dei tenant di cui si è owner)*/
+                        //new Scope("palestregogo.api.users.management", "Gestione Utenti")
+                        //{
+                        //},
                         new Scope("palestregogo.api", "Accesso completo alle API")
                     }
                 },
@@ -72,11 +73,12 @@ namespace Palestregogo.STS
                 {
                     ClientName = "Web Client",
                     ClientId="palestregogo_web",
-                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     AllowOfflineAccess = true, //Enable Refresh Token (??)
                     ClientSecrets = new List<Secret>(){new Secret("b753a50a8966dccb0c99248d2aa1fe2d65a6dca43de88cc1a2".Sha256())},
                     RequireClientSecret = true,
                     AllowedScopes = { "palestregogo.api",
+                                      "customprofile",
                                       IdentityServerConstants.StandardScopes.OpenId,
                                       IdentityServerConstants.StandardScopes.Email,
                                       IdentityServerConstants.StandardScopes.Profile,
@@ -90,6 +92,9 @@ namespace Palestregogo.STS
                         "http://localhost:18071"
                     },
                     AllowAccessTokensViaBrowser = true, //permit transmit access tokens via the browser channel
+                    RequireConsent = false,  //disabilitiamo il CONSENT SCREEN
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AlwaysSendClientClaims = true
                 },
                 new Client
                 {

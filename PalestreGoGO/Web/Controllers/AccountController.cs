@@ -25,11 +25,13 @@ namespace Web.Controllers
         private readonly AppConfig _appConfig;
         private readonly AccountServices _account;
 
-        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account)
+        private readonly WebAPIClient _apiClient;
+        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account, WebAPIClient apiClient)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _account = account;
+            _apiClient = apiClient;
         }
 
         //
@@ -82,7 +84,7 @@ namespace Web.Controllers
                     float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
                 {
                     apiModel.Coordinate = new CoordinateViewModel(latitudine, longitudine);
-                    var result = await WebAPIClient.NuovoClienteAsync(apiModel, _appConfig.WebAPI.BaseAddress);
+                    var result = await _apiClient.NuovoClienteAsync(apiModel);
                         if (result)
                     {
                         return RedirectToAction("MailToConfirm");
@@ -117,7 +119,7 @@ namespace Web.Controllers
         {
             try
             {
-                var url = await WebAPIClient.ConfermaAccount(email, WebUtility.UrlEncode(code), _appConfig.WebAPI.BaseAddress);
+                var url = await _apiClient.ConfermaAccount(email, WebUtility.UrlEncode(code));
 
                 return RedirectToAction("Index", "Clienti", url);
             }

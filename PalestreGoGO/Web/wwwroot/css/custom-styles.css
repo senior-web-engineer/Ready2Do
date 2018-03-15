@@ -24,6 +24,7 @@
     top: -15px;
     left: 15px;
 }
+
 /******************* PROFILE EDIT ************************/
 .gallery_container {
     /*margin-left: 120px;
@@ -57,3 +58,29 @@
 }
 
 
+/******************** GALLERY EDIT **************************/
+
+.gallery_item_container {
+    display: inline;
+}
+
+.thumb_container {
+    height: 120px;
+    width: 120px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.thumb_image {
+    max-height: 120px;
+    max-width: 120px;
+    /* Per centrarla orizzontalmente */
+    display: block;
+    margin: auto;
+}
+
+.valign_helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}

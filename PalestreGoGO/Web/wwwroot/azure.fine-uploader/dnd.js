@@ -1,4 +1,4 @@
-// Fine Uploader 5.15.6 - MIT licensed. http://fineuploader.com
+// Fine Uploader 5.16.0 - MIT licensed. http://fineuploader.com
 (function(global) {
     var qq = function(element) {
         "use strict";
@@ -578,7 +578,7 @@
             global.qq = qq;
         }
     })();
-    qq.version = "5.15.6";
+    qq.version = "5.16.0";
     qq.supportedFeatures = function() {
         "use strict";
         var supportsUploading, supportsUploadingBlobs, supportsFileDrop, supportsAjaxFileUploading, supportsFolderDrop, supportsChunking, supportsResume, supportsUploadViaPaste, supportsUploadCors, supportsDeleteFileXdr, supportsDeleteFileCorsXhr, supportsDeleteFileCors, supportsFolderSelection, supportsImagePreviews, supportsUploadProgress;
@@ -595,9 +595,6 @@
                 supported = false;
             }
             return supported;
-        }
-        function isChrome21OrHigher() {
-            return (qq.chrome() || qq.opera()) && navigator.userAgent.match(/Chrome\/[2][1-9]|Chrome\/[3-9][0-9]/) !== undefined;
         }
         function isChrome14OrHigher() {
             return (qq.chrome() || qq.opera()) && navigator.userAgent.match(/Chrome\/[1][4-9]|Chrome\/[2-9][0-9]/) !== undefined;
@@ -636,7 +633,11 @@
         supportsAjaxFileUploading = supportsUploading && qq.isXhrUploadSupported();
         supportsUploadingBlobs = supportsAjaxFileUploading && !qq.androidStock();
         supportsFileDrop = supportsAjaxFileUploading && isDragAndDropSupported();
-        supportsFolderDrop = supportsFileDrop && isChrome21OrHigher();
+        supportsFolderDrop = supportsFileDrop && function() {
+            var input = document.createElement("input");
+            input.type = "file";
+            return !!("webkitdirectory" in (input || document.querySelectorAll("input[type=file]")[0]));
+        }();
         supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
         supportsResume = supportsAjaxFileUploading && supportsChunking && isLocalStorageSupported();
         supportsUploadViaPaste = supportsAjaxFileUploading && isChrome14OrHigher();
@@ -765,12 +766,7 @@
             var parseEntryPromise = new qq.Promise();
             if (entry.isFile) {
                 entry.file(function(file) {
-                    var name = entry.name, fullPath = entry.fullPath, indexOfNameInFullPath = fullPath.indexOf(name);
-                    fullPath = fullPath.substr(0, indexOfNameInFullPath);
-                    if (fullPath.charAt(0) === "/") {
-                        fullPath = fullPath.substr(1);
-                    }
-                    file.qqPath = fullPath;
+                    file.qqPath = extractDirectoryPath(entry);
                     droppedFiles.push(file);
                     parseEntryPromise.success();
                 }, function(fileError) {
@@ -797,6 +793,14 @@
                 });
             }
             return parseEntryPromise;
+        }
+        function extractDirectoryPath(entry) {
+            var name = entry.name, fullPath = entry.fullPath, indexOfNameInFullPath = fullPath.lastIndexOf(name);
+            fullPath = fullPath.substr(0, indexOfNameInFullPath);
+            if (fullPath.charAt(0) === "/") {
+                fullPath = fullPath.substr(1);
+            }
+            return fullPath;
         }
         function getFilesInDirectory(entry, reader, accumEntries, existingPromise) {
             var promise = existingPromise || new qq.Promise(), dirReader = reader || entry.createReader();
@@ -952,6 +956,8 @@
                 });
             }
         });
+        this._testing = {};
+        this._testing.extractDirectoryPath = extractDirectoryPath;
     };
     qq.DragAndDrop.callbacks = function() {
         "use strict";

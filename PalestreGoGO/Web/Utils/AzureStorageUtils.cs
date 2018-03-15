@@ -7,6 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using Web.Configuration;
+using System.Threading.Tasks;
 
 namespace Web.Utils
 {
@@ -24,6 +25,14 @@ namespace Web.Utils
                 SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(validity),
             });            
             return string.Format(CultureInfo.InvariantCulture, "{0}{1}", blob.Uri, sas);
+        }
+
+        public async static Task EnsureContainerExists(AzureConfig config, string containerName)
+        {
+            var credentials = new StorageCredentials(config.Storage.AccountName, config.Storage.AccountKey);
+            CloudBlobClient client = new CloudBlobClient(new Uri(config.Storage.BlobStorageBaseUrl), credentials);
+            var contRef = client.GetContainerReference(containerName);
+            await contRef.CreateIfNotExistsAsync();
         }
 
     }

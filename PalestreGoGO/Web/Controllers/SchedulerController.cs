@@ -23,22 +23,25 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
+        private readonly WebAPIClient _apiClient;
 
         public SchedulerController(ILogger<AccountController> logger,
-                                 IOptions<AppConfig> apiOptions
+                                 IOptions<AppConfig> apiOptions,
+                                 WebAPIClient apiClient
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
+            _apiClient = apiClient;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "lid")] int? idActiveLocation)
         {
-            var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
             var vm = new SchedulerViewModel();
-            vm.Sale = await WebAPIClient.GetLocationsAsync(cliente.IdCliente, _appConfig.WebAPI.BaseAddress);
+            vm.Sale = await _apiClient.GetLocationsAsync(cliente.IdCliente);
             vm.IdActiveLocation = idActiveLocation ?? vm.Sale.First().Id;
             return View(vm);
         }

@@ -21,7 +21,9 @@ namespace PalestreGoGo.DataAccess
 
         #region Immagini
         Task AddImagesAsync(int idCliente, IEnumerable<ClientiImmagini> immagine);
-        Task DeleteImage(int idCliente, int idImmagine);
+        Task DeleteImageAsync(int idCliente, int idImmagine);
+        Task UpdateImageAsync(int idCliente, ClientiImmagini immagine);
+        ClientiImmagini GetImage(int idCliente, int idImmagine);
         IEnumerable<ClientiImmagini> GetImages(int idCliente);
         IEnumerable<ClientiImmagini> GetImages(int idCliente, TipologieImmagini tipoImmagine);
         #endregion

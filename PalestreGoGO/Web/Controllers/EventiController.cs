@@ -22,13 +22,16 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
+        private readonly WebAPIClient _apiClient;
 
         public EventiController(ILogger<AccountController> logger,
-                                 IOptions<AppConfig> apiOptions
+                                 IOptions<AppConfig> apiOptions,
+                                 WebAPIClient apiClient
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
+            _apiClient = apiClient;
         }
 
 
@@ -42,9 +45,9 @@ namespace Web.Controllers
             DateTime dataParsed;
             TimeSpan timeParsed;
             int idLocation;
-            var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
-            var tipoLezioni = await WebAPIClient.GetTipologieLezioniClienteAsync(_appConfig.WebAPI.BaseAddress, cliente.IdCliente);
-            var locations = await WebAPIClient.GetLocationsAsync(cliente.IdCliente, _appConfig.WebAPI.BaseAddress);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
+            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
             if (!string.IsNullOrWhiteSpace(dataEvento) && DateTime.TryParseExact(dataEvento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dataParsed))
             {
                 vm.Data = dataParsed;
@@ -67,9 +70,9 @@ namespace Web.Controllers
         [HttpPost("{cliente}/eventi/edit/{id}")]
         public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] EventoViewModel evento, [FromRoute(Name="id")] int? idEvento)
         {
-            var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
-            var tipoLezioni = await WebAPIClient.GetTipologieLezioniClienteAsync(_appConfig.WebAPI.BaseAddress, cliente.IdCliente);
-            var locations = await WebAPIClient.GetLocationsAsync(cliente.IdCliente, _appConfig.WebAPI.BaseAddress);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
+            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
             if (!ModelState.IsValid)
             {
                 ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
@@ -92,7 +95,7 @@ namespace Web.Controllers
                 IdTipoLezione = evento.IdTipoLezione.Value,
                 Id = evento.Id
             };
-            await WebAPIClient.SaveSchedule(cliente.IdCliente, _appConfig.WebAPI.BaseAddress, apiVM);
+            await _apiClient.SaveSchedule(cliente.IdCliente, apiVM);
             return RedirectToAction("Index", "Schedules");
         }
 
@@ -101,10 +104,10 @@ namespace Web.Controllers
         public async Task<IActionResult> EditEvento([FromRoute(Name = "cliente")]string urlRoute,
                                                     [FromRoute(Name = "id")] int idEvento)
         {
-            var cliente = await WebAPIClient.GetClienteAsync(urlRoute, _appConfig.WebAPI.BaseAddress);
-            var tipoLezioni = await WebAPIClient.GetTipologieLezioniClienteAsync(_appConfig.WebAPI.BaseAddress, cliente.IdCliente);
-            var locations = await WebAPIClient.GetLocationsAsync(cliente.IdCliente, _appConfig.WebAPI.BaseAddress);
-            var evento = await WebAPIClient.GetScheduleAsync(_appConfig.WebAPI.BaseAddress, cliente.IdCliente, idEvento);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
+            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
+            var evento = await _apiClient.GetScheduleAsync(cliente.IdCliente, idEvento);
             ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
             ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
             ViewData["IdCliente"] = cliente.IdCliente;

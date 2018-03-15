@@ -8,7 +8,11 @@ namespace Web
     public static class Constants
     {
 
-        public const string ClaimType_Users_Managed = "UsersManaged";
+        public const string ClaimStructureOwned = "structure_owned";
+        public const string ClaimStructureManaged = "structure_managed";
+        public const string ClaimRole = "role";
+
+        public const string ROLE_GLOBAL_ADMIN = "global_admin";
 
         public const string CUSTOM_HEADER_TOKEN_AUTH = "X-PalestreGoGO-AUTHToken";
 

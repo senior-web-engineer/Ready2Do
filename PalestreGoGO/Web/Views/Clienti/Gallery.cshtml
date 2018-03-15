@@ -1,0 +1,133 @@
+﻿@model GalleryEditViewModel;
+@{
+    Layout = "_LayoutClienti";
+}
+
+@section Header{
+    <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+    <script src="~/azure.fine-uploader/azure.fine-uploader.core.js"></script>
+
+    <!-- Sortable Library from https://github.com/RubaXa/Sortable -->
+    @*<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>*@
+}
+
+<section id="galleryEdit">
+    <input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />
+
+    <div class="container">
+        @{Dictionary<string, string> parms;}
+
+        @for (int row = 0; row < 3; row++)
+        {
+            <div class="row">
+                <div class="col l2 hide-on-med-and-down"></div>
+                @for (int col = 1; col <= 3; col++)
+                {
+                    int idx = col + (row * 3);
+                    parms = new Dictionary<string, string> { { "imageOrder", idx.ToString() } };
+                    <div class="col s4 l3">
+                        @{
+                            var imgCurrent = Model.Images.SingleOrDefault(i => i.Ordinamento == idx);
+                            <div class="gallery_item_container">
+                                <div class="thumb_container">
+                                    <span class="valign_helper">
+                                        <img class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx)" />
+                                    </span>
+                                </div>
+                                @if (imgCurrent != null)
+                                {
+                                    <a class="inline" onclick="deleteImage(@imgCurrent.Id)">Elimina</a>
+                                }
+                            </div>
+                        }
+                        <div class="col l1 hide-on-med-and-down"></div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+
+<!-- Dialog Modale per la conferma della cancellazione -->
+<div id="modalConfermaCanc" class="modal">
+    <div class="modal-content">
+        <h4>Conferma cancellazione immagine</h4>
+        <p>Confermando la cancellazione l'immagine sarà eliminata in modo definitivo e non potrà essere recuperata.</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Annulla</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Conferma</a>
+    </div>
+</div>
+@section Scripts{
+
+    <script>
+        var uploader;
+        var modal;
+        var btnFileSelect;
+        var currentFileIdx; //Indice dell'immagine attualmente in upload
+        document.addEventListener("DOMContentLoaded", function (event) {          
+           //Init Uploader
+            uploader = new qq.azure.FineUploaderBasic({
+                autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+                debug: true,
+                warnBeforeUnload: true,
+                multiple: false,
+                cors: {
+                    allowXdr: false,
+                    expected:true,
+                    sendCredentials: false
+                },
+                request: {
+                    endpoint: "@Model.ContainerUrl"
+                },
+                signature: {
+                    endpoint: "/api/fileupload",
+                    customHeaders: {
+                        "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
+                    }
+                },
+                uploadSuccess: {
+                    endpoint: "/api/fileupload",
+                    customHeaders: {
+                        "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
+                    }
+                },
+                callbacks: {
+                    onError: function (id, name, errorReason, xhrOrXdr) {
+                        alert(qq.format("Error on file number {} - {}.  Reason: {}", id, name, errorReason));
+                    }
+                }
+            });
+            //Init Modal
+            modal = M.Modal.init(document.getElementById('modalConfermaCanc'), {
+                onOpenStart: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3);},
+                onCloseStart: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3); },
+                onCloseEnd: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3); }
+            });
+            btnFileSelect = document.getElementById('fileSelect');
+        });
+
+        function choseImage(e, imageOrder) {
+            var selectedFile;
+            currentFileIdx = imageOrder;
+            if (btnFileSelect) {
+                btnFileSelect.click()
+            }
+            return false;
+        }
+
+        function handleFiles(files) {
+            if (files) {
+                uploader.reset();
+                uploader.addFiles(files[0], { fileOrder: currentFileIdx, idCliente: @(ViewBag.IdCliente) });
+            }
+        }
+
+        function deleteImage(imageId) {
+            modal.imageId = imageId;
+            modal.open(imageId);
+        }
+    </script>
+}

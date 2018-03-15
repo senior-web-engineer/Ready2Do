@@ -19,7 +19,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/{idCliente:int}/tipologiche/tipolezioni")]
     //[Authorize]
-    public class TipoLezioniController : ControllerBase
+    public class TipoLezioniController : PalestreControllerBase
     {
         private readonly ILogger<TipoLezioniController> _logger;
         private readonly ITipologieLezioniRepository _repository;
@@ -123,11 +123,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             _repository.Delete(idCliente, id);
             return new NoContentResult();
-        }
-
-        public virtual ClaimsPrincipal GetCurrentUser()
-        {
-            return HttpContext.User;
         }
     }
 }

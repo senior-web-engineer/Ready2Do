@@ -25,11 +25,13 @@ $Context = New-AzureStorageContext `
     -ConnectionString $ConnectionString
 
 # cors rules
+# AllowedHeaders=@("x-ms-meta-qqfilename,x-ms-blob-type,x-ms-blob-content-type,Content-Type");
+
 $CorsRules = (@{
     AllowedHeaders=@("*");
     AllowedOrigins=@("*");
-    ExposedHeaders=@("x-ms-*");
-    MaxAgeInSeconds=60*60*24;
+    ExposedHeaders=@("*");
+    MaxAgeInSeconds=200;
     AllowedMethods=@("Get", "Post", "Connect", "Head", "Delete", "Put")
 })
 

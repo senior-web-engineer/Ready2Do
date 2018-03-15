@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System;       
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -91,19 +91,40 @@ namespace Web.Utils
             if (principal == null) return UserType.Anonymous;
             if (!principal.Identity.IsAuthenticated) return UserType.Anonymous; // Se non autenticato ==> 
             UserType result = UserType.Anonymous;
-            //Valutiamo il cliam USERS_MANAGED per determinare se l'utente corrente è un Admin per il cliente
-            foreach (var c in principal.Claims.Where(c => c.Type.Equals(Constants.ClaimType_Users_Managed)))
+            //Valutiamo i claim STRUCTURE_OWNED e STRUCTURE_MANAGED per determinare se l'utente corrente è un Admin per il cliente
+            foreach (var c in principal.Claims.Where(c => c.Type.Equals(Constants.ClaimStructureManaged)))
             {
                 foreach(var cliente in c.Value.Split(','))
                 {
                     if (int.Parse(cliente).Equals(idCliente))
                     {
-                        result = UserType.Admin;
+                        result = result | UserType.Admin;
                     }
                 }
             }
-            //TODO: AGGIUNGERE GESTIONE GLOBAL ADMIN
+            foreach (var c in principal.Claims.Where(c => c.Type.Equals(Constants.ClaimStructureOwned)))
+            {
+                foreach (var cliente in c.Value.Split(','))
+                {
+                    if (int.Parse(cliente).Equals(idCliente))
+                    {
+                        result = result | UserType.Owner;
+                    }
+                }
+            }
+            if(principal.Claims.Any(c=>c.Type.Equals(Constants.ClaimRole) && c.Value.Equals(Constants.ROLE_GLOBAL_ADMIN)))
+            {
+                result = result | UserType.GlobalAdmin;
+            }
             return result;
+        }
+
+        public static bool IsAtLeastAdmin(this UserType userType)
+        {
+            if ((userType & UserType.Admin) == UserType.Admin) return true;
+            if ((userType & UserType.Owner) == UserType.Owner) return true;
+            if ((userType & UserType.GlobalAdmin) == UserType.GlobalAdmin) return true;
+            return false;
         }
     }
 }

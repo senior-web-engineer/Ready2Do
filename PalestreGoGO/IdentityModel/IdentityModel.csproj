@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Palestregogo.IdentityModel</AssemblyName>
+    <RootNamespace>Palestregogo.IdentityModel</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

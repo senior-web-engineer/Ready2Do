@@ -163,13 +163,27 @@ namespace PalestreGoGo.DataAccess
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteImage(int idCliente, int idImmagine)
+        public async Task DeleteImageAsync(int idCliente, int idImmagine)
         {
             var entity = await _context.ClientiImmagini.Where(ci => ci.IdCliente.Equals(idCliente) && ci.Id.Equals(idImmagine)).FirstOrDefaultAsync();
             if (entity == null) throw new ArgumentException("Invalid Tenant or Id");
             var entry = _context.Entry(entity);
             entry.State = EntityState.Deleted;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateImageAsync(int idCliente, ClientiImmagini immagine)
+        {
+            if(immagine == null) { throw new ArgumentNullException(nameof(immagine)); }
+            if (immagine.IdCliente != idCliente) throw new ArgumentException("Invalid Tenant");
+            EntityEntry dbEntityEntry = _context.Entry<ClientiImmagini>(immagine);
+            dbEntityEntry.State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public ClientiImmagini GetImage(int idCliente, int idImmagine)
+        {
+            return _context.ClientiImmagini.Where(ci => ci.IdCliente.Equals(idCliente) && ci.Id.Equals(idImmagine)).AsNoTracking().Single();
         }
 
         public IEnumerable<ClientiImmagini> GetImages(int idCliente)

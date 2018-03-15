@@ -17,9 +17,9 @@ namespace Palestregogo.STS.Business
     {
         private readonly IUserClaimsPrincipalFactory<AppUser> _claimsFactory;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ILogger _logger;
+        private readonly ILogger<STSProfileService> _logger;
 
-        public STSProfileService(ILogger logger, UserManager<AppUser> userManager, IUserClaimsPrincipalFactory<AppUser> claimsFactory)
+        public STSProfileService(ILogger<STSProfileService> logger, UserManager<AppUser> userManager, IUserClaimsPrincipalFactory<AppUser> claimsFactory)
         {
             _logger = logger;
             _userManager = userManager;

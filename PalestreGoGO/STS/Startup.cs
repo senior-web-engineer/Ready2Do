@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Palestregogo.STS.Business;
 using Microsoft.EntityFrameworkCore;
 using Palestregogo.STS.Services;
+using IdentityServer4.Services;
 
 namespace Palestregogo.STS
 {
@@ -59,13 +60,17 @@ namespace Palestregogo.STS
 
             // configure identity server with in-memory stores, keys, clients and scopes
             STSConfig.Configuration = Configuration;
-            services.AddIdentityServer()
+            services
+                .AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(STSConfig.GetIdentityResources())
                 .AddInMemoryApiResources(STSConfig.GetApiResources())
                 .AddInMemoryClients(STSConfig.GetClients())
+                .AddProfileService<STSProfileService>()
                 .AddAspNetIdentity<AppUser>();
+
+            services.AddTransient<IProfileService, STSProfileService>();
 
             services.AddAuthentication();
 

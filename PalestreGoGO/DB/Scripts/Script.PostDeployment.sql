@@ -12,3 +12,6 @@ Post-Deployment Script Template
 :r .\Prepop\Prepop.Test.TipologieClienti.sql
 :r .\Prepop\Prepop.Test.TipologieImmagini.sql
 :r .\Prepop\Prepop.Test.Clienti.sql
+
+
+:r .\Prepop\Prepop.Security.Roles.sql

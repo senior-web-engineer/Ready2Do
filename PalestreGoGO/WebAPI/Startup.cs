@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +16,8 @@ using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using Swashbuckle.AspNetCore.Swagger;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI
 {
@@ -30,7 +33,7 @@ namespace PalestreGoGo.WebAPI
 
         protected void SetupRoles()
         {
-            
+
         }
 
         private void RegisterRepositories(IServiceCollection services)
@@ -59,11 +62,29 @@ namespace PalestreGoGo.WebAPI
                 opt.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
             });
 
-            //services.AddDbContext<PalestreGoGoDbContext>(options =>
-            //{
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            //});
+            services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
+            services.AddTransient<IUserConfirmationService, UserConfirmationService>();
+            services.AddTransient<IUsersManagementService, UsersManagementService>();
 
+            RegisterRepositories(services);
+            
+            services.AddMvc()
+                .AddFluentValidation();
+
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+            })
+                .AddCookie()
+                .AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.Authority = Configuration["STS:Issuer"];
+                    options.ApiName = "palestregogo.api";
+                    options.RequireHttpsMetadata = false; //Disabilitare per la produzione
+                    options.EnableCaching = true;
+                    options.CacheDuration = new System.TimeSpan(0, 5, 0); //5 minuti cache
+                });
 
             services.AddIdentity<AppUser, AppRole>(cfg =>
             {
@@ -76,48 +97,26 @@ namespace PalestreGoGo.WebAPI
                 //Richiediamo la conferma dell'email
                 // Per ora disabilitato, dobbiamo implementare il servizio EmailSender prima di abilitarla
                 cfg.SignIn.RequireConfirmedEmail = true;
-
                 cfg.User.RequireUniqueEmail = true; //In caso di utente con registrazione locale e Google?
+
             })
              .AddEntityFrameworkStores<AppIdentityDbContext>()
              .AddDefaultTokenProviders();
-
-            services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
-            services.AddTransient<IUserConfirmationService, UserConfirmationService>();
-            services.AddTransient<IUsersManagementService, UsersManagementService>();
-            RegisterRepositories(services);
-
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options =>
-                {
-                    options.Authority = Configuration["STS:Issuer"];
-                    options.ApiName = "palestregogo.api";
-                    options.RequireHttpsMetadata = false; //Disabilitare per la produzione
-                });
 
             services.AddAuthorization(options =>
             {
                 //options.AddPolicy("tipologiche.edit",
                 //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeTipologicheEdit, Configuration["STS:Issuer"])));
                 options.AddPolicy("UsersManagement",
-                    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
-                options.AddPolicy("ProvisioningPolicy",
-                    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
+                    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ClaimStructureManaged, Configuration["STS:Issuer"])));
+                //options.AddPolicy("ProvisioningPolicy",
+                //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
             });
 
             Mapper.Initialize(x =>
             {
                 x.AddProfile<DomainToViewModelMappingProfile>();
             });
-
-            services.AddCors();
-            services.AddMvc()
-                //Utilizziamo FluentValidation invece dei DataAnnotation per la validazione dei viewmodel
-                .AddFluentValidation(config =>
-                {
-                    //Registriamo i Validators definiti nell'asembly corrente
-                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                });
 
             services.AddSwaggerGen(c =>
             {
@@ -129,15 +128,15 @@ namespace PalestreGoGo.WebAPI
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             //Disable Application Insights
-            var config = app.ApplicationServices.GetService<TelemetryConfiguration>();
-            if (config != null) config.DisableTelemetry = true;
+            //var config = app.ApplicationServices.GetService<TelemetryConfiguration>();
+            //if (config != null) config.DisableTelemetry = true;
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();                
+                app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
 
-            app.SetupUsersAndRoles(); 
+            app.SetupUsersAndRoles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -146,7 +145,7 @@ namespace PalestreGoGo.WebAPI
 
             //app.UseCors()
             app.UseMvc();
-            
+
         }
     }
 }

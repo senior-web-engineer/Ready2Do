@@ -94,6 +94,7 @@
     <None Include="Scripts\Prepop\Prepop.Test.TipologieClienti.sql" />
     <None Include="DB.AZURE.publish.xml" />
     <None Include="Scripts\Prepop\Prepop.Test.Clienti.sql" />
+    <None Include="Scripts\Prepop\Prepop.Security.Roles.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

@@ -26,7 +26,14 @@ namespace PalestreGoGo.WebAPI
         #endregion
 
         #region ROLES
-        public const string RoleGlobalAdmin = "GlobalAdmin";
+        public const string RoleGlobalAdmin = "global_admin";
+        #endregion
+
+        #region TIPI_IMMAGINI
+        public const int TIPOIMMAGINE_LOGO = 1;
+        public const int TIPOIMMAGINE_SFONDO = 2;
+        public const int TIPOIMMAGINE_GALLERY = 3;
+
         #endregion
     }
 }

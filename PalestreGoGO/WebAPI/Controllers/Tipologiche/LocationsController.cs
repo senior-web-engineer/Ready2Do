@@ -15,7 +15,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/{idCliente:int}/tipologiche/locations")]
     //[Authorize]
-    public class LocationsController: ControllerBase
+    public class LocationsController: PalestreControllerBase
     {
 
         private readonly ILogger<LocationsController> _logger;
@@ -116,11 +116,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             _repository.Delete(idCliente, id);
             return new NoContentResult();
-        }
-
-        public virtual ClaimsPrincipal GetCurrentUser()
-        {
-            return HttpContext.User;
         }
     }
 }

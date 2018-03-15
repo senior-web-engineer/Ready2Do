@@ -22,12 +22,15 @@ namespace Web.Controllers.API
     {
         private readonly AppConfig _appConfig;
         private readonly ILogger<BlobUploadController> _logger;
+        private readonly WebAPIClient _apiClient;
 
         public EventFeedsController(ILogger<BlobUploadController> logger,
-                                    IOptions<AppConfig> apiOptions)
+                                    IOptions<AppConfig> apiOptions,
+                                    WebAPIClient apiClient)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
+            _apiClient = apiClient;
         }
 
 
@@ -87,7 +90,7 @@ namespace Web.Controllers.API
                 return Unauthorized();
             }
             //var cliente = await WebAPIClient.GetClienteAsync(clientRoute, _appConfig.WebAPI.BaseAddress);
-            var schedules = await WebAPIClient.GetSchedulesAsync(_appConfig.WebAPI.BaseAddress, token.IdCliente, startDate, endDate, idLocationNullable);
+            var schedules = await _apiClient.GetSchedulesAsync(token.IdCliente, startDate, endDate, idLocationNullable);
             var result = schedules.MapToSchedulerEventViewModel();
 
             return Ok(result);

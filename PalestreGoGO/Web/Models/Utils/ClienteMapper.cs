@@ -34,14 +34,15 @@ namespace Web.Models.Utils
 
         private static OrarioAperturaViewModel MapOrarioApertura(this PalestreGoGo.WebAPIModel.OrarioAperturaViewModel apiModel)
         {
+            if (apiModel == null) return null;
             var result = new OrarioAperturaViewModel();
-            result.Domenica = apiModel.Domenica.MapGiornoOrarioApertura();
-            result.Lunedi= apiModel.Lunedi.MapGiornoOrarioApertura();
-            result.Martedi= apiModel.Martedi.MapGiornoOrarioApertura();
-            result.Mercoledi= apiModel.Mercoledi.MapGiornoOrarioApertura();
-            result.Giovedi= apiModel.Giovedi.MapGiornoOrarioApertura();
-            result.Venerdi= apiModel.Venerdi.MapGiornoOrarioApertura();
-            result.Sabato= apiModel.Sabato.MapGiornoOrarioApertura();
+            result.Domenica = apiModel?.Domenica?.MapGiornoOrarioApertura();
+            result.Lunedi= apiModel?.Lunedi?.MapGiornoOrarioApertura();
+            result.Martedi= apiModel?.Martedi?.MapGiornoOrarioApertura();
+            result.Mercoledi= apiModel?.Mercoledi?.MapGiornoOrarioApertura();
+            result.Giovedi= apiModel?.Giovedi?.MapGiornoOrarioApertura();
+            result.Venerdi= apiModel?.Venerdi?.MapGiornoOrarioApertura();
+            result.Sabato= apiModel?.Sabato?.MapGiornoOrarioApertura();
             return result;
         }
 

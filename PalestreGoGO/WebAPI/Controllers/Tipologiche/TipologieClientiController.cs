@@ -19,7 +19,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti")]
     [Authorize]
-    public class TipologieClientiController : Controller
+    public class TipologieClientiController : PalestreControllerBase
     {
         private readonly ILogger<TipologieClientiController> _logger;
         private readonly ITipologieClientiRepository _repository;

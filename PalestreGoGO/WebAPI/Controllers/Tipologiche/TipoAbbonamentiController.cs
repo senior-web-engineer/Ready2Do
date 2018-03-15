@@ -19,7 +19,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/{idCliente}/tipologiche/tipoabbonamenti")]
     [Authorize]
-    public class TipoAbbonamentiController : Controller
+    public class TipoAbbonamentiController : PalestreControllerBase
     {
         private readonly ILogger<TipoAbbonamentiController> _logger;
         private readonly ITipologieAbbonamentiRepository _repository;
@@ -121,11 +121,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             _repository.Delete(idCliente, id);
             return new NoContentResult();
-        }
-
-        public virtual ClaimsPrincipal GetCurrentUser()
-        {
-            return HttpContext.User;
         }
     }
 }

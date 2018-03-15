@@ -14,19 +14,18 @@ namespace Web.Services
     {
         //private readonly IClientStore _clientStore;
         private readonly AppConfig _appConfig;
+        private readonly WebAPIClient _apiClient;
 
         public AccountServices(
-            //IClientStore clientStore,
-            IOptions<AppConfig> config)
+            IOptions<AppConfig> config,
+            WebAPIClient apiClient)
         {
-            //_clientStore = clientStore;
             _appConfig = config.Value;
-
+            _apiClient = apiClient;
         }
         public async Task<RegistrationViewModel> BuildRegisterViewModelAsync(string returnUrl)
         {
-            var allTipologie = await WebAPIClient
-                                    .GetTipologiClientiAsync(_appConfig.WebAPI.BaseAddress);
+            var allTipologie = await _apiClient.GetTipologiClientiAsync();
             var vm = new RegistrationViewModel()
             {
                 ReturnUrl = returnUrl,

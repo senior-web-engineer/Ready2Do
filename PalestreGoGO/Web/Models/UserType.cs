@@ -10,6 +10,7 @@ namespace Web.Models
         Anonymous   = 0,
         NormalUser  =0x1,
         Admin       =0x10,
-        GlobalAdmin =0x1000000
+        Owner       =0x100,
+        GlobalAdmin = 0x1000000
     }
 }
