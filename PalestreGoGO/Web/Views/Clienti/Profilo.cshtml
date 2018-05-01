@@ -1,204 +1,358 @@
-﻿@model ClienteProfileEditViewModel;
+﻿@using Microsoft.Extensions.Options;
+@using Web.Configuration;
+
+@model ClienteProfileEditViewModel;
+@inject IOptions<AppConfig> OptionsApplicationConfiguration
+
 @{
     Layout = "_LayoutClienti";
 }
 <head>
     @section Header{
         <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
-        <link href="~/css/solved-by-flexbox-grid.css" rel="stylesheet">
+        @*<link href="~/css/solved-by-flexbox-grid.css" rel="stylesheet">*@
         <style type="text/css">
             #formEditProfile .input-field {
                 margin-top: 0px;
+            }
+
+            .mt-10 {
+                margin-top: 10px;
             }
         </style>
     }
 </head>
 <!-- Non dovrebbe esserci NavBar in questa pagina-->
 <!-- Primo banner pubblicitario -->
-<section id="banner1"></section>
-
-@*@Html.Partial("_GalleryEdit", Model.GalleryVM)*@
-<section id="galleryEdit">
+<section id="banner1">
     <div class="container">
-        @{Dictionary<string, string> parms;}
-        @for (int row = 1; row <= 3; row++)
-        {
-            <div class="row">
-                @for (int col = 0; col < 3; col++)
-                {
-                    int idx = (col * 3) + row;
-                    parms = new Dictionary<string, string> { { "imageOrder", idx.ToString() } };
-
-                    <div class="col-md-4">
-                        @if (Model.GalleryVM.Images.Any(i => i.Ordinamento == idx))
-                        {
-                            <div class="gallery_item_container">
-                                <div class="thumb_container">
-                                    <span class="valign_helper" />
-                                    <img class="thumb_image" src="@Model.GalleryVM.Images.Where(i => i.Ordinamento == idx).Single().Url" />
-                                </div>
-                                <a asp-controller="Clienti" asp-action="DeleteImage" asp-all-route-data="parms" style="display:inline">Elimina</a>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="gallery_item_container">
-                                <div class="thumb_container">
-                                    <span class="valign_helper" />
-                                    <img class="thumb_image" src="~/img/no-image-available.png" />
-                                </div>
-                                <input type="file" accept="image/*" style="display:inline" onchange="uploadFile(this, @idx)" />
-                            </div>
-                        }
-                        <!-- Img 1 -->
-                    </div>
-                }
+        <div class="row center-align">
+            <div class="adsbanner_container">
+                <img src="~/img/placeholders/google/leaderboard_728x90.png" />
             </div>
-        }
+        </div>
     </div>
-    <!-- 3-->
 </section>
 
 <section id="editProfile">
     <div class="container">
         <form asp-action="ProfileEdit" method="post" id="formEditProfile">
+            <input type="hidden" asp-for="EsitoLookup" />
+            <input type="hidden" asp-for="IdCliente" />
+            <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
+            <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
+            <input id="inputCitta" type="hidden" asp-for="Citta" />
+            <input id="inputCountry" type="hidden" asp-for="Country" />
+            <input id="inputCAP" type="hidden" asp-for="CAP" />
+
             <div class="row">
-                <div class="col-md-2">Giorno</div>
-                <div class="col-md-2">Mattina</div>
-                <div class="col-md-2">Pomeriggio</div>
-                <div class="col-md-2"></div>
+                <div class="col s10 offset-s1 center-align">
+                    <h6>Modifica Anagrafica</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="text" asp-for="Nome" />
+                    <label asp-for="Nome"></label>
+                    <span asp-validation-for="Nome"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="email" asp-for="Email" readonly />
+                    <label asp-for="Email"></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="text" asp-for="RagioneSociale" />
+                    <label asp-for="RagioneSociale"></label>
+                    <span asp-validation-for="RagioneSociale"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="tel" asp-for="NumTelefono" />
+                    <label asp-for="NumTelefono"></label>
+                    <span asp-validation-for="NumTelefono"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <textarea asp-for="Descrizione" rows="5" class="materialize-textarea"></textarea>
+                    <label asp-for="Descrizione"></label>
+                    <span asp-validation-for="Descrizione"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input id="addressAutocomplete" type="text" asp-for="Indirizzo" />
+                    <label asp-for="Indirizzo"></label>
+                    <span asp-validation-for="Indirizzo"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6 offset-s1">
+                    <input type="text" asp-for="Citta" />
+                    <label asp-for="Citta"></label>
+                    <span asp-validation-for="Citta"></span>
+                </div>
+                <div class="input-field col s4">
+                    <input type="text" asp-for="CAP" />
+                    <label asp-for="CAP"></label>
+                    <span asp-validation-for="CAP"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3 offset-s1">
+                    <img src="@Model.ImmagineHome?.Url" alt="@Model.ImmagineHome?.Alt" />
+                </div>
+                <div class="input-field col s9 offset-s1">
+                    <!-- TODO: Implementare upload immagine Home-->
+                </div>
+            </div>
+
+            <!-- ORARIO APERTURA -->
+            <div class="row">
+                <div class="col s10 offset-s1 center-align">
+                    <h6>Orario Apartura</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s1 offset-s1"><span>Giorno</span></div>
+                <div class="col s2 center-align"><span>Mattina</span></div>
+                <div class="col s2 center-align"><span>Pomeriggio</span></div>
+                <div class="col s8"></div>
             </div>
             <div class="row" id="orarioLunedi">
-                <div class="col-md-2 input-field">Lunedì</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Lunedì</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Lunedi.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Lunedi.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Lunedi.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Lunedi.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Lunedi.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Lunedi.IsContinuato" />
-                    <label for="lunediContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="lunediContinuativo">
+                        <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Lunedi.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="lunediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Lunedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioLunedi')" />
-                    <label for="lunediChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="lunediChiuso">
+                        <input id="lunediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Lunedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioLunedi')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
             <div class="row" id="orarioMartedi">
-                <div class="col-md-2 input-field">Martedì</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Martedì</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Martedi.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Martedi.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Martedi.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Martedi.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Martedi.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="martediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Martedi.IsContinuato" />
-                    <label for="martediContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="martediContinuativo">
+                        <input id="martediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Martedi.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="martediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Martedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioMartedi')" />
-                    <label for="martediChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="martediChiuso">
+                        <input id="martediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Martedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioMartedi')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
             <div class="row" id="orarioMercoledi">
-                <div class="col-md-2 input-field">Mercoledì</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Mercoledì</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Mercoledi.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Mercoledi.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Mercoledi.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Mercoledi.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Mercoledi.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="mercolediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Mercoledi.IsContinuato" />
-                    <label for="mercolediContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="mercolediContinuativo">
+                        <input id="mercolediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Mercoledi.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="mercolediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Mercoledi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioMercoledi')" />
-                    <label for="mercolediChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="mercolediChiuso">
+                        <input id="mercolediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Mercoledi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioMercoledi')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
             <div class="row" id="orarioGiovedi">
-                <div class="col-md-2 input-field">Giovedì</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Giovedì</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Giovedi.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Giovedi.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Giovedi.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Giovedi.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Giovedi.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="giovediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Giovedi.IsContinuato" />
-                    <label for="giovediContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="giovediContinuativo">
+                        <input id="giovediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Giovedi.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="giovediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Giovedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioGiovedi')" />
-                    <label for="giovediChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="giovediChiuso">
+                        <input id="giovediChiuso" type="checkbox" asp-for="OrarioAperturaVM.Giovedi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioGiovedi')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
             <div class="row" id="orarioVenerdi">
-                <div class="col-md-2 input-field">Venerdì</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Venerdì</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Venerdi.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Venerdi.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Venerdi.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Venerdi.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Venerdi.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="venerdiContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Venerdi.IsContinuato" />
-                    <label for="venerdiContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="venerdiContinuativo">
+                        <input id="venerdiContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Venerdi.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="venerdiChiuso" type="checkbox" asp-for="OrarioAperturaVM.Venerdi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioVenerdi')" />
-                    <label for="venerdiChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="venerdiChiuso">
+                        <input id="venerdiChiuso" type="checkbox" asp-for="OrarioAperturaVM.Venerdi.IsChiuso" onchange="checkChiusoChanged(this, 'orarioVenerdi')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
             <div class="row" id="orarioSabato">
-                <div class="col-md-2 input-field">Sabato</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Sabato</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" />
-                    <label for="sabatoContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="sabatoContinuativo">
+                        <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="sabatoChiuso" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsChiuso" onchange="checkChiusoChanged(this, 'orarioSabato')" />
-                    <label for="sabatoChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="sabatoChiuso">
+                        <input id="sabatoChiuso" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsChiuso" onchange="checkChiusoChanged(this, 'orarioSabato')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
             <div class="row" id="orarioDomenica">
-                <div class="col-md-2 input-field">Domenica</div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Domenica</span>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" />
-                    <label for="domenicaContinuativo">Orario Continuato</label>
+                <div class="col s3 input-field">
+                    <label for="domenicaContinuativo">
+                        <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" />
+                        <span>Orario Continuato</span>
+                    </label>
                 </div>
-                <div class="col-md-2 input-field">
-                    <input id="domenicaChiuso" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsChiuso" onchange="checkChiusoChanged(this, 'orarioDomenica')" />
-                    <label for="domenicaChiuso">Chiuso tutto il giorno</label>
+                <div class="col s3 input-field">
+                    <label for="domenicaChiuso">
+                        <input id="domenicaChiuso" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsChiuso" onchange="checkChiusoChanged(this, 'orarioDomenica')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
                 </div>
             </div>
         </form>
@@ -206,22 +360,68 @@
 </section>
 
 <!-- Secondo banner pubblicitario -->
-<section id="banner2"></section>
+<section id="banner2">
+    <div class="container">
+        <div class="row center-align">
+            <div class="adsbanner_container">
+                <img src="~/img/placeholders/google/leaderboard_728x90.png" />
+            </div>
+        </div>
+    </div>
+</section>
+
 
 @section Scripts{
-    <script src="~/js/jquery-2.1.3.min.js"></script>
     <script src='~/js/moment.min.js'></script>
-    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.js"></script>
-    <script src="~/pickadate.js-3.5.6/lib/compressed/picker.time.js"></script>
-    <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    <script src="~/materialize/js/materialize.min.js"></script>
-    <script src="~/js/menuzord.js"></script>
-    <script src="~/js/scripts.js"></script>
-
     <script src="~/azure.fine-uploader/azure.fine-uploader.core.min.js"></script>
-    @*<script src="~/azure.fine-uploader/azure.jquery.fine-uploader.min.js"></script>*@
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsApplicationConfiguration.Value.GoogleAPI.GoogleMapsAPIKey&libraries=places&language=it"></script>
     <script>
-        function uploadFile(file, idx) {
+        var i18nTime = {
+            cancel: 'Annulla',
+            clear: 'Cancella',
+            done: 'Ok'
+        };
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var elems = document.getElementsByClassName('timepicker');
+            var instances = [];
+            for (i = 0; i < elems.length; i++) {
+                var instance = M.Timepicker.init(elems[i], {
+                    twelveHour: false,
+                    i18n: i18nTime
+                });
+                instance.time = elems[i].value;
+                instances.push(instance);
+            }
+        });
+
+        /// GOOGLE AUTOCOMPLETE ///
+        var input = document.getElementById('addressAutocomplete');
+        var options = {
+            type: ['(address)'],
+            componentRestrictions: { country: 'it' }
+        };
+
+        autocomplete = new google.maps.places.Autocomplete(input, options);
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+            document.getElementById('inputLatitudine').value = place.geometry.location.lat();
+            document.getElementById('inputLongitudine').value = place.geometry.location.lng();
+
+            var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
+            if (tmp) {
+                document.getElementById('inputCAP').value = tmp.long_name;
+            }
+            tmp = place.address_components.find(function (c) { return c.types[0] === "locality"; });
+            if (tmp) {
+                document.getElementById('inputCountry').value = tmp.long_name;
+            }
+            tmp = place.address_components.find(function (c) { return c.types[0] === "administrative_area_level_1"; });
+            if (tmp) {
+                document.getElementById('inputCitta').value = tmp.long_name;
+            }
+        });
+
+        @*function uploadFile(file, idx) {
             uploaders[0].addFiles(file, { fileOrder: idx });
         }
 
@@ -237,17 +437,17 @@
         var uploaders = [];
 
         jQuery(document).ready(function () {
-            $('.timepicker').pickatime({
-                default: 'now', // Set default time: 'now', '1:30AM', '16:30'
-                fromnow: 0,       // set default time to * milliseconds from now (using with default = 'now')
-                twelvehour: true, // Use AM/PM or 24-hour format
-                donetext: 'OK', // text for done-button
-                cleartext: 'Clear', // text for clear-button
-                canceltext: 'Cancel', // Text for cancel-button
-                autoclose: true, // automatic close timepicker
-                ampmclickable: false, // make AM PM clickable
-                aftershow: function () { } //Function for after opening timepicker
-            });
+            //$('.timepicker').timepicker({
+            //    default: 'now', // Set default time: 'now', '1:30AM', '16:30'
+            //    fromnow: 0,       // set default time to * milliseconds from now (using with default = 'now')
+            //    twelvehour: true, // Use AM/PM or 24-hour format
+            //    donetext: 'OK', // text for done-button
+            //    cleartext: 'Clear', // text for clear-button
+            //    canceltext: 'Cancel', // Text for cancel-button
+            //    autoclose: true, // automatic close timepicker
+            //    ampmclickable: false, // make AM PM clickable
+            //    aftershow: function () { } //Function for after opening timepicker
+            //});
         });
 
         uploaders.push(new qq.azure.FineUploaderBasic({
@@ -268,6 +468,6 @@
                     "X-PalestreGoGO-AUTHToken": "@Html.Raw(Model.GalleryVM.SASToken)"
                 }
             }
-        }));
+        }));*@
     </script>
 }

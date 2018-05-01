@@ -19,10 +19,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
     public class ClientiController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -91,37 +93,100 @@ namespace Web.Controllers
         }
 
 
-        [HttpGet("{cliente}/profile")]
+        [HttpGet("{cliente}/profilo")]
         public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
             var userType = User.GetUserTypeForCliente(cliente.IdCliente);
-            if ((userType != UserType.Admin) && (userType != UserType.GlobalAdmin)) { return Forbid(); }
-            var vm = new ClienteProfileEditViewModel();
-            vm.GalleryVM.SASToken = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
-            vm.GalleryVM.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
-                                                _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
-                                                cliente.StorageContainer);
-            if (cliente.Immagini != null)
+            if (!userType.IsAtLeastAdmin())
             {
-                foreach (var img in cliente.Immagini)
-                {
-                    vm.GalleryVM.Images.Add(new ImageViewModel()
-                    {
-                        Id = img.Id,
-                        Alt = img.Alt,
-                        Caption = img.Nome,
-                        Url = img.Url,
-                        Ordinamento = img.Ordinamento
-                    });
-                }
+                return Forbid();
             }
-            //TODO: Completare popolamento VM
-            return View("Profile", vm);
+            var vm = cliente.MapToProfileEditVM();
+            //vm.GalleryVM.SASToken = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            //vm.GalleryVM.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+            //                                    _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+            //                                    cliente.StorageContainer);
+
+            return View("Profilo", vm);
+        }
+
+        [HttpPost("{cliente}/profilo")]
+        public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute, ClienteProfileEditViewModel cliente)
+        {
+            return BadRequest(); // Da Implementare
+        }
+
+        #region Gestione Locations
+        [HttpGet("{cliente}/sale")]
+        public async Task<IActionResult> Sale([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
+            return View("Sale", locations.ToList());
+        }
+
+        [HttpGet("{cliente}/sale/{id}")]
+        public async Task<IActionResult> SalaEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name="id")]int? idSala)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+
+            Models.LocationViewModel location = null;
+            if (idSala.HasValue)
+            {
+                location = await _apiClient.GetOneLocationAsync(cliente.IdCliente, idSala.Value);
+            }
+            else
+            {
+                location = new Models.LocationViewModel();
+            }
+            return View("Sala", location);
         }
 
 
+        [HttpPost("{cliente}/sale")]
+        public async Task<IActionResult> SalaEdit([FromRoute(Name = "cliente")]string urlRoute, [FromBody] Models.LocationViewModel location)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View("Sala", location);
+            }
+            await _apiClient.SaveLocationAsync(cliente.IdCliente, location);
+            return RedirectToAction("Sale");
+        }
+
+
+        [HttpDelete("{cliente}/sale/{id}")]
+        public async Task<IActionResult> SalaDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idSala)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            await _apiClient.DeleteOneLocationAsync(cliente.IdCliente, idSala);
+            return RedirectToAction("Sale");
+        }
+
+        #endregion
         #region Helpers
         /// <summary>
         /// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax

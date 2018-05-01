@@ -10,8 +10,9 @@
     line-height: 18px;
 }
 
-.top_bar_height {
+.top_bar_main {
     min-height: 55px;
+    border-bottom: 1px solid #ccc;
 }
 
 .menu_cliente {
@@ -59,4 +60,11 @@
     display: inline-block;
     height: 100%;
     vertical-align: middle;
+}
+
+
+/* Stile per i banner pubblicitari*/
+.adsbanner_container {
+    padding-bottom: 4rem;
+    padding-top: 4rem;
 }

@@ -97,6 +97,44 @@ namespace Web.Utils
             return result;
         }
 
+        public async Task SaveLocationAsync(int idCliente, Models.LocationViewModel location)
+        {
+            HttpClient client = new HttpClient();
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations");
+            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
+            var content = new StringContent(JsonConvert.SerializeObject(location), Encoding.UTF8, "application/json");
+            HttpResponseMessage response;
+            if (location.Id.HasValue && location.Id.Value > 0)
+            {
+                response = await client.PutAsync(uri, content);
+            }
+            else
+            {
+                response = await client.PostAsync(uri, content);
+            }
+            response.EnsureSuccessStatusCode();            
+        }
+
+        public async Task<Models.LocationViewModel> GetOneLocationAsync(int idCliente, int idLocation)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
+            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Models.LocationViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
+        public async Task DeleteOneLocationAsync(int idCliente, int idLocation)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
+            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
 
         public async Task<IEnumerable<Models.TipologieLezioniViewModel>> GetTipologieLezioniClienteAsync(int idCliente)
         {

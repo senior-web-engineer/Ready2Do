@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,8 +8,10 @@ namespace Web.Models
 {
     public class FasciaOrariaViewmodel
     {
-        public TimeSpan Inizio { get; set; }
-        public TimeSpan Fine { get; set; }
+        [RegularExpression("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")]
+        public string Inizio { get; set; }
+        [RegularExpression("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")]
+        public string Fine { get; set; }
     }
 
     public class GiornoViewModel
@@ -20,6 +23,12 @@ namespace Web.Models
             IsContinuato = true;
         }
 
+        public GiornoViewModel(string nome) : base()
+        {
+            Nome = nome;
+        }
+
+        public string Nome { get; set; }
         public FasciaOrariaViewmodel Mattina { get; set; }
         public FasciaOrariaViewmodel Pomeriggio { get; set; }
         public bool IsContinuato { get; set; }
@@ -30,13 +39,13 @@ namespace Web.Models
     {
         public OrarioAperturaViewModel()
         {
-            Lunedi = new GiornoViewModel();
-            Martedi = new GiornoViewModel();
-            Mercoledi = new GiornoViewModel();
-            Giovedi = new GiornoViewModel();
-            Venerdi = new GiornoViewModel();
-            Sabato = new GiornoViewModel();
-            Domenica = new GiornoViewModel();
+            Lunedi = new GiornoViewModel("Lunedì");
+            Martedi = new GiornoViewModel("Martedì");
+            Mercoledi = new GiornoViewModel("Mercoledì");
+            Giovedi = new GiornoViewModel("Giovedì");
+            Venerdi = new GiornoViewModel("Venerdì");
+            Sabato = new GiornoViewModel("Sabato");
+            Domenica = new GiornoViewModel("Domenica");
         }
 
         public GiornoViewModel Lunedi { get; set; }

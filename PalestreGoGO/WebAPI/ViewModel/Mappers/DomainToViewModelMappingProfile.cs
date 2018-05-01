@@ -48,6 +48,7 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                 .ForPath(d => d.Indirizzo.Coordinate.Longitudine, opt => opt.MapFrom(src => src.Longitudine))
                 .ForPath(d => d.Indirizzo.PostalCode, opt => opt.MapFrom(src => src.ZipOrPostalCode))
                 .ForPath(d => d.Indirizzo.Country, opt => opt.MapFrom(src => src.Country))
+                .ForPath(d => d.Indirizzo.Indirizzo, opt => opt.MapFrom(src => src.Indirizzo))
                 .ForMember(d => d.ImmagineHome, opt =>
                                     opt.MapFrom(src => Mapper.Map<ClientiImmagini, ImmagineViewModel>(
                                     src.ClientiImmagini.Where(i => i.IdTipoImmagine.Equals(Constants.TIPOIMMAGINE_SFONDO)).FirstOrDefault())))

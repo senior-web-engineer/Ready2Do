@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -34,6 +35,7 @@ namespace Palestregogo.STS.UI
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IIdentityServerInteractionService _interaction;
+        private readonly IRedirectUriValidator _validator;
         private readonly IEventService _events;
         private readonly AccountService _account;
         private readonly ILogger<AccountController> _logger;

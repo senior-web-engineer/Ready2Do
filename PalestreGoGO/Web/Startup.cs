@@ -47,16 +47,13 @@ namespace Web
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme =
-                    CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme =
-                    OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultScheme =CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                options.SignInScheme =
-                    CookieAuthenticationDefaults.AuthenticationScheme;
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.Authority = Configuration["AppConfig:STS:Authority"];
                 options.RequireHttpsMetadata = bool.Parse(Configuration["AppConfig:STS:RequireHttpsMetadata"]);
                 options.ClientId = Configuration["AppConfig:STS:ClientId"];

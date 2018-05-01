@@ -13,6 +13,8 @@ using Palestregogo.STS.Business;
 using Microsoft.EntityFrameworkCore;
 using Palestregogo.STS.Services;
 using IdentityServer4.Services;
+using Palestregogo.STS.UI.Services;
+using IdentityServer4.Validation;
 
 namespace Palestregogo.STS
 {
@@ -68,18 +70,22 @@ namespace Palestregogo.STS
                 .AddInMemoryApiResources(STSConfig.GetApiResources())
                 .AddInMemoryClients(STSConfig.GetClients())
                 .AddProfileService<STSProfileService>()
-                .AddAspNetIdentity<AppUser>();
+                .AddAspNetIdentity<AppUser>()
+                .AddRedirectUriValidator<CustomRedirectUriValidator>();
+
 
             services.AddTransient<IProfileService, STSProfileService>();
 
             services.AddAuthentication();
+
+            services.AddTransient<IRedirectUriValidator, CustomRedirectUriValidator>();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -128,5 +128,12 @@ namespace Web.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login(string returnUrl)
+        {
+            return RedirectPermanent($"{_appConfig.LoginUrl}&returnUrl={returnUrl}");
+        }
     }
 }

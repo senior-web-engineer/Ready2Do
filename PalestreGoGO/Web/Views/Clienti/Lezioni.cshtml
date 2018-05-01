@@ -1,4 +1,4 @@
-﻿
+﻿@model List<LocationViewModel>
 @{
     ViewData["Title"] = "Lezioni";
     Layout = "_LayoutClienti";
@@ -6,3 +6,34 @@
 
 <h2>Lezioni</h2>
 
+@if ((Model == null) || (Model.Count == 0))
+{
+    <span>Nessuna lezione inserita.</span>
+}
+else
+{
+    <table class="stripped responsive-table">
+        <thead>
+            <tr>
+                <th>Sala</th>
+                <th>Descrizione</th>
+                <th>Capienza</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(var s in Model) { 
+            <tr>
+                <td data-id-sala="@s.Id">@s.Nome</td>
+                <td>@s.Descrizione</td>
+                <td>@s.CapienzaMax</td>
+                <td>
+                    <div><button type="button" onclick="editSala(@s.Id);">Modifica</button></div>
+                    <div><button type="button" onclick="editSala(@s.Id);">Elimina</button></div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}

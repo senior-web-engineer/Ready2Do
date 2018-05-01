@@ -85,7 +85,7 @@ namespace Palestregogo.STS
                                       IdentityServerConstants.StandardScopes.OfflineAccess
                     },
                     AccessTokenType = AccessTokenType.Jwt,
-                    RedirectUris = {"http://localhost:18071/signin-oidc", "https://localhost:44320/signin-oidc" },
+                    RedirectUris = {"http://localhost:18071/signin-oidc", "https://localhost:44320/signin-oidc", "https://localhost:44320", "https://localhost:44320/" },
                     AllowedCorsOrigins = new List<string>
                     {
                         "https://localhost:44320/",
@@ -94,7 +94,8 @@ namespace Palestregogo.STS
                     AllowAccessTokensViaBrowser = true, //permit transmit access tokens via the browser channel
                     RequireConsent = false,  //disabilitiamo il CONSENT SCREEN
                     AlwaysIncludeUserClaimsInIdToken = true,
-                    AlwaysSendClientClaims = true
+                    AlwaysSendClientClaims = true,
+                    
                 },
                 new Client
                 {
