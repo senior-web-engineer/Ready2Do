@@ -15,6 +15,8 @@ using Web.Configuration;
 using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Web.Controllers
 {
@@ -32,6 +34,28 @@ namespace Web.Controllers
             _appConfig = apiOptions.Value;
             _account = account;
             _apiClient = apiClient;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login(string returnUrl = null)
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = Url.Action("Index", "Home");
+            }
+            var authProps = new AuthenticationProperties()
+                                {
+                                    RedirectUri = returnUrl
+                                };
+            return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            //NOTA: Aggiungere le properties?
+            return SignOut(OpenIdConnectDefaults.AuthenticationScheme);
         }
 
         //
@@ -80,12 +104,12 @@ namespace Web.Controllers
                 };
                 //Parsing coordinate
                 //NOTA: dato che usando direttamente il itpo float nem ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
-                if(float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
+                if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
                     float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
                 {
                     apiModel.Coordinate = new CoordinateViewModel(latitudine, longitudine);
                     var result = await _apiClient.NuovoClienteAsync(apiModel);
-                        if (result)
+                    if (result)
                     {
                         return RedirectToAction("MailToConfirm");
                     }
@@ -127,13 +151,6 @@ namespace Web.Controllers
             {
                 return BadRequest();
             }
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Login(string returnUrl)
-        {
-            return RedirectPermanent($"{_appConfig.LoginUrl}&returnUrl={returnUrl}");
         }
     }
 }

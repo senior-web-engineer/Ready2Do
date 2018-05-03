@@ -97,29 +97,32 @@ namespace Web.Utils
             return result;
         }
 
-        public async Task SaveLocationAsync(int idCliente, Models.LocationViewModel location)
+        public async Task SaveLocationAsync(int idCliente, Models.LocationViewModel location, string access_token)
         {
             HttpClient client = new HttpClient();
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations");
-            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
-            var content = new StringContent(JsonConvert.SerializeObject(location), Encoding.UTF8, "application/json");
-            HttpResponseMessage response;
+            HttpRequestMessage request;
             if (location.Id.HasValue && location.Id.Value > 0)
             {
-                response = await client.PutAsync(uri, content);
+                request = new HttpRequestMessage(HttpMethod.Put, uri);
             }
             else
             {
-                response = await client.PostAsync(uri, content);
+                request = new HttpRequestMessage(HttpMethod.Post, uri);
             }
-            response.EnsureSuccessStatusCode();            
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
+            request.Content = new StringContent(JsonConvert.SerializeObject(location), Encoding.UTF8, "application/json");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
         }
 
-        public async Task<Models.LocationViewModel> GetOneLocationAsync(int idCliente, int idLocation)
+
+        public async Task<Models.LocationViewModel> GetOneLocationAsync(int idCliente, int idLocation, string access_token)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
-            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
@@ -147,6 +150,42 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<IEnumerable<Models.TipologieLezioniViewModel>>(responseString, _serializerSettings);
             return result;
         }
+
+        public async Task<Models.TipologieLezioniViewModel> GetOneTipologiaLezione(int idCliente, int idLocation, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{idLocation}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Models.TipologieLezioniViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
+
+        public async Task SaveTipologiaLezioneAsync(int idCliente, Models.TipologieLezioniViewModel tipoLezione, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni");
+            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
+            HttpRequestMessage request;
+            if (tipoLezione.Id.HasValue && tipoLezione.Id.Value > 0)
+            {
+                request = new HttpRequestMessage(HttpMethod.Put, uri);
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, uri);
+            }
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
+            request.Content = new StringContent(JsonConvert.SerializeObject(tipoLezione), Encoding.UTF8, "application/json");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+
         public async Task<IEnumerable<ScheduleDetailsViewModel>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToString("yyyyMMddTHHmmss")}&ed={end.ToString("yyyyMMddTHHmmss")}&lid={idLocation}");
@@ -213,6 +252,17 @@ namespace Web.Utils
                 response = await client.PostAsync(uri, content);
             }
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<string> DeleteImmagineGalleryAsync(int idCliente, int idImage, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/gallery/{idImage}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(responseString, _serializerSettings);
         }
 
         //public async Task GallerySalvaImmagine(int idCliente, ImmagineViewModel image, string token)

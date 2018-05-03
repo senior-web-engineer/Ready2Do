@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/{idCliente:int}/tipologiche/tipolezioni")]
-    //[Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TipoLezioniController : PalestreControllerBase
     {
         private readonly ILogger<TipoLezioniController> _logger;
@@ -30,6 +31,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             this._repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet()]
         public IActionResult GetAll([FromRoute]int idCliente)
         {
@@ -40,11 +42,12 @@ namespace PalestreGoGo.WebAPI.Controllers
             //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             //}
             var tipoLezioni = _repository.GetAll(idCliente);
-            var result = Mapper.Map<IEnumerable<TipologieLezioni>,IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
+            var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
             return new OkObjectResult(result);
         }
 
-        [HttpGet("{id}")]
+        [AllowAnonymous]
+        [HttpGet("{id}", Name = "GetTipoLezione")]
         public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
         {
             bool authorized = GetCurrentUser().CanReadTipologiche(idCliente);
@@ -53,7 +56,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
             var tipoLezione = _repository.GetSingle(idCliente, id);
-            if((tipoLezione == null) || (tipoLezione.IdCliente != idCliente))
+            if ((tipoLezione == null) || (tipoLezione.IdCliente != idCliente))
             {
                 return BadRequest();
             }
@@ -65,7 +68,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpPost()]
         public IActionResult Create([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
         {
-            
+
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
@@ -78,7 +81,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
             m.IdCliente = idCliente;
             _repository.Add(idCliente, m);
-            return CreatedAtAction("GetOne", m.Id);
+            //return CreatedAtAction("GetTipoLezione", new { idCliente, id = m.Id });
+            return Ok();
         }
 
         [HttpPut()]
@@ -95,7 +99,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
             var oldEntity = _repository.GetSingle(idCliente, m.Id);
-            if(oldEntity == null)
+            if (oldEntity == null)
             {
                 return BadRequest();
             }
@@ -105,7 +109,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             oldEntity.MaxPartecipanti = model.MaxPartecipanti;
             oldEntity.Nome = model.Nome;
             oldEntity.LimiteCancellazioneMinuti = model.LimiteCancellazioneMinuti;
-            _repository.Update(idCliente, oldEntity);            
+            _repository.Update(idCliente, oldEntity);
             return Ok();
         }
 

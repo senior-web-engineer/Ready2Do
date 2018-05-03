@@ -73,7 +73,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Get_tipo_lezione ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var tipoLezione = okResult.Value.Should().BeAssignableTo<TipologieLezioniViewModel>().Subject;
             tipoLezione.Id.Should().Be(_tipoLezioneFixture.TipoLezione.Id);
@@ -116,7 +116,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Get_tipo_lezione_modified ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var tipoLezione = okResult.Value.Should().BeAssignableTo<TipologieLezioniViewModel>().Subject;
             tipoLezione.Id.Should().Be(_tipoLezioneFixture.TipoLezione.Id);

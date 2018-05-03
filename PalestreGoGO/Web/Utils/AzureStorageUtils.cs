@@ -35,5 +35,11 @@ namespace Web.Utils
             await contRef.CreateIfNotExistsAsync();
         }
 
+        public static async Task DeleteBlobAsync(AzureConfig config, string blobUri)
+        {
+            var credentials = new StorageCredentials(config.Storage.AccountName, config.Storage.AccountKey);
+            CloudBlockBlob blob = new CloudBlockBlob(new Uri(blobUri), credentials);
+            await blob.DeleteIfExistsAsync();
+        }
     }
 }

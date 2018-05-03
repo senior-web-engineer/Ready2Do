@@ -18,22 +18,26 @@
                         <!-- questo server per il burger menu per il mobile-->
                         <a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                         <ul class="hide-on-med-and-down">
-                            <li><a class="blue-text text-darken-2" asp-action="CalendarEdit">Calendari</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Index">Home</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Index" asp-controller="Scheduler">Calendari</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="ProfileEdit">Profilo</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="GalleryEdit">Gallery</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="SaleEdit">Sale</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="LezioniEdit">Lezioni</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Sale">Sale</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Lezioni">Lezioni</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="UtentiEdit">Utenti</a></li>
                         </ul>
                     }
                     <ul class="right">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li><a class="blue-text text-darken-2" href="@OptionsApplicationConfiguration.Value.LogoutUrl">Logout</a></li>
+                            <li><a class="blue-text text-darken-2" asp-route="logout" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Logout</a></li>
                         }
                         else
                         {
-                            <li><a class="blue-text text-darken-2" href='@string.Format("{0}?returnurl={1}",OptionsApplicationConfiguration.Value.LoginUrl,Context.Request.GetEncodedUrl())'>Logon</a></li>
+                            <li>
+                                @*<a class="blue-text text-darken-2" href='@string.Format("{0}?returnurl={1}",OptionsApplicationConfiguration.Value.LoginUrl,Context.Request.GetEncodedUrl())'>Logon</a>*@
+                                <a class="blue-text text-darken-2" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Accedi</a>
+                            </li>
                         }
                     </ul>
                 </div>

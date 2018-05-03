@@ -193,6 +193,16 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpDelete("{idCliente:int}/gallery/{idImage}")]
+        public async Task<IActionResult> ClienteDeleteImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idImage")] int idImage)
+        {
+            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+            if (!ModelState.IsValid) { return BadRequest(); }
+            var existing = _repository.GetImage(idCliente, idImage);
+            if (existing == null) return BadRequest();
+            await _repository.DeleteImageAsync(idCliente, idImage);
+            return Ok(existing.Url);
+        }
 
         /// <summary>
         /// 

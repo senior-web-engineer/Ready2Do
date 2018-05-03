@@ -5,12 +5,29 @@
 
 @section Header{
     <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+
     <script src="~/azure.fine-uploader/azure.fine-uploader.core.js"></script>
+
+    <link href="~/css/ajax-modal.css" rel="stylesheet" />
 
     <!-- Sortable Library from https://github.com/RubaXa/Sortable -->
     @*<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>*@
+    <style type="text/css">
+        .spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -50px; /* half width of the spinner gif */
+            margin-top: -50px; /* half height of the spinner gif */
+            text-align: center;
+            z-index: 1234;
+            overflow: auto;
+            width: 100px; /* width of the spinner gif */
+            height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+        }
+    </style>
 }
-
+@Html.Partial("_MenuCliente", ViewData["IdCliente"])
 <section id="galleryEdit">
     <input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />
 
@@ -48,6 +65,9 @@
     </div>
 </section>
 
+@*<div id="spinner" class="spinner" style="display:none;">
+        <img id="img-spinner" src="~/img/ajax-loader.gif" alt="Loading" />
+    </div>*@
 
 <!-- Dialog Modale per la conferma della cancellazione -->
 <div id="modalConfermaCanc" class="modal">
@@ -57,17 +77,30 @@
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Annulla</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Conferma</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat" onclick="ConfirmImageDelete()">Conferma</a>
     </div>
 </div>
+<div class="ajax-modal"></div>
+
 @section Scripts{
+    <script src="~/js/jquery-ajax-modal.js"></script>
 
     <script>
+
+        //$(document)
+        //    .ajaxStart(function () {
+        //        $("#spinner").show();
+        //    })
+        //    .ajaxStop(function () {
+        //        $("#spinner").hide();
+        //    });
+
+
         var uploader;
         var modal;
         var btnFileSelect;
         var currentFileIdx; //Indice dell'immagine attualmente in upload
-        document.addEventListener("DOMContentLoaded", function (event) {          
+        document.addEventListener("DOMContentLoaded", function (event) {
            //Init Uploader
             uploader = new qq.azure.FineUploaderBasic({
                 autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
@@ -102,9 +135,9 @@
             });
             //Init Modal
             modal = M.Modal.init(document.getElementById('modalConfermaCanc'), {
-                onOpenStart: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3);},
-                onCloseStart: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3); },
-                onCloseEnd: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3); }
+                //onOpenStart: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3);},
+                //onCloseStart: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3); },
+                //onCloseEnd: function (a1, a2, a3) { alert(a1); alert(a2); alert(a3); }
             });
             btnFileSelect = document.getElementById('fileSelect');
         });
@@ -128,6 +161,21 @@
         function deleteImage(imageId) {
             modal.imageId = imageId;
             modal.open(imageId);
+        }
+
+        function ConfirmImageDelete() {
+            $('body').addClass('modal-loading');
+            $.ajax({
+                type: "DELETE",
+                url: "./gallery/delete/" + modal.imageId,
+                success: function (data) {
+                    location.reload();
+                },
+                error: function (request, textStatus, error) {
+                    alert("Errore durante la cancellazione dell'immagine. " + error);
+                    $('body').removeClass('modal-loading');
+                }
+            });
         }
     </script>
 }

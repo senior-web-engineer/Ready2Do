@@ -87,9 +87,18 @@ namespace Web.Controllers
         }
 
         [HttpDelete("{cliente}/gallery/delete/{imageId}")]
-        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute)
+        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="imageId")]int imageId)
         {
-            return await ProfileEdit(urlRoute);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var userType = User.GetUserTypeForCliente(cliente.IdCliente);
+            if (!userType.IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var urlImage = await _apiClient.DeleteImmagineGalleryAsync(cliente.IdCliente, imageId, accessToken);
+            await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, urlImage);
+            return await GalleryEdit(urlRoute);
         }
 
 
@@ -128,12 +137,13 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
+            ViewData["IdCliente"] = cliente.IdCliente;
             var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
             return View("Sale", locations.ToList());
         }
 
         [HttpGet("{cliente}/sale/{id}")]
-        public async Task<IActionResult> SalaEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name="id")]int? idSala)
+        public async Task<IActionResult> SalaEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name="id")]int idSala)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
@@ -143,9 +153,10 @@ namespace Web.Controllers
             }
 
             Models.LocationViewModel location = null;
-            if (idSala.HasValue)
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (idSala > 0)
             {
-                location = await _apiClient.GetOneLocationAsync(cliente.IdCliente, idSala.Value);
+                location = await _apiClient.GetOneLocationAsync(cliente.IdCliente, idSala, accessToken);
             }
             else
             {
@@ -168,7 +179,8 @@ namespace Web.Controllers
             {
                 return View("Sala", location);
             }
-            await _apiClient.SaveLocationAsync(cliente.IdCliente, location);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _apiClient.SaveLocationAsync(cliente.IdCliente, location, accessToken);
             return RedirectToAction("Sale");
         }
 
@@ -184,6 +196,82 @@ namespace Web.Controllers
             }
             await _apiClient.DeleteOneLocationAsync(cliente.IdCliente, idSala);
             return RedirectToAction("Sale");
+        }
+
+        #endregion
+
+        #region Gestione Tipologie Lezioni
+        [HttpGet("{cliente}/lezioni")]
+        public async Task<IActionResult> Lezioni([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            
+            ViewData["IdCliente"] = cliente.IdCliente;
+            var lezioni= await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
+            return View("Lezioni", lezioni.ToList());
+        }
+
+        [HttpGet("{cliente}/lezioni/{id:int}")]
+        public async Task<IActionResult> LezioneEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idLezione)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+
+            Models.TipologieLezioniViewModel tipoLezione = null;
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (idLezione > 0)
+            {
+                tipoLezione = await _apiClient.GetOneTipologiaLezione(cliente.IdCliente, idLezione, accessToken);
+            }
+            if(tipoLezione == null)
+            {
+                return NotFound();
+            }
+            return View("Lezione", tipoLezione);
+        }
+
+        [HttpGet("{cliente}/lezioni/new")]
+        public async Task<IActionResult> LezioneAdd([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+
+            Models.TipologieLezioniViewModel tipoLezione = new Models.TipologieLezioniViewModel();
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            return View("Lezione", tipoLezione);
+        }
+
+
+        [HttpPost("{cliente}/lezioni")]
+        public async Task<IActionResult> LezioneSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.TipologieLezioniViewModel tipoLezione)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View("Lezione", tipoLezione);
+            }
+            if(tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; } 
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _apiClient.SaveTipologiaLezioneAsync(cliente.IdCliente, tipoLezione, accessToken);
+            return RedirectToAction("Lezioni");
         }
 
         #endregion

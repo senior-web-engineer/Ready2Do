@@ -35,7 +35,6 @@ namespace Palestregogo.STS.UI
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IIdentityServerInteractionService _interaction;
-        private readonly IRedirectUriValidator _validator;
         private readonly IEventService _events;
         private readonly AccountService _account;
         private readonly ILogger<AccountController> _logger;

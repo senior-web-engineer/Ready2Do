@@ -32,6 +32,7 @@ namespace Palestregogo.STS
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(ObjectDisposedException: true));
             services.AddOptions();
             services.Configure<ApplicationConfiguration>(Configuration.GetSection("ApplicationConfiguration"));
 
@@ -63,15 +64,21 @@ namespace Palestregogo.STS
             // configure identity server with in-memory stores, keys, clients and scopes
             STSConfig.Configuration = Configuration;
             services
-                .AddIdentityServer()
+                .AddIdentityServer(options =>
+                {
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
+                })
                 .AddDeveloperSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(STSConfig.GetIdentityResources())
                 .AddInMemoryApiResources(STSConfig.GetApiResources())
                 .AddInMemoryClients(STSConfig.GetClients())
-                .AddProfileService<STSProfileService>()
+                //.AddRedirectUriValidator<CustomRedirectUriValidator>()
                 .AddAspNetIdentity<AppUser>()
-                .AddRedirectUriValidator<CustomRedirectUriValidator>();
+                .AddProfileService<STSProfileService>();
 
 
             services.AddTransient<IProfileService, STSProfileService>();
