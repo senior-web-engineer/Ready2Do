@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/{idCliente:int}/tipologiche/locations")]
-    //[Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class LocationsController: PalestreControllerBase
     {
 
@@ -28,12 +29,13 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet()]
+        [AllowAnonymous]
         public IActionResult GetAll([FromRoute]int idCliente)
         {
             //bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             //if (!authorized)
             //{
-            //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
+            //    return Forbid();
             //}
             var locations = _repository.GetAll(idCliente);
             var result = Mapper.Map<IEnumerable<Locations>, IEnumerable<LocationViewModel>>(locations);
@@ -41,13 +43,14 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
         {
-            bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
-            }
+            //bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
+            //if (!authorized)
+            //{
+            //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
+            //}
             var location = _repository.GetSingle(idCliente, id);
             if ((location == null) || (location.IdCliente != idCliente))
             {
@@ -74,7 +77,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             var m = Mapper.Map<LocationViewModel, Locations>(model);
             m.IdCliente = idCliente;
             _repository.Add(idCliente, m);
-            return CreatedAtAction("GetOne", m.Id);
+            //return CreatedAtAction("GetOne", m.Id);
+            return Ok();
         }
 
         [HttpPut()]

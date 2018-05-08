@@ -14,6 +14,7 @@ using Web.Services;
 using Web.Configuration;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Web.Controllers
 {
@@ -38,7 +39,7 @@ namespace Web.Controllers
         [HttpGet("{cliente}/eventi/new")]
         public async Task<IActionResult> NewEvento([FromRoute(Name = "cliente")]string urlRoute,
                                                     [FromQuery(Name = "lid")] string lid,
-                                                    [FromQuery(Name = "date")] string dataEvento, 
+                                                    [FromQuery(Name = "date")] string dataEvento,
                                                     [FromQuery(Name = "time")] string oraEvento)
         {
             var vm = new EventoViewModel();
@@ -56,7 +57,7 @@ namespace Web.Controllers
             {
                 vm.OraInizio = timeParsed;
             }
-            if(!string.IsNullOrWhiteSpace(lid) && int.TryParse(lid, out idLocation))
+            if (!string.IsNullOrWhiteSpace(lid) && int.TryParse(lid, out idLocation))
             {
                 vm.IdLocation = idLocation;
             }
@@ -68,7 +69,7 @@ namespace Web.Controllers
 
         [HttpPost("{cliente}/eventi/new")]
         [HttpPost("{cliente}/eventi/edit/{id}")]
-        public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] EventoViewModel evento, [FromRoute(Name="id")] int? idEvento)
+        public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] EventoViewModel evento, [FromRoute(Name = "id")] int? idEvento)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
@@ -95,7 +96,8 @@ namespace Web.Controllers
                 IdTipoLezione = evento.IdTipoLezione.Value,
                 Id = evento.Id
             };
-            await _apiClient.SaveSchedule(cliente.IdCliente, apiVM);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _apiClient.SaveSchedule(cliente.IdCliente, apiVM, accessToken);
             return RedirectToAction("Index", "Schedules");
         }
 
@@ -129,7 +131,7 @@ namespace Web.Controllers
                 Note = apiModel.Note,
                 OraInizio = apiModel.OraInizio,
                 PostiDisponibili = apiModel.PostiDisponibili,
-                Id = apiModel.Id                
+                Id = apiModel.Id
             };
             return vm;
         }

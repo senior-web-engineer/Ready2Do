@@ -3,7 +3,29 @@
 @{
     Layout = "_LayoutClienti";
 }
-@Html.Partial("_MenuCliente", Model.IdCliente)
+@section Header{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
+    <style>
+        .fc-time-grid .fc-slats td {
+            height: 3em;
+        }
+        .spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -50px; /* half width of the spinner gif */
+            margin-top: -50px; /* half height of the spinner gif */
+            text-align: center;
+            z-index: 1234;
+            overflow: auto;
+            width: 100px; /* width of the spinner gif */
+            height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+        }
+    </style>
+}
+
+
+@Html.Partial("_MenuCliente", ViewData["IdCliente"])
 @*<input type="hidden" id="token" value="@ViewBag.AuthToken"/>*@
 <div class="container">
     <!-- TABS SALE-->
@@ -28,14 +50,10 @@
         </div>
     </div>
 </div>
-@section Header{
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
-    <style>
-        .fc-time-grid .fc-slats td {
-            height: 3em;
-        }
-    </style>
-}
+
+<div id="spinner" class="spinner" style="display:none;">
+    <img id="img-spinner" src="~/img/ajax-loader.gif" alt="Loading" />
+</div>
 
 
 @section Scripts{
@@ -95,18 +113,15 @@
                     }
                 },
                 dayClick: function (date, jsEvent, view) {
-                    alert('Clicked on: ' + date.format());
-                    alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-                    alert('Current view: ' + view.name);
+                    $("#spinner").show();
                     addEvento(date);
-                    // change the day's background color just for fun
-                    $(this).css('background-color', 'red');
+                    //TODO: Caricare loader!
                 },
                 eventClick: function (calEvent, jsEvent, view) {
-                    alert('Event: ' + calEvent.title);
-                    alert('Event Id: ' + calEvent.id);
+                    $("#spinner").show();
                     var url = "eventi/edit/" + calEvent.id;
                     window.location = url;
+                    //TODO: Caricare loader!
                 }
             })
         });

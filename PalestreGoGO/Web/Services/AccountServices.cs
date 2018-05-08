@@ -53,5 +53,10 @@ namespace Web.Services
             result.Telefono = model.Telefono;
             return result;
         }
+
+        public async Task<bool> CheckEmailAsync(string email)
+        {
+            return await _apiClient.CheckEmail(email);
+        }
     }
 }

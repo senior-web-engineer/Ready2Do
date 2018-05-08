@@ -10,6 +10,7 @@
 
 
 	CONSTRAINT PK_TipologieAbbonamenti PRIMARY KEY ([Id]),
+	-- ATTENZIONE: Almeno uno tra duratamesi e numIngressi dovrebbe essere valorizzato
 	-- Durata e Num Ingressi potrebbero esistere contemporaneamente (num ingressi entro x mesi)
 	--CONSTRAINT CK_TipologieAbbonamenti CHECK (([DurataMesi] IS NOT NULL) OR ([NumIngressi] IS NOT NULL)),
 	CONSTRAINT FK_TipologieAbbonamenti_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),

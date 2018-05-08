@@ -165,7 +165,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Delete_tipo_lezione ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id);
+            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value);
             var okResult = result.Should().BeOfType<NoContentResult>().Subject;
         }
     }

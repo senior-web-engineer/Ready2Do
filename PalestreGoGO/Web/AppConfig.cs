@@ -21,6 +21,7 @@ namespace Web.Configuration
         public STSConfig STS { get; set; }
         public GoogleAPIConfig GoogleAPI { get; set; }
         public AzureConfig Azure { get; set; }
+        public MemoryCacheConfig CacheConfig { get; set; }
     }
 
     public class WebAPIConfig
@@ -54,5 +55,10 @@ namespace Web.Configuration
         }
         public string SendGridAPIKey { get; set; }
         public StorageConfig Storage { get; set; }
+    }
+
+    public class MemoryCacheConfig
+    {
+        public int ClienteSlidingExpiration { get; set; }
     }
 }

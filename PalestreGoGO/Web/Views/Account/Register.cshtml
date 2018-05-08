@@ -4,7 +4,7 @@
 @model RegistrationViewModel
 @inject IOptions<AppConfig> OptionsApplicationConfiguration
 
-@{ 
+@{
     Layout = "_LayoutLanding";
 }
 <section class="section">
@@ -140,15 +140,6 @@
     <script src="~/materialize/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
     <script src="~/js/autocompleteajax.js"></script>
-    @*<script src="~/js/bootstrap-tabcollapse.min.js"></script>*@
-    @*<script src="~/js/jquery.easing.min.js"></script>
-        <script src="~/js/jquery.sticky.min.js"></script>
-        <script src="~/js/smoothscroll.min.js"></script>
-        <script src="~/js/jquery.stellar.min.js"></script>
-        <script src="~/js/jquery.inview.min.js"></script>
-        <script src="~/owl.carousel/owl.carousel.min.js"></script>
-        <script src="~/flexSlider/jquery.flexslider-min.js"></script>
-        <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>*@
     @*<script src="https://maps.googleapis.com/maps/api/js"></script>*@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsApplicationConfiguration.Value.GoogleAPI.GoogleMapsAPIKey&libraries=places&language=it"></script>
     <script src="~/js/scripts.js"></script>

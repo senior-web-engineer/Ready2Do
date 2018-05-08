@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti/{idCliente:int}/schedules")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SchedulesController : PalestreControllerBase
     {
         private readonly ILogger<SchedulesController> _logger;
@@ -34,7 +35,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest();
             var entity = Mapper.Map<ScheduleViewModel, Schedules>(model);
             await _repository.AddScheduleAsync(idCliente, entity);
-            return CreatedAtAction("GetSchedule", entity.Id);
+            return Ok(entity.Id);
         }
 
         /// <summary>

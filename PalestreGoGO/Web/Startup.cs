@@ -37,6 +37,10 @@ namespace Web
             // Add application services.
             services.AddTransient<AccountServices, AccountServices>();
             services.AddTransient<WebAPIClient, WebAPIClient>();
+            services.AddTransient<ClienteResolverServices, ClienteResolverServices>();
+
+            //Aggiungiamo la cache in memory
+            services.AddMemoryCache();
 
             //TODO: CONFIGURARE DPAPI PER USARE UN CERTIFICATO SU AZURE (STORAGE O VAULT)
             // vedi: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/implementation/key-storage-providers#azure-and-redis

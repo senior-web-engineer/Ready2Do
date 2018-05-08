@@ -73,6 +73,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
         }
 
+
         /// <summary>
         /// Registrazione di un Nuovo Cliente CONTESTUALMENTE ad un nuovo Utente
         /// </summary>

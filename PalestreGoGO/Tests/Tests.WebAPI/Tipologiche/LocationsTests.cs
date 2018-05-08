@@ -70,7 +70,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Get_location...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var location = okResult.Value.Should().BeAssignableTo<LocationViewModel>().Subject;
             location.Id.Should().Be(_locationFixture.Location.Id);
@@ -108,7 +108,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Get_location_modified ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var tipoLezione = okResult.Value.Should().BeAssignableTo<LocationViewModel>().Subject;
             tipoLezione.Id.Should().Be(_locationFixture.Location.Id);
@@ -151,7 +151,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Delete_location ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id);
+            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id.Value);
             var okResult = result.Should().BeOfType<NoContentResult>().Subject;
         }
     }

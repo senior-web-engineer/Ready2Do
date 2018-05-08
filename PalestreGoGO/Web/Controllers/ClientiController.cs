@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Web.Services;
 
 namespace Web.Controllers
 {
@@ -29,16 +30,19 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private WebAPIClient _apiClient;
+        private readonly WebAPIClient _apiClient;
+        private readonly ClienteResolverServices _clientiResolver;
 
         public ClientiController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient
+                                 WebAPIClient apiClient,
+                                 ClienteResolverServices clientiResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _apiClient = apiClient;
+            _clientiResolver = clientiResolver;
         }
 
         [HttpGet]
@@ -89,14 +93,15 @@ namespace Web.Controllers
         [HttpDelete("{cliente}/gallery/delete/{imageId}")]
         public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="imageId")]int imageId)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            var userType = User.GetUserTypeForCliente(cliente.IdCliente);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            var userType = User.GetUserTypeForCliente(idCliente);
             if (!userType.IsAtLeastAdmin())
             {
                 return Forbid();
             }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var urlImage = await _apiClient.DeleteImmagineGalleryAsync(cliente.IdCliente, imageId, accessToken);
+            var urlImage = await _apiClient.DeleteImmagineGalleryAsync(idCliente, imageId, accessToken);
             await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, urlImage);
             return await GalleryEdit(urlRoute);
         }
@@ -131,47 +136,60 @@ namespace Web.Controllers
         [HttpGet("{cliente}/sale")]
         public async Task<IActionResult> Sale([FromRoute(Name = "cliente")]string urlRoute)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
-            ViewData["IdCliente"] = cliente.IdCliente;
-            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
+            ViewData["IdCliente"] = idCliente;
+            var locations = await _apiClient.GetLocationsAsync(idCliente);
             return View("Sale", locations.ToList());
         }
 
-        [HttpGet("{cliente}/sale/{id}")]
-        public async Task<IActionResult> SalaEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name="id")]int idSala)
+        [HttpGet("{cliente}/sale/{id:int}")]
+        public async Task<IActionResult> Sala([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name="id")]int idSala)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
 
             Models.LocationViewModel location = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (idSala > 0)
+            location = await _apiClient.GetOneLocationAsync(idCliente, idSala, accessToken);
+            return View("Sala", location);
+        }
+
+        [HttpGet("{cliente}/sale/new")]
+        public async Task<IActionResult> SalaNew([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idSala)
+        {
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
-                location = await _apiClient.GetOneLocationAsync(cliente.IdCliente, idSala, accessToken);
+                return Forbid();
             }
-            else
-            {
+
+            Models.LocationViewModel location = null;
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
                 location = new Models.LocationViewModel();
-            }
             return View("Sala", location);
         }
 
 
         [HttpPost("{cliente}/sale")]
-        public async Task<IActionResult> SalaEdit([FromRoute(Name = "cliente")]string urlRoute, [FromBody] Models.LocationViewModel location)
+        public async Task<IActionResult> SalaSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.LocationViewModel location)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
@@ -180,21 +198,23 @@ namespace Web.Controllers
                 return View("Sala", location);
             }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveLocationAsync(cliente.IdCliente, location, accessToken);
+            await _apiClient.SaveLocationAsync(idCliente, location, accessToken);
             return RedirectToAction("Sale");
         }
 
 
-        [HttpDelete("{cliente}/sale/{id}")]
+        [HttpGet("{cliente}/sale/{id}/delete")]
         public async Task<IActionResult> SalaDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idSala)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
-            await _apiClient.DeleteOneLocationAsync(cliente.IdCliente, idSala);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _apiClient.DeleteOneLocationAsync(idCliente, idSala,accessToken);
             return RedirectToAction("Sale");
         }
 
@@ -204,24 +224,26 @@ namespace Web.Controllers
         [HttpGet("{cliente}/lezioni")]
         public async Task<IActionResult> Lezioni([FromRoute(Name = "cliente")]string urlRoute)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
             
-            ViewData["IdCliente"] = cliente.IdCliente;
-            var lezioni= await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
+            ViewData["IdCliente"] = idCliente;
+            var lezioni= await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
             return View("Lezioni", lezioni.ToList());
         }
 
         [HttpGet("{cliente}/lezioni/{id:int}")]
         public async Task<IActionResult> LezioneEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idLezione)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
@@ -230,7 +252,7 @@ namespace Web.Controllers
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idLezione > 0)
             {
-                tipoLezione = await _apiClient.GetOneTipologiaLezione(cliente.IdCliente, idLezione, accessToken);
+                tipoLezione = await _apiClient.GetOneTipologiaLezione(idCliente, idLezione, accessToken);
             }
             if(tipoLezione == null)
             {
@@ -242,9 +264,10 @@ namespace Web.Controllers
         [HttpGet("{cliente}/lezioni/new")]
         public async Task<IActionResult> LezioneAdd([FromRoute(Name = "cliente")]string urlRoute)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
@@ -258,9 +281,10 @@ namespace Web.Controllers
         [HttpPost("{cliente}/lezioni")]
         public async Task<IActionResult> LezioneSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.TipologieLezioniViewModel tipoLezione)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin())
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
                 return Forbid();
             }
@@ -270,7 +294,22 @@ namespace Web.Controllers
             }
             if(tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; } 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveTipologiaLezioneAsync(cliente.IdCliente, tipoLezione, accessToken);
+            await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione, accessToken);
+            return RedirectToAction("Lezioni");
+        }
+
+        [HttpGet("{cliente}/lezioni/{id}/delete")]
+        public async Task<IActionResult> LezioneDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idSala)
+        {
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _apiClient.DeleteOneTipologiaLezioneAsync(idCliente, idSala, accessToken);
             return RedirectToAction("Lezioni");
         }
 

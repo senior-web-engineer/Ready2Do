@@ -18,12 +18,13 @@
                         <!-- questo server per il burger menu per il mobile-->
                         <a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                         <ul class="hide-on-med-and-down">
-                            <li><a class="blue-text text-darken-2" asp-action="Index">Home</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Index" asp-controller="Clienti">Home</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="Index" asp-controller="Scheduler">Calendari</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="ProfileEdit">Profilo</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="GalleryEdit">Gallery</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="Sale">Sale</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="Lezioni">Lezioni</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="ProfileEdit" asp-controller="Clienti">Profilo</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="GalleryEdit" asp-controller="Clienti">Gallery</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Sale" asp-controller="Clienti">Sale</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Lezioni" asp-controller="Clienti">Lezioni</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Abbonamenti" asp-controller="Clienti">Abbonamenti</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="UtentiEdit">Utenti</a></li>
                         </ul>
                     }

@@ -130,11 +130,11 @@ namespace Web.Utils
             return result;
         }
 
-        public async Task DeleteOneLocationAsync(int idCliente, int idLocation)
+        public async Task DeleteOneLocationAsync(int idCliente, int idLocation, string access_token)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
-            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
         }
@@ -185,6 +185,15 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idLocation, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{idLocation}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
 
         public async Task<IEnumerable<ScheduleDetailsViewModel>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
@@ -208,11 +217,12 @@ namespace Web.Utils
             return result;
         }
 
-        public async Task SaveSchedule(int idCliente, ScheduleViewModel schedule)
+        public async Task SaveSchedule(int idCliente, ScheduleViewModel schedule, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules");
             var content = new StringContent(JsonConvert.SerializeObject(schedule), Encoding.UTF8, "application/json");
             HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
             HttpResponseMessage response;
             if (schedule.Id.HasValue && schedule.Id.Value > 0)
             {
@@ -223,6 +233,15 @@ namespace Web.Utils
                 response = await client.PostAsync(uri, content);
             }
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<bool> CheckEmail(string email)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return bool.Parse((await response.Content.ReadAsStringAsync()));
         }
 
         public async Task<string> ConfermaAccount(string email, string code)

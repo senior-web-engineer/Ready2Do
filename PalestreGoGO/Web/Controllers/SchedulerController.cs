@@ -39,6 +39,7 @@ namespace Web.Controllers
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "lid")] int? idActiveLocation)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            ViewData["IdCliente"] = cliente.IdCliente;
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
             var vm = new SchedulerViewModel();
             vm.Sale = await _apiClient.GetLocationsAsync(cliente.IdCliente);

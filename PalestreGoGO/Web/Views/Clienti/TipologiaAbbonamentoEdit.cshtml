@@ -1,12 +1,10 @@
-﻿@model LocationViewModel;
+﻿@model TipologiaAbbonamentoViewModel;
 
 @{
-    ViewData["Title"] = "Sala";
+    ViewData["Title"] = "Tipologia Abbonamento";
     Layout = "_LayoutClienti";
 }
 
-
-<!-- Non dovrebbe esserci NavBar in questa pagina-->
 @Html.Partial("_MenuCliente", ViewData["IdCliente"])
 
 <!-- Primo banner pubblicitario -->
@@ -20,36 +18,51 @@
     </div>
 </section>
 
-<section id="editSala">
+<section id="editTipoAbbonamento">
     <div class="container">
-        <form asp-action="SalaSave" method="post" id="formEditLezione">
+        <form asp-action="TipoAbbonamentoSave" method="post">
             <input type="hidden" asp-for="Id" />
             <div class="row">
                 <div class="col s10 offset-s1 center-align">
-                    <h6>Edit Sala</h6>
+                    <h6>Edit Tipo Abbonamento</h6>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s10 offset-s1">
-                    <input type="text" asp-for="Nome" />
+                    <input type="text" asp-for="Nome" data-lenght="100" />
                     <label asp-for="Nome"></label>
                     <span asp-validation-for="Nome"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s10 offset-s1">
-                    <input type="text" asp-for="Descrizione" />
-                    <label asp-for="Descrizione"></label>
-                    <span asp-validation-for="Descrizione"></span>
+                    <input type="number" asp-for="DurataMesi" />
+                    <label asp-for="DurataMesi"></label>
+                    <span asp-validation-for="DurataMesi"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s10 offset-s1">
-                    <input type="text" asp-for="CapienzaMax" />
-                    <label asp-for="CapienzaMax"></label>
-                    <span asp-validation-for="CapienzaMax"></span>
+                    <input type="number" asp-for="NumIngressi" />
+                    <label asp-for="NumIngressi"></label>
+                    <span asp-validation-for="NumIngressi"></span>
                 </div>
             </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="number" asp-for="Costo" />
+                    <label asp-for="Costo"></label>
+                    <span asp-validation-for="Costo"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="range" min="0" max="10" asp-for="MaxLivCorsi" />
+                    <label asp-for="MaxLivCorsi"></label>
+                    <span asp-validation-for="MaxLivCorsi"></span>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="input-field col s10 offset-s1 center">
                     <button class="btn waves-effect waves-light" type="submit" name="action">

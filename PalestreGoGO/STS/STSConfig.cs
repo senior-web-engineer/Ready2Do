@@ -85,19 +85,29 @@ namespace Palestregogo.STS
                                       IdentityServerConstants.StandardScopes.OfflineAccess
                     },
                     AccessTokenType = AccessTokenType.Jwt,
+#if DEBUG
                     RedirectUris = {"http://localhost:18071/signin-oidc", "https://localhost:44320/signin-oidc", "https://localhost:44320", "https://localhost:44320/" },
                     AllowedCorsOrigins = new List<string>
                     {
                         "https://localhost:44320/",
                         "http://localhost:18071"
                     },
+#elif RELEASE
+                    RedirectUris = {"https://gianlucatofi.it/signin-oidc", "https://gianlucatofi.it", "https://gianlucatofi.it/", "https://www.gianlucatofi.it", "https://www.gianlucatofi.it/" },
+                    AllowedCorsOrigins = new List<string>
+                    {
+                        "https://gianlucatofi.it/",
+                        "https://www.gianlucatofi.it/"
+                    },
+#endif
                     AllowAccessTokensViaBrowser = true, //permit transmit access tokens via the browser channel
                     RequireConsent = false,  //disabilitiamo il CONSENT SCREEN
                     AlwaysIncludeUserClaimsInIdToken = true,
                     AlwaysSendClientClaims = true,
                     
-                },
-                new Client
+                }
+#if DEBUG                
+                ,new Client
                 {
                     ClientName = "Test Client",
                     ClientId="tests.client",
@@ -107,40 +117,7 @@ namespace Palestregogo.STS
                     AllowedScopes = { "palestregogo.sts.assignownership", "openid", "role", "profile", "email", "offline_access"},
                     AccessTokenType = AccessTokenType.Jwt,
                 }
-                //      new Client
-                //{
-                //    ClientName = "angularclient",
-                //    ClientId = "angularclient",
-                //    AccessTokenType = AccessTokenType.Reference,
-                //    AccessTokenLifetime = 300,// 330 seconds, default 60 minutes
-                //    IdentityTokenLifetime = 20,
-                //    AllowedGrantTypes = GrantTypes.Implicit,
-                //    AllowAccessTokensViaBrowser = true,
-                //    RedirectUris = new List<string>{
-                //        "https://localhost:44387/"
-                //    },
-                //    PostLogoutRedirectUris = new List<string>
-                //    {
-                //        "https://localhost:44387/unauthorized",
-                //        "https://localhost:44387"
-                //    },
-                //    AllowedCorsOrigins = new List<string>
-                //    {
-                //        "https://localhost:44387",
-                //        "http://localhost:44386"
-                //    },
-                //    AllowedScopes = new List<string>
-                //    {
-                //        "openid",
-                //        //"dataEventRecords",
-                //        //"dataeventrecordsscope",
-                //        //"securedFiles",
-                //        //"securedfilesscope",
-                //        "role",
-                //        "profile",
-                //        "email"
-                //    }
-                //}
+#endif
             };
         }
     }

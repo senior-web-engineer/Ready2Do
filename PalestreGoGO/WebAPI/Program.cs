@@ -19,7 +19,8 @@ namespace PalestreGoGo.WebAPI
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseApplicationInsights()
+                .UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build()) //aggiunto per gestire il parametro --urls "http://xxxx" in sede di hosting per evitare di usare la porta 5000 di default
+                .UseConfiguration(new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("hosting.json", optional: true).Build()) // per gestire la configurazione degli URL Kestrel da file di configurazione
                 .UseStartup<Startup>()
                 .Build();
     }

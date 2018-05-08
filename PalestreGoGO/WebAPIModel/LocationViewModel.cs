@@ -8,19 +8,19 @@ namespace PalestreGoGo.WebAPIModel
 {
     public class LocationViewModel
     {
-        [JsonProperty("id")]
-        [JsonRequired]
-        public int Id { get; set; }
+        //[JsonProperty("id")]
+        //[JsonRequired]
+        public int? Id { get; set; }
 
-        [JsonProperty("nome")]
-        [JsonRequired]
+        //[JsonProperty("nome")]
+        //[JsonRequired]
         public string Nome { get; set; }
 
-        [JsonProperty("desc")]
-        [JsonRequired]
+        //[JsonProperty("desc")]
+        //[JsonRequired]
         public string Descrizione { get; set; }
 
-        [JsonProperty("capacity")]
+        //[JsonProperty("capacity")]
         public short? CapienzaMax { get; set; }
     }
 }

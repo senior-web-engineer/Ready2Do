@@ -136,6 +136,23 @@ namespace Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        [Produces("application/json")]
+        public async Task<IActionResult> CheckEmail(string email)
+        {
+            //ViewData["ReturnUrl"] = returnUrl;
+            bool emailIsValid =  await _account.CheckEmailAsync(email);
+            if (!emailIsValid)
+            {
+                return Json(data: $"L'email specificata risulta già registrata.");
+            }
+            else
+            {
+                return Json(data: emailIsValid);
+            }
+        }
+
 
         [HttpGet]
         [AllowAnonymous]
