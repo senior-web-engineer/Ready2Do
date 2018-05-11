@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/{idCliente}/tipologiche/tipoabbonamenti")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TipoAbbonamentiController : PalestreControllerBase
     {
         private readonly ILogger<TipoAbbonamentiController> _logger;
@@ -44,7 +45,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetOne([FromRoute]int idCliente, [FromQuery]int id)
+        public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -83,6 +84,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpPut()]
         public IActionResult Modify([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
         {
+            //TODO: Verificare cosa succede se si modifica un tipo abbonamento per cui ci sono già abbonamenti attivi           
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
@@ -108,8 +110,10 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute]int idCliente, [FromQuery] int id)
+        public IActionResult Delete([FromRoute]int idCliente, [FromRoute] int id)
         {
+            //TODO: Assicurarsi di cancellare solo se non ci sono abbonamenti attivi in essere
+            //TODO: In futuro gestire la cancellazione logica
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {

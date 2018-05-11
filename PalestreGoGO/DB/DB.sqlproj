@@ -88,6 +88,8 @@
     <None Include="Scripts\Prepop\Prepop.Test.TipologieImmagini.sql" />
     <Build Include="dbo\Tables\ClientiUtenti.sql" />
     <Build Include="dbo\Stored Procedures\CreateUrlRoute.sql" />
+    <Build Include="dbo\Tables\MailTemplates.sql" />
+    <None Include="Scripts\Prepop\Prepop.Test.MailTemplates.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

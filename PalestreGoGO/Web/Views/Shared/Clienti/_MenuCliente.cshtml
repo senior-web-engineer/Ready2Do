@@ -24,20 +24,22 @@
                             <li><a class="blue-text text-darken-2" asp-action="GalleryEdit" asp-controller="Clienti">Gallery</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="Sale" asp-controller="Clienti">Sale</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="Lezioni" asp-controller="Clienti">Lezioni</a></li>
-                            <li><a class="blue-text text-darken-2" asp-action="Abbonamenti" asp-controller="Clienti">Abbonamenti</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti">Abbonamenti</a></li>
                             <li><a class="blue-text text-darken-2" asp-action="UtentiEdit">Utenti</a></li>
                         </ul>
                     }
                     <ul class="right">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li><a class="blue-text text-darken-2" asp-route="logout" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Logout</a></li>
+                            <li><a class="blue-text text-darken-2" asp-action="Logout" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Logout</a></li>
                         }
                         else
                         {
                             <li>
                                 @*<a class="blue-text text-darken-2" href='@string.Format("{0}?returnurl={1}",OptionsApplicationConfiguration.Value.LoginUrl,Context.Request.GetEncodedUrl())'>Logon</a>*@
                                 <a class="blue-text text-darken-2" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Accedi</a>
+                                <a class="blue-text text-darken-2" asp-action="RegisterUtente" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()"
+                                   asp-route-idref="@Model">Registrati</a>
                             </li>
                         }
                     </ul>

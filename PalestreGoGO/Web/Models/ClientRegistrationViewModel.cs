@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
-    public class RegistrationViewModel: RegistrationInputModel
+    public class ClientRegistrationViewModel: ClientRegistrationInputModel
     {
 
         public IEnumerable<SelectListItem> TipologieClienti { get; set; }

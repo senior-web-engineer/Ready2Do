@@ -226,7 +226,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");
                 return BadRequest();
             }
-            var cliente = await _repository.GetByIdUserOwner(esitoConfirmation.IdUserOwner);
+            var cliente = await _repository.GetByIdUserOwner(esitoConfirmation.IdUser);
             //TODO: Ritornare un CreatedAt con l'url del cliente?
             return Created(new Uri(cliente.UrlRoute, UriKind.Relative), null);
         }

@@ -23,10 +23,10 @@ namespace Web.Services
             _appConfig = config.Value;
             _apiClient = apiClient;
         }
-        public async Task<RegistrationViewModel> BuildRegisterViewModelAsync(string returnUrl)
+        public async Task<ClientRegistrationViewModel> BuildRegisterClienteViewModelAsync(string returnUrl)
         {
             var allTipologie = await _apiClient.GetTipologiClientiAsync();
-            var vm = new RegistrationViewModel()
+            var vm = new ClientRegistrationViewModel()
             {
                 ReturnUrl = returnUrl,
                 TipologieClienti = allTipologie
@@ -38,9 +38,9 @@ namespace Web.Services
             };
             return vm;
         }
-        public async Task<RegistrationViewModel> BuildRegisterViewModelAsync(RegistrationInputModel model)
+        public async Task<ClientRegistrationViewModel> BuildRegisterClienteViewModelAsync(ClientRegistrationInputModel model)
         {
-            var result = await BuildRegisterViewModelAsync(model.ReturnUrl);
+            var result = await BuildRegisterClienteViewModelAsync(model.ReturnUrl);
             result.Cognome = model.Cognome;
             result.Email = model.Email;
             result.EmailStruttura = model.EmailStruttura;

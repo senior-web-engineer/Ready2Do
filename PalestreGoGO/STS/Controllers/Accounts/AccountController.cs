@@ -137,6 +137,11 @@ namespace Palestregogo.STS.UI
 
                     return Redirect("~/");
                 }
+                else if (result.IsNotAllowed)
+                {
+                    //Tendenzialmente se arriva qui è perchè non ha confermato l'account
+                    return RedirectToAction("NotConfirmed",new { returnUrl = model.ReturnUrl, userName= model.Username });
+                }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
 
@@ -168,6 +173,13 @@ namespace Palestregogo.STS.UI
             return View(vm);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> NotConfirmed(string userName, string returnUrl)
+        {
+            ViewData["UserName"] = userName;
+            ViewData["ReturnUrl"] = returnUrl;
+            return View("NotConfirmed");
+        }
         /// <summary>
         /// Handle logout page postback
         /// </summary>
@@ -200,7 +212,9 @@ namespace Palestregogo.STS.UI
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 
-            return View("LoggedOut", vm);
+            //20180508#Redirect post logout
+            return Redirect(vm.PostLogoutRedirectUri);
+            //return View("LoggedOut", vm);
         }
 
         [HttpGet]

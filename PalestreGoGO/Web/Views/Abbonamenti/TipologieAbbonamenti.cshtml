@@ -1,6 +1,6 @@
-﻿@model List<LocationViewModel>
+﻿@model List<TipologiaAbbonamentoViewModel>
 @{
-    ViewData["Title"] = "Sale";
+    ViewData["Title"] = "Tipologie Abbonamenti";
     Layout = "_LayoutClienti";
 }
 @Html.Partial("_MenuCliente", ViewData["IdCliente"])
@@ -12,7 +12,7 @@
             </span>
         </div>
         <div class="col s4">
-            <a class="btn-floating btn-large waves-effect waves-light red" asp-action="SalaNew" data-position="bottom" data-tooltip="Aggiungi Sala" title="Aggiungi Sala"><i class="material-icons">add</i></a>
+            <a class="btn-floating btn-large waves-effect waves-light red" asp-action="TipoAbbonamentoAdd" data-position="bottom" data-tooltip="Aggiungi Tipologia Abbonamento" title="Aggiungi Sala"><i class="material-icons">add</i></a>
         </div>
     </div>
     <div class="row">
@@ -20,16 +20,17 @@
 
         @if ((Model == null) || (Model.Count == 0))
         {
-            <span>Nessuna lezione inserita.</span>
+            <span class="noDataFound">Nessuna tipologi di Abbonamento ancora inserita.</span>
         }
         else
         {
             <table class="stripped responsive-table">
                 <thead>
                     <tr>
-                        <th>Sala</th>
-                        <th>Descrizione</th>
-                        <th>Capienza</th>
+                        <th>Tipo Abbonamento</th>
+                        <th>Durata Mesi</th>
+                        <th>Num. Ingressi</th>
+                        <th>Prezzo</th>
                         <th class="center">Azioni</th>
                     </tr>
                 </thead>
@@ -39,12 +40,13 @@
                     {
                     <tr>
                         <td data-id-sala="@s.Id">@s.Nome</td>
-                        <td>@s.Descrizione</td>
-                        <td>@s.CapienzaMax</td>
+                        <td>@s.DurataMesi</td>
+                        <td>@s.NumIngressi</td>
+                        <td>@s.Costo</td>
                         <td class="center">
                             <div>
-                                <a class="waves-effect waves-light btn" asp-action="Sala" asp-route-id="@s.Id"><i class="medium material-icons">edit</i></a>
-                                <a class="waves-effect waves-light btn" asp-action="SalaDelete" asp-route-id="@s.Id"><i class="medium material-icons">delete</i></a>
+                                <a class="waves-effect waves-light btn" asp-action="TipoAbbonamentoEdit" asp-route-id="@s.Id"><i class="medium material-icons">edit</i></a>
+                                <a class="waves-effect waves-light btn" asp-action="TipoAbbonamentoDelete" asp-route-id="@s.Id"><i class="medium material-icons">delete</i></a>
                             </div>
                         </td>
                     </tr>

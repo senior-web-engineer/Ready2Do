@@ -13,7 +13,7 @@ namespace Web.Models
         public int IdCliente { get; set; }
 
         [Required]
-        [MaxLength(100, ErrorMessage = "Nome troppo lungo (max. 100 caratteri)"]
+        [MaxLength(100, ErrorMessage = "Nome troppo lungo (max. 100 caratteri)")]
         [Display(Name = "Nome abbonamento")]
         public string Nome { get; set; }
 

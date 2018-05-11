@@ -104,16 +104,17 @@ namespace Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "clienti",
-                    template: "{cliente:required}/{controller=Clienti}/{action=Index}/{id?}"
-                    );
-                routes.MapRoute(
                     name: "logout",
                     template: "logout",
                     defaults: new { controller = "Account", action = "Logout" });
                 routes.MapRoute(
+                    name: "clienti",
+                    template: "{cliente:required}/{controller=Clienti}/{action=Index}/{id?}"
+                    );
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
             });
         }
     }

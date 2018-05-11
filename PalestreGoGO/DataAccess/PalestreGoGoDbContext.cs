@@ -29,6 +29,7 @@ namespace PalestreGoGo.DataAccess
         public virtual DbSet<TipologiaCliente> TipologieClienti { get; set; }
         public virtual DbSet<TipologieImmagini> TipologieImmagini { get; set; }
         public virtual DbSet<TipologieLezioni> TipologieLezioni { get; set; }
+        public virtual DbSet<MailTemplate> MailTemplates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -200,6 +201,13 @@ namespace PalestreGoGo.DataAccess
                     .HasForeignKey(d => d.IdCliente)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TipologieLezioni_Clienti");
+            });
+
+            modelBuilder.Entity<MailTemplate>(entity =>
+            {
+                entity.HasIndex(t => t.TipoMail)
+                .HasName("UK_MailTemplates_Tipo")
+                .IsUnique();
             });
         }
     }

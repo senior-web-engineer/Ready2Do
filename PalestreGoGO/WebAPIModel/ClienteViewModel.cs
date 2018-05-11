@@ -45,7 +45,10 @@ namespace PalestreGoGo.WebAPIModel
         [JsonProperty("storageContainer")]
         public string StorageContainer { get; set; }
 
+        [JsonProperty("route")]
+        public string UrlRoute { get; set; }
         
+
         [JsonProperty("orarioApertura")]
         public OrarioAperturaViewModel OrarioApertura { get; set; }        
     }

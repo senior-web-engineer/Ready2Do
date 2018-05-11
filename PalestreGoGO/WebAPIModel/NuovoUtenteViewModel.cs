@@ -9,27 +9,27 @@ namespace PalestreGoGo.WebAPIModel
 {
     public class NuovoUtenteViewModel
     {
-        //[Required]
-        //[EmailAddress]
-        //[MaxLength(256)]
+        [Required]
+        [EmailAddress]
+        [MaxLength(256)]
         [JsonProperty("email")]
         public string Email { get; set; }
 
-        //[Required]
-        //[MaxLength(100)]
-        //[JsonProperty("nome")]
+        [Required]
+        [MaxLength(100)]
+        [JsonProperty("nome")]
         public string Nome { get; set; }
 
-        //[Required]
-        //[MaxLength(100)]
-        //[JsonProperty("cognome")]
+        [Required]
+        [MaxLength(100)]
+        [JsonProperty("cognome")]
         public string Cognome { get; set; }
 
-        //[Phone]
+        [Phone]
         [JsonProperty("phone")]
         public string Telefono { get; set; }
 
-        //[Required]
+        [Required]
         [JsonProperty("password")]
         public string Password { get; set; }
 

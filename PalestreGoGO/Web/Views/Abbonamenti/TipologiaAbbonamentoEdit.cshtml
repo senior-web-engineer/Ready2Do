@@ -35,32 +35,28 @@
                 </div>
             </div>
             <div class="row">
-                <div class="input-field col s10 offset-s1">
-                    <input type="number" asp-for="DurataMesi" />
+                <div class="input-field col s4 offset-s1">
+                    <input type="number" asp-for="DurataMesi" min="0" max="999" />
                     <label asp-for="DurataMesi"></label>
                     <span asp-validation-for="DurataMesi"></span>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s10 offset-s1">
-                    <input type="number" asp-for="NumIngressi" />
+                <div class="input-field col s4 offset-s2">
+                    <input type="number" asp-for="NumIngressi" min="0" max="999"/>
                     <label asp-for="NumIngressi"></label>
                     <span asp-validation-for="NumIngressi"></span>
                 </div>
             </div>
             <div class="row">
-                <div class="input-field col s10 offset-s1">
+                <div class="input-field col s4 offset-s1">
                     <input type="number" asp-for="Costo" />
                     <label asp-for="Costo"></label>
                     <span asp-validation-for="Costo"></span>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s10 offset-s1">
-                    <input type="range" min="0" max="10" asp-for="MaxLivCorsi" />
+                <p class="input-field col s4 offset-s2">
                     <label asp-for="MaxLivCorsi"></label>
-                    <span asp-validation-for="MaxLivCorsi"></span>
-                </div>
+                    <input type="number" min="0" max="10" asp-for="MaxLivCorsi" />
+                </p>
+                <span asp-validation-for="MaxLivCorsi"></span>
             </div>
 
             <div class="row">

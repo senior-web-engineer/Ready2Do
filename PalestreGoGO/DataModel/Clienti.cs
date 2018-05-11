@@ -55,6 +55,7 @@ namespace PalestreGoGo.DataModel
         public string SecurityToken { get; set; }
         [Column(TypeName = "datetime2(2)")]
         public DateTime? DataProvisioning { get; set; }       
+
         [Required]
         [StringLength(205)]
         public string UrlRoute { get; set; }        

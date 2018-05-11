@@ -39,6 +39,7 @@ namespace Palestregogo.STS.Services
             HttpResponseMessage response = await client.PostAsync(uri, content);
             return response.IsSuccessStatusCode;
         }
+       
 
         public async static Task<ClienteViewModel> GetClienteAsync(int idCliente, string baseUrl)
         {

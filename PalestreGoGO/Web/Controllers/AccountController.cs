@@ -28,6 +28,7 @@ namespace Web.Controllers
         private readonly AccountServices _account;
 
         private readonly WebAPIClient _apiClient;
+
         public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account, WebAPIClient apiClient)
         {
             _logger = logger;
@@ -45,16 +46,24 @@ namespace Web.Controllers
                 returnUrl = Url.Action("Index", "Home");
             }
             var authProps = new AuthenticationProperties()
-                                {
-                                    RedirectUri = returnUrl
-                                };
+            {
+                RedirectUri = returnUrl
+            };
             return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
         [HttpGet]
-        public IActionResult Logout()
+        public IActionResult Logout(string returnUrl = null)
         {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = this.Url.Action("Index", "Home");
+            }
             //NOTA: Aggiungere le properties?
+            AuthenticationProperties props = new AuthenticationProperties()
+            {
+                RedirectUri = returnUrl
+            };
             return SignOut(OpenIdConnectDefaults.AuthenticationScheme);
         }
 
@@ -62,10 +71,10 @@ namespace Web.Controllers
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(string returnUrl = null)
+        public async Task<IActionResult> RegisterCliente(string returnUrl = null)
         {
             //ViewData["ReturnUrl"] = returnUrl;
-            var vm = await _account.BuildRegisterViewModelAsync(returnUrl);
+            var vm = await _account.BuildRegisterClienteViewModelAsync(returnUrl);
             return View(vm);
         }
 
@@ -74,7 +83,7 @@ namespace Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegistrationInputModel model, string returnUrl = null)
+        public async Task<IActionResult> RegisterCliente(ClientRegistrationInputModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
@@ -126,12 +135,65 @@ namespace Web.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View(await _account.BuildRegisterViewModelAsync(model));
+            return View(await _account.BuildRegisterClienteViewModelAsync(model));
         }
 
+
+        //
+        // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult MailToConfirm()
+        public IActionResult RegisterUtente([FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
+        {
+            var vm = new UtenteRegistrationViewModel();
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["IdAffiliato"] = idStrutturaAffiliata;
+            return View(vm);
+        }
+
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterUtente([FromForm]UtenteRegistrationViewModel model, [FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                if (model.Password.Equals(model.PasswordConfirm))
+                {
+                    /* Creiamo il l'utenza*/
+                    var nuovoUtente = new NuovoUtenteViewModel()
+                    {
+                        Cognome = model.Cognome,
+                        Email = model.Email,
+                        Nome = model.Nome,
+                        Password = model.Password
+                    };
+
+                    var result = await _apiClient.NuovoUtenteAsync(nuovoUtente, idStrutturaAffiliata);
+                    if (result)
+                    {
+                        return RedirectToAction("MailToConfirm");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("Password", "Le password inserite non coincidono.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Coordinate non valide");
+            }
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+
+        [AllowAnonymous]
+        public IActionResult MailToConfirm([FromQuery]string email, [FromQuery]string code)
         {
             return View();
         }
@@ -142,7 +204,7 @@ namespace Web.Controllers
         public async Task<IActionResult> CheckEmail(string email)
         {
             //ViewData["ReturnUrl"] = returnUrl;
-            bool emailIsValid =  await _account.CheckEmailAsync(email);
+            bool emailIsValid = await _account.CheckEmailAsync(email);
             if (!emailIsValid)
             {
                 return Json(data: $"L'email specificata risulta già registrata.");
@@ -160,9 +222,23 @@ namespace Web.Controllers
         {
             try
             {
-                var url = await _apiClient.ConfermaAccount(email, WebUtility.UrlEncode(code));
-
-                return RedirectToAction("Index", "Clienti", url);
+                var confirmationResult = await _apiClient.ConfermaAccount(email, WebUtility.UrlEncode(code));
+                //TODO: Se si tratta di un cliente, il redirect, deve essere fatto alla home del cliente
+                //      In caso di utente invece, il redirect andrebbe fatto alla struttura a cui è affiliato se presente, altrimenti alla home del sito
+                if (!confirmationResult.Esito)
+                {
+                    return BadRequest();
+                }
+                var idCliente = confirmationResult.IdCliente ?? confirmationResult.IdStrutturaAffiliate;
+                if (idCliente.HasValue)
+                {
+                    var cliente = await _apiClient.GetClienteAsync(idCliente.Value);
+                    return RedirectToAction("Index", "Clienti", new { urlroute = cliente.UrlRoute });
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
             catch
             {

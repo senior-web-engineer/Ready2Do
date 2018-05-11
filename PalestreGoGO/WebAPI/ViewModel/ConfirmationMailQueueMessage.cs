@@ -7,27 +7,35 @@ using Newtonsoft.Json;
 namespace PalestreGoGo.WebAPI.Model
 {
     [JsonObject(Title ="confirmMail")]
-    public class ConfirmationMailQueueMessage
+    public class ConfirmationMailMessage
     {
-        public ConfirmationMailQueueMessage()
+        public ConfirmationMailMessage()
         {
 
         }
 
-        public ConfirmationMailQueueMessage(string userName, string code, string token)
+        public ConfirmationMailMessage(string email, string code, string token, bool isCliente)
         {
-            this.UserName = userName;
+            this.Email = email;
             this.ConfirmationCode = code;
             this.CorrelationToken = token;
+            this.IsCliente = isCliente;
         }
 
-        [JsonProperty("username",Required =Required.Always)]
-        public string UserName { get; set; }
+        [JsonProperty("email",Required =Required.Always)]
+        public string Email { get; set; }
 
         [JsonProperty("code", Required = Required.Always)]
         public string ConfirmationCode { get; set; }
 
+        [JsonProperty("confirmationurl", Required = Required.Always)]
+        public string ConfirmationUrl { get; set; }
+
         [JsonProperty("token", Required = Required.Always)]
         public string CorrelationToken { get; set; }
+
+        [JsonProperty("isCliente", Required = Required.Always)]
+        public bool IsCliente{ get; set; }
+
     }
 }

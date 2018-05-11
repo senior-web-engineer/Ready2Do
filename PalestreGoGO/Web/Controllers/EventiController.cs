@@ -15,10 +15,11 @@ using Web.Configuration;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Web.Controllers
 {
-    //[Authorize]
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
     public class EventiController : Controller
     {
         private readonly ILogger<AccountController> _logger;

@@ -46,7 +46,7 @@ namespace PalestreGoGo.WebAPI
             services.AddTransient<ITipologieAbbonamentiRepository, TipologieAbbonamentiRepository>();
             services.AddTransient<ITipologieClientiRepository, TipologieClientiRepository>();
             services.AddTransient<ITipologieLezioniRepository, TipologieLezioniRepository>();
-
+            services.AddTransient<IMailTemplatesRepository, MailTemplatesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

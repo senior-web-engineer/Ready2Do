@@ -1,0 +1,82 @@
+﻿@model UtenteRegistrationViewModel
+
+@{
+    ViewData["Title"] = "Registrazione Utente";
+    Layout = "_LayoutLanding";
+}
+<section class="section">
+    @*banner-6*@
+    <div class="container">
+        <div class="text-center mb-20">
+            <h3 class="section-title text-uppercase">Registrati gratuitamente per iscriverti ai tuoi corsi preferiti</h3>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <form asp-controller="Account" asp-action="RegisterUtente" asp-route-idref="@ViewBag.IdAffiliato" asp-route-returnUrl="@ViewBag.ReturnUrl" method="POST">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="text" asp-for="Nome" class="validate">
+                                <label asp-for="Nome"></label>
+                                <span asp-validation-for="Nome"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="text" asp-for="Cognome" class="validate">
+                                <label asp-for="Cognome"></label>
+                                <span asp-validation-for="Cognome"></span>
+                            </div>
+                        </div>
+                    </div><!-- /.row -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-field">
+                                <input type="email" asp-for="Email" class="validate">
+                                <label asp-for="Email"></label>
+                                <span asp-validation-for="Email"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="password" asp-for="Password" class="validate">
+                                <label asp-for="Password">Password</label>
+                                <span asp-validation-for="Password"></span>
+                            </div>
+                        </div><!-- /.col-sm-6 -->
+                        <div class="col-sm-6">
+                            <div class="input-field">
+                                <input type="password" asp-for="PasswordConfirm" class="validate">
+                                <label asp-for="PasswordConfirm"></label>
+                                <span asp-validation-for="PasswordConfirm"></span>
+                            </div>
+                        </div><!-- /.col-sm-6 -->
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Registrati</button>
+                    </div>
+                </form>
+            </div><!-- /.col-sm-8 -->
+            <div class="col-sm-2"></div>
+        </div><!-- /.row -->
+    </div>
+
+</section>
+
+@section Scripts{
+    <!-- jQuery -->
+    <script src="~/js/jquery-2.1.3.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/js/menuzord.js"></script>
+    <script src="~/js/autocompleteajax.js"></script>
+    <script src="~/js/scripts.js"></script>
+
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+}

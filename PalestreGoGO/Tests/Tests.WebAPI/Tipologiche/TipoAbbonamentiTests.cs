@@ -70,7 +70,7 @@ namespace Tests.WebAPI.Tipologiche
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var tipoAbbonamento = okResult.Value.Should().BeAssignableTo<TipologieAbbonamentiViewModel>().Subject;
             tipoAbbonamento.Id.Should().Be(_fixture.Entity.Id);
@@ -110,7 +110,7 @@ namespace Tests.WebAPI.Tipologiche
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var tipoAbbonamento = okResult.Value.Should().BeAssignableTo<TipologieAbbonamentiViewModel>().Subject;
             tipoAbbonamento.Id.Should().Be(_fixture.Entity.Id);
@@ -126,7 +126,7 @@ namespace Tests.WebAPI.Tipologiche
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_2, _fixture.Entity.Id);
+            var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_2, _fixture.Entity.Id.Value);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -154,7 +154,7 @@ namespace Tests.WebAPI.Tipologiche
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id);
+            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _fixture.Entity.Id.Value);
             result.Should().BeOfType<NoContentResult>();
         }
     }

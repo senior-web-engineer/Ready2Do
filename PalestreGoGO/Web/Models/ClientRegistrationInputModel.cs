@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
-    public class RegistrationInputModel
+    public class ClientRegistrationInputModel
     {
         /* DATI UTENTE*/
         [Required]

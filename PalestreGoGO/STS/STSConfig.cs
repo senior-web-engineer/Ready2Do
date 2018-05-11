@@ -20,7 +20,7 @@ namespace Palestregogo.STS
             var customProfile = new IdentityResource(
                 name: "customprofile",
                 displayName: "Profilo Completo",
-                claimTypes: new[] { "name", "email", "role", Constants.CLAIMTYPE_STRUCTURE_OWNED, Constants.CLAIMTYPE_STRUCTURE_MANAGED }
+                claimTypes: new[] { "name", "email", "role", Constants.CLAIMTYPE_STRUCTURE_OWNED, Constants.CLAIMTYPE_STRUCTURE_MANAGED, Constants.CLAIMTYPE_STRUCTURE_AFFILIATED }
                 );
 
             return new List<IdentityResource>

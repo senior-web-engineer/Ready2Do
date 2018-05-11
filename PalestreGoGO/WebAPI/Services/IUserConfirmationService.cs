@@ -8,6 +8,8 @@ namespace PalestreGoGo.WebAPI.Services
 {
     public interface IUserConfirmationService
     {
-        Task EnqueueConfirmationMailRequest(ConfirmationMailQueueMessage mailReq);
+        Task EnqueueConfirmationMailRequestAsync(ConfirmationMailMessage mailReq);
+
+        Task SendConfirmationMailRequestAsync(ConfirmationMailMessage mailReq);
     }
 }

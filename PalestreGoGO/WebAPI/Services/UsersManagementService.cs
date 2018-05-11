@@ -4,6 +4,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Model;
 using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,37 +19,58 @@ namespace PalestreGoGo.WebAPI.Services
         private readonly IUserConfirmationService _confirmUserService;
         private readonly ILogger<UsersManagementService> _logger;
         private readonly IClientiProvisioner _clientiProvisioner;
+        private readonly IClientiRepository _repository;
 
         public UsersManagementService(UserManager<AppUser> userManager,
                                       IUserConfirmationService confirmService,
                                       ILogger<UsersManagementService> logger,
-                                      IClientiProvisioner clientiProvisioner)
+                                      IClientiProvisioner clientiProvisioner,
+                                      IClientiRepository repository
+                                      )
         {
             this._logger = logger;
             this._userManager = userManager;
             this._confirmUserService = confirmService;
             this._clientiProvisioner = clientiProvisioner;
+            this._repository = repository;
         }
 
         public async Task<UserConfirmationViewModel> ConfirmUserAsync(string username, string code)
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user == null) return new UserConfirmationViewModel(false);
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            if (!result.Succeeded)
+            var esitoConferma = await _userManager.ConfirmEmailAsync(user, code);
+            if (!esitoConferma.Succeeded)
             {
                 _logger.LogWarning($"ConfirmUserAsync -> Failed validation for user: {username} with code: [{code}]");
-                return new UserConfirmationViewModel(false);
+                return new UserConfirmationViewModel()
+                {
+                    IdUser = user.Id
+                };
             }
+            var result = new UserConfirmationViewModel(user.Id);
             var claims = await _userManager.GetClaimsAsync(user);
+            var claimStructureOwned = claims.SingleOrDefault(c => c.Type.Equals(Constants.ClaimStructureOwned));
             //Se è un owner ==> facciamo il provisioning del cliente
-            if (claims.Any(c => c.Type.Equals(Constants.ClaimStructureOwned)))
+            if (claimStructureOwned != null)
             {
                 await _clientiProvisioner.ProvisionClienteAsync(user.CreationToken, user.Id);
+                result.IdStrutturaAffiliate = int.Parse(claimStructureOwned.Value);
+            }
+            else
+            {
+                //Se è un utente "ORDINARIO" ed in fase di registrazione è stata specificata la struttura di affiliazione andiamo a censire l'associazione sul DB
+                var claimSrutturaAffiliata = claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimStructureAffiliated));
+                if (claimSrutturaAffiliata != null)
+                {
+                    int idStrutturaAffiliata = int.Parse(claimSrutturaAffiliata.Value);
+                    await _repository.AddUtenteFollowerAsync(idStrutturaAffiliata, user.Id);
+                    result.IdStrutturaAffiliate = idStrutturaAffiliata;
+                }
+
             }
             _logger.LogInformation($"ConfirmUserAsync -> Successfully validated user {username}");
-
-            return new UserConfirmationViewModel(user.Id);
+            return result;
         }
 
         public Task<AppUser> GetUserByMailAsync(string email)
@@ -60,6 +82,13 @@ namespace PalestreGoGo.WebAPI.Services
         {
             return this._userManager.FindByNameAsync(username);
         }
+
+        public async Task<IList<Claim>> GetUserCalimsAsync(AppUser user)
+        {
+            if (user == null) return null;
+            return await _userManager.GetClaimsAsync(user);
+        }
+
 
         public Task<AppUser> GetUserByIdAsync(Guid userId)
         {
@@ -76,7 +105,37 @@ namespace PalestreGoGo.WebAPI.Services
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrWhiteSpace(idCliente)) throw new ArgumentNullException(nameof(idCliente));
 
+            var newUser = await internalCreateUserAsync(user, password, true);
 
+            // Rendiamo l'utente OWNER della struttura (associando il claim all'utente)
+            await _userManager.AddClaimAsync(newUser, new Claim(Constants.ClaimStructureOwned, idCliente));
+            _logger.LogInformation($"Created a new owner. UserId: {user.Id}");
+
+            return user.Id;
+        }
+
+        public async Task<Guid> RegisterUserAsync(AppUser user, string password, int? idStrutturaAffiliata)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (string.IsNullOrWhiteSpace(user.UserName)) throw new ArgumentNullException(nameof(user.UserName));
+            if (string.IsNullOrWhiteSpace(user.FirstName)) throw new ArgumentNullException(nameof(user.FirstName));
+            if (string.IsNullOrWhiteSpace(user.LastName)) throw new ArgumentNullException(nameof(user.LastName));
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+
+            var newUser = await internalCreateUserAsync(user, password, false);
+
+            // Creiamo il claim con la struttura da cui arriva l'utente (Affiliato principale)
+            if (idStrutturaAffiliata.HasValue)
+            {
+                await _userManager.AddClaimAsync(user, new Claim(Constants.ClaimStructureAffiliated, idStrutturaAffiliata.Value.ToString()));
+            }
+            _logger.LogInformation($"Created a new user (UserId: {user.Id}) affiliated with referer: {idStrutturaAffiliata}");
+
+            return user.Id;
+        }
+
+        protected async Task<AppUser> internalCreateUserAsync(AppUser user, string password, bool isCliente)
+        {
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
@@ -88,16 +147,10 @@ namespace PalestreGoGo.WebAPI.Services
             // Send an email with this link
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             _logger.LogTrace($"RegisterUser-> generated code [{code}]for user: {user.UserName}");
-            await _confirmUserService.EnqueueConfirmationMailRequest(new ConfirmationMailQueueMessage(user.UserName, code, user.CreationToken));
+            await _confirmUserService.SendConfirmationMailRequestAsync(new ConfirmationMailMessage(user.UserName, code, user.CreationToken, isCliente));
+            _logger.LogInformation($"Created a new account with password and enqueued confirmation mail send. UserId: {user.Id}");
             //Rileggiamo l'utente appena creato 
-            user = await _userManager.FindByNameAsync(user.UserName);
-            // Rendiamo l'utente OWNER della struttura (associando il claim all'utente)
-            await _userManager.AddClaimAsync(user, new Claim(Constants.ClaimStructureOwned, idCliente));
-
-            _logger.LogInformation($"Created a new account with password. UserId: {user.Id}");
-
-            return user.Id;
+            return await _userManager.FindByNameAsync(user.UserName);
         }
-
     }
 }

@@ -37,8 +37,18 @@ namespace Web.Utils
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> NuovoUtenteAsync(NuovoUtenteViewModel utente, int? idStrutturaAffiliata)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti?idref={idStrutturaAffiliata}");
+            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/clienti");
+            var content = new StringContent(JsonConvert.SerializeObject(utente), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.PostAsync(uri, content);
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task<ClienteViewModel> GetClienteAsync(int idCliente)
-        {        
+        {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}");
             //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -195,6 +205,63 @@ namespace Web.Utils
         }
 
 
+        #region Tipologie Abbonamenti
+        public async Task<IEnumerable<TipologieAbbonamentiViewModel>> GetTipologieAbbonamentiClienteAsync(int idCliente, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti");
+            HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<TipologieAbbonamentiViewModel>>(responseString, _serializerSettings);
+            return result;
+        }
+
+        public async Task<TipologieAbbonamentiViewModel> GetOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<TipologieAbbonamentiViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
+
+        public async Task SaveTipologiaAbbonamentoAsync(int idCliente, TipologieAbbonamentiViewModel tipoAbbonamento, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti");
+            HttpRequestMessage request;
+            if (tipoAbbonamento.Id.HasValue && tipoAbbonamento.Id.Value > 0)
+            {
+                request = new HttpRequestMessage(HttpMethod.Put, uri);
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, uri);
+            }
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
+            request.Content = new StringContent(JsonConvert.SerializeObject(tipoAbbonamento), Encoding.UTF8, "application/json");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        #endregion
+
         public async Task<IEnumerable<ScheduleDetailsViewModel>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToString("yyyyMMddTHHmmss")}&ed={end.ToString("yyyyMMddTHHmmss")}&lid={idLocation}");
@@ -244,13 +311,14 @@ namespace Web.Utils
             return bool.Parse((await response.Content.ReadAsStringAsync()));
         }
 
-        public async Task<string> ConfermaAccount(string email, string code)
+        public async Task<UserConfirmationViewModel> ConfermaAccount(string email, string code)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/confirmation?email={email}&code={code}");
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.PostAsync(uri, null);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<UserConfirmationViewModel>(responseString);
         }
 
         public async Task GallerySalvaImmagine(int idCliente, ImmagineViewModel image, string token)
