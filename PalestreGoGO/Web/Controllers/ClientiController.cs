@@ -47,6 +47,40 @@ namespace Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [Produces("application/json")]
+        public async Task<IActionResult> CheckUrl(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return BadRequest();
+            }
+            if (!Uri.IsWellFormedUriString(url, UriKind.Relative))
+            {
+                return Json(data: $"L'URL specificato non è un url valido.");
+            }
+            if (url.Contains("/"))
+            {
+                return Json(data: $"Non è possibile specificare più di un segmento.");
+            }
+            if (url.Contains("?"))
+            {
+                return Json(data: $"Non è possibile specificare una qurystring");
+            }
+
+            bool urlIsValid = await _apiClient.CheckUrlRoute(url);
+            if (!urlIsValid)
+            {
+                return Json(data: $"L'URL specificato risulta già utilizzato. Inserirne un altro.");
+            }
+            else
+            {
+                return Json(data: urlIsValid);
+            }
+        }
+
+        [HttpGet]
+        [Route("/{cliente}", Name = "HomeCliente")]
+        [AllowAnonymous]
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);

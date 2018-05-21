@@ -52,6 +52,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetCliente([FromRoute(Name = "urlroute")] string urlRoute)
         {
             var cliente = await _repository.GetByUrlAsync(urlRoute);
+            if (cliente == null) return NotFound();
             var result = Mapper.Map<ClienteWithImagesViewModel>(cliente);
             if (!string.IsNullOrWhiteSpace(cliente.OrarioApertura))
             {
@@ -71,6 +72,35 @@ namespace PalestreGoGo.WebAPI.Controllers
                 result.OrarioApertura = JsonConvert.DeserializeObject<OrarioAperturaViewModel>(cliente.OrarioApertura);
             }
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Verifica se l'url specificato è già registrato
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Ritorna true se l'email non è stta ancora registrata, false se esiste già un utente con l'email specificata</returns>
+        [HttpGet("checkurl")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckUrlRoute(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return BadRequest();
+            }
+            if (!Uri.IsWellFormedUriString(url, UriKind.Relative))
+            {
+                return Ok(false);
+            }
+            if (url.Contains("/"))
+            {
+                return Ok(false);
+            }
+            if (url.Contains("?"))
+            {
+                return Ok(false);
+            }
+            var cliente = await _repository.GetByUrlAsync(url);
+            return Ok(cliente == null);
         }
 
 
@@ -108,7 +138,8 @@ namespace PalestreGoGo.WebAPI.Controllers
                 SecurityToken = token,
                 RagioneSociale = newCliente.RagioneSociale,
                 ZipOrPostalCode = newCliente.ZipOrPostalCode,
-                StorageContainer = token
+                StorageContainer = token,
+                UrlRoute = newCliente.UrlRoute
             };
             await _repository.AddAsync(cliente);
 
@@ -227,8 +258,9 @@ namespace PalestreGoGo.WebAPI.Controllers
                 return BadRequest();
             }
             var cliente = await _repository.GetByIdUserOwner(esitoConfirmation.IdUser);
+            esitoConfirmation.IdCliente = cliente.Id;
             //TODO: Ritornare un CreatedAt con l'url del cliente?
-            return Created(new Uri(cliente.UrlRoute, UriKind.Relative), null);
+            return Ok(esitoConfirmation);
         }
 
         //public async Task<IActionResult> AssociaImmagine(ImmagineViewModel immagine)

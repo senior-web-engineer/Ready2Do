@@ -233,15 +233,18 @@ namespace Web.Controllers
                 if (idCliente.HasValue)
                 {
                     var cliente = await _apiClient.GetClienteAsync(idCliente.Value);
-                    return RedirectToAction("Index", "Clienti", new { urlroute = cliente.UrlRoute });
+                    var url = Url.RouteUrl("HomeCliente", new { cliente = cliente.UrlRoute });
+                    return Redirect(url);
+                    //                    return RedirectToAction("HomeCliente", "Clienti", );
                 }
                 else
                 {
                     return RedirectToAction("Index", "Home");
                 }
             }
-            catch
+            catch (Exception exc)
             {
+                _logger.LogError(exc, $"Errore durante la conferma dell'account. Email:{email}, Code:{code}");
                 return BadRequest();
             }
         }

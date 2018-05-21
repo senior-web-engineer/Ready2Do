@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Utils;
 
 namespace Web.Models
 {
@@ -29,6 +30,11 @@ namespace Web.Models
         [Display(Name = "Conferma Password")]
         public string PasswordConfirm { get; set; }
 
+        [Required]
+        [Display(Name = "Url struttura")]
+        [Remote("CheckUrl", "Clienti")]
+        public string URL { get; set; }
+
         /* DATI STRUTTURA */
         [Required]
         [MaxLength(100)]
@@ -50,6 +56,7 @@ namespace Web.Models
 
         [Required]
         [MaxLength(255)]
+        [GoogleAdrressValidationAttribute]
         public string Indirizzo { get; set; }
 
         [Phone]

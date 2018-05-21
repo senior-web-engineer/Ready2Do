@@ -310,6 +310,15 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
             return bool.Parse((await response.Content.ReadAsStringAsync()));
         }
+        
+        public async Task<bool> CheckUrlRoute(string urlRoute)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return bool.Parse((await response.Content.ReadAsStringAsync()));
+        }
 
         public async Task<UserConfirmationViewModel> ConfermaAccount(string email, string code)
         {

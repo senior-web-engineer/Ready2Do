@@ -60,5 +60,8 @@ namespace PalestreGoGo.WebAPIModel
         //[Required]
         [JsonProperty("userInfo")]
         public NuovoUtenteViewModel NuovoUtente { get; set; }
+
+        [JsonProperty("urlRoute")]
+        public string UrlRoute { get; set; }
     }
 }

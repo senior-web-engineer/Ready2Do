@@ -7,6 +7,10 @@ namespace PalestreGoGo.WebAPIModel
 {
     public class UserConfirmationViewModel
     {
+        public UserConfirmationViewModel() :this(false)
+        {
+        }
+
         public UserConfirmationViewModel(bool esito = false)
         {
             Esito = esito;

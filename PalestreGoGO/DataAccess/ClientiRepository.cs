@@ -23,7 +23,8 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<int> AddAsync(Clienti cliente)
         {
-            cliente.UrlRoute = await this.internalCreateUrlRoute(cliente.Nome);
+            /*20180519#La route URL la facciamo inserire direttamente senza andarcela a generare */
+            //cliente.UrlRoute = await this.internalCreateUrlRoute(cliente.Nome);
             await _context.Clienti.AddAsync(cliente);
             await _context.SaveChangesAsync();
             return cliente.Id;
@@ -53,16 +54,17 @@ namespace PalestreGoGo.DataAccess
             await _context.SaveChangesAsync();
         }
 
-        public Task<Clienti> GetByUrlAsync(string urlRoute)
+        public async Task<Clienti> GetByUrlAsync(string urlRoute)
         {
-            var cliente = _context
+            var cliente = await _context
                             .Clienti
                             .AsNoTracking()
                             .Include(c => c.IdTipologiaNavigation)
                             .Include(c => c.ClientiMetadati)
                             .Where(c => (c.UrlRoute.Equals(urlRoute)))
-                            .Single();
+                            .SingleOrDefaultAsync();
 
+            if (cliente == null) return null;
             //Leggiamo anche le immagini
             var immagini = _context.ClientiImmagini
                             .AsNoTracking()
@@ -73,7 +75,7 @@ namespace PalestreGoGo.DataAccess
                             .ToList();
             cliente.ClientiImmagini = immagini;
 
-            return Task.FromResult(cliente);
+            return cliente;
         }
 
         public Task<Clienti> GetByTokenAsync(string securityToken)

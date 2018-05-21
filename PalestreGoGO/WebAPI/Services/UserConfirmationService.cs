@@ -11,6 +11,7 @@ using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -72,7 +73,7 @@ namespace PalestreGoGo.WebAPI.Services
         private Dictionary<string,string> GetPlaceholdersValues(ConfirmationMailMessage mailReq)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
-            result.Add("Code".ToUpper(), mailReq.ConfirmationCode);
+            result.Add("Code".ToUpper(), WebUtility.UrlEncode(mailReq.ConfirmationCode));
             result.Add("Email".ToUpper(), mailReq.Email);
             result.Add("UrlAttivazione".ToUpper(), _config.GetValue<string>("UserConfirmation:ConfirmationBaseAddress"));
             //Eventualmente integrare leggendo dal DB

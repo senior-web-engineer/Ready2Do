@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace PalestreGoGo.WebAPI
 {
     public static class Constants
-    {
+    {        
         #region FORMATS
         public const string DATETIME_QUERYSTRING_FORMAT = "yyyyMMddTHHmmss";
 
