@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Web.Services;
+using System.Net;
 
 namespace Web.Controllers
 {
@@ -90,10 +91,15 @@ namespace Web.Controllers
             ViewData["Sale"] = locations;
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
             ViewData["ClienteRoute"] = urlRoute;
+            ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
             //ViewData["UserRole"] = User.GetUserRoleForCliente(cliente.IdCliente);
             return View(cliente.MapToHomeViewModel());
         }
 
+        private object BuildMapUrlForCliente(ClienteWithImagesViewModel cliente)
+        {
+            return $"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Clabel:{WebUtility.UrlEncode(cliente.Nome)}%7C{cliente.Indirizzo.Coordinate.Latitudine},{cliente.Indirizzo.Coordinate.Longitudine}&size=640x250&scale=2&maptype=roadmap&zoom=14&key={_appConfig.GoogleAPI.GoogleMapsAPIKey}";
+        }
 
         [HttpGet("{cliente}/gallery")]
         public async Task<IActionResult> GalleryEdit([FromRoute(Name = "cliente")]string urlRoute)

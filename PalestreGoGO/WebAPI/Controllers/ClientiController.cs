@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PalestreGoGo.DataAccess;
@@ -9,6 +10,7 @@ using PalestreGoGo.DataModel;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
+using PalestreGoGo.WebAPI.ViewModel;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Security.Claims;
@@ -24,11 +26,14 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly ILogger<ClientiController> _logger;
         private readonly IClientiRepository _repository;
         private readonly IUsersManagementService _userManagementService;
+        private readonly IConfiguration _config;
 
-        public ClientiController(ILogger<ClientiController> logger,
+        public ClientiController(IConfiguration config, 
+                                 ILogger<ClientiController> logger,
                                  IUsersManagementService userManagementService,
                                  IClientiRepository repository)
         {
+            _config = config;
             _logger = logger;
             _repository = repository;
             _userManagementService = userManagementService;
@@ -141,6 +146,14 @@ namespace PalestreGoGo.WebAPI.Controllers
                 StorageContainer = token,
                 UrlRoute = newCliente.UrlRoute
             };
+            //Aggiungiamo la Hero Image di default 
+            cliente.ClientiImmagini.Add(new ClientiImmagini()
+            {
+                IdTipoImmagine = (int)TipoImmagine.Sfondo,
+                Url = _config.GetValue<string>("Provisioning:DefaultHeroImageUrl"),
+                Nome = "Default Hero Image",
+                IdCliente = cliente.Id
+            });
             await _repository.AddAsync(cliente);
 
             //Step 2 - Creiamo l'utente Owner

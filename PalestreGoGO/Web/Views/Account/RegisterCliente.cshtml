@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-                <form asp-controller="Account" asp-action="RegisterCliente" method="POST">
+                <form asp-controller="Account" asp-action="RegisterCliente" method="POST" id="formRegistration">
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="input-field">
@@ -129,6 +129,7 @@
                     <div class="text-center">
                         <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Registrati</button>
                     </div>
+                    <input id="esitoLookup" type="hidden" asp-for="EsitoLookup" />
                     <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
                     <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
                     <input id="inputCitta" type="hidden" asp-for="Citta" />
@@ -163,17 +164,18 @@
 
             /// GOOGLE AUTOCOMPLETE ///
             var input = document.getElementById('addressAutocomplete');
-            input.addEventListener('blur', function () {
+            input.addEventListener('focus', function () {
                 //var log = document.getElementById('log');
                 //log.innerText = log.innerText + '<br>' + 'BLUR EVENT'
                 //L'OnBlur viene scatenato appena il controllo per il focus (a prescindere dal motivo), per cui partiamo con l'assunto che l'indirizzo non sia valido
                 //APPLICHIAMO LA CLASSE invalid
-                input.className = input.className.replace(/\bvalid\b/g, "");
-                arr = input.className.split(" ");
-                if (arr.indexOf("invalid") == -1) {
-                    input.className += " invalid";
-                }
-                input.setCustomValidity("Selezionare l'indirizzo tra uno di quelli proposti.");
+                //input.className = input.className.replace(/\bvalid\b/g, "");
+                //arr = input.className.split(" ");
+                //if (arr.indexOf("invalid") == -1) {
+                //    input.className += " invalid";
+                //}
+                //input.setCustomValidity("Selezionare l'indirizzo tra uno di quelli proposti.");
+                document.getElementById('esitoLookup').value = 0;
             });
 
             var options = {
@@ -186,17 +188,18 @@
                 var place = autocomplete.getPlace();
                 //NOTA: se non è stata selezionato uno degli indirizzi proposti da google, sia perché l'utente ha scritto l'inidirizzo e poi ha spostato il focus oppure
                 //      perché c'è stato un problema nel lookup, l'oggetto place ha la sola proprietà Name valorizzta con l'input inserito dall'utente
-                
+
                 //var log = document.getElementById('log');
                 //log.innerText = log.innerText + '<br>' + 'place_changed EVENT'
                 if (place.geometry) {
-                    input.className = input.className.replace(/\binvalid\b/g, "");
-                    //Applichiamo la classe VALID
-                    arr = input.className.split(" ");
-                    if (arr.indexOf("valid") == -1) {
-                        input.className += " valid";
-                    }
-                    input.setCustomValidity("");
+                    //input.className = input.className.replace(/\binvalid\b/g, "");
+                    ////Applichiamo la classe VALID
+                    //arr = input.className.split(" ");
+                    //if (arr.indexOf("valid") == -1) {
+                    //    input.className += " valid";
+                    //}
+                    ////input.setCustomValidity("");
+                    document.getElementById('esitoLookup').value = 1;
                     document.getElementById('inputLatitudine').value = place.geometry.location.lat();
                     document.getElementById('inputLongitudine').value = place.geometry.location.lng();
 
@@ -212,6 +215,10 @@
                     if (tmp) {
                         document.getElementById('inputCitta').value = tmp.long_name;
                     }
+                    //Dobbiamo rieseguire la validazione perché quando arriva qui è già stata eseguita con i valori "errati"
+                    $("#formRegistration").validate().element("#addressAutocomplete");
+                } else {
+                    document.getElementById('esitoLookup').value = 0;
                 }
             });
 
@@ -241,7 +248,22 @@
         //        options.messages['googleaddress'] = options.message;
         //    })
         //});
+
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        $(function () {
+            $.validator.addMethod('googleaddress', function (value, element, params) {
+                $.validator.messages.googleaddress = "E' necessario selezionare un indirizzo tra quelli proposti";
+            return $(params).val() == 1;
+        });
+
+        $.validator.unobtrusive.adapters.add('googleaddress', ['esitolookupField'], function (options) {
+            options.rules['googleaddress'] = '#esitoLookup';// + options.params.esitolookupField;
+            options.messages['googleaddress'] = options.message;
+        });
+        }(jQuery));
+    </script>
 
 }
