@@ -30,8 +30,8 @@ namespace Web.Utils
                 // Let's check that otherProperty is of type DateTime as we expect it to be
                 if (otherPropertyInfo.PropertyType.Equals(new bool().GetType()))
                 {
-                    bool esitoLookup = (bool)otherPropertyInfo.GetValue(validationContext.ObjectInstance, null);
-                    if (!esitoLookup)
+                    short esitoLookup = (short)otherPropertyInfo.GetValue(validationContext.ObjectInstance, null);
+                    if (esitoLookup == 1)
                     {
                         validationResult = new ValidationResult(ErrorMessageString);
                     }
