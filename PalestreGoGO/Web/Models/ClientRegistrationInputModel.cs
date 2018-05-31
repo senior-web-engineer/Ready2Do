@@ -56,7 +56,7 @@ namespace Web.Models
 
         [Required]
         [MaxLength(255)]
-        [GoogleAdrressValidationAttribute]
+        [GoogleAdrressValidation("EsitoLookup","E' necessario selezionare un indirizzo tra quelli proposti nella lista")]
         public string Indirizzo { get; set; }
 
         [Phone]
@@ -64,7 +64,7 @@ namespace Web.Models
 
         public string ReturnUrl { get; set; }
 
-        public bool EsitoLookup { get; set; }
+        public short EsitoLookup { get; set; }
 
         [Required(ErrorMessage ="Indirizzo non valido")]
         public string Latitudine { get; set; }

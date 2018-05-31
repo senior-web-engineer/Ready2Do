@@ -112,7 +112,7 @@ namespace Web.Controllers
                     }
                 };
                 //Parsing coordinate
-                //NOTA: dato che usando direttamente il itpo float nem ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
+                //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
                 if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
                     float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
                 {
