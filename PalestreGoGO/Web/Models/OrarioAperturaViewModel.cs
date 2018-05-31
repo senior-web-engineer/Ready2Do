@@ -39,20 +39,22 @@ namespace Web.Models
     {
         public OrarioAperturaViewModel()
         {
-            Lunedi = new GiornoViewModel("Lunedì");
-            Martedi = new GiornoViewModel("Martedì");
-            Mercoledi = new GiornoViewModel("Mercoledì");
-            Giovedi = new GiornoViewModel("Giovedì");
-            Venerdi = new GiornoViewModel("Venerdì");
+            //Lunedi = new GiornoViewModel("Lunedì");
+            //Martedi = new GiornoViewModel("Martedì");
+            //Mercoledi = new GiornoViewModel("Mercoledì");
+            //Giovedi = new GiornoViewModel("Giovedì");
+            //Venerdi = new GiornoViewModel("Venerdì");
+            LunVen = new GiornoViewModel("Venerdì");
             Sabato = new GiornoViewModel("Sabato");
             Domenica = new GiornoViewModel("Domenica");
         }
 
-        public GiornoViewModel Lunedi { get; set; }
-        public GiornoViewModel Martedi { get; set; }
-        public GiornoViewModel Mercoledi { get; set; }
-        public GiornoViewModel Giovedi { get; set; }
-        public GiornoViewModel Venerdi { get; set; }
+        //public GiornoViewModel Lunedi { get; set; }
+        //public GiornoViewModel Martedi { get; set; }
+        //public GiornoViewModel Mercoledi { get; set; }
+        //public GiornoViewModel Giovedi { get; set; }
+        //public GiornoViewModel Venerdi { get; set; }
+        public GiornoViewModel LunVen { get; set; }
         public GiornoViewModel Sabato { get; set; }
         public GiornoViewModel Domenica { get; set; }
 

@@ -84,6 +84,8 @@ namespace Web.Controllers
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Se non troviamo il cliente redirect alla home
+            if (cliente == null) { return RedirectToAction("Index", "Home"); }
             var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
 
             ViewData["ReturnUrl"] = Request.Path.ToString();
@@ -125,7 +127,7 @@ namespace Web.Controllers
         }
 
         [HttpDelete("{cliente}/gallery/delete/{imageId}")]
-        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="imageId")]int imageId)
+        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "imageId")]int imageId)
         {
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
@@ -152,10 +154,10 @@ namespace Web.Controllers
                 return Forbid();
             }
             var vm = cliente.MapToProfileEditVM();
-            //vm.GalleryVM.SASToken = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
-            //vm.GalleryVM.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
-            //                                    _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
-            //                                    cliente.StorageContainer);
+            ViewData["SASToken"] = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+                                                _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+                                               cliente.StorageContainer);
 
             return View("Profilo", vm);
         }
@@ -183,7 +185,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("{cliente}/sale/{id:int}")]
-        public async Task<IActionResult> Sala([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name="id")]int idSala)
+        public async Task<IActionResult> Sala([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idSala)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
@@ -212,7 +214,7 @@ namespace Web.Controllers
 
             Models.LocationViewModel location = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-                location = new Models.LocationViewModel();
+            location = new Models.LocationViewModel();
             return View("Sala", location);
         }
 
@@ -248,7 +250,7 @@ namespace Web.Controllers
                 return Forbid();
             }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.DeleteOneLocationAsync(idCliente, idSala,accessToken);
+            await _apiClient.DeleteOneLocationAsync(idCliente, idSala, accessToken);
             return RedirectToAction("Sale");
         }
 
@@ -265,9 +267,9 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-            
+
             ViewData["IdCliente"] = idCliente;
-            var lezioni= await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
+            var lezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
             return View("Lezioni", lezioni.ToList());
         }
 
@@ -288,7 +290,7 @@ namespace Web.Controllers
             {
                 tipoLezione = await _apiClient.GetOneTipologiaLezione(idCliente, idLezione, accessToken);
             }
-            if(tipoLezione == null)
+            if (tipoLezione == null)
             {
                 return NotFound();
             }
@@ -326,7 +328,7 @@ namespace Web.Controllers
             {
                 return View("Lezione", tipoLezione);
             }
-            if(tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; } 
+            if (tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione, accessToken);
             return RedirectToAction("Lezioni");

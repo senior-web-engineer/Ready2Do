@@ -71,11 +71,13 @@ namespace Web.Models.Utils
             if (apiModel == null) return null;
             var result = new OrarioAperturaViewModel();
             result.Domenica = apiModel?.Domenica?.MapGiornoOrarioApertura();
-            result.Lunedi = apiModel?.Lunedi?.MapGiornoOrarioApertura();
+            result.LunVen = apiModel?.Lunedi?.MapGiornoOrarioApertura();
+            /*
             result.Martedi = apiModel?.Martedi?.MapGiornoOrarioApertura();
             result.Mercoledi = apiModel?.Mercoledi?.MapGiornoOrarioApertura();
             result.Giovedi = apiModel?.Giovedi?.MapGiornoOrarioApertura();
             result.Venerdi = apiModel?.Venerdi?.MapGiornoOrarioApertura();
+            */
             result.Sabato = apiModel?.Sabato?.MapGiornoOrarioApertura();
             return result;
         }
