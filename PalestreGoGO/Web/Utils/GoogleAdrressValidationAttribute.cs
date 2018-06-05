@@ -28,10 +28,10 @@ namespace Web.Utils
                 // Using reflection we can get a reference to the other date property, in this example the project start date
                 var otherPropertyInfo = validationContext.ObjectType.GetProperty(this._esitoLookupAddressPropName);
                 // Let's check that otherProperty is of type DateTime as we expect it to be
-                if (otherPropertyInfo.PropertyType.Equals(new bool().GetType()))
+                if (otherPropertyInfo.PropertyType.Equals(typeof(short)))
                 {
                     short esitoLookup = (short)otherPropertyInfo.GetValue(validationContext.ObjectInstance, null);
-                    if (esitoLookup == 1)
+                    if (esitoLookup != 1)
                     {
                         validationResult = new ValidationResult(ErrorMessageString);
                     }

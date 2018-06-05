@@ -85,7 +85,7 @@
                 <div class="col s3 offset-s1">
                     <div class="image_edit_container">
                         <input id="urlImageHome" type="hidden" value="@Model.ImmagineHome?.Url" />
-                        <img src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' alt="@Model.ImmagineHome?.Alt" class="hero_edit_image" />
+                        <img id="imgHeroEdit"src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' alt="@Model.ImmagineHome?.Alt" class="hero_edit_image" />
                         <div >
                             <a class="image_edit_btn waves-effect waves-light btn-small" onclick="choseImage(this)" ><i class="material-icons">edit</i></a>
                         </div>
@@ -190,7 +190,7 @@
                 </div>
                 <div class="col s3 input-field">
                     <label for="lunediContinuativo">
-                        <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsContinuato" />
+                        <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioLunVen')"/>
                         <span>Orario Continuato</span>
                     </label>
                 </div>
@@ -223,7 +223,7 @@
                 </div>
                 <div class="col s3 input-field">
                     <label for="sabatoContinuativo">
-                        <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" />
+                        <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioSabato')"/>
                         <span>Orario Continuato</span>
                     </label>
                 </div>
@@ -256,7 +256,7 @@
                 </div>
                 <div class="col s3 input-field">
                     <label for="domenicaContinuativo">
-                        <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" />
+                        <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioDomenica')"/>
                         <span>Orario Continuato</span>
                     </label>
                 </div>
@@ -333,10 +333,6 @@
             }
         });
 
-        @*function uploadFile(file, idx) {
-            uploaders[0].addFiles(file, { fileOrder: idx });
-        }
-
         function checkChiusoChanged(check, divParent) {
             if (check.checked) {
                 $("#" + divParent + " :input").attr("disabled", true);
@@ -345,6 +341,21 @@
             }
             check.disabled = false;
         }
+
+        function checkContinuativoChanged(check, divParent) {
+            if (check.checked) {
+                $("#" + divParent + " :input").attr("disabled", true);
+            } else {
+                $("#" + divParent + " :input").attr("disabled", false);
+            }
+            check.disabled = false;
+        }
+
+        @*function uploadFile(file, idx) {
+            uploaders[0].addFiles(file, { fileOrder: idx });
+        }
+
+       
 
         var uploaders = [];
 
@@ -370,6 +381,7 @@
                     if (response.success === true) {
                         let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
                         document.getElementById('urlImageHome').value = fullUrl;
+                        document.getElementById('imgHeroEdit').src = fullUrl;
                         console.log("New Hero image uploaded to: " + fullUrl);
                     }
                     else {

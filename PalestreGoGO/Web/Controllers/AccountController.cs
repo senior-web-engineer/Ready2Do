@@ -102,6 +102,7 @@ namespace Web.Controllers
                     Cognome = model.Cognome,
                     NumTelefono = model.Telefono,
                     RagioneSociale = model.RagioneSociale,
+                    UrlRoute = model.URL,
                     NuovoUtente = new NuovoUtenteViewModel()
                     {
                         Cognome = model.Cognome,
@@ -114,7 +115,7 @@ namespace Web.Controllers
                 //Parsing coordinate
                 //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
                 if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
-                    float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
+                    float.TryParse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
                 {
                     apiModel.Coordinate = new CoordinateViewModel(latitudine, longitudine);
                     var result = await _apiClient.NuovoClienteAsync(apiModel);
