@@ -177,7 +177,7 @@ namespace Web.Utils
         public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloViewModel profilo, string access_token)
         {
             HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/profilo");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
             request.Content = new StringContent(JsonConvert.SerializeObject(profilo), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.SendAsync(request);

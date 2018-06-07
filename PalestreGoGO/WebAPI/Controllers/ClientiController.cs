@@ -15,6 +15,7 @@ using PalestreGoGo.WebAPIModel;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
@@ -176,7 +177,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         {
             if (profilo == null) { return BadRequest(); }
             if (idCliente != profilo.IdCliente) { return BadRequest(); }
-            if (!ClaimsPrincipal.Current.CanManageStructure(idCliente)) { return Unauthorized(); }
+            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
             if (!ModelState.IsValid)
             {
                 return BadRequest();
@@ -194,6 +195,18 @@ namespace PalestreGoGo.WebAPI.Controllers
             existing.RagioneSociale = profilo.RagioneSociale;
             existing.ZipOrPostalCode = profilo.Indirizzo.PostalCode;
             existing.OrarioApertura = JsonConvert.SerializeObject(profilo.OrarioApertura);
+
+            if(!profilo.ImmagineHome.Id.HasValue)
+            {
+                var oldImg = existing.ClientiImmagini.SingleOrDefault(i=>i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini();
+                oldImg.IdCliente = idCliente;
+                oldImg.IdTipoImmagine = (int)TipoImmagine.Sfondo;
+                oldImg.Nome = profilo.ImmagineHome.Nome;
+                oldImg.Alt = profilo.ImmagineHome.Alt;
+                oldImg.Descrizione = profilo.ImmagineHome.Descrizione;
+                oldImg.Ordinamento = 0;
+                oldImg.Url = profilo.ImmagineHome.Url;
+            }
             await _repository.UpdateAsync(existing);
             return Ok();
         }

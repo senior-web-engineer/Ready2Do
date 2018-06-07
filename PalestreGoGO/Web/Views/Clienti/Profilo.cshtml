@@ -84,8 +84,8 @@
                 <div class="col s4">Immagine: </div>
                 <div class="col s3 offset-s1">
                     <div class="image_edit_container">
-                        <input id="urlImageHome" type="hidden" value="@Model.ImmagineHome?.Url" />
-                        <input id="idImageHome" type="hidden" value="@Model.ImmagineHome?.Id" />
+                        <input id="urlImageHome" type="hidden" asp-for="ImmagineHome.Url" />
+                        <input id="idImageHome" type="hidden" asp-for="ImmagineHome.Id" />
                         <img id="imgHeroEdit" src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' alt="@Model.ImmagineHome?.Alt" class="hero_edit_image" />
                         <div>
                             <a class="image_edit_btn waves-effect waves-light btn-small" onclick="choseImage(this)"><i class="material-icons">edit</i></a>
