@@ -85,9 +85,10 @@
                 <div class="col s3 offset-s1">
                     <div class="image_edit_container">
                         <input id="urlImageHome" type="hidden" value="@Model.ImmagineHome?.Url" />
-                        <img id="imgHeroEdit"src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' alt="@Model.ImmagineHome?.Alt" class="hero_edit_image" />
-                        <div >
-                            <a class="image_edit_btn waves-effect waves-light btn-small" onclick="choseImage(this)" ><i class="material-icons">edit</i></a>
+                        <input id="idImageHome" type="hidden" value="@Model.ImmagineHome?.Id" />
+                        <img id="imgHeroEdit" src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' alt="@Model.ImmagineHome?.Alt" class="hero_edit_image" />
+                        <div>
+                            <a class="image_edit_btn waves-effect waves-light btn-small" onclick="choseImage(this)"><i class="material-icons">edit</i></a>
                         </div>
                     </div>
                 </div>
@@ -176,11 +177,11 @@
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Mattina.Inizio" />
                     <label asp-for="OrarioAperturaVM.LunVen.Mattina.Inizio">Dalle</label>
                 </div>
-                <div class="col s1 input-field">
+                <div class="col s1 input-field" disableOnOrarioCont="true">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Mattina.Fine" />
                     <label asp-for="OrarioAperturaVM.LunVen.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col s1 input-field">
+                <div class="col s1 input-field" disableOnOrarioCont="true">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Inizio" />
                     <label asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Inizio">Dalle</label>
                 </div>
@@ -190,7 +191,7 @@
                 </div>
                 <div class="col s3 input-field">
                     <label for="lunediContinuativo">
-                        <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioLunVen')"/>
+                        <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioLunVen')" />
                         <span>Orario Continuato</span>
                     </label>
                 </div>
@@ -209,11 +210,11 @@
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio" />
                     <label asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio">Dalle</label>
                 </div>
-                <div class="col s1 input-field">
+                <div class="col s1 input-field" disableOnOrarioCont="true">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Fine" />
                     <label asp-for="OrarioAperturaVM.Sabato.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col s1 input-field">
+                <div class="col s1 input-field" disableOnOrarioCont="true">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio" />
                     <label asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio">Dalle</label>
                 </div>
@@ -223,7 +224,7 @@
                 </div>
                 <div class="col s3 input-field">
                     <label for="sabatoContinuativo">
-                        <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioSabato')"/>
+                        <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioSabato')" />
                         <span>Orario Continuato</span>
                     </label>
                 </div>
@@ -242,11 +243,11 @@
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio" />
                     <label asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio">Dalle</label>
                 </div>
-                <div class="col s1 input-field">
+                <div class="col s1 input-field" disableOnOrarioCont="true">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Fine" />
                     <label asp-for="OrarioAperturaVM.Domenica.Mattina.Fine">Alle</label>
                 </div>
-                <div class="col s1 input-field">
+                <div class="col s1 input-field" disableOnOrarioCont="true">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio" />
                     <label asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio">Dalle</label>
                 </div>
@@ -256,7 +257,7 @@
                 </div>
                 <div class="col s3 input-field">
                     <label for="domenicaContinuativo">
-                        <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioDomenica')"/>
+                        <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioDomenica')" />
                         <span>Orario Continuato</span>
                     </label>
                 </div>
@@ -265,6 +266,14 @@
                         <input id="domenicaChiuso" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsChiuso" onchange="checkChiusoChanged(this, 'orarioDomenica')" />
                         <span>Chiuso tutto il giorno</span>
                     </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1 center">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">
+                        Salva
+                        <i class="material-icons right">save</i>
+                    </button>
                 </div>
             </div>
         </form>
@@ -344,9 +353,11 @@
 
         function checkContinuativoChanged(check, divParent) {
             if (check.checked) {
-                $("#" + divParent + " :input").attr("disabled", true);
+                $("#" + divParent + " [disableOnOrarioCont] :input").attr("disabled", true);
+                $("#" + divParent + " [disableOnOrarioCont]").hide();
             } else {
-                $("#" + divParent + " :input").attr("disabled", false);
+                $("#" + divParent + " [disableOnOrarioCont] :input").attr("disabled", false);
+                $("#" + divParent + " [disableOnOrarioCont]").show();
             }
             check.disabled = false;
         }
@@ -366,11 +377,17 @@
         var uploader = new qq.azure.FineUploaderBasic({
             autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
             debug: true,
+            multiple: false,
+            cors: {
+                allowXdr: false,
+                expected: true,
+                sendCredentials: false
+            },
             request: {
                 endpoint: "@ViewBag.ContainerUrl"
             },
             signature: {
-                endpoint: "/api/FileUpload",
+                endpoint: "/api/fileupload",
                 customHeaders: {
                     "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
                 }
@@ -382,6 +399,7 @@
                         let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
                         document.getElementById('urlImageHome').value = fullUrl;
                         document.getElementById('imgHeroEdit').src = fullUrl;
+                        document.getElementById('idImageHome').value = -1;
                         console.log("New Hero image uploaded to: " + fullUrl);
                     }
                     else {
@@ -404,6 +422,7 @@
         }
 
         function handleFiles(files) {
+            @*var baseContainerUrl = "@ViewBag.ContainerUrl";*@
             if (files) {
                 uploader.reset();
                 uploader.addFiles(files[0]);

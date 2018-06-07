@@ -174,6 +174,16 @@ namespace Web.Utils
             return result;
         }
 
+        public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloViewModel profilo, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/profilo");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Content = new StringContent(JsonConvert.SerializeObject(profilo), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
 
         public async Task SaveTipologiaLezioneAsync(int idCliente, Models.TipologieLezioniViewModel tipoLezione, string access_token)
         {

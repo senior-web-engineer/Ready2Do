@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Web.Controllers
 {
@@ -64,7 +65,10 @@ namespace Web.Controllers
             {
                 RedirectUri = returnUrl
             };
-            return SignOut(OpenIdConnectDefaults.AuthenticationScheme);
+            return SignOut(new string[]{
+                OpenIdConnectDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            });
         }
 
         //

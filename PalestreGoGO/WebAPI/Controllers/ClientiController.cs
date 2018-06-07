@@ -171,28 +171,29 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("{idCliente:int}")]
-        public async Task<IActionResult> ClienteSalvaProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteViewModel cliente)
+        [HttpPut("{idCliente:int}/profilo")]
+        public async Task<IActionResult> ClienteSalvaProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteProfiloViewModel profilo)
         {
-            if (cliente == null) { return BadRequest(); }
-            if (idCliente != cliente.IdCliente) { return BadRequest(); }
+            if (profilo == null) { return BadRequest(); }
+            if (idCliente != profilo.IdCliente) { return BadRequest(); }
             if (!ClaimsPrincipal.Current.CanManageStructure(idCliente)) { return Unauthorized(); }
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var existing = await _repository.GetAsync(cliente.IdCliente);
+            var existing = await _repository.GetAsync(profilo.IdCliente);
 
-            existing.Descrizione = cliente.Descrizione;
-            existing.Citta = cliente.Indirizzo.Citta;
-            existing.Latitudine = cliente.Indirizzo.Coordinate.Latitudine;
-            existing.Longitudine = cliente.Indirizzo.Coordinate.Longitudine;
-            existing.Country = cliente.Indirizzo.Country;
-            existing.Indirizzo = cliente.Indirizzo.Indirizzo;
-            existing.Nome = cliente.Nome;
-            existing.NumTelefono = cliente.NumTelefono;
-            existing.RagioneSociale = cliente.RagioneSociale;
-            existing.ZipOrPostalCode = cliente.Indirizzo.PostalCode;
+            existing.Descrizione = profilo.Descrizione;
+            existing.Citta = profilo.Indirizzo.Citta;
+            existing.Latitudine = profilo.Indirizzo.Coordinate.Latitudine;
+            existing.Longitudine = profilo.Indirizzo.Coordinate.Longitudine;
+            existing.Country = profilo.Indirizzo.Country;
+            existing.Indirizzo = profilo.Indirizzo.Indirizzo;
+            existing.Nome = profilo.Nome;
+            existing.NumTelefono = profilo.NumTelefono;
+            existing.RagioneSociale = profilo.RagioneSociale;
+            existing.ZipOrPostalCode = profilo.Indirizzo.PostalCode;
+            existing.OrarioApertura = JsonConvert.SerializeObject(profilo.OrarioApertura);
             await _repository.UpdateAsync(existing);
             return Ok();
         }

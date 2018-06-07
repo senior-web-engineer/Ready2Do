@@ -65,6 +65,48 @@ namespace Web.Models.Utils
             return result;
         }
 
+        public static ClienteProfiloViewModel MapToAPIModel(this ClienteProfileEditViewModel model)
+        {
+            if (model == null) { throw new ArgumentNullException(nameof(model)); }
+            var result = new ClienteProfiloViewModel()
+            {
+                IdCliente = model.IdCliente,
+                Nome = model.Nome,
+                RagioneSociale = model.RagioneSociale,
+                Email = model.Email,    //Email struttura
+                NumTelefono = model.NumTelefono,
+                Descrizione = model.Descrizione,
+                Indirizzo = new IndirizzoViewModel()
+                {
+                    Citta = model.Citta,
+                    Coordinate = new CoordinateViewModel()
+                    {
+                        Latitudine = float.Parse(model.Latitudine),
+                        Longitudine = float.Parse(model.Longitudine)
+                    }
+                },
+                ImmagineHome = new ImmagineViewModel()
+                {
+                    Alt = model.ImmagineHome?.Alt,
+                    Nome = model.ImmagineHome?.Caption,
+                    Id = model.ImmagineHome?.Id,
+                    Ordinamento = (model.ImmagineHome?.Ordinamento) ?? 0,
+                    Url = model.ImmagineHome?.Url
+                },
+                OrarioApertura = new PalestreGoGo.WebAPIModel.OrarioAperturaViewModel()
+                {
+                    Lunedi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
+                    Martedi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
+                    Mercoledi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
+                    Giovedi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
+                    Venerdi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
+                    Sabato = model.OrarioAperturaVM?.Sabato?.MapGiornoOrarioApertura(),
+                    Domenica = model.OrarioAperturaVM?.Domenica?.MapGiornoOrarioApertura(),
+                }
+            };
+
+            return result;
+        }
 
         private static OrarioAperturaViewModel MapOrarioApertura(this PalestreGoGo.WebAPIModel.OrarioAperturaViewModel apiModel)
         {
@@ -105,6 +147,45 @@ namespace Web.Models.Utils
                     Inizio = apiModel.Pomeriggio.Inizio.ToString("hh:mm"),
                     Fine = apiModel.Pomeriggio.Fine.ToString("hh:mm")
                 };
+            }
+            return result;
+        }
+
+        private static PalestreGoGo.WebAPIModel.GiornoViewModel MapGiornoOrarioApertura(this GiornoViewModel webDayModel)
+        {
+            if (webDayModel == null) return null;
+            var result = new PalestreGoGo.WebAPIModel.GiornoViewModel()
+            {
+                IsChiuso = webDayModel.IsChiuso,
+                IsContinuato = webDayModel.IsContinuato
+            };
+            if (webDayModel.Mattina != null)
+            {
+                result.Mattina = new PalestreGoGo.WebAPIModel.FasciaOrariaViewmodel();
+                if (!string.IsNullOrEmpty(webDayModel.Mattina.Inizio))
+                {
+                    var parts = webDayModel.Mattina.Inizio.Split(':');
+                    result.Mattina.Inizio = new TimeSpan(int.Parse(parts[0]), int.Parse(parts[1]), 0);
+                }
+                if (!string.IsNullOrEmpty(webDayModel.Mattina.Fine))
+                {
+                    var parts = webDayModel.Mattina.Fine.Split(':');
+                    result.Mattina.Fine = new TimeSpan(int.Parse(parts[0]), int.Parse(parts[1]), 0);
+                }
+            }
+            if (webDayModel.Pomeriggio != null)
+            {
+                result.Pomeriggio = new PalestreGoGo.WebAPIModel.FasciaOrariaViewmodel();
+                if (!string.IsNullOrEmpty(webDayModel.Pomeriggio.Inizio))
+                {
+                    var parts = webDayModel.Pomeriggio.Inizio.Split(':');
+                    result.Pomeriggio.Inizio = new TimeSpan(int.Parse(parts[0]), int.Parse(parts[1]), 0);
+                }
+                if (!string.IsNullOrEmpty(webDayModel.Pomeriggio.Fine))
+                {
+                    var parts = webDayModel.Pomeriggio.Fine.Split(':');
+                    result.Pomeriggio.Fine = new TimeSpan(int.Parse(parts[0]), int.Parse(parts[1]), 0);
+                }                
             }
             return result;
         }

@@ -169,9 +169,36 @@ namespace Web.Controllers
         }
 
         [HttpPost("{cliente}/profilo")]
-        public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute, ClienteProfileEditViewModel cliente)
+        public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute, ClienteProfileEditViewModel profilo)
         {
-            return BadRequest(); // Da Implementare
+            float latitudine, longitudine;
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                return Forbid();
+            }
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
+            var userType = User.GetUserTypeForCliente(cliente.IdCliente);
+            if (!userType.IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View("Profilo", profilo);
+            }
+            //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
+            if (!float.TryParse(profilo.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out latitudine) ||
+                !float.TryParse(profilo.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out longitudine))
+            {
+                ModelState.AddModelError(string.Empty, "Coordinate non valide");
+                return View("Profilo", profilo);
+            }
+            //Salviamo il profilo
+            var apiModel = profilo.MapToAPIModel();
+            await _apiClient.ClienteSalvaProfilo(cliente.IdCliente, apiModel, accessToken);
+            return RedirectToAction("Index", new { cliente = urlRoute });
         }
 
         #region Gestione Locations
