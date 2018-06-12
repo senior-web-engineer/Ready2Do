@@ -196,7 +196,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             existing.ZipOrPostalCode = profilo.Indirizzo.PostalCode;
             existing.OrarioApertura = JsonConvert.SerializeObject(profilo.OrarioApertura);
 
-            if(!profilo.ImmagineHome.Id.HasValue)
+            //Se è una nuova immagine, sovrascriviamo la precedente (manteniamo l'Id della vecchia)
+            if(!profilo.ImmagineHome.Id.HasValue && profilo.ImmagineHome.Id.Value <= 0)
             {
                 var oldImg = existing.ClientiImmagini.SingleOrDefault(i=>i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini();
                 oldImg.IdCliente = idCliente;

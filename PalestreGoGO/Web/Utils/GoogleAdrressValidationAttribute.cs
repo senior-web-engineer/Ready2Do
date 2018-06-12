@@ -38,7 +38,7 @@ namespace Web.Utils
                 }
                 else
                 {
-                    validationResult = new ValidationResult("An error occurred while validating the property. OtherProperty is not of type DateTime");
+                    validationResult = new ValidationResult("An error occurred while validating the property. OtherProperty is not of type Short");
                 }
             }
             catch (Exception ex)

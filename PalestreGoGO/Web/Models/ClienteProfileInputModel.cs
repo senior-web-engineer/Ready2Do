@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Utils;
 
 namespace Web.Models
 {
@@ -28,13 +29,15 @@ namespace Web.Models
         [Required]
         public string NumTelefono { get; set; }
 
-        [Required]
+        //[Required]
         public string Descrizione { get; set; }
 
         #region Indirizzo
+        [GoogleAdrressValidation("EsitoLookup", "E' necessario selezionare un indirizzo tra quelli proposti nella lista")]
+        [Required]
         public string Indirizzo { get; set; }
 
-        public bool EsitoLookup { get; set; }
+        public short EsitoLookup { get; set; }
 
         [Required(ErrorMessage = "Indirizzo non valido")]
         public string Latitudine { get; set; }
