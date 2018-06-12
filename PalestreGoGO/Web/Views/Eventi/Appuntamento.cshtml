@@ -1,0 +1,41 @@
+﻿@using Web.Utils;
+
+@model AppuntamentoViewModel;
+@{
+    Layout = "_LayoutClienti";
+}
+<head>
+    @section Header{
+    }
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col s4">
+            <span class="label">Nome</span>
+        </div>
+        <div class="col s6">
+            <span class="label">@Model.Nome</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <span>Per iscriversi all'evento è necessario autenticarsi</span><br />
+                <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Accedi</a>
+            }
+            @if (string.IsNullOrEmpty(Model.DataOraIscrizione))
+            {
+                <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Iscriviti</a>
+            }
+            else
+            {
+                <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Annulla Iscrizione</a>
+            }
+        </div>
+    </div>
+</div>
+@section Scripts{
+
+}

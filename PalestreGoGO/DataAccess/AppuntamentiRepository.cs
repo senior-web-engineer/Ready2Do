@@ -33,7 +33,7 @@ namespace PalestreGoGo.DataAccess
                     var schedule = await _context.Schedules.FirstOrDefaultAsync(s => s.IdCliente.Equals(idCliente) && (s.Id.Equals(appuntamento.ScheduleId)));
                     if (schedule == null) throw new ArgumentException("Ivalid Schedule");
                     //Se non è un guest ==> deve avere un abbonamento da cui scalare gli ingressi
-                    if (!appuntamento.IsGuest)
+                    if (appuntamento.UserId != null)
                     {
                         //recupero l'abbonamento per l'utente, non deve essere scaduto ed avere ancora ingressi disponibili
                         var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(a => a.IdCliente.Equals(idCliente) &&
@@ -70,13 +70,16 @@ namespace PalestreGoGo.DataAccess
                 {
                     var appuntamento = await _context.Appuntamenti.SingleAsync(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idAppuntamento));
                     var schedule = await _context.Schedules.SingleAsync(s => s.Id.Equals(appuntamento.ScheduleId));
+                    appuntamento.DataCancellazione = DateTime.Now;
+                    //Se la cancellazione avviene entro il termine previsto, rimborsiamo l'ingresso
                     if (schedule.CancellabileFinoAl >= DateTime.Now)
                     {
-                        await CancellaAppuntamentoAsync(_context, idCliente, appuntamento);
-                    }
-                    else
-                    {
-                        appuntamento.DataCancellazione = DateTime.Now;
+                        var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(appuntamento.UserId));
+                        // Avoid overflow
+                        if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
+                        {
+                            abbonamento.IngressiResidui++;
+                        }
                     }
                     schedule.PostiResidui++;
                     await _context.SaveChangesAsync();
@@ -91,25 +94,20 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        internal static async Task CancellaAppuntamentoAsync(PalestreGoGoDbContext context, int idCliente, Appuntamenti appuntamento)
-        {
-            appuntamento.DataCancellazione = DateTime.Now;
-            //Riaccreditiamo l'ingresso
-            if (!appuntamento.IsGuest)
-            {
-                var abbonamento = await context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(appuntamento.UserId));
-                // Avoid overflow
-                if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
-                {
-                    abbonamento.IngressiResidui++;
-                }
-            }
-        }
-
         public IEnumerable<Appuntamenti> GetAppuntamentiForSchedule(int idCliente, int idSchedule)
         {
             var appuntamenti = _context.Appuntamenti.Where(a => a.Id.Equals(idSchedule) && a.IdCliente.Equals(idCliente));
             return appuntamenti;
+        }
+
+        public async Task<Appuntamenti> GetAppuntamentoAsync(int idCliente, int idAppuntamento)
+        {
+            return await _context.Appuntamenti.Where(a => a.IdCliente.Equals(idCliente) && a.Id.Equals(idAppuntamento)).FirstOrDefaultAsync();
+        }
+
+        public async Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, Guid userId)
+        {
+            return await _context.Appuntamenti.Where(a => a.IdCliente.Equals(idCliente) && a.ScheduleId.Equals(idSchedule) && a.UserId.Equals(userId)).FirstOrDefaultAsync();
         }
     }
 }

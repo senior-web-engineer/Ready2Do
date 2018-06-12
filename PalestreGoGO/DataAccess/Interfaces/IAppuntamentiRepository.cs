@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PalestreGoGo.DataAccess.Interfaces
+namespace PalestreGoGo.DataAccess
 {
     public interface IAppuntamentiRepository
     {
@@ -15,5 +15,7 @@ namespace PalestreGoGo.DataAccess.Interfaces
         IEnumerable<Appuntamenti> GetAppuntamentiForSchedule(int idCliente, int idSchedule);
 
         Task<Appuntamenti> GetAppuntamentoAsync(int idCliente, int idAppuntamento);
+
+        Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, Guid userId);
     }
 }

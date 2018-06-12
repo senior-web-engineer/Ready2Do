@@ -5,11 +5,8 @@ using System.Text;
 
 namespace PalestreGoGo.WebAPIModel
 {
-
-    public class NuovoEventoViewModel
+    public abstract class NuovoAppuntamentoBaseViewModel 
     {
-        [JsonProperty("user", Required = Required.Always)]
-        public Guid IdUtente { get; set; }
 
         [JsonProperty("evento", Required = Required.Always)]
         public int IdEvento { get; set; }
@@ -18,7 +15,14 @@ namespace PalestreGoGo.WebAPIModel
         public string Note { get; set; }
     }
 
-    public class NuovoEventoGuestViewModel: NuovoEventoViewModel
+    public class NuovoAppuntamentoViewModel: NuovoAppuntamentoBaseViewModel
+    {
+        [JsonProperty("user", Required = Required.Always)]
+        public Guid IdUtente { get; set; }
+
+    }
+
+    public class NuovoAppuntamentoGuestViewModel: NuovoAppuntamentoBaseViewModel
     {
         [JsonProperty("nominativo", Required = Required.Always)]
         public string Nominativo { get; set; }

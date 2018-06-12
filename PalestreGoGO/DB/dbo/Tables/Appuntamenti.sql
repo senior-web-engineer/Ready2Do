@@ -2,13 +2,12 @@
 (
 	[Id]					INT					NOT NULL	IDENTITY(1,1),
 	[IdCliente]				INT					NOT NULL,
-	[UserId]				UNIQUEIDENTIFIER	NOT NULL,
+	[UserId]				UNIQUEIDENTIFIER	NULL,		--Se NULL indica un appuntamento per un utente Guest
 	[ScheduleId]			INT					NOT NULL,
 	[DataPrenotazione]		DATETIME2			NOT NULL,
 	[DataCancellazione]		DATETIME2			NULL,
 	[Note]					NVARCHAR(1000)		NULL,
 	[Nominativo]			NVARCHAR(200)		NULL,	/* ??? */
-	[IsGuest]				BIT					NOT NULL,
 	CONSTRAINT PK_Appuntamenti PRIMARY KEY (Id),
 	CONSTRAINT FK_Appuntamenti_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),
 	CONSTRAINT FK_Appuntamenti_Schedules FOREIGN KEY (ScheduleId) REFERENCES [Schedules](Id),

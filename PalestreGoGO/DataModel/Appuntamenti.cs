@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataModel
     {
         public int Id { get; set; }
         public int IdCliente { get; set; }        
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         public int ScheduleId { get; set; }
         public DateTime DataPrenotazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
@@ -17,7 +17,6 @@ namespace PalestreGoGo.DataModel
         public string Note { get; set; }
         [StringLength(200)]
         public string Nominativo { get; set; }
-        public bool IsGuest { get; set; }
 
         [ForeignKey("ScheduleId")]
         [InverseProperty("Appuntamenti")]

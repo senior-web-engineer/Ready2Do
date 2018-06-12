@@ -39,8 +39,8 @@ namespace PalestreGoGo.DataAccess
         public IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate)
         {
             var result = _context.Schedules
-                                    .Include(s=>s.TipologiaLezione)
-                                    .Include(s=>s.Location)
+                                    .Include(s => s.TipologiaLezione)
+                                    .Include(s => s.Location)
                                     .Where(s => (s.IdCliente.Equals(idCliente) &&
                                            (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) >= startDate) &&
                                            (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) <= endDate)));
@@ -61,22 +61,32 @@ namespace PalestreGoGo.DataAccess
         public async Task RemoveScheduleAsync(int idCliente, int idSchedule)
         {
             var entity = _context.Schedules
-                                .Include(s=>s.Appuntamenti)
+                                .Include(s => s.Appuntamenti)
                                 .Single(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idSchedule));
             if (entity == null) throw new ArgumentException("Invalid Tenant");
             if (Utils.DateTimeFromDateAndTime(entity.Data, entity.OraInizio) <= DateTime.Now)
             {
                 throw new InvalidOperationException("Impossibile cancellare uno schedule passato.");
             }
+
             using (var trans = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     entity.DataCancellazione = DateTime.Now;
-                    //Annulliamo gli appuntamenti
-                    foreach(var app in entity.Appuntamenti)
+                    foreach (var app in entity.Appuntamenti)
                     {
-                        await AppuntamentiRepository.CancellaAppuntamentoAsync(_context, idCliente, app);
+                        app.DataCancellazione = DateTime.Now;
+                        //Rimborisamo gli appuntamenti (solo i NON GUEST)
+                        if (app.UserId != null)
+                        {
+                            var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(app.UserId));
+                            // Avoid overflow
+                            if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
+                            {
+                                abbonamento.IngressiResidui++;
+                            }
+                        }
                     }
                     await _context.SaveChangesAsync();
                     trans.Commit();

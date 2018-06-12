@@ -391,5 +391,18 @@ namespace Web.Utils
         //    }
         //    response.EnsureSuccessStatusCode();
         //}
+
+        public async Task<Models.AppuntamentoViewModel> GetAppuntamentoForCurrentUserAsync(int idCliente, int idEvento)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti?idEvento={idEvento}");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            //Sfruttiamo l'uguaglianza a livello di serializzazione tra i due modelli
+            var result = JsonConvert.DeserializeObject<Models.AppuntamentoViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
     }
 }

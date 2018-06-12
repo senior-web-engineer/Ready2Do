@@ -20,7 +20,8 @@ namespace PalestreGoGo.WebAPI.Services
             //Che deve fare il provisioning?
             //1. Aggiorniamo lo stato sul DB
             await _repositoryClienti.ConfermaProvisioningAsync(provisioningToken,userId);
-            //2. Altro??
+            //2. Creiamo l'utente Guest per il cliente
+
             // Aggiungere le immagini di default e gli altri eventuali oggetti di default
         }
     }

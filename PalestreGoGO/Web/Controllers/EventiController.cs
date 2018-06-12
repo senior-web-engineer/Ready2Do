@@ -25,15 +25,18 @@ namespace Web.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
         private readonly WebAPIClient _apiClient;
+        private readonly ClienteResolverServices _clientsResolver;
 
         public EventiController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient
+                                 WebAPIClient apiClient,
+                                 ClienteResolverServices clientsResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _apiClient = apiClient;
+            _clientsResolver = clientsResolver;
         }
 
 
@@ -47,9 +50,9 @@ namespace Web.Controllers
             DateTime dataParsed;
             TimeSpan timeParsed;
             int idLocation;
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
-            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
+            var locations = await _apiClient.GetLocationsAsync(idCliente);
             if (!string.IsNullOrWhiteSpace(dataEvento) && DateTime.TryParseExact(dataEvento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dataParsed))
             {
                 vm.Data = dataParsed;
@@ -64,7 +67,7 @@ namespace Web.Controllers
             }
             ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
             ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
-            ViewData["IdCliente"] = cliente.IdCliente;
+            ViewData["IdCliente"] = idCliente;
             return View("EditEvento", vm);
         }
 
@@ -72,14 +75,14 @@ namespace Web.Controllers
         [HttpPost("{cliente}/eventi/edit/{id}")]
         public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] EventoViewModel evento, [FromRoute(Name = "id")] int? idEvento)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
-            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
+            var locations = await _apiClient.GetLocationsAsync(idCliente);
             if (!ModelState.IsValid)
             {
                 ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
                 ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
-                ViewData["IdCliente"] = cliente.IdCliente;
+                ViewData["IdCliente"] = idCliente;
                 return View("EditEvento", evento);
             }
 
@@ -88,7 +91,7 @@ namespace Web.Controllers
                 CancellabileFinoAl = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value),
                 Data = evento.Data.Value,
                 Title = evento.Title,
-                IdCliente = cliente.IdCliente,
+                IdCliente = idCliente,
                 IdLocation = evento.IdLocation.Value,
                 Istruttore = evento.Istruttore,
                 Note = evento.Note,
@@ -98,7 +101,7 @@ namespace Web.Controllers
                 Id = evento.Id
             };
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveSchedule(cliente.IdCliente, apiVM, accessToken);
+            await _apiClient.SaveSchedule(idCliente, apiVM, accessToken);
             return RedirectToAction("Index", "Schedules");
         }
 
@@ -107,16 +110,25 @@ namespace Web.Controllers
         public async Task<IActionResult> EditEvento([FromRoute(Name = "cliente")]string urlRoute,
                                                     [FromRoute(Name = "id")] int idEvento)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(cliente.IdCliente);
-            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
-            var evento = await _apiClient.GetScheduleAsync(cliente.IdCliente, idEvento);
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
+            var locations = await _apiClient.GetLocationsAsync(idCliente);
+            var evento = await _apiClient.GetScheduleAsync(idCliente, idEvento);
             ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
             ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
-            ViewData["IdCliente"] = cliente.IdCliente;
+            ViewData["IdCliente"] = idCliente;
             return View("EditEvento", internalBuildViewModel(evento));
         }
 
+        [HttpGet("{cliente}/eventi/{idEvento}/appuntamenti")]
+        public async Task<IActionResult> GetAppuntamento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
+        {
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento);
+            return View("Appuntamento", appuntamento);
+        }
 
         private EventoViewModel internalBuildViewModel(ScheduleDetailsViewModel apiModel)
         {
