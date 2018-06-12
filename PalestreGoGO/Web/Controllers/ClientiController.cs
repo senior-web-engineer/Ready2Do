@@ -164,6 +164,7 @@ namespace Web.Controllers
             ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                                 _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                                cliente.StorageContainer);
+            ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
 
             return View("Profilo", vm);
         }
@@ -198,7 +199,7 @@ namespace Web.Controllers
             //Salviamo il profilo
             var apiModel = profilo.MapToAPIModel();
             await _apiClient.ClienteSalvaProfilo(cliente.IdCliente, apiModel, accessToken);
-            return RedirectToAction("Index", new { cliente = urlRoute });
+            return RedirectToAction("ProfileEdit", new { cliente = urlRoute });
         }
 
         #region Gestione Locations

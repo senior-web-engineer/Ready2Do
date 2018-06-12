@@ -46,7 +46,7 @@ namespace Web.Models.Utils
                 Longitudine = model.Indirizzo?.Coordinate?.Longitudine.ToString(CultureInfo.InvariantCulture),
                 Descrizione = model.Descrizione,
                 Email = model.Email,
-                EsitoLookup = false,
+                EsitoLookup = 0,
                 IdCliente = model.IdCliente,
                 ImmagineHome = new ImageViewModel()
                 {
@@ -79,10 +79,11 @@ namespace Web.Models.Utils
                 Indirizzo = new IndirizzoViewModel()
                 {
                     Citta = model.Citta,
+                    Indirizzo = model.Indirizzo,
                     Coordinate = new CoordinateViewModel()
                     {
-                        Latitudine = float.Parse(model.Latitudine),
-                        Longitudine = float.Parse(model.Longitudine)
+                        Latitudine = float.Parse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture),
+                        Longitudine = float.Parse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture)
                     }
                 },
                 ImmagineHome = new ImmagineViewModel()
@@ -136,16 +137,16 @@ namespace Web.Models.Utils
             {
                 result.Mattina = new FasciaOrariaViewmodel()
                 {
-                    Inizio = apiModel.Mattina.Inizio.ToString("hh:mm"),
-                    Fine = apiModel.Mattina.Fine.ToString("hh:mm")
+                    Inizio = apiModel.Mattina.Inizio.ToString(@"hh\:mm"),
+                    Fine = apiModel.Mattina.Fine.ToString(@"hh\:mm")
                 };
             }
             if (apiModel.Pomeriggio != null)
             {
                 result.Pomeriggio = new FasciaOrariaViewmodel()
                 {
-                    Inizio = apiModel.Pomeriggio.Inizio.ToString("hh:mm"),
-                    Fine = apiModel.Pomeriggio.Fine.ToString("hh:mm")
+                    Inizio = apiModel.Pomeriggio.Inizio.ToString(@"hh\:mm"),
+                    Fine = apiModel.Pomeriggio.Fine.ToString(@"hh\:mm")
                 };
             }
             return result;

@@ -53,7 +53,9 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                                     opt.MapFrom(src => Mapper.Map<ClientiImmagini, ImmagineViewModel>(
                                     src.ClientiImmagini.Where(i => i.IdTipoImmagine.Equals(Constants.TIPOIMMAGINE_SFONDO)).FirstOrDefault())))
                 .ForMember(d => d.OrarioApertura, opt => opt.MapFrom(src => src.ClientiMetadati.Count > 0 ? src.ClientiMetadati.Where(md => md.Key.Equals(DataModel.Constants.METADATI_KEY_ORARIO_APERTURA)) : null))
-                .ForMember(d => d.Immagini, opt => opt.MapFrom(src => Mapper.Map<ICollection<ClientiImmagini>, ICollection<ImmagineViewModel>>(src.ClientiImmagini)))
+                .ForMember(d => d.Immagini, opt => 
+                                    opt.MapFrom(src => Mapper.Map<ICollection<ClientiImmagini>, ICollection<ImmagineViewModel>>(
+                                            src.ClientiImmagini.Where(i => !i.IdTipoImmagine.Equals(Constants.TIPOIMMAGINE_SFONDO)).ToList())))
                 .ForMember(d => d.OrarioApertura, opt => opt.Ignore()); //Skip mapping orario apertura, la facciamo a mano
 
             CreateMap<Schedules, ScheduleViewModel>()

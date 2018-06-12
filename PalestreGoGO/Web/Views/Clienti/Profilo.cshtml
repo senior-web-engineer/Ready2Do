@@ -25,13 +25,13 @@
                 position: relative;
             }
 
-            .image_edit_container:hover .hero_edit_image {
-                opacity: 0.3;
-            }
+                .image_edit_container:hover .hero_edit_image {
+                    opacity: 0.3;
+                }
 
-            .image_edit_container:hover .image_edit_btn {
-                opacity: 1;
-            }
+                .image_edit_container:hover .image_edit_btn {
+                    opacity: 1;
+                }
 
             .hero_edit_image {
                 opacity: 1;
@@ -45,7 +45,7 @@
             .image_edit_btn {
                 transition: .5s ease;
                 opacity: 0;
-                position: absolute;               
+                position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
@@ -72,7 +72,7 @@
     <div class="container">
         <input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />
         <form asp-action="ProfileEdit" method="post" id="formEditProfile">
-            <input type="hidden" asp-for="EsitoLookup" />
+            <input id="esitoLookup" type="hidden" asp-for="EsitoLookup" />
             <input type="hidden" asp-for="IdCliente" />
             <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
             <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
@@ -130,13 +130,13 @@
                     <span asp-validation-for="NumTelefono"></span>
                 </div>
             </div>
-            <div class="row">
+            @*<div class="row">
                 <div class="input-field col s10 offset-s1">
                     <textarea asp-for="Descrizione" rows="5" class="materialize-textarea"></textarea>
                     <label asp-for="Descrizione"></label>
                     <span asp-validation-for="Descrizione"></span>
                 </div>
-            </div>
+            </div>*@
             <div class="row">
                 <div class="input-field col s10 offset-s1">
                     <input id="addressAutocomplete" type="text" asp-for="Indirizzo" />
@@ -144,7 +144,16 @@
                     <span asp-validation-for="Indirizzo"></span>
                 </div>
             </div>
+
             <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <img id="imgMap" class="img-responsive" src="@ViewBag.MapUrl" />
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+
+            @*<div class="row">
                 <div class="input-field col s6 offset-s1">
                     <input type="text" asp-for="Citta" />
                     <label asp-for="Citta"></label>
@@ -155,7 +164,7 @@
                     <label asp-for="CAP"></label>
                     <span asp-validation-for="CAP"></span>
                 </div>
-            </div>
+            </div>*@
 
             <!-- ORARIO APERTURA -->
             <div class="row">
@@ -171,7 +180,7 @@
             </div>
             <div class="row" id="orarioLunVen">
                 <div class="col s1 right-align offset-s1 mt-10">
-                    <span>Lunedì</span>
+                    <span>Lun. - Ven.</span>
                 </div>
                 <div class="col s1 input-field">
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Mattina.Inizio" />
@@ -325,20 +334,28 @@
         autocomplete = new google.maps.places.Autocomplete(input, options);
         autocomplete.addListener('place_changed', function () {
             var place = autocomplete.getPlace();
-            document.getElementById('inputLatitudine').value = place.geometry.location.lat();
-            document.getElementById('inputLongitudine').value = place.geometry.location.lng();
+            debugger;
+            if (place.geometry) {
+                document.getElementById('esitoLookup').value = 1;
+                document.getElementById('inputLatitudine').value = place.geometry.location.lat();
+                document.getElementById('inputLongitudine').value = place.geometry.location.lng();
 
-            var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
-            if (tmp) {
-                document.getElementById('inputCAP').value = tmp.long_name;
-            }
-            tmp = place.address_components.find(function (c) { return c.types[0] === "locality"; });
-            if (tmp) {
-                document.getElementById('inputCountry').value = tmp.long_name;
-            }
-            tmp = place.address_components.find(function (c) { return c.types[0] === "administrative_area_level_1"; });
-            if (tmp) {
-                document.getElementById('inputCitta').value = tmp.long_name;
+                var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
+                if (tmp) {
+                    document.getElementById('inputCAP').value = tmp.long_name;
+                }
+                tmp = place.address_components.find(function (c) { return c.types[0] === "locality"; });
+                if (tmp) {
+                    document.getElementById('inputCountry').value = tmp.long_name;
+                }
+                tmp = place.address_components.find(function (c) { return c.types[0] === "administrative_area_level_1"; });
+                if (tmp) {
+                    document.getElementById('inputCitta').value = tmp.long_name;
+                }
+                //Dobbiamo rieseguire la validazione perché quando arriva qui è già stata eseguita con i valori "errati"
+                $("#formEditProfile").validate().element("#addressAutocomplete");
+            } else {
+                document.getElementById('esitoLookup').value = 0;
             }
         });
 
@@ -366,11 +383,11 @@
             uploaders[0].addFiles(file, { fileOrder: idx });
         }
 
-       
+
 
         var uploaders = [];
 
-     
+
         }));*@
 
         var btnFileSelect = document.getElementById('fileSelect');
@@ -403,14 +420,14 @@
                         console.log("New Hero image uploaded to: " + fullUrl);
                     }
                     else {
-                        let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText 
+                        let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
                         console.log(message);
                         alert(message);
 
                     }
                 }
             }
-            
+
         });
 
         function choseImage(e) {
@@ -429,5 +446,19 @@
             }
         }
 
+    </script>
+    <!-- Scrip per la validazione dell'inidirizzo -->
+    <script>
+        $(function () {
+            $.validator.addMethod('googleaddress', function (value, element, params) {
+                $.validator.messages.googleaddress = "E' necessario selezionare un indirizzo tra quelli proposti";
+                return $(params).val() == 1;
+            });
+
+            $.validator.unobtrusive.adapters.add('googleaddress', ['esitolookupField'], function (options) {
+                options.rules['googleaddress'] = '#esitoLookup';// + options.params.esitolookupField;
+                options.messages['googleaddress'] = options.message;
+            });
+        }(jQuery));
     </script>
 }
