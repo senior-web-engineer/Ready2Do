@@ -23,6 +23,8 @@ namespace PalestreGoGo.DataModel
         [StringLength(150)]
         public string Istruttore { get; set; }
         public int PostiDisponibili { get; set; }
+        public int? PostiResidui { get; set; }
+
         public DateTime CancellabileFinoAl { get; set; }
         public DateTime? DataCancellazione { get; set; }
         [StringLength(450)]

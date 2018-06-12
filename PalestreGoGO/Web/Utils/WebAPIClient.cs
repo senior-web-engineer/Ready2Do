@@ -333,7 +333,7 @@ namespace Web.Utils
 
         public async Task<UserConfirmationViewModel> ConfermaAccount(string email, string code)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/confirmation?email={email}&code={code}");
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/confirmation?email={email}&code={code}");
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.PostAsync(uri, null);
             response.EnsureSuccessStatusCode();

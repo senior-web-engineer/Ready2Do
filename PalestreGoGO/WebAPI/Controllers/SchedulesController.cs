@@ -29,7 +29,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddSchedule([FromRoute]int idCliente, ScheduleViewModel model)
+        public async Task<IActionResult> AddSchedule([FromRoute]int idCliente, [FromBody] ScheduleViewModel model)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             if (!ModelState.IsValid) return BadRequest();

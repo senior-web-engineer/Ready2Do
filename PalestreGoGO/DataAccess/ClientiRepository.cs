@@ -101,16 +101,16 @@ namespace PalestreGoGo.DataAccess
             return Task.FromResult(cliente);
         }
 
-        public Task<Clienti> GetByIdUserOwner(Guid idOwner, bool includeImages = false)
+        public async Task<Clienti> GetByIdUserOwnerAsync(Guid idOwner, bool includeImages = false)
         {
-            var cliente = _context
-                            .Clienti
-                            .AsNoTracking()
-                            .Include(c => c.IdTipologiaNavigation)
-                            .Include(c => c.ClientiMetadati)
-                            .Where(c => (c.IdUserOwner.Equals(idOwner)))
-                            .Single();
-            if (includeImages)
+            var cliente = await _context
+                                .Clienti
+                                .AsNoTracking()
+                                .Include(c => c.IdTipologiaNavigation)
+                                .Include(c => c.ClientiMetadati)
+                                .Where(c => (c.IdUserOwner.Equals(idOwner)))
+                                .SingleOrDefaultAsync();
+            if ((cliente!= null) && includeImages)
             {
                 //Leggiamo anche le immagini
                 var immagini = _context.ClientiImmagini
@@ -122,7 +122,7 @@ namespace PalestreGoGo.DataAccess
                                 .ToList();
                 cliente.ClientiImmagini = immagini;
             }
-            return Task.FromResult(cliente);
+            return cliente;
         }
 
         public Task<Clienti> GetAsync(int idCliente)

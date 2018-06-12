@@ -45,7 +45,7 @@ namespace Web.Controllers
         [HttpGet("{cliente}/abbonamenti/tipologie")]
         public async Task<IActionResult> TipoAbbonamenti([FromRoute(Name = "cliente")]string urlRoute)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -61,7 +61,7 @@ namespace Web.Controllers
         [HttpGet("{cliente}/abbonamenti/tipologie/new")]
         public async Task<IActionResult> TipoAbbonamentoAdd([FromRoute(Name = "cliente")]string urlRoute)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -76,7 +76,7 @@ namespace Web.Controllers
         [HttpGet("{cliente}/abbonamenti/tipologie/{id:int}")]
         public async Task<IActionResult> TipoAbbonamentoEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idTipoAbbonamento)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -101,7 +101,7 @@ namespace Web.Controllers
         [HttpPost("{cliente}/abbonamenti/tipologie")]
         public async Task<IActionResult> TipoAbbonamentoSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.TipologiaAbbonamentoViewModel tipoAbbonamento)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -120,7 +120,7 @@ namespace Web.Controllers
         [HttpGet("{cliente}/abbonamenti/tipologie/{id}/delete")]
         public async Task<IActionResult> TipoAbbonamentoDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idTipoAbbonamento)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRoute(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {

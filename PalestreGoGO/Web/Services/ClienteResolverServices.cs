@@ -29,7 +29,7 @@ namespace Web.Services
             return new TimeSpan(0,_cacheConfig?.ClienteSlidingExpiration ?? DEFAULT_SLIDING_EXPIRATION, 0);
         }
 
-        public async Task<int> GetIdClienteFromRoute(string clienteRoute)
+        public async Task<int> GetIdClienteFromRouteAsync(string clienteRoute)
         {
             int idCliente;
             if (!_cache.TryGetValue(clienteRoute, out idCliente)){

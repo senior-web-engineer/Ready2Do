@@ -63,12 +63,14 @@ namespace Web.Controllers
             //NOTA: Aggiungere le properties?
             AuthenticationProperties props = new AuthenticationProperties()
             {
-                RedirectUri = returnUrl
-            };
-            return SignOut(new string[]{
+                RedirectUri = returnUrl,
+            };           
+            SignOut(new string[]{
                 OpenIdConnectDefaults.AuthenticationScheme,
-                CookieAuthenticationDefaults.AuthenticationScheme
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                "AuthenticationTypes.Federation"
             });
+            return Redirect(returnUrl);
         }
 
         //

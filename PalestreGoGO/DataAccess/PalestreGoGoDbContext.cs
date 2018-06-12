@@ -146,7 +146,7 @@ namespace PalestreGoGo.DataAccess
             modelBuilder.Entity<Schedules>(entity =>
             {
                 //entity.Property(e => e.Timestamp).IsRowVersion();
-
+                
                 entity.HasOne(d => d.Cliente)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.IdCliente)

@@ -32,19 +32,23 @@ namespace PalestreGoGo.DataAccess
                 {
                     var schedule = await _context.Schedules.FirstOrDefaultAsync(s => s.IdCliente.Equals(idCliente) && (s.Id.Equals(appuntamento.ScheduleId)));
                     if (schedule == null) throw new ArgumentException("Ivalid Schedule");
-                    //recupero l'abbonamento per l'utente, non deve essere scaduto ed avere ancora ingressi disponibili
-                    var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(a => a.IdCliente.Equals(idCliente) &&
-                                                                                                a.UserId.Equals(appuntamento.UserId) &&
-                                                                                                a.Scadenza >= schedule.Data &&
-                                                                                                a.IngressiResidui > 0);
-                    if (abbonamento == null)
+                    //Se non è un guest ==> deve avere un abbonamento da cui scalare gli ingressi
+                    if (!appuntamento.IsGuest)
                     {
-                        _logger.LogWarning($"Cliente {idCliente} - non è stato trovato un abbonamento valido per l'utente {appuntamento.UserId}.");
-                        throw new AbbonamentoNotFoundedException($"Cliente {idCliente} - non è stato trovato un abbonamento valido per l'utente {appuntamento.UserId}.");
+                        //recupero l'abbonamento per l'utente, non deve essere scaduto ed avere ancora ingressi disponibili
+                        var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(a => a.IdCliente.Equals(idCliente) &&
+                                                                                                    a.UserId.Equals(appuntamento.UserId) &&
+                                                                                                    a.Scadenza >= schedule.Data &&
+                                                                                                    a.IngressiResidui > 0);
+                        if (abbonamento == null)
+                        {
+                            _logger.LogWarning($"Cliente {idCliente} - non è stato trovato un abbonamento valido per l'utente {appuntamento.UserId}.");
+                            throw new AbbonamentoNotFoundedException($"Cliente {idCliente} - non è stato trovato un abbonamento valido per l'utente {appuntamento.UserId}.");
+                        }
+                        _context.Appuntamenti.Add(appuntamento); //Salviamo l'appuntamento
+                        abbonamento.IngressiResidui--; //decrementiamo gli ingressi
                     }
-                    _context.Appuntamenti.Add(appuntamento); //Salviamo l'appuntamento
-                    abbonamento.IngressiResidui--; //decrementiamo gli ingressi
-                    schedule.PostiDisponibili--; //decrementiamo i posti disponibili
+                    schedule.PostiResidui--; //decrementiamo i posti disponibili
                     await _context.SaveChangesAsync();
                     trans.Commit();
                 }
@@ -65,9 +69,16 @@ namespace PalestreGoGo.DataAccess
                 try
                 {
                     var appuntamento = await _context.Appuntamenti.SingleAsync(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idAppuntamento));
-                    await CancellaAppuntamentoAsync(_context, idCliente, appuntamento);
                     var schedule = await _context.Schedules.SingleAsync(s => s.Id.Equals(appuntamento.ScheduleId));
-                    schedule.PostiDisponibili++;
+                    if (schedule.CancellabileFinoAl >= DateTime.Now)
+                    {
+                        await CancellaAppuntamentoAsync(_context, idCliente, appuntamento);
+                    }
+                    else
+                    {
+                        appuntamento.DataCancellazione = DateTime.Now;
+                    }
+                    schedule.PostiResidui++;
                     await _context.SaveChangesAsync();
                     trans.Commit();
                 }

@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -92,6 +93,7 @@ namespace PalestreGoGo.DataAccess
         public async Task UpdateSchedule(int idCliente, Schedules entity)
         {
             //Attenzione! Non verifichiamo il tenant
+            Debug.Assert(entity.PostiDisponibili == entity.PostiResidui);
             //TODO: Implementare le logiche di verifica di fattibilità
             if (entity.IdCliente != idCliente) throw new ArgumentException("idTenant not valid");
             EntityEntry dbEntityEntry = _context.Entry<Schedules>(entity);

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPIModel;
@@ -19,12 +20,15 @@ namespace PalestreGoGo.WebAPI.Controllers
     {
         private readonly ILogger<UtentiController> _logger;
         private readonly IUsersManagementService _userManagementService;
+        private readonly IClientiRepository _repository;
 
         public UtentiController(ILogger<UtentiController> logger,
-                                 IUsersManagementService userManagementService)
+                                 IUsersManagementService userManagementService,
+                                 IClientiRepository repository)
         {
             this._logger = logger;
             this._userManagementService = userManagementService;
+            this._repository = repository;
         }
 
         /// <summary>
@@ -99,9 +103,12 @@ namespace PalestreGoGo.WebAPI.Controllers
                 _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");
                 return BadRequest();
             }
-            // 
+            var cliente = await _repository.GetByIdUserOwnerAsync(esitoConfirmation.IdUser);
+            if (cliente != null)
+            {
+                esitoConfirmation.IdCliente = cliente.Id;
+            }
             //TODO: Ritornare un CreatedAt con l'url del cliente?
-            //return Created(new Uri(cliente.UrlRoute, UriKind.Relative), null);
             return Ok(esitoConfirmation);
         }
 

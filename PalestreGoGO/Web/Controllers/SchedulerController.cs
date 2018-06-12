@@ -24,25 +24,28 @@ namespace Web.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
         private readonly WebAPIClient _apiClient;
+        private readonly ClienteResolverServices _clientiResolver;
 
         public SchedulerController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient
+                                 WebAPIClient apiClient,
+                                 ClienteResolverServices clientiResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _apiClient = apiClient;
+            _clientiResolver = clientiResolver;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "lid")] int? idActiveLocation)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            ViewData["IdCliente"] = cliente.IdCliente;
-            ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            ViewData["IdCliente"] = idCliente;
+            ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, idCliente);
             var vm = new SchedulerViewModel();
-            vm.Sale = await _apiClient.GetLocationsAsync(cliente.IdCliente);
+            vm.Sale = await _apiClient.GetLocationsAsync(idCliente);
             vm.IdActiveLocation = idActiveLocation ?? vm.Sale.First().Id;
             return View(vm);
         }

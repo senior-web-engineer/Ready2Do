@@ -263,32 +263,32 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(existing.Url);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="code"></param>
-        /// <returns>Ritorna l'url della homepage del cliente appena confermatp in caso di esito positivo</returns>
-        [HttpPost("confirmation")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfermaCliente([FromQuery]string email, [FromQuery]string code)
-        {
-            _logger.LogTrace($"ConfirmEmail -> Received request for user: [{email ?? "NULL"}], code: [{code ?? "NULL"}]");
-            if (email == null || code == null)
-            {
-                return BadRequest();
-            }
-            var esitoConfirmation = await _userManagementService.ConfirmUserAsync(email, code);
-            if (!esitoConfirmation.Esito)
-            {
-                _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");
-                return BadRequest();
-            }
-            var cliente = await _repository.GetByIdUserOwner(esitoConfirmation.IdUser);
-            esitoConfirmation.IdCliente = cliente.Id;
-            //TODO: Ritornare un CreatedAt con l'url del cliente?
-            return Ok(esitoConfirmation);
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="email"></param>
+        ///// <param name="code"></param>
+        ///// <returns>Ritorna l'url della homepage del cliente appena confermatp in caso di esito positivo</returns>
+        //[HttpPost("confirmation")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> ConfermaCliente([FromQuery]string email, [FromQuery]string code)
+        //{
+        //    _logger.LogTrace($"ConfirmEmail -> Received request for user: [{email ?? "NULL"}], code: [{code ?? "NULL"}]");
+        //    if (email == null || code == null)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    var esitoConfirmation = await _userManagementService.ConfirmUserAsync(email, code);
+        //    if (!esitoConfirmation.Esito)
+        //    {
+        //        _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");
+        //        return BadRequest();
+        //    }
+        //    var cliente = await _repository.GetByIdUserOwner(esitoConfirmation.IdUser);
+        //    esitoConfirmation.IdCliente = cliente.Id;
+        //    //TODO: Ritornare un CreatedAt con l'url del cliente?
+        //    return Ok(esitoConfirmation);
+        //}
 
         //public async Task<IActionResult> AssociaImmagine(ImmagineViewModel immagine)
         //{
