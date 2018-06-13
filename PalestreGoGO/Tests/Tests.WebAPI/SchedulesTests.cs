@@ -121,7 +121,6 @@ namespace Tests.WebAPI
             {
                 DataPrenotazione = DateTime.Now,
                 IdCliente = Utils.ID_CLIENTE_TEST_1,
-                IsGuest = false,
                 ScheduleId = _fixture.Entity.Id.Value,
                 UserId = Utils.USERID_DUMMY
             });

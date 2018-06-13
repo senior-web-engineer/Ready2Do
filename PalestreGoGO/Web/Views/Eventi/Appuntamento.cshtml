@@ -1,4 +1,5 @@
 ﻿@using Web.Utils;
+@using Microsoft.AspNetCore.Http.Extensions;
 
 @model AppuntamentoViewModel;
 @{
@@ -23,15 +24,17 @@
             @if (!User.Identity.IsAuthenticated)
             {
                 <span>Per iscriversi all'evento è necessario autenticarsi</span><br />
-                <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Accedi</a>
+                <a class="waves-effect waves-light btn" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">
+                    <i class="material-icons left">person</i>Accedi
+                </a>
             }
             @if (string.IsNullOrEmpty(Model.DataOraIscrizione))
             {
-                <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Iscriviti</a>
+                <a class="waves-effect waves-light btn"><i class="material-icons left">turned_in</i>Iscriviti</a>
             }
             else
             {
-                <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Annulla Iscrizione</a>
+                <a class="waves-effect waves-light btn"><i class="material-icons left">turned_in_not</i>Annulla Iscrizione</a>
             }
         </div>
     </div>

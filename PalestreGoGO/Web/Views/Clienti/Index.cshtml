@@ -211,6 +211,12 @@
                         type: 'GET',
                         data: { lid: '@s.Id' }
                     },
+                    eventClick: function (calEvent, jsEvent, view) {
+                        $("#spinner").show();
+                        var url = '@Html.Raw(ViewBag.ClienteRoute)/eventi/' + calEvent.id +"/appuntamenti";
+                        window.location = url;
+                        //TODO: Caricare loader!
+                    }  
                 });
                 </text>
             }
