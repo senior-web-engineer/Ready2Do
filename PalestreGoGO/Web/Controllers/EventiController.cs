@@ -121,12 +121,25 @@ namespace Web.Controllers
             return View("EditEvento", internalBuildViewModel(evento));
         }
 
+        /// <summary>
+        /// Se l'utente non è autenticato vedrà solo i dettagli dell'evento senza poter creare/modificare l'appuntamento
+        /// Se invece l'utente è autenticato può creare un nuovo appuntamento o annullarne uno precedentemente preso.
+        /// Come verifichiamo che l'utente sia "associato" alla struttura?
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <param name="idEvento"></param>
+        /// <returns></returns>
         [HttpGet("{cliente}/eventi/{idEvento}/appuntamenti")]
-        public async Task<IActionResult> GetAppuntamento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento);
+            var schedule = await _apiClient.GetScheduleAsync(idCliente, idEvento);
+            if (User.Identity.IsAuthenticated)
+            {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+                var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento);
+            }
             return View("Appuntamento", appuntamento);
         }
 
