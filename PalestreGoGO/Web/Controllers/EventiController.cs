@@ -56,10 +56,12 @@ namespace Web.Controllers
             if (!string.IsNullOrWhiteSpace(dataEvento) && DateTime.TryParseExact(dataEvento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dataParsed))
             {
                 vm.Data = dataParsed;
+                vm.DataCancellazioneMax = dataParsed.AddDays(-1);
             }
             if (!string.IsNullOrWhiteSpace(oraEvento) && TimeSpan.TryParseExact(oraEvento, "c", CultureInfo.InvariantCulture, out timeParsed))
             {
                 vm.OraInizio = timeParsed;
+                vm.OraCancellazioneMax = timeParsed;
             }
             if (!string.IsNullOrWhiteSpace(lid) && int.TryParse(lid, out idLocation))
             {
@@ -86,7 +88,26 @@ namespace Web.Controllers
                 return View("EditEvento", evento);
             }
 
-            ScheduleViewModel apiVM = new ScheduleViewModel()
+            if((evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue) ||
+                (evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue))
+            {
+                ModelState.AddModelError("DataOraCancellazione", "E' necessario specificare sia la Data che l'Ora limite per la Cancellazione dell'evento");
+                return View("EditEvento", evento);
+            }
+
+            if (evento.DataCancellazioneMax.HasValue)
+            {
+                var dtCanc = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value);
+                var dtEvento = evento.Data.Value.Add(evento.OraInizio.Value);
+                if(dtEvento < dtCanc)
+                {
+                    ModelState.AddModelError("DataOraCancellazioneTooLate", "La Data limite per la Cancellazione dell'evento deve essere anteriore alla data dell'evento stesso.");
+                    return View("EditEvento", evento);
+                }
+            }
+
+                //TODO: Verificare che la data cancellazione sia antecedente la data evento e le eventuali
+                ScheduleViewModel apiVM = new ScheduleViewModel()
             {
                 CancellabileFinoAl = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value),
                 Data = evento.Data.Value,
@@ -129,17 +150,18 @@ namespace Web.Controllers
         /// <param name="urlRoute"></param>
         /// <param name="idEvento"></param>
         /// <returns></returns>
-        [HttpGet("{cliente}/eventi/{idEvento}/appuntamenti")]
+        [HttpGet("{cliente}/eventi/{idEvento}/appuntamento")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             var schedule = await _apiClient.GetScheduleAsync(idCliente, idEvento);
+            string accessToken = null;
             if (User.Identity.IsAuthenticated)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-                var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento);
+                accessToken = await HttpContext.GetTokenAsync("access_token");
             }
+            var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
             return View("Appuntamento", appuntamento);
         }
 

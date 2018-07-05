@@ -32,7 +32,10 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<Schedules> GetScheduleAsync(int idCliente, int idSchedule)
         {
-            var result = await _context.Schedules.SingleOrDefaultAsync(s => s.Id.Equals(idSchedule) && s.IdCliente.Equals(idCliente));
+            var result = await _context.Schedules
+                                .Include(s=>s.TipologiaLezione)
+                                .Include(s=>s.Location)
+                                .SingleOrDefaultAsync(s => s.Id.Equals(idSchedule) && s.IdCliente.Equals(idCliente));
             return result;
         }
 

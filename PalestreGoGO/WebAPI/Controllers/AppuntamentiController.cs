@@ -54,13 +54,14 @@ namespace PalestreGoGo.WebAPI.Controllers
 
 
         [HttpGet()]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAppuntamento([FromRoute]int idCliente, [FromQuery]int idEvento)
         {
             AppuntamentoViewModel result = new AppuntamentoViewModel();
             //Leggiamo i dati sull'evento
             var schedule = await _repositorySchedule.GetScheduleAsync(idCliente, idEvento);
             result.IdEvento = idEvento;
-            result.DataOra = string.Format("{0}T{1}Z", schedule.Data.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.OraInizio.ToString("HH:mm:ss", CultureInfo.InvariantCulture));
+            result.DataOra = string.Format("{0}T{1}Z", schedule.Data.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.OraInizio.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
             result.DurataMinuti = schedule.TipologiaLezione.Durata;
             result.Istruttore = schedule.Istruttore;
             result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.ToString("o", CultureInfo.InvariantCulture);
@@ -70,14 +71,17 @@ namespace PalestreGoGo.WebAPI.Controllers
             result.PostiResidui = schedule.PostiResidui.Value;
 
             //Verifichiamo se esiste un appuntamento per l'utente chiamante per l'evento
-            var idUser = User.UserId();
-            if (idUser.HasValue)
+            if (User.Identity.IsAuthenticated)
             {
-                var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idEvento, idUser.Value);
-                if(appuntuamento != null)
+                var idUser = User.UserId();
+                if (idUser.HasValue)
                 {
-                    result.IdAppuntamento = appuntuamento.Id;
-                    result.DataOraIscrizione = appuntuamento.DataPrenotazione.ToString("o", CultureInfo.InvariantCulture);
+                    var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idEvento, idUser.Value);
+                    if (appuntuamento != null)
+                    {
+                        result.IdAppuntamento = appuntuamento.Id;
+                        result.DataOraIscrizione = appuntuamento.DataPrenotazione.ToString("o", CultureInfo.InvariantCulture);
+                    }
                 }
             }
             return Ok(result);

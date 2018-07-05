@@ -392,10 +392,14 @@ namespace Web.Utils
         //    response.EnsureSuccessStatusCode();
         //}
 
-        public async Task<Models.AppuntamentoViewModel> GetAppuntamentoForCurrentUserAsync(int idCliente, int idEvento)
+        public async Task<Models.AppuntamentoViewModel> GetAppuntamentoForCurrentUserAsync(int idCliente, int idEvento, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti?idEvento={idEvento}");
             HttpClient client = new HttpClient();
+            if(access_token != null)
+            {
+                client.SetBearerToken(access_token);
+            }
             HttpResponseMessage response = await client.GetAsync(uri); ;
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();

@@ -34,6 +34,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             if (!ModelState.IsValid) return BadRequest();
             var entity = Mapper.Map<ScheduleViewModel, Schedules>(model);
+            entity.PostiResidui = entity.PostiDisponibili;
             await _repository.AddScheduleAsync(idCliente, entity);
             return Ok(entity.Id);
         }

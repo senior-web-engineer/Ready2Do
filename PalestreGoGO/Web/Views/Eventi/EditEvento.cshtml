@@ -35,12 +35,12 @@
             </div>
             <div class="row">
                 <div class="input-field col s5">
-                    <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
-                    <label asp-for="Data"></label>
+                    <input id="dataEvento" type="date" asp-for="Data" class="datepicker" />
+                    <label asp-for="Data" ></label>
                     <span asp-validation-for="Data" />
                 </div>
                 <div class="input-field col s5">
-                    <input id="oraEvento" type="text" asp-for="OraInizio" class="timepicker" />
+                    <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
                     <label asp-for="OraInizio"></label>
                     <span asp-validation-for="OraInizio" />
                 </div>
@@ -68,12 +68,12 @@
             </div>
             <div class="row">
                 <div class="input-field col s5">
-                    <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
+                    <input id="dataCancellazione" type="date" asp-for="DataCancellazioneMax" class="datepicker" />
                     <label asp-for="DataCancellazioneMax"></label>
                     <span asp-validation-for="DataCancellazioneMax" />
                 </div>
                 <div class="input-field col s5">
-                    <input id="oraCancellazione" type="text" asp-for='OraCancellazioneMax' class="timepicker" />
+                    <input id="oraCancellazione" type="time" asp-for='OraCancellazioneMax' class="timepicker" />
                     <label asp-for="OraCancellazioneMax"></label>
                     <span asp-validation-for="OraCancellazioneMax" />
                 </div>
@@ -147,20 +147,20 @@
             var elemOraEvento = document.getElementById('oraEvento');
             var elemDataCancellazione = document.getElementById('dataCancellazione');
             var elemOraCancellazione = document.getElementById('oraCancellazione');
-
             var datePickDataEvento = M.Datepicker.init(elemDataEvento, {
-                format: "yyyy-mm-dd",
-                defaultDate: "@(Model.Data.HasValue ? Model.Data.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))",
-                setDefaultDate: true,
+                format: "dd/mm/yyyy",
+               // defaultDate: "@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))",
+                //setDefaultDate: true,
                 i18n: i18nDate
             });
             @if (Model.Data.HasValue) {
                 @: datePickDataEvento.date = new Date('@Model.Data.Value.ToString("yyyy-MM-dd")')
             }
             var datePickDataCanc = M.Datepicker.init(elemDataCancellazione, {
-                format: "yyyy-mm-dd",
-                defaultDate: new Date("@(Model.DataCancellazioneMax.HasValue ? Model.DataCancellazioneMax.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))"),
-                setDefaultDate: true,
+                format: "dd/mm/yyyy",
+
+                //defaultDate: new Date("@(Model.DataCancellazioneMax.HasValue ? Model.DataCancellazioneMax.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))"),
+               // setDefaultDate: true,
                 i18n: i18nDate
             });
 
