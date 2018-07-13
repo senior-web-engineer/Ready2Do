@@ -149,7 +149,7 @@
             var elemOraCancellazione = document.getElementById('oraCancellazione');
             var datePickDataEvento = M.Datepicker.init(elemDataEvento, {
                 format: "dd/mm/yyyy",
-               // defaultDate: "@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))",
+                defaultDate: "@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))",
                 //setDefaultDate: true,
                 i18n: i18nDate
             });
@@ -157,9 +157,9 @@
                 @: datePickDataEvento.date = new Date('@Model.Data.Value.ToString("yyyy-MM-dd")')
             }
             var datePickDataCanc = M.Datepicker.init(elemDataCancellazione, {
-                format: "dd/mm/yyyy",
+                //format: "dd/mm/yyyy",
 
-                //defaultDate: new Date("@(Model.DataCancellazioneMax.HasValue ? Model.DataCancellazioneMax.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))"),
+                defaultDate: new Date("@(Model.DataCancellazioneMax.HasValue ? Model.DataCancellazioneMax.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))"),
                // setDefaultDate: true,
                 i18n: i18nDate
             });
