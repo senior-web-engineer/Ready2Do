@@ -161,9 +161,27 @@ namespace Web.Controllers
             {
                 accessToken = await HttpContext.GetTokenAsync("access_token");
             }
+            ViewBag.IdCliente = idCliente;
+            ViewBag.Cliente = urlRoute;
+            ViewBag.IdEvento = idEvento;
             var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
             return View("Appuntamento", appuntamento);
         }
+
+        [HttpPost("{cliente}/eventi/{idEvento}/appuntamento")]
+        public async Task<IActionResult> AddAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
+        {
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var access_token = await HttpContext.GetTokenAsync("access_token");
+            var apiModel = new NuovoAppuntamentoApiModel()
+            {
+                IdEvento = idEvento,
+                IdUtente = User.UserId().Value
+            };
+            await _apiClient.SalvaAppuntamentoForCurrentUser(idCliente, apiModel, access_token);
+            return RedirectToAction("GetAppuntamentoEvento", new { cliente = idCliente, idEvento = idEvento });
+        }
+
 
         private EventoViewModel internalBuildViewModel(ScheduleDetailsViewModel apiModel)
         {

@@ -11,5 +11,7 @@ namespace Palestregogo.STS
         public const string CLAIMTYPE_STRUCTURE_OWNED = "structure_owned";
         public const string CLAIMTYPE_STRUCTURE_MANAGED = "structure_managed";
         public const string CLAIMTYPE_STRUCTURE_AFFILIATED = "structure_affiliated";
+
+        public const string CLAIMTYPE_USERID = "uid";
     }
 }

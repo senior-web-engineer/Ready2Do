@@ -88,7 +88,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddAppuntamento([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoViewModel model)
+        public async Task<IActionResult> AddAppuntamento([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoApiModel model)
         {
             if (model == null) return BadRequest();
             //Se è un amministratore può inserire appuntamenti anche per conto di altri utenti, altrimenti può inserire appuntamenti solo per se stesso
@@ -105,7 +105,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPost("/guest")]
-        public async Task<IActionResult> AddAppuntamentoForGuest([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoGuestViewModel model)
+        public async Task<IActionResult> AddAppuntamentoForGuest([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoGuestApiModel model)
         {
             if (model == null) return BadRequest();
             //Solo un amministratore può inserire appuntamenti per un utente GUEST

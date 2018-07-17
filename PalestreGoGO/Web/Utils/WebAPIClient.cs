@@ -408,6 +408,15 @@ namespace Web.Utils
             return result;
         }
 
+        public async Task SalvaAppuntamentoForCurrentUser(int idCliente, NuovoAppuntamentoApiModel appuntamento, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti");
+            var content = new StringContent(JsonConvert.SerializeObject(appuntamento), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task<List<AppuntamentoUserApiModel>> GetAppuntamentiForCurrentUserAsync(Guid userId, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/{userId}/appuntamenti");
