@@ -35,7 +35,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s5">
-                    <input id="dataEvento" type="date" asp-for="Data" class="datepicker" />
+                    <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
                     <label asp-for="Data" ></label>
                     <span asp-validation-for="Data" />
                 </div>
@@ -68,7 +68,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s5">
-                    <input id="dataCancellazione" type="date" asp-for="DataCancellazioneMax" class="datepicker" />
+                    <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
                     <label asp-for="DataCancellazioneMax"></label>
                     <span asp-validation-for="DataCancellazioneMax" />
                 </div>
@@ -106,7 +106,6 @@
     <!-- jQuery -->
     <script src='~/js/moment.min.js'></script>
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    @*<script src="~/materialize/js/materialize.min.js"></script>*@
     <script src="~/materialize-v1.0.0/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
     <script src="~/js/bootstrap-tabcollapse.min.js"></script>
@@ -147,26 +146,33 @@
             var elemOraEvento = document.getElementById('oraEvento');
             var elemDataCancellazione = document.getElementById('dataCancellazione');
             var elemOraCancellazione = document.getElementById('oraCancellazione');
+            let dataEvento = new Date("@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))");
+
             var datePickDataEvento = M.Datepicker.init(elemDataEvento, {
                 format: "dd/mm/yyyy",
-                defaultDate: "@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))",
-                //setDefaultDate: true,
+                defaultDate: dataEvento,
+                setDefaultDate: true,
+                minDate:  new Date(),
                 i18n: i18nDate
             });
-            @if (Model.Data.HasValue) {
+
+            @*@if (Model.Data.HasValue) {
                 @: datePickDataEvento.date = new Date('@Model.Data.Value.ToString("yyyy-MM-dd")')
-            }
-            var datePickDataCanc = M.Datepicker.init(elemDataCancellazione, {
-                //format: "dd/mm/yyyy",
+            }*@
 
-                defaultDate: new Date("@(Model.DataCancellazioneMax.HasValue ? Model.DataCancellazioneMax.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))"),
-               // setDefaultDate: true,
+            let dataCancellazione = new Date("@(Model.DataCancellazioneMax.HasValue ? Model.DataCancellazioneMax.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))");
+
+            var datePickDataCanc = M.Datepicker.init(elemDataCancellazione, {
+                format: "dd/mm/yyyy",
+                defaultDate: dataCancellazione,
+                setDefaultDate: true,
+                minDate: new Date(),
                 i18n: i18nDate
             });
 
-            @if (Model.DataCancellazioneMax.HasValue) {
+            @*@if (Model.DataCancellazioneMax.HasValue) {
                 @: datePickDataCanc.date = new Date("@Model.DataCancellazioneMax.Value.ToString("yyyy-MM-dd")");
-            }
+            }*@
 
             var timePickOraEvento = M.Timepicker.init(elemOraEvento, {
                 twelveHour: false,
