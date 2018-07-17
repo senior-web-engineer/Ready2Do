@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
+using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
@@ -21,14 +22,17 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly ILogger<UtentiController> _logger;
         private readonly IUsersManagementService _userManagementService;
         private readonly IClientiRepository _repository;
+        private readonly IAppuntamentiRepository _repositoryAppuntamenti;
 
         public UtentiController(ILogger<UtentiController> logger,
                                  IUsersManagementService userManagementService,
-                                 IClientiRepository repository)
+                                 IClientiRepository repository,
+                                 IAppuntamentiRepository repositoryAppuntamenti)
         {
             this._logger = logger;
             this._userManagementService = userManagementService;
             this._repository = repository;
+            this._repositoryAppuntamenti = repositoryAppuntamenti;
         }
 
         /// <summary>
@@ -110,6 +114,34 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             //TODO: Ritornare un CreatedAt con l'url del cliente?
             return Ok(esitoConfirmation);
+        }
+
+        [HttpGet("{userId:guid}/appuntamenti")]
+        public IActionResult GetAppuntamentiForUser([FromRoute]int idCliente, [FromRoute] Guid userId)
+        {
+            //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
+            if (!User.UserId().HasValue || !User.UserId().Value.Equals(userId))
+            {
+                return Forbid();
+            }
+
+            var result = new List<AppuntamentoUserApiModel>();
+            var appuntamenti = _repositoryAppuntamenti.GetAppuntamentiForUser(idCliente, userId);
+            foreach (var a in appuntamenti)
+            {
+                result.Add(new AppuntamentoUserApiModel()
+                {
+                    DataOra = a.Schedule.Data.Add(a.Schedule.OraInizio),
+                    DataOraCancellazione = a.DataCancellazione,
+                    DataOraIscrizione = a.DataPrenotazione,
+                    IdAppuntamento = a.Id,
+                    IdCliente = a.IdCliente,
+                    IdEvento = a.ScheduleId,
+                    Nome = a.Schedule.TipologiaLezione.Nome,
+                    NomeCliente = a.Cliente.Nome
+                });
+            }
+            return Ok(result);
         }
 
     }

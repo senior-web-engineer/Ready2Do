@@ -17,5 +17,7 @@ namespace PalestreGoGo.DataAccess
         Task<Appuntamenti> GetAppuntamentoAsync(int idCliente, int idAppuntamento);
 
         Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, Guid userId);
+
+        IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, Guid userId);
     }
 }

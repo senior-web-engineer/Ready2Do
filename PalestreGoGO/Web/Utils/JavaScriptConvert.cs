@@ -16,6 +16,10 @@ namespace Web.Utils
     /// <see cref="https://blog.mariusschulz.com/2014/02/05/passing-net-server-side-data-to-javascript"/>
     public static class JavaScriptConvert
     {
+        private static readonly DateTime EPOCH = new DateTime(1970, 1, 1);
+        private static readonly DateTime EPOCH_UTC = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+
         public static HtmlString SerializeObject(object value)
         {
             using (var stringWriter = new StringWriter())
@@ -33,6 +37,11 @@ namespace Web.Utils
 
                 return new HtmlString(stringWriter.ToString());
             }
+        }
+
+        public static long ToJSmsSinceEpoch(this DateTime date)
+        {
+            return (long)date.Subtract(EPOCH).TotalMilliseconds;
         }
     }
 }

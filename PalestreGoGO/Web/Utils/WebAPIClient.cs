@@ -65,7 +65,7 @@ namespace Web.Utils
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}");
             //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await client.SendAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) {return null; }
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) { return null; }
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
@@ -321,7 +321,7 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
             return bool.Parse((await response.Content.ReadAsStringAsync()));
         }
-        
+
         public async Task<bool> CheckUrlRoute(string urlRoute)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}");
@@ -396,7 +396,7 @@ namespace Web.Utils
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti?idEvento={idEvento}");
             HttpClient client = new HttpClient();
-            if(access_token != null)
+            if (access_token != null)
             {
                 client.SetBearerToken(access_token);
             }
@@ -408,5 +408,19 @@ namespace Web.Utils
             return result;
         }
 
+        public async Task<List<AppuntamentoUserApiModel>> GetAppuntamentiForCurrentUserAsync(Guid userId, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/{userId}/appuntamenti");
+            HttpClient client = new HttpClient();
+            if (access_token != null)
+            {
+                client.SetBearerToken(access_token);
+            }
+            HttpResponseMessage response = await client.GetAsync(uri); ;
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<AppuntamentoUserApiModel>>(responseString, _serializerSettings);
+            return result;
+        }
     }
 }

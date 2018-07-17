@@ -109,5 +109,16 @@ namespace PalestreGoGo.DataAccess
         {
             return await _context.Appuntamenti.Where(a => a.IdCliente.Equals(idCliente) && a.ScheduleId.Equals(idSchedule) && a.UserId.Equals(userId)).FirstOrDefaultAsync();
         }
+
+        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, Guid userId)
+        {
+            return _context
+                    .Appuntamenti
+                    .AsNoTracking()
+                    .Include(a => a.Cliente)
+                    .Include(a => a.Schedule)
+                        .ThenInclude(s => s.TipologiaLezione)
+                    .Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId));
+        }
     }
 }

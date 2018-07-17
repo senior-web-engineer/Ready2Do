@@ -119,5 +119,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             appuntamento.Id = await _repositoryAppuntamenti.AddAppuntamentoAsync(idCliente, appuntamento);
             return Ok(appuntamento.Id);
         }
+
+       
     }
 }

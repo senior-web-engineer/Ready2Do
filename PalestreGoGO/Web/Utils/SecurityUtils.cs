@@ -126,5 +126,16 @@ namespace Web.Utils
             if ((userType & UserType.GlobalAdmin) == UserType.GlobalAdmin) return true;
             return false;
         }
+
+        public static Guid? UserId(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            Guid result;
+            string userId = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimUserId))?.Value;
+            if (Guid.TryParse(userId, out result)) return result;
+            return null;
+        }
+
+
     }
 }

@@ -108,6 +108,11 @@ namespace Web
                     template: "logout",
                     defaults: new { controller = "Account", action = "Logout" });
                 routes.MapRoute(
+                    name: "users",
+                    template: "users/myprofile",
+                    defaults: new { controller = "Users", action = "Index" }
+                    );
+                routes.MapRoute(
                     name: "clienti",
                     template: "{cliente:required}/{controller=Clienti}/{action=Index}/{id?}"
                     );
