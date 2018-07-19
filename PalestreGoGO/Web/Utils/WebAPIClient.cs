@@ -431,5 +431,23 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<List<AppuntamentoUserApiModel>>(responseString, _serializerSettings);
             return result;
         }
+
+        public async Task ClienteFollowAsync(int idCliente, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/follow");
+            HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
+            HttpResponseMessage response = await client.PostAsync(uri, null); ;
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task ClienteUnFollowAsync(int idCliente, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/unfollow");
+            HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
+            HttpResponseMessage response = await client.PostAsync(uri, null); ;
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

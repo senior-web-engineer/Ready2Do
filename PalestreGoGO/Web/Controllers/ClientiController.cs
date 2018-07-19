@@ -384,6 +384,40 @@ namespace Web.Controllers
         }
 
         #endregion
+
+        #region Gestione Associazione Utenti
+
+        /// <summary>
+        /// Associa l'utente corrente alla struttura (cliente)
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <returns></returns>
+        [HttpPost("{cliente}/associa")]
+        public async Task<IActionResult> AddAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _apiClient.ClienteFollowAsync(idCliente, accessToken);
+            return RedirectToAction("Index", new { cliente = urlRoute });
+        }
+
+        /// <summary>
+        /// Associa l'utente corrente alla struttura (cliente)
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <returns></returns>
+        [HttpPost("{cliente}/disassocia")]
+        public async Task<IActionResult> RemoveAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _apiClient.ClienteUnFollowAsync(idCliente, accessToken);
+            return RedirectToAction("Index", new { cliente = urlRoute });
+        }
+        #endregion
+
         #region Helpers
         /// <summary>
         /// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax
