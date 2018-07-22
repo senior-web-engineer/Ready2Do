@@ -33,6 +33,8 @@ namespace PalestreGoGo.DataAccess
         Task RemoveUtenteFollowerAsync(int idCliente, Guid idUtente);
         IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente);
         Task<ClientiUtenti> GetFollowerAsync(int idCliente, Guid idUtente);
+        Task<IEnumerable<ClienteUtenteConAbbonamento>> GetAllFollowersWithAbbonamenti(int idCliente);
+
         #endregion
 
         #region Abbonamenti

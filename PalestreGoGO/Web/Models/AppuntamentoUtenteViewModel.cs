@@ -13,6 +13,9 @@ namespace Web.Models
 
         public string NomeCliente { get; set; }
 
+        public string ClienteUrlRoute { get; set; }
+
+        public int IdEvento { get; set; }
         /// <summary>
         /// Data ed ora inizio evento 
         /// </summary>

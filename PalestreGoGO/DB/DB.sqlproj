@@ -90,6 +90,8 @@
     <Build Include="dbo\Stored Procedures\CreateUrlRoute.sql" />
     <Build Include="dbo\Tables\MailTemplates.sql" />
     <None Include="Scripts\Prepop\Prepop.Test.MailTemplates.sql" />
+    <Build Include="dbo\Tables\ClientiUtentiAbbonamenti.sql" />
+    <Build Include="dbo\Stored Procedures\GetUtentiCliente.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

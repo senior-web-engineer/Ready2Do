@@ -16,6 +16,6 @@ namespace PalestreGoGo.DataModel
 
         [ForeignKey("IdCliente")]
         [InverseProperty("ClientiUtenti")]
-        public Clienti IdClienteNavigation { get; set; }
+        public Clienti Cliente { get; set; }
     }
 }

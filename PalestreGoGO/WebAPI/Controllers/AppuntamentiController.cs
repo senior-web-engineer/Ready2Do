@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     /// <seealso cref="https://palestregogo.visualstudio.com/MyFirstProject/_wiki?pagePath=%2FAppuntamenti"/>
     [Produces("application/json")]
     [Route("api/clienti/{idCliente:int}/appuntamenti/")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AppuntamentiController : PalestreControllerBase
     {
 
@@ -104,7 +105,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(appuntamento.Id);
         }
 
-        [HttpPost("/guest")]
+        [HttpPost("guest")]
         public async Task<IActionResult> AddAppuntamentoForGuest([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoGuestApiModel model)
         {
             if (model == null) return BadRequest();
@@ -120,6 +121,18 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(appuntamento.Id);
         }
 
-       
+       [HttpDelete("{id}")]
+       public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute] int idAppuntmento)
+        {
+            var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoAsync(idCliente, idAppuntmento);
+            if (appuntamento == null) return NotFound();
+            bool authorized = false;
+            if (User.CanManageStructure(idCliente)) { authorized = true; }
+            if (!authorized && (appuntamento.UserId.HasValue) && (appuntamento.UserId.Value.Equals(User.UserId()))) { authorized = true; }
+            if (!authorized) { return Forbid(); }
+
+            await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntmento);
+            return Ok();
+        }
     }
 }

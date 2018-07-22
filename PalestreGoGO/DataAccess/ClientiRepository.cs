@@ -226,6 +226,66 @@ namespace PalestreGoGo.DataAccess
             return _context.ClientiUtenti.Where(cu => cu.IdCliente.Equals(idCliente));
         }
 
+        public async Task<IEnumerable<ClienteUtenteConAbbonamento>> GetAllFollowersWithAbbonamenti(int idCliente)
+        {
+            List<ClienteUtenteConAbbonamento> result = new List<ClienteUtenteConAbbonamento>();
+            ClienteUtenteConAbbonamento item;
+            using (var cn = _context.Database.GetDbConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[GetUtentiCliente]";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.Add(new SqlParameter("@pIdCliente", idCliente));
+                await cn.OpenAsync();
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    //TODO: calcolare gli ordinal delle colonne one time
+                    while (reader.Read())
+                    {
+                        item = new ClienteUtenteConAbbonamento()
+                        {
+                            Cognome = reader["LastName"] as string,
+                            Nome = reader["FirstName"] as string,
+                            IdUtente = (Guid)reader["Id"],
+                            IdCliente = idCliente,
+                            DataAssociazione = (DateTime)reader["DataAssociazione"],
+                            Email = reader["Email"] as string
+                        };
+                        result.Add(item);
+                        //Se ci sono i dati sull'abbonamento li andiamo a leggere
+                        if (!await reader.IsDBNullAsync(reader.GetOrdinal("IdAbbonamentoUtente")))
+                        {
+                            item.Abbonamento = new AbbonamentiUtenti()
+                            {
+                                DataInizioValidita = (DateTime)reader["DataInizioValidita"],
+                                Id = (int)reader["IdAbbonamentoUtente"],
+                                IdCliente = idCliente,
+                                IdClienteNavigation = null,
+                                IdTipoAbbonamento = (int)reader["IdTipoAbbonamento"],
+                                IngressiResidui = reader["NumIngressi"] == System.DBNull.Value ? null : (short?)reader["NumIngressi"],
+                                Scadenza = (DateTime)reader["Scadenza"],
+                                ScadenzaCertificato = reader["ScadenzaCertificato"] == DBNull.Value ? null : (DateTime?)reader["ScadenzaCertificato"],
+                                StatoPagamento = reader["NumIngressi"] == System.DBNull.Value ? null : (byte?)reader["NumIngressi"],
+                                UserId = item.IdUtente,
+                                IdTipoAbbonamentoNavigation = new TipologieAbbonamenti()
+                                {
+                                    AbbonamentiUtenti = null,
+                                    Costo = reader["Costo"] == System.DBNull.Value ? null : (decimal?)reader["Costo"],
+                                    DurataMesi = reader["DurataMesi"] == System.DBNull.Value ? null : (short?)reader["DurataMesi"],
+                                    Id = (int)reader["IdTipoAbbonamento"],
+                                    IdCliente = idCliente,
+                                    IdClienteNavigation = null,
+                                    MaxLivCorsi = reader["MaxLivCorsi"] == System.DBNull.Value ? null : (short?)reader["MaxLivCorsi"],
+                                    Nome = reader["Nome"] as string,
+                                    NumIngressi = reader["NumIngressi"] == System.DBNull.Value ? null : (short?)reader["NumIngressi"]                                    
+                                }
+                            };
+                        }
+                    }
+                }
+                return result;
+            }
+        }
         public async Task<ClientiUtenti> GetFollowerAsync(int idCliente, Guid idUtente)
         {
             return await _context.ClientiUtenti.Where(cu => cu.IdCliente.Equals(idCliente) && cu.IdUtente.Equals(idUtente)).SingleOrDefaultAsync();

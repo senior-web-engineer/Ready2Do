@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         //Accesso anonimo ma verifichiamo l'header custom
         [AllowAnonymous]
-        public async Task<IActionResult> GetBlobSAS([FromQuery]string _method, [FromQuery]string bloburi, [FromQuery] string qqtimestamp)
+        public IActionResult GetBlobSAS([FromQuery]string _method, [FromQuery]string bloburi, [FromQuery] string qqtimestamp)
         {
 
             if (!HttpContext.Request.Headers.ContainsKey(CUSTOM_HEADER_TOKEN_SAS))

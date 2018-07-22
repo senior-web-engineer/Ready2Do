@@ -120,5 +120,16 @@ namespace PalestreGoGo.DataAccess
                         .ThenInclude(s => s.TipologiaLezione)
                     .Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId));
         }
+
+        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(Guid userId)
+        {
+            return _context
+                    .Appuntamenti
+                    .AsNoTracking()
+                    .Include(a => a.Cliente)
+                    .Include(a => a.Schedule)
+                        .ThenInclude(s => s.TipologiaLezione)
+                    .Where(a => a.UserId.Equals(userId));
+        }
     }
 }

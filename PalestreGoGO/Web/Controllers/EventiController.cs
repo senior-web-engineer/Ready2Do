@@ -179,7 +179,25 @@ namespace Web.Controllers
                 IdUtente = User.UserId().Value
             };
             await _apiClient.SalvaAppuntamentoForCurrentUser(idCliente, apiModel, access_token);
-            return RedirectToAction("GetAppuntamentoEvento", new { cliente = idCliente, idEvento = idEvento });
+            return RedirectToAction("GetAppuntamentoEvento", new { cliente = urlRoute, idEvento = idEvento });
+        }
+
+
+        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/delete")]
+        public async Task<IActionResult> DeleteAppuntamento([FromRoute(Name = "cliente")] string urlRoute, 
+                                                            [FromRoute(Name = "idEvento")]int idEvento, 
+                                                            [FromRoute(Name = "idAppuntamento")]int idAppuntamento,
+                                                            [FromQuery(Name ="returnUrl")] string returnUrl)
+        {
+            //NOTA: idEvento non utilizzato
+            if (string.IsNullOrWhiteSpace(returnUrl)) { return BadRequest(); }
+
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var access_token = await HttpContext.GetTokenAsync("access_token");
+
+            await _apiClient.DeleteAppuntamentoAsync(idCliente, idAppuntamento, access_token);
+            return Redirect(returnUrl);
+            //return RedirectToAction("GetAppuntamentoEvento", new { cliente = idCliente, idEvento = idEvento });
         }
 
 

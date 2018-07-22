@@ -11,12 +11,14 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 using PalestreGoGo.DataModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using PalestreGoGo.WebAPIModel;
 
 namespace WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/abbonamenti")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AbbonamentiController : PalestreControllerBase
     {
         private readonly IAbbonamentiRepository _repository;
@@ -29,12 +31,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAbbonamento([FromRoute]int idCliente, [FromBody] AbbonamentoViewModel abbonamento)
+        public async Task<IActionResult> AddAbbonamento([FromRoute]int idCliente, [FromBody] AbbonamentoUtenteApiModel abbonamento)
         {
 
-            var entity = Mapper.Map<AbbonamentoViewModel, AbbonamentiUtenti>(abbonamento);
+            var entity = Mapper.Map<AbbonamentoUtenteApiModel, AbbonamentiUtenti>(abbonamento);
             int id = await _repository.AddAbbonamentoAsync(idCliente, entity);
-            return CreatedAtAction("GetAbbonamento", id);
+            return Ok(id);
         }
 
         [HttpGet("{id}")]
@@ -55,13 +57,13 @@ namespace WebAPI.Controllers
 
 
         [HttpPut()]
-        public async Task<IActionResult> UpdateAbbonamento([FromRoute]int idCliente, [FromBody] AbbonamentoViewModel abbonamento)
+        public async Task<IActionResult> UpdateAbbonamento([FromRoute]int idCliente, [FromBody] AbbonamentoUtenteApiModel abbonamento)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var entity = Mapper.Map<AbbonamentoViewModel, AbbonamentiUtenti>(abbonamento);
+            var entity = Mapper.Map<AbbonamentoUtenteApiModel, AbbonamentiUtenti>(abbonamento);
             await _repository.UpdateAbbonamentoAsync(idCliente, entity);
             return Ok();
         }

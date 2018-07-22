@@ -6,6 +6,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +22,8 @@ namespace Tests.WebAPI
 {
     public class AbbonamentiTests : BaseWebApiTests
     {
-        private static AbbonamentoViewModel s_abbonamento;
-        private static AbbonamentoViewModel s_abbonamento2;
+        private static AbbonamentoUtenteApiModel s_abbonamento;
+        private static AbbonamentoUtenteApiModel s_abbonamento2;
 
         public AbbonamentiTests(ITestOutputHelper output) : base(output)
         {
@@ -46,7 +47,7 @@ namespace Tests.WebAPI
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var abbonamento = new AbbonamentoViewModel()
+            var abbonamento = new AbbonamentoUtenteApiModel()
             {
                 IdCliente = Utils.ID_CLIENTE_TEST_1,
                 IdTipoAbbonamento = Utils.ID_TIPO_ABBONAMENTO_1_CLIENTE_1,
@@ -105,7 +106,7 @@ namespace Tests.WebAPI
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var abbonamento = new AbbonamentoViewModel()
+            var abbonamento = new AbbonamentoUtenteApiModel()
             {
                 IdCliente = Utils.ID_CLIENTE_TEST_1,
                 IdTipoAbbonamento = Utils.ID_TIPO_ABBONAMENTO_1_CLIENTE_1,

@@ -82,7 +82,8 @@
                 if (string.IsNullOrEmpty(Model.DataOraIscrizione))
                 {
                     <form method="post" asp-controller="Eventi" asp-action="AddAppuntamentoEvento" asp-route-cliente="@ViewBag.Cliente" asp-route-idEvento="@ViewBag.IdEvento">
-                        <input type="submit" class="waves-effect waves-light btn material-icons left" value="Iscriviti"/>                        
+                        <input type="submit" class="waves-effect waves-light btn" value="Iscriviti" />
+
                     </form>
                 }
                 else

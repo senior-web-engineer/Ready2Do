@@ -5,13 +5,15 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
-    public class ClienteUtenteViewModel
+    public class ClienteUtenteApiModel
     {
-        public Guid Id { get; set; }
+        public int IdCliente { get; set; }
+        public Guid IdUtente { get; set; }
         public string Nome { get; set; }
         public string Cognome { get; set; }
         public string Email { get; set; }
 
-        
+        public DateTime DataAssociazione { get; set; }
+
     }
 }

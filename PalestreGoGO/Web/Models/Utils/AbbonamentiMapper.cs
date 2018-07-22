@@ -60,6 +60,45 @@ namespace Web.Models.Utils
             return result;
         }
 
+        public static AbbonamentoUtenteApiModel MapToAPIModel(this AbbonamentoUtenteViewModel model)
+        {
+            if (model == null) return null;
+            var result = new AbbonamentoUtenteApiModel()
+            {
+                DataInizioValidita = model.DataInizioValidita,
+                Id = model.Id,
+                IdCliente = model.IdCliente,
+                IdTipoAbbonamento = model.TipoAbbonamento.Id,
+                UserId = model.UserId,
+                IngressiResidui = model.IngressiResidui,
+                Scadenza = model.Scadenza,
+                ScadenzaCertificato = model.ScadenzaCertificato,
+                StatoPagamento = model.StatoPagamento,
+                TipoAbbonamento = null
+            };
+            return result;
+        }
+
+        public static AbbonamentoUtenteApiModel MapToAPIModel(this EditAbbonamentoUtenteInputModel model)
+        {
+            if (model == null) return null;
+            var result = new AbbonamentoUtenteApiModel()
+            {
+                DataInizioValidita = model.DataInizioValidita,
+                Id = model.Id,
+                IdCliente = model.IdCliente,
+                IdTipoAbbonamento = model.IdTipologiaAbbonamento,
+                UserId = model.IdUtente,
+                IngressiResidui = model.IngressiResidui,
+                Scadenza = model.Scadenza,
+                ScadenzaCertificato = model.ScadenzaCertificato,
+                StatoPagamento = model.Pagato ? (byte)1 : (byte)0,
+                TipoAbbonamento = null
+            };
+            return result;
+        }
+
+        
     }
 
 }

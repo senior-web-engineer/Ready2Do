@@ -106,12 +106,24 @@ namespace PalestreGoGo.DataAccess
         public async Task UpdateSchedule(int idCliente, Schedules entity)
         {
             //Attenzione! Non verifichiamo il tenant
-            Debug.Assert(entity.PostiDisponibili == entity.PostiResidui);
             //TODO: Implementare le logiche di verifica di fattibilità
+
             if (entity.IdCliente != idCliente) throw new ArgumentException("idTenant not valid");
-            EntityEntry dbEntityEntry = _context.Entry<Schedules>(entity);
-            dbEntityEntry.State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            using (var trans = await _context.Database.BeginTransactionAsync()) {
+                var oldItem = await _context.Schedules.AsNoTracking().SingleAsync(s => s.Id.Equals(entity.Id));
+                var numPrenotazioni = oldItem.PostiDisponibili - oldItem.PostiResidui;
+                if (entity.PostiDisponibili < numPrenotazioni)
+                {
+                    //Impossibile impostare un numero di posti disponibile inferiore a quelli già riservati (ma funziona questo controllo?)
+                    throw new ApplicationException("Numero di Posti Disponibili inferiore al numero di prenotazioni già presenti");
+                }
+                //Calcoliamo i nuovi posti residui 
+                entity.PostiResidui = entity.PostiDisponibili - numPrenotazioni; 
+                EntityEntry dbEntityEntry = _context.Entry<Schedules>(entity);
+                dbEntityEntry.State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                trans.Commit();
+            }
         }
     }
 }

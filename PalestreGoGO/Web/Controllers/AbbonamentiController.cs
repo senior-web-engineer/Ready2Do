@@ -133,6 +133,61 @@ namespace Web.Controllers
 
         #endregion
 
-        
+
+        #region Gestione Abbonamenti Utenti
+        //TODO: da implementare
+        [HttpGet("{cliente}/abbonamenti/add/{userId:guid}")]
+        public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute, 
+                                                              [FromRoute(Name = "userId")]Guid userId, 
+                                                              [FromQuery(Name ="tipoAbb")] int idTipoAbbonamento)
+        {
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Gestione Abbonamenti
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var tipoAbbonamento = await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
+            if(tipoAbbonamento == null) { return BadRequest(); }
+
+            EditAbbonamentoUtenteInputModel vm = new EditAbbonamentoUtenteInputModel()
+            {
+                Id = null,
+                IdCliente = idCliente,
+                IdUtente = userId,
+                DataInizioValidita = DateTime.Now,
+                IdTipologiaAbbonamento = idTipoAbbonamento,
+                IngressiResidui = tipoAbbonamento.NumIngressi,
+                Scadenza = tipoAbbonamento.DurataMesi.HasValue ? DateTime.Now.AddMonths(tipoAbbonamento.DurataMesi.Value): (DateTime?)null,
+                ScadenzaCertificato = null,
+                Pagato = false
+            };
+
+            ViewBag.IdCliente = idCliente;
+            ViewBag.IdUtente = userId;
+            ViewBag.ClienteUrl = urlRoute;
+            ViewBag.TipologiaAbbonamento = tipoAbbonamento.Nome;
+
+            return View("NuovoAbbonamento", vm);
+        }
+
+        [HttpPost("{cliente}/abbonamenti/add/{userId:guid}")]
+        public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
+                                                              [FromRoute(Name = "userId")]Guid userId,
+                                                              [FromForm]EditAbbonamentoUtenteInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("NuovoAbbonamento", model);
+            }
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if((model.IdCliente != idCliente) || (model.IdUtente != userId)) { return BadRequest(); }
+            await _apiClient.EditAbbonamentoCliente(idCliente, model.MapToAPIModel(), accessToken);
+            return RedirectToAction("GetUtentiCliente", "Clienti",new { cliente = urlRoute});
+        }
+
+        #endregion
     }
 }

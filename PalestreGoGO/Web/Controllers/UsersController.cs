@@ -36,7 +36,7 @@ namespace Web.Controllers
 
         //Ritorna il profilo dell'utente
         [HttpGet()]
-        public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute)
+        public async Task<IActionResult> Index()
         {
             string accessToken = await HttpContext.GetTokenAsync("access_token");
             var userId = User.UserId();
@@ -55,11 +55,13 @@ namespace Web.Controllers
                 {
                     Id = i.IdAppuntamento,
                     DataCancellazione = i.DataOraCancellazione,
+                    ClienteUrlRoute = await _clientiResolver.GetRouteClienteFromIdAsync(i.IdCliente),
                     DataOra = i.DataOra,
                     DataOraIscrizione = i.DataOraIscrizione,
                     Nome = i.Nome,
                     NomeCliente = i.NomeCliente,
-                    Cancellabile = i.DataOra > DateTime.Now.AddMinutes(30)
+                    Cancellabile = i.DataOra > DateTime.Now.AddMinutes(30),
+                    IdEvento = i.IdEvento
                 };
                 appuntamenti.Add(appuntamento);
             }

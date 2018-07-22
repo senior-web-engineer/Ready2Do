@@ -117,7 +117,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet("{userId:guid}/appuntamenti")]
-        public IActionResult GetAppuntamentiForUser([FromRoute]int idCliente, [FromRoute] Guid userId)
+        public IActionResult GetAppuntamentiForUser([FromRoute] Guid userId)
         {
             //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
             if (!User.UserId().HasValue || !User.UserId().Value.Equals(userId))
@@ -126,7 +126,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
 
             var result = new List<AppuntamentoUserApiModel>();
-            var appuntamenti = _repositoryAppuntamenti.GetAppuntamentiForUser(idCliente, userId);
+            var appuntamenti = _repositoryAppuntamenti.GetAppuntamentiForUser(userId);
             foreach (var a in appuntamenti)
             {
                 result.Add(new AppuntamentoUserApiModel()

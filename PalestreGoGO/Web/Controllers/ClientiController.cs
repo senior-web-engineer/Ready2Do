@@ -384,6 +384,29 @@ namespace Web.Controllers
         }
 
         #endregion
+
+        #region Gestione Utenti del Cliente
+        [HttpGet("{cliente}/users")]
+        public async Task<IActionResult> GetUtentiCliente([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di gestione degli utenti
+            var userType = User.GetUserTypeForCliente(idCliente);
+            if (!userType.IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var tipologieAbbnamenti = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+            var vm = await _apiClient.GetUtentiClienteConAbbonamenti(idCliente, accessToken);
+            ViewBag.IdCliente = idCliente;
+            if (tipologieAbbnamenti != null && tipologieAbbnamenti.Count() > 0)
+            {
+                ViewBag.TipologieAbbonamenti = tipologieAbbnamenti.Select(ta => new KeyValuePair<int, string>(ta.Id.Value, ta.Nome));
+            }
+            return View("Utenti",vm);
+        }
+        #endregion
         #region Helpers
         /// <summary>
         /// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax

@@ -16,7 +16,7 @@ namespace Web.Services
         private WebAPIClient _apiClient;
         private MemoryCacheConfig _cacheConfig;
         public ClienteResolverServices(IMemoryCache memCache,
-                                             IOptions<AppConfig> options,
+                                        IOptions<AppConfig> options,
                                     WebAPIClient apiClient)
         {
             this._cache = memCache;
@@ -29,6 +29,11 @@ namespace Web.Services
             return new TimeSpan(0,_cacheConfig?.ClienteSlidingExpiration ?? DEFAULT_SLIDING_EXPIRATION, 0);
         }
 
+        private string GetIdClienteKey(int idCliente)
+        {
+            return $"IdCliente-{idCliente}";
+        }
+
         public async Task<int> GetIdClienteFromRouteAsync(string clienteRoute)
         {
             int idCliente;
@@ -37,8 +42,24 @@ namespace Web.Services
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                         .SetSlidingExpiration(this.GetSlidingExpirationInterval());
                 _cache.Set(clienteRoute, idCliente, cacheEntryOptions);
+                _cache.Set(GetIdClienteKey(idCliente), clienteRoute, cacheEntryOptions);
             }
             return idCliente;
+        }
+        public async Task<string> GetRouteClienteFromIdAsync(int idCliente)
+        {
+            string result;
+            string key = GetIdClienteKey(idCliente);
+            if (!_cache.TryGetValue(key, out result))
+            {
+                var cliente = await _apiClient.GetClienteAsync(idCliente);
+                result = cliente.UrlRoute;
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(this.GetSlidingExpirationInterval());
+                _cache.Set(result, idCliente, cacheEntryOptions);
+                _cache.Set(key, result, cacheEntryOptions);
+            }
+            return result;
         }
     }
 }

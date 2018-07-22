@@ -7,7 +7,7 @@ namespace Web.Models
 {
     public class UserProfileViewModel
     {
-        public IEnumerable<AppuntamentoUtenteViewModel> Appuntamenti { get; set; }
+        public List<AppuntamentoUtenteViewModel> Appuntamenti { get; set; }
 
         public UserProfileViewModel()
         {

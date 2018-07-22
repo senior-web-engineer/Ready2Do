@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
+using Web.Models.Utils;
 
 namespace Web.Utils
 {
@@ -413,6 +414,7 @@ namespace Web.Utils
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti");
             var content = new StringContent(JsonConvert.SerializeObject(appuntamento), Encoding.UTF8, "application/json");
             HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
             HttpResponseMessage response = await client.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
         }
@@ -430,6 +432,45 @@ namespace Web.Utils
             string responseString = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<List<AppuntamentoUserApiModel>>(responseString, _serializerSettings);
             return result;
+        }
+
+        public async Task<List<ClienteUtenteViewModel>> GetUtentiClienteConAbbonamenti(int idCliente, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users");
+            HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
+            HttpResponseMessage response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<ClienteUtenteWithAbbonamentoApiModel>>(responseString, _serializerSettings);
+            return result.MapToClienteUtenteViewModel();
+        }
+
+        public async Task EditAbbonamentoCliente (int idCliente, AbbonamentoUtenteApiModel abbonamento, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti");
+            var content = new StringContent(JsonConvert.SerializeObject(abbonamento), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
+            HttpResponseMessage response;
+            if (!abbonamento.Id.HasValue)
+            {
+                response = await client.PostAsync(uri, content);
+            }
+            else
+            {
+                response = await client.PutAsync(uri, content);
+            }
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteAppuntamentoAsync(int idCliente, int idAppuntamento, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti/{idAppuntamento}");
+            HttpClient client = new HttpClient();
+            client.SetBearerToken(access_token);
+            HttpResponseMessage response = await client.DeleteAsync(uri);
+            response.EnsureSuccessStatusCode();
         }
     }
 }

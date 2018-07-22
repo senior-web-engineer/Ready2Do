@@ -18,6 +18,8 @@ CREATE TABLE [dbo].[AbbonamentiUtenti]
 
 	CONSTRAINT PK_AbbonamentiUtenti PRIMARY KEY (Id),
 	CONSTRAINT FK_AbbonamentiUtenti_Clienti FOREIGN KEY(IdCliente) REFERENCES [Clienti]([Id]),
-	CONSTRAINT FK_AbbonamentiUtenti_TipoAbbonamento FOREIGN KEY (IdTipoAbbonamento) REFERENCES [TipologieAbbonamenti](Id)
-
+	CONSTRAINT FK_AbbonamentiUtenti_TipoAbbonamento FOREIGN KEY (IdTipoAbbonamento) REFERENCES [TipologieAbbonamenti](Id),
+	-- Nella versiona attuale un utente può avere solo un abbonamento, in futuro sarà usata la tabella ClientiUtentiAbbonamenti per gestire lo storico.
+	-- A quel punto sarà necessario rimuovere questo constraint
+	CONSTRAINT UQ_AbbonamentiUtenti_UtenteCliente UNIQUE (IdCliente, UserId) 
 )

@@ -174,7 +174,7 @@ namespace Palestregogo.STS.UI
         }
 
         [HttpGet]
-        public async Task<IActionResult> NotConfirmed(string userName, string returnUrl)
+        public IActionResult NotConfirmed(string userName, string returnUrl)
         {
             ViewData["UserName"] = userName;
             ViewData["ReturnUrl"] = returnUrl;

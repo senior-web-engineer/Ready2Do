@@ -78,7 +78,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             var m = Mapper.Map<TipologieAbbonamentiViewModel, TipologieAbbonamenti>(model);
             m.IdCliente = idCliente;
             _repository.Add(idCliente, m);
-            return CreatedAtAction("GetOne", m.Id);
+            return Ok(m.Id);
         }
 
         [HttpPut()]

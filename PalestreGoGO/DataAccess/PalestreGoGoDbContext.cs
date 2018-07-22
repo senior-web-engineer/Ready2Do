@@ -117,7 +117,7 @@ namespace PalestreGoGo.DataAccess
 
                 entity.HasKey(e => new { e.IdCliente, e.IdUtente });
 
-                entity.HasOne(d => d.IdClienteNavigation)
+                entity.HasOne(d => d.Cliente)
                     .WithMany(p => p.ClientiUtenti)
                     .HasForeignKey(d => d.IdCliente)
                     .OnDelete(DeleteBehavior.ClientSetNull)
