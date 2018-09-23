@@ -192,5 +192,19 @@
                 @: timePickOraCanc.time = '@Model.OraCancellazioneMax.Value.ToString(@"hh\:mm")';
             }
         });
+        /*Logica per la validazione custom MVC - Da capire se applicabile*/
+        (function ($) {
+             var $jQval = $.validator;
+
+            $jQval.addMethod("nopastdatevalidation", function (value, element, params) {
+                if (!value) return true;
+                let date = new Date($.trim(value));
+                if (!date || date < new Date()) return false;
+                return true;
+            });
+
+            var adapters = $jQval.unobtrusive.adapters;
+            adapters.addBool("nopastdatevalidation");
+        })(jQuery);
     </script>
 }

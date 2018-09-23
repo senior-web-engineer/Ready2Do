@@ -29,7 +29,7 @@
 <section id="clientHeroes" class="section-padding">
     <div class="container">
         <div class="clientHeroes text-center mb-80" style="background-image: url('@Model.ImmagineHome.Url')">
-            <h2 class="section-title text-uppercase">@Model.Nome</h2>
+            <h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>
         </div>
     </div>
 </section>
@@ -117,7 +117,14 @@
                 }
             </div>
         }
-    </div>
+        else
+        {
+            <div class="container">
+                <div class="row">
+                    <h4><a asp-controller="Clienti" asp-action="SalaNew">Configurare</a> almeno una Sala per poter iniziare ad inserire gli eventi.</h4>
+                </div>
+            </div>
+        }
 </section>
 
 <section id="whereare">

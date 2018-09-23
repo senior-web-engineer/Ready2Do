@@ -107,7 +107,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute]int idCliente, [FromQuery] int id)
+        public IActionResult Delete([FromRoute]int idCliente, [FromRoute] int id)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)

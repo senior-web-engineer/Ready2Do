@@ -274,7 +274,7 @@ namespace Web.Controllers
 
 
         [HttpGet("{cliente}/sale/{id}/delete")]
-        public async Task<IActionResult> SalaDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idSala)
+        public async Task<IActionResult> SalaDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")] int idSala)
         {
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);

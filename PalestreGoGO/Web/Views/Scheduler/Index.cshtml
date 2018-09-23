@@ -113,8 +113,13 @@
                     }
                 },
                 dayClick: function (date, jsEvent, view) {
-                    $("#spinner").show();
-                    addEvento(date);
+                    var now = new Date();
+                    if (date > now) {
+                        $("#spinner").show();
+                        addEvento(date);
+                    } else {
+                        alert("Non è possibile creare un evento per una data passata");
+                    }
                     //TODO: Caricare loader!
                 },
                 eventClick: function (calEvent, jsEvent, view) {

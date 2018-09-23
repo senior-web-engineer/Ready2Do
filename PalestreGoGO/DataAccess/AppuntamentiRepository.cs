@@ -110,7 +110,7 @@ namespace PalestreGoGo.DataAccess
             return await _context.Appuntamenti.Where(a => a.IdCliente.Equals(idCliente) && a.ScheduleId.Equals(idSchedule) && a.UserId.Equals(userId)).FirstOrDefaultAsync();
         }
 
-        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, Guid userId)
+        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, Guid userId, bool includePast=false)
         {
             return _context
                     .Appuntamenti
@@ -118,10 +118,10 @@ namespace PalestreGoGo.DataAccess
                     .Include(a => a.Cliente)
                     .Include(a => a.Schedule)
                         .ThenInclude(s => s.TipologiaLezione)
-                    .Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId));
+                    .Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId) );
         }
 
-        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(Guid userId)
+        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(Guid userId, bool includePast)
         {
             return _context
                     .Appuntamenti
@@ -129,7 +129,7 @@ namespace PalestreGoGo.DataAccess
                     .Include(a => a.Cliente)
                     .Include(a => a.Schedule)
                         .ThenInclude(s => s.TipologiaLezione)
-                    .Where(a => a.UserId.Equals(userId));
+                    .Where(a => a.UserId.Equals(userId) && (!includePast || a.Schedule.Data > DateTime.Now));
         }
     }
 }

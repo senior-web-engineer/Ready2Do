@@ -7,6 +7,11 @@
 @{
     Layout = "_LayoutLanding";
 }
+<style>
+    .select-wrapper + label{
+        top:-26px;
+    }
+</style>
 <section class="section">
     @*banner-6*@
     <div class="container">
@@ -82,11 +87,11 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col-sm-12">
+                        <div class="input-field col s12">
                             <select asp-for="IdTipologia" asp-items="Model.TipologieClienti" class="active">
                                 <option disabled selected>Selezionare un categoria</option>
                             </select>
-                            <label id="lblTipologiaCliente" for="IdTipologia" class="customSelectLabel">Tipologia di Struttura</label>
+                            <label style="left:1em">Tipologia di Struttura</label>
                             <span asp-validation-for="IdTipologia"></span>
                         </div>
                     </div>
@@ -111,7 +116,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="input-field">
-                                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" class="autocomplete validate" placeholder="">
+                                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" class="autocomplete validate" placeholder="Indirizzo completo" >
                                 <label asp-for="Indirizzo"></label>
                                 <span asp-validation-for="Indirizzo"></span>
                             </div>
@@ -149,7 +154,7 @@
     <!-- jQuery -->
     <script src="~/js/jquery-2.1.3.min.js"></script>
     <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    <script src="~/materialize/js/materialize.min.js"></script>
+    <script src="~/materialize-v1.0.0/js/materialize.min.js"></script>
     <script src="~/js/menuzord.js"></script>
     <script src="~/js/autocompleteajax.js"></script>
     @*<script src="https://maps.googleapis.com/maps/api/js"></script>*@
@@ -160,7 +165,9 @@
     <script type="text/javascript">
         jQuery(document).ready(function () {
 
-            $('select').material_select();
+            //$('select').material_select();
+            $('select').formSelect();
+            
 
             /// GOOGLE AUTOCOMPLETE ///
             var input = document.getElementById('addressAutocomplete');
