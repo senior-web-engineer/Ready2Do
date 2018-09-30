@@ -32,7 +32,12 @@ namespace Web.Utils
             var credentials = new StorageCredentials(config.Storage.AccountName, config.Storage.AccountKey);
             CloudBlobClient client = new CloudBlobClient(new Uri(config.Storage.BlobStorageBaseUrl), credentials);
             var contRef = client.GetContainerReference(containerName);
-            await contRef.CreateIfNotExistsAsync();
+            //Ritorna True se il container non esisteva ed è stato appena creato
+            if (await contRef.CreateIfNotExistsAsync()){
+                var permissions = await contRef.GetPermissionsAsync();
+                permissions.PublicAccess = BlobContainerPublicAccessType.Blob;
+                await contRef.SetPermissionsAsync(permissions);
+            }
         }
 
         public static async Task DeleteBlobAsync(AzureConfig config, string blobUri)

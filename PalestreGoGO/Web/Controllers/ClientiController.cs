@@ -228,7 +228,7 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-
+            ViewData["IdCliente"] = idCliente;
             Models.LocationViewModel location = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             location = await _apiClient.GetOneLocationAsync(idCliente, idSala, accessToken);
@@ -317,6 +317,7 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
+            ViewData["IdCliente"] = idCliente;
 
             Models.TipologieLezioniViewModel tipoLezione = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -341,7 +342,7 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-
+            ViewData["IdCliente"] = idCliente;
             Models.TipologieLezioniViewModel tipoLezione = new Models.TipologieLezioniViewModel();
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             return View("Lezione", tipoLezione);

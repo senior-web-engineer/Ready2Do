@@ -224,7 +224,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 new ClientiImmagini()
                 {
                     IdCliente = idCliente,
-                    IdTipoImmagine = Constants.TIPOIMMAGINE_SFONDO,
+                    IdTipoImmagine = Constants.TIPOIMMAGINE_GALLERY,
                     Alt = immagine.Alt,
                     Descrizione = immagine.Descrizione,
                     Nome = immagine.Nome,

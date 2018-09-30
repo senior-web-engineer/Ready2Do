@@ -15,6 +15,16 @@
     <style type="text/css">
         .spinner {
             position: fixed;
+            top: 0;
+            left: 0;
+            text-align: center;
+            z-index: 1234;
+            overflow: auto;
+            width: 100%;
+            height: 100%;
+        }
+        .img-spinner {
+            position: fixed;
             top: 50%;
             left: 50%;
             margin-left: -50px; /* half width of the spinner gif */
@@ -48,7 +58,7 @@
                             <div class="gallery_item_container">
                                 <div class="thumb_container">
                                     <span class="valign_helper">
-                                        <img class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx)" />
+                                        <img id='@string.Format("galleryImg-{0}",idx)' class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx)" />
                                     </span>
                                 </div>
                                 @if (imgCurrent != null)
@@ -65,9 +75,9 @@
     </div>
 </section>
 
-@*<div id="spinner" class="spinner" style="display:none;">
-        <img id="img-spinner" src="~/img/ajax-loader.gif" alt="Loading" />
-    </div>*@
+<div id="spinner" class="spinner" style="display:none;">
+        <img class="img-spinner" src="~/img/ajax-loader.gif" alt="Loading" />
+    </div>
 
 <!-- Dialog Modale per la conferma della cancellazione -->
 <div id="modalConfermaCanc" class="modal">
@@ -130,6 +140,12 @@
                 callbacks: {
                     onError: function (id, name, errorReason, xhrOrXdr) {
                         alert(qq.format("Error on file number {} - {}.  Reason: {}", id, name, errorReason));
+                    },
+                    onComplete: function (id, name, responseJSON, xhr) {
+                        if (responseJSON.success) {
+                            location.reload();
+                        }
+                        $("#spinner").hide();
                     }
                 }
             });
@@ -153,6 +169,7 @@
 
         function handleFiles(files) {
             if (files) {
+                $("#spinner").show();
                 uploader.reset();
                 uploader.addFiles(files[0], { fileOrder: currentFileIdx, idCliente: @(ViewBag.IdCliente) });
             }

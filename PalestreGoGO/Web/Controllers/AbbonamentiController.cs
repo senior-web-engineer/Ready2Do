@@ -42,6 +42,28 @@ namespace Web.Controllers
 
         #region Gestione Tipologie Abbonamenti
 
+        [HttpGet("{cliente}/abbonamenti/tipologie/checkname")]
+        //[AllowAnonymous]
+        [Produces("application/json")]
+        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name ="Nome")]string nomeAbbonamento)
+        {
+            //ViewData["ReturnUrl"] = returnUrl;
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            //TODO:Modificare implementazione aggiungendo una API apposita invece di farsi ritornare tutti gli abbonamenti per il Cliente
+            var abbonamenti = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+
+            bool nomeIsValid = !abbonamenti.Any(a => a.Nome.Equals(nomeAbbonamento, StringComparison.InvariantCultureIgnoreCase));
+            if (!nomeIsValid)
+            {
+                return Json(data: $"Esiste già una tipologia di abbonamento con lo stesso nome.");
+            }
+            else
+            {
+                return Json(data: nomeIsValid);
+            }
+        }
+
         [HttpGet("{cliente}/abbonamenti/tipologie")]
         public async Task<IActionResult> TipoAbbonamenti([FromRoute(Name = "cliente")]string urlRoute)
         {
@@ -82,7 +104,7 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-
+            ViewData["IdCliente"] = idCliente;
             Models.TipologiaAbbonamentoViewModel tipologiaAbbonamento = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idTipoAbbonamento > 0)
@@ -107,6 +129,7 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
+            ViewData["IdCliente"] = idCliente;
             if (!ModelState.IsValid)
             {
                 return View("TipologiaAbbonamentoEdit", tipoAbbonamento);
@@ -114,11 +137,11 @@ namespace Web.Controllers
             //if (tipoAbbonamento.Id.HasValue && (tipoAbbonamento.Id.Value <= 0)) { tipoAbbonamento.Id = null; }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             await _apiClient.SaveTipologiaAbbonamentoAsync(idCliente, tipoAbbonamento.MapToAPIModel(), accessToken);
-            return RedirectToAction("TipoAbboanmenti");
+            return RedirectToAction("TipoAbbonamenti");
         }
 
         [HttpGet("{cliente}/abbonamenti/tipologie/{id}/delete")]
-        public async Task<IActionResult> TipoAbbonamentoDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idTipoAbbonamento)
+        public async Task<IActionResult> TipoAbbonamentoDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")] int idTipoAbbonamento)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
@@ -126,9 +149,10 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
+            ViewData["IdCliente"] = idCliente;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             await _apiClient.DeleteOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
-            return RedirectToAction("TipoAbboanmenti");
+            return RedirectToAction("TipoAbbonamenti");
         }
 
         #endregion

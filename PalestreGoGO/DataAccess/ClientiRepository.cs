@@ -71,7 +71,9 @@ namespace PalestreGoGo.DataAccess
                             .Include(ci => ci.IdTipoImmagineNavigation)
                             .Where(ci => ci.IdCliente.Equals(cliente.Id) &&
                                         (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
-                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO) ||
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_GALLERY)
+                                         ))
                             .ToList();
             cliente.ClientiImmagini = immagini;
 
@@ -94,7 +96,8 @@ namespace PalestreGoGo.DataAccess
                             .Include(ci => ci.IdTipoImmagineNavigation)
                             .Where(ci => ci.IdCliente.Equals(cliente.Id) &&
                                         (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
-                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)) ||
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_GALLERY))
                             .ToList();
             cliente.ClientiImmagini = immagini;
 
@@ -118,7 +121,8 @@ namespace PalestreGoGo.DataAccess
                                 .Include(ci => ci.IdTipoImmagineNavigation)
                                 .Where(ci => ci.IdCliente.Equals(cliente.Id) &&
                                             (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
-                                             ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                                             ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)) ||
+                                             ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_GALLERY))
                                 .ToList();
                 cliente.ClientiImmagini = immagini;
             }
@@ -141,7 +145,8 @@ namespace PalestreGoGo.DataAccess
                             .Include(ci => ci.IdTipoImmagineNavigation)
                             .Where(ci => ci.IdCliente.Equals(idCliente) &&
                                         (ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_LOGO) ||
-                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)))
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_SFONDO)) ||
+                                         ci.IdTipoImmagineNavigation.Codice.Equals(Constants.TIPO_IMMAGINE_GALLERY))
                             .ToList();
             cliente.ClientiImmagini = immagini;
 

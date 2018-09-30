@@ -90,7 +90,7 @@ namespace Web.Controllers.API
             oldImage.Url = url;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             await _apiClient.GallerySalvaImmagine(cliente.IdCliente, oldImage, accessToken);
-            return Ok();
+            return Ok(url);
         }
 
 

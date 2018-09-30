@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace Web.Models
         [Required]
         [MaxLength(100, ErrorMessage = "Nome troppo lungo (max. 100 caratteri)")]
         [Display(Name = "Nome abbonamento")]
+        [Remote("CheckNome", "Abbonamenti")]
         public string Nome { get; set; }
 
         [Display(Name = "Durata in Mesi")]
