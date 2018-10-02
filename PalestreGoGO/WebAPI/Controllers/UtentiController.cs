@@ -22,6 +22,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly ILogger<UtentiController> _logger;
         private readonly IUsersManagementService _userManagementService;
         private readonly IClientiRepository _repository;
+        private readonly IUtentiRepository _repositoryUtenti;
         private readonly IAppuntamentiRepository _repositoryAppuntamenti;
 
         public UtentiController(ILogger<UtentiController> logger,
@@ -117,7 +118,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet("{userId:guid}/appuntamenti")]
-        public IActionResult GetAppuntamentiForUser([FromRoute] Guid userId, [FromQuery] bool includePast=false)
+        public IActionResult GetAppuntamentiForUser([FromRoute] Guid userId, [FromQuery] bool includePast = false)
         {
             //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
             if (!User.UserId().HasValue || !User.UserId().Value.Equals(userId))
@@ -126,7 +127,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
 
             var result = new List<AppuntamentoUserApiModel>();
-            var appuntamenti = _repositoryAppuntamenti.GetAppuntamentiForUser(userId, includePast=false);
+            var appuntamenti = _repositoryAppuntamenti.GetAppuntamentiForUser(userId, includePast = false);
             foreach (var a in appuntamenti)
             {
                 result.Add(new AppuntamentoUserApiModel()
@@ -139,6 +140,30 @@ namespace PalestreGoGo.WebAPI.Controllers
                     IdEvento = a.ScheduleId,
                     Nome = a.Schedule.TipologiaLezione.Nome,
                     NomeCliente = a.Cliente.Nome
+                });
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("{userId:guid}/clientifollowed")]
+        public async Task<IActionResult> GetClientiFollowedForUserAsync([FromRoute] Guid userId)
+        {
+            //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
+            if (!User.UserId().HasValue || !User.UserId().Value.Equals(userId))
+            {
+                return Forbid();
+            }            
+            var result = new List<ClienteFollowedApiModel>();
+            var clienti = await _repositoryUtenti.GetGlientiFollowedAsync(userId);
+            for(int idx = 0; clienti != null &&  idx < clienti.Count; idx++)
+            {
+                result.Add(new ClienteFollowedApiModel()
+                {
+                    IdCliente = clienti[idx].IdCliente,
+                    Nome = clienti[idx].Nome,
+                    DataFollowing = clienti[idx].DataFollowing,
+                    RagioneSociale = clienti[idx].RagioneSociale,
+                    AbbonamentoValido = clienti[idx].AbbonamentoValido
                 });
             }
             return Ok(result);

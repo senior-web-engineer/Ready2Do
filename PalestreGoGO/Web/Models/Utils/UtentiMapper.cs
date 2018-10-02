@@ -8,7 +8,8 @@ namespace Web.Models.Utils
 {
     public static class UtentiMapper
     {
-        public static List<ClienteUtenteViewModel> MapToClienteUtenteViewModel(this IEnumerable<ClienteUtenteWithAbbonamentoApiModel> utenti){
+        public static List<ClienteUtenteViewModel> MapToClienteUtenteViewModel(this IEnumerable<ClienteUtenteWithAbbonamentoApiModel> utenti)
+        {
             if (utenti == null) return null;
             var result = new List<ClienteUtenteViewModel>();
             ClienteUtenteViewModel item;
@@ -39,5 +40,28 @@ namespace Web.Models.Utils
             }
             return result;
         }
+
+        public static ClienteFollowed MapToClienteFollowed(this ClienteFollowedApiModel cf)
+        {
+            if (cf == null) return null;
+            return new ClienteFollowed()
+            {
+                IdCliente = cf.IdCliente,
+                NomeCliente = cf.Nome,
+                DataFollowing = cf.DataFollowing,
+                RagioneSociale = cf.RagioneSociale,
+                HasAbbonamentoValido = cf.AbbonamentoValido
+            };
+        }
+        public static IEnumerable<ClienteFollowed> MapToEnumerableClienteFollowed(this IEnumerable<ClienteFollowedApiModel> cfEnum)
+        {
+            if (cfEnum == null) throw new ArgumentNullException(nameof(cfEnum));
+
+            foreach(var item in cfEnum) {
+                yield return item.MapToClienteFollowed(); 
+            }
+        }
+
+
     }
 }
