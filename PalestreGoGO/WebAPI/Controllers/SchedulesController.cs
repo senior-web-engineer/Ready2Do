@@ -72,7 +72,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns></returns>
         [HttpGet()]
         [AllowAnonymous]
-        public IActionResult GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start, [FromQuery(Name ="ed")]string end, [FromQuery(Name ="lid")]int? idLocation)
+        public async Task<IActionResult> GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start, [FromQuery(Name ="ed")]string end, [FromQuery(Name ="lid")]int? idLocation)
         {
             DateTime startDate, endDate;
             IEnumerable<Schedules> schedule;
@@ -92,11 +92,11 @@ namespace PalestreGoGo.WebAPI.Controllers
 
             if (idLocation.HasValue)
             {
-                schedule = _repository.GetSchedules(idCliente, startDate, endDate,idLocation.Value);
+                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate,idLocation.Value);
             }
             else
             {
-                schedule = _repository.GetSchedules(idCliente, startDate, endDate);
+                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate);
             }
             var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailsViewModel>>(schedule);
             return Ok(result);

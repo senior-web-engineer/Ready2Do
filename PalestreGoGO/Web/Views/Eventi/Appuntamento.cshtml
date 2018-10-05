@@ -79,16 +79,35 @@
             }
             else
             {
-                if (string.IsNullOrEmpty(Model.DataOraIscrizione))
+                if (ViewBag.ClienteFollowed)
                 {
-                    <form method="post" asp-controller="Eventi" asp-action="AddAppuntamentoEvento" asp-route-cliente="@ViewBag.Cliente" asp-route-idEvento="@ViewBag.IdEvento">
-                        <input type="submit" class="waves-effect waves-light btn" value="Iscriviti" />
+                    if (string.IsNullOrEmpty(Model.DataOraIscrizione))
+                    {
+                        if (ViewBag.AbbonamentoValido)
+                        {
+                            <form method="post" asp-controller="Eventi" asp-action="AddAppuntamentoEvento" asp-route-cliente="@ViewBag.Cliente" asp-route-idEvento="@ViewBag.IdEvento">
+                                <input type="submit" class="waves-effect waves-light btn" value="Iscriviti" />
 
-                    </form>
+                            </form>
+                        }
+                        else
+                        {
+                            <span>Per iscriversi all'evento è necessario un abbonamento attivo.</span><br />
+                        }
+                    }
+                    else
+                    {
+                        <a class="waves-effect waves-light btn"><i class="material-icons left">turned_in_not</i>Annulla Iscrizione</a>
+                    }
                 }
-                else
+                else //Utente autenticato ma che non è associato al Cliente
                 {
-                    <a class="waves-effect waves-light btn"><i class="material-icons left">turned_in_not</i>Annulla Iscrizione</a>
+                    <span>Per iscriversi all'evento è necessario essere associati ed avere un abbonamento presso la Struttura</span><br />
+                    <form method="post" asp-controller="Clienti" asp-action="AddAssociazioneUserToCliente" asp-route-cliente="@ViewBag.Cliente" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">
+                        <button class="btn waves-effect waves-light medium" type="submit" name="action">
+                            <i class="Large material-icons">favorite_border</i> Follow
+                        </button>                       
+                    </form>
                 }
             }
         </div>

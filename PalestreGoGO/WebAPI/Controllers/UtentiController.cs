@@ -28,13 +28,15 @@ namespace PalestreGoGo.WebAPI.Controllers
         public UtentiController(ILogger<UtentiController> logger,
                                  IUsersManagementService userManagementService,
                                  IClientiRepository repository,
-                                 IAppuntamentiRepository repositoryAppuntamenti)
+                                 IAppuntamentiRepository repositoryAppuntamenti,
+                                 IUtentiRepository repositoryUtenti)
         {
             this._logger = logger;
             this._userManagementService = userManagementService;
             this._repository = repository;
             this._repositoryAppuntamenti = repositoryAppuntamenti;
-        }
+            this._repositoryUtenti = repositoryUtenti;
+    }
 
         /// <summary>
         /// Verifica se l'email specificata esiste già nel DB o meno

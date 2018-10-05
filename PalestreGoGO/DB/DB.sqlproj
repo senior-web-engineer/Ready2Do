@@ -95,6 +95,7 @@
     <Build Include="dbo\Stored Procedures\GetUtentiCliente.sql" />
     <Build Include="dbo\Stored Procedures\Utenti_ClientiFollowed.sql" />
     <Build Include="dbo\Views\vAbbonamentiValidi.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_GetForCliente.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

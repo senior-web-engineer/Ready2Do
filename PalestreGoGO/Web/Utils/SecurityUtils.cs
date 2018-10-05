@@ -90,7 +90,7 @@ namespace Web.Utils
         {
             if (principal == null) return UserType.Anonymous;
             if (!principal.Identity.IsAuthenticated) return UserType.Anonymous; // Se non autenticato ==> 
-            UserType result = UserType.Anonymous;
+            UserType result = UserType.NormalUser;
             //Valutiamo i claim STRUCTURE_OWNED e STRUCTURE_MANAGED per determinare se l'utente corrente è un Admin per il cliente
             foreach (var c in principal.Claims.Where(c => c.Type.Equals(Constants.ClaimStructureManaged)))
             {

@@ -21,16 +21,39 @@
 
     <!-- jQuery ==> Già incluso nel layout-->
     @*<script src="~/js/jquery-2.1.3.min.js"></script>
-    <script src='~/js/moment.min.js'></script>*@
+        <script src='~/js/moment.min.js'></script>*@
 }
 
 @Html.Partial("_MenuCliente", Model.IdCliente)
 
 <section id="clientHeroes" class="section-padding">
     <div class="container">
-        <div class="clientHeroes text-center mb-80" style="background-image: url('@Model.ImmagineHome.Url')">
-            <h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>
+        <div class="row">
+            <div class="clientHeroes text-center mb-80" style="background-image: url('@Model.ImmagineHome.Url')">
+                <h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>
+            </div>
         </div>
+        @if (ViewBag.UtenteNormale)
+        {
+        <div class="row right-align">
+            @if (ViewBag.IsFollowing)
+            {
+                <form asp-action="RemoveAssociazioneUserToCliente" asp-controller="Clienti" method="post">
+                    <button class="btn waves-effect waves-light medium" type="submit" name="action">
+                        <i class="Large material-icons">favorite</i> Unfollow
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form asp-action="AddAssociazioneUserToCliente" asp-controller="Clienti" method="post">
+                    <button class="btn waves-effect waves-light medium" type="submit" name="action">
+                        <i class="Large material-icons">favorite_border</i> Follow
+                    </button>
+                </form>
+            }
+        </div>
+        }
     </div>
 </section>
 
@@ -84,7 +107,7 @@
     <div class="container">
         <div class="row center-align">
             <div class="adsbanner">
-                <img src="~/img/placeholders/google/leaderboard_728x90.png"/>
+                <img src="~/img/placeholders/google/leaderboard_728x90.png" />
             </div>
         </div>
     </div>
@@ -129,13 +152,13 @@
 
 <section id="whereare">
     <div class="container">
-            <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-                    <img class="img-responsive" src="@ViewBag.MapUrl" />
-                </div>
-                <div class="col-md-2"></div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <img class="img-responsive" src="@ViewBag.MapUrl" />
             </div>
+            <div class="col-md-2"></div>
+        </div>
     </div>
 </section>
 
@@ -223,7 +246,7 @@
                         var url = '@Html.Raw(ViewBag.ClienteRoute)/eventi/' + calEvent.id +"/appuntamento";
                         window.location = url;
                         //TODO: Caricare loader!
-                    }  
+                    }
                 });
                 </text>
             }

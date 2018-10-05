@@ -164,6 +164,9 @@ namespace Web.Controllers
             ViewBag.IdCliente = idCliente;
             ViewBag.Cliente = urlRoute;
             ViewBag.IdEvento = idEvento;
+            var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId().Value, accessToken)).FirstOrDefault(cf=>cf.IdCliente.Equals(idCliente));
+            ViewBag.ClienteFollowed = followInfo != null;
+            ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;                   
             var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
             return View("Appuntamento", appuntamento);
         }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Dapper;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -50,15 +51,23 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate, int idLocation)
+        public async Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null)
         {
-            var result = _context.Schedules
-                                    .Include(s => s.TipologiaLezione)
-                                    .Include(s => s.Location)
-                                    .Where(s => (s.IdCliente.Equals(idCliente) &&
-                                                 s.IdLocation.Equals(idLocation) &&
-                                               (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) >= startDate) &&
-                                               (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) <= endDate)));
+            IEnumerable<Schedules> result = null;
+            using (var cn = _context.Database.GetDbConnection())
+            {
+                result = await cn.QueryAsync<Schedules, Locations, TipologieLezioni, Schedules>("Schedules_GetForCliente",
+                                    (s, l, tl) =>
+                                    {
+                                        s.Location = l;
+                                        s.TipologiaLezione = tl;
+                                        return s;
+                                    },
+                                    splitOn: "IdLocation,IdTipoLezione",
+                                    commandType: System.Data.CommandType.StoredProcedure,
+                                    param:new { pIdCliente = idCliente, pStartDate = startDate, pEndDate = endDate, pIdLocation = idLocation}
+                            );
+            }
             return result;
         }
         public async Task RemoveScheduleAsync(int idCliente, int idSchedule)

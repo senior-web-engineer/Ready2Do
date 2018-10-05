@@ -94,6 +94,16 @@ namespace Web.Controllers
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
             ViewData["ClienteRoute"] = urlRoute;
             ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
+            ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
+            ViewBag.IsFollowing = false;
+            if (ViewBag.UtenteNormale)
+            {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+                var follwed = await _apiClient.ClientiFollowedByUserAsync(User.UserId().Value, accessToken);
+                if (follwed.Any(f => f.IdCliente.Equals(cliente.IdCliente))){
+                    ViewBag.IsFollowing = true;
+                }
+            }
             //ViewData["UserRole"] = User.GetUserRoleForCliente(cliente.IdCliente);
             return View(cliente.MapToHomeViewModel());
         }
@@ -394,13 +404,21 @@ namespace Web.Controllers
         /// <param name="urlRoute"></param>
         /// <returns></returns>
         [HttpPost("{cliente}/associa")]
-        public async Task<IActionResult> AddAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute)
+        public async Task<IActionResult> AddAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name ="returnUrl")]string returnUrl)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             await _apiClient.ClienteFollowAsync(idCliente, accessToken);
-            return RedirectToAction("Index", new { cliente = urlRoute });
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                //Possibile problema di sicurezza? (Open Redirect?)
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", new { cliente = urlRoute });
+            }
         }
 
         /// <summary>
@@ -418,7 +436,6 @@ namespace Web.Controllers
             return RedirectToAction("Index", new { cliente = urlRoute });
         }
         #endregion
-
 
         #region Gestione Utenti del Cliente
         [HttpGet("{cliente}/users")]
@@ -442,6 +459,7 @@ namespace Web.Controllers
             return View("Utenti",vm);
         }
         #endregion
+
         #region Helpers
         /// <summary>
         /// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax

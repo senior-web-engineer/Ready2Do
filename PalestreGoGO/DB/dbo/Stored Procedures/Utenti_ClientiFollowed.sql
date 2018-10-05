@@ -2,7 +2,7 @@
 	@pUserId UNIQUEIDENTIFIER
 AS
 BEGIN
-	SELECT	c.Id,
+	SELECT	c.Id AS IdCliente,
 			c.Nome,
 			c.RagioneSociale,
 			cu.DataCreazione as DataFollowing,
