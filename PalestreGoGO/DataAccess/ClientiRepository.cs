@@ -270,7 +270,7 @@ namespace PalestreGoGo.DataAccess
                                 IngressiResidui = reader["NumIngressi"] == System.DBNull.Value ? null : (short?)reader["NumIngressi"],
                                 Scadenza = (DateTime)reader["Scadenza"],
                                 ScadenzaCertificato = reader["ScadenzaCertificato"] == DBNull.Value ? null : (DateTime?)reader["ScadenzaCertificato"],
-                                StatoPagamento = reader["NumIngressi"] == System.DBNull.Value ? null : (byte?)reader["NumIngressi"],
+                                StatoPagamento = reader["StatoPagamento"] == System.DBNull.Value ? null : (byte?)reader["StatoPagamento"],
                                 UserId = item.IdUtente,
                                 IdTipoAbbonamentoNavigation = new TipologieAbbonamenti()
                                 {
