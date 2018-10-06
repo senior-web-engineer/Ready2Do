@@ -5,6 +5,7 @@
     <RootNamespace>PalestreGoGo.WebAPI</RootNamespace>
     <AssemblyName>PalestreGoGo.WebAPI</AssemblyName>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+    <UserSecretsId>e0728cd9-4b15-4a7e-82ba-e3d223ffe581</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
