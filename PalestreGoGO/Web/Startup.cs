@@ -14,6 +14,9 @@ using Web.Services;
 using Web.Configuration;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Web.Utils;
+using Microsoft.AspNetCore.Authentication;
+
+
 //using 
 namespace Web
 {
@@ -49,28 +52,36 @@ namespace Web
 
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            services.AddAuthentication(options =>
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            //})
+            //.AddCookie()
+            //.AddOpenIdConnect(options =>
+            //{
+            //    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    options.Authority = Configuration["AppConfig:STS:Authority"];
+            //    options.RequireHttpsMetadata = bool.Parse(Configuration["AppConfig:STS:RequireHttpsMetadata"]);
+            //    options.ClientId = Configuration["AppConfig:STS:ClientId"];
+            //    options.ClientSecret = Configuration["AppConfig:STS:ClientSecret"];
+            //    options.ResponseType = Configuration["AppConfig:STS:ResponseType"];
+            //    var scopes = Configuration.GetSection("AppConfig:STS:Scopes").GetChildren().Select(x => x.Value);
+            //    foreach (var s in scopes)
+            //    {
+            //        options.Scope.Add(s);
+            //    }
+            //    options.GetClaimsFromUserInfoEndpoint = true;
+            //    options.SaveTokens = true;
+            //});
+            services.AddAuthentication(sharedOptions =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie()
-            .AddOpenIdConnect(options =>
-            {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = Configuration["AppConfig:STS:Authority"];
-                options.RequireHttpsMetadata = bool.Parse(Configuration["AppConfig:STS:RequireHttpsMetadata"]);
-                options.ClientId = Configuration["AppConfig:STS:ClientId"];
-                options.ClientSecret = Configuration["AppConfig:STS:ClientSecret"];
-                options.ResponseType = Configuration["AppConfig:STS:ResponseType"];
-                var scopes = Configuration.GetSection("AppConfig:STS:Scopes").GetChildren().Select(x => x.Value);
-                foreach (var s in scopes)
-                {
-                    options.Scope.Add(s);
-                }
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.SaveTokens = true;
-            });
+            .AddAzureADB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
+            .AddCookie();
+
             services.AddMvc();
             services.Configure<RazorViewEngineOptions>(options =>
             {
