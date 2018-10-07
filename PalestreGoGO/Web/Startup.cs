@@ -36,6 +36,7 @@ namespace Web
 
             services.AddOptions();
             services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
+            services.Configure<GraphAPIOptions>(Configuration.GetSection("Authentication:GraphAPI"));
 
             // Add application services.
             services.AddTransient<AccountServices, AccountServices>();
@@ -51,7 +52,7 @@ namespace Web
             //    .PersistKeysToAzureBlobStorage(new Uri("<blob URI including SAS token>"));
 
 
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             //services.AddAuthentication(options =>
             //{
             //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -79,7 +80,7 @@ namespace Web
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddAzureADB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
+            .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
             .AddCookie();
 
             services.AddMvc();
@@ -88,6 +89,11 @@ namespace Web
                 options.ViewLocationExpanders.Add(new SharedViewsLocationExpander());
             });
 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.Cookie.HttpOnly = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,6 +116,7 @@ namespace Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseSession();
             app.UseAuthentication();
             app.UseStaticFiles();
             app.UseMvc(routes =>

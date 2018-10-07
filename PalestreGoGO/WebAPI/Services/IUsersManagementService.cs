@@ -1,5 +1,6 @@
 ﻿using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
@@ -11,18 +12,18 @@ namespace PalestreGoGo.WebAPI.Services
 {
     public interface IUsersManagementService
     {
-        Task<Guid> RegisterOwnerAsync(AppUser user, string password, string idCliente);
+        Task<Guid> RegisterOwnerAsync(LocalAccountUser user, string password, string idCliente);
 
-        Task<Guid> RegisterUserAsync(AppUser user, string password, int? idStrutturaAffiliata);
+        Task<Guid> RegisterUserAsync(LocalAccountUser user);
 
         Task<UserConfirmationViewModel> ConfirmUserAsync(string username, string code);
 
-        Task<AppUser> GetUserByMailAsync(string email);
+        Task<LocalAccountUser> GetUserByMailAsync(string email);
 
-        Task<AppUser> GetUserByUsernameAsync(string username);
+        //Task<LocalAccountUser> GetUserByUsernameAsync(string username);
 
-        Task<AppUser> GetUserByIdAsync(Guid id);
+        Task<LocalAccountUser> GetUserByIdAsync(string id);
 
-        Task<IList<Claim>> GetUserCalimsAsync(AppUser user);
+        //Task<IList<Claim>> GetUserCalimsAsync(LocalAccountUser user);
     }
 }

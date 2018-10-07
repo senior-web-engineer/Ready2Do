@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Web
@@ -11,7 +12,7 @@ namespace Web
         public const string ClaimStructureOwned = "structure_owned";
         public const string ClaimStructureManaged = "structure_managed";
         public const string ClaimRole = "role";
-        public const string ClaimUserId = "uid";
+        public const string ClaimUserId = ClaimTypes.NameIdentifier;
 
         public const string ROLE_GLOBAL_ADMIN = "global_admin";
 

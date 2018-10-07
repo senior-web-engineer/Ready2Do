@@ -68,17 +68,18 @@ namespace PalestreGoGo.WebAPI.Controllers
             var follower = await _clientiRepo.GetFollowerAsync(idCliente, id);
             if (follower == null) return BadRequest(); //Se non l'ho trovato i parametri non sono corretit
             //Se ho trovato l'associazione utente-cliente, recupero i dettagli dell'utente
-            var user = await _userManagementService.GetUserByIdAsync(id);
+            var user = await _userManagementService.GetUserByIdAsync(id.ToString());
             if(user == null)
             {
                 _logger.LogError($"Impossibile trovare l'utente [{id}] associato al cliente [{idCliente}]");
                 return this.NotFound(); //Forse sarebbe più corretto un 500 invece di un 404
             }
-            var result = Mapper.Map<AppUser, ClienteUtenteApiModel>(user);
-            result.IdCliente = idCliente;
-            result.DataAssociazione = follower.DataCreazione;
+            //var result = Mapper.Map<AppUser, ClienteUtenteApiModel>(user);
+            //result.IdCliente = idCliente;
+            //result.DataAssociazione = follower.DataCreazione;
 
-            return Ok(result);
+            //return Ok(result);
+            return Ok();
         }
         #endregion
 

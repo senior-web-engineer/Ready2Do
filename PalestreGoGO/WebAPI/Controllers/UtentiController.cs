@@ -6,6 +6,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
+using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
@@ -62,7 +63,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost()]
         [AllowAnonymous]
-        public async Task<IActionResult> NuovoUtente([FromBody]NuovoUtenteViewModel newUser, [FromQuery(Name = "idref")]int idStrutturaAffiliata)
+        public async Task<IActionResult> NuovoUtente([FromBody]NuovoUtenteViewModel newUser, [FromQuery(Name = "idref")]int? idStrutturaAffiliata)
         {
             if (newUser == null)
             {
@@ -73,15 +74,15 @@ namespace PalestreGoGo.WebAPI.Controllers
                 return new BadRequestResult();
             }
             var token = Guid.NewGuid().ToString("N");
-            var appUser = new AppUser()
+            var appUser = new LocalAccountUser(newUser.Email, newUser.Password)
             {
-                UserName = newUser.Email,
-                FirstName = newUser.Nome,
-                LastName = newUser.Cognome,
-                Email = newUser.Email,
-                CreationToken = token
+                Cognome = newUser.Cognome,
+                Nome = newUser.Nome,
+                TelephoneNumber = newUser.Telefono,        
+                Refereer = idStrutturaAffiliata?.ToString()
             };
-            await _userManagementService.RegisterUserAsync(appUser, newUser.Password, idStrutturaAffiliata);
+
+            await _userManagementService.RegisterUserAsync(appUser);
 
             return Ok();
         }

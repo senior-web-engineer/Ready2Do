@@ -110,8 +110,70 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
 
+        ///// <summary>
+        ///// Registrazione di un Nuovo Cliente CONTESTUALMENTE ad un nuovo Utente
+        ///// </summary>
+        ///// <param name="newCliente"></param>
+        ///// <returns></returns>
+        //[HttpPost()]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> NuovoCliente([FromBody]NuovoClienteViewModel newCliente)
+        //{
+        //    if (newCliente == null)
+        //    {
+        //        return new BadRequestResult();
+        //    }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return new BadRequestResult();
+        //    }
+        //    var token = Guid.NewGuid().ToString("N");
+        //    // Step 1 - Salviamo i dati del Cliente
+        //    var cliente = new DataModel.Clienti()
+        //    {
+        //        Citta = newCliente.Citta,
+        //        Latitudine = newCliente.Coordinate.Latitudine,
+        //        Longitudine = newCliente.Coordinate.Longitudine,
+        //        Country = newCliente.Country,
+        //        DataProvisioning = DateTime.Now,
+        //        Email = newCliente.Email,
+        //        IdTipologia = newCliente.IdTipologia,
+        //        Indirizzo = newCliente.Indirizzo,
+        //        Nome = newCliente.Nome,
+        //        NumTelefono = newCliente.NumTelefono,
+        //        SecurityToken = token,
+        //        RagioneSociale = newCliente.RagioneSociale,
+        //        ZipOrPostalCode = newCliente.ZipOrPostalCode,
+        //        StorageContainer = token,
+        //        UrlRoute = newCliente.UrlRoute
+        //    };
+        //    //Aggiungiamo la Hero Image di default 
+        //    cliente.ClientiImmagini.Add(new ClientiImmagini()
+        //    {
+        //        IdTipoImmagine = (int)TipoImmagine.Sfondo,
+        //        Url = _config.GetValue<string>("Provisioning:DefaultHeroImageUrl"),
+        //        Nome = "Default Hero Image",
+        //        IdCliente = cliente.Id
+        //    });
+        //    await _repository.AddAsync(cliente);
+
+        //    //Step 2 - Creiamo l'utente Owner
+        //    var user = new AppUser()
+        //    {
+        //        UserName = newCliente.NuovoUtente.Email,
+        //        FirstName = newCliente.NuovoUtente.Nome,
+        //        LastName = newCliente.NuovoUtente.Cognome,
+        //        Email = newCliente.NuovoUtente.Email,
+        //        PhoneNumber = newCliente.NuovoUtente.Telefono,
+        //        CreationToken = token
+        //    };
+        //    await _userManagementService.RegisterOwnerAsync(user, newCliente.NuovoUtente.Password, cliente.Id.ToString());
+
+        //    return Ok();
+        //}
+
         /// <summary>
-        /// Registrazione di un Nuovo Cliente CONTESTUALMENTE ad un nuovo Utente
+        /// Registrazione di un Nuovo Cliente DA CONFERMARE e senza creazione Utente associato
         /// </summary>
         /// <param name="newCliente"></param>
         /// <returns></returns>
@@ -167,7 +229,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 PhoneNumber = newCliente.NuovoUtente.Telefono,
                 CreationToken = token
             };
-            await _userManagementService.RegisterOwnerAsync(user, newCliente.NuovoUtente.Password, cliente.Id.ToString());
+           // await _userManagementService.RegisterOwnerAsync(user, newCliente.NuovoUtente.Password, cliente.Id.ToString());
 
             return Ok();
         }

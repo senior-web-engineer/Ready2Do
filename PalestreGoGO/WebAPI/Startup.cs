@@ -17,6 +17,7 @@ using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI
@@ -53,6 +54,11 @@ namespace PalestreGoGo.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<GraphAPIOptions>(Configuration.GetSection("Authentication:GraphAPI"));
+
+            ApiConfigs.InitConfiguration(Configuration);
+
             services.AddDbContext<AppIdentityDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"));
@@ -65,54 +71,36 @@ namespace PalestreGoGo.WebAPI
 
             services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
             services.AddTransient<IUserConfirmationService, UserConfirmationService>();
+            services.AddTransient<B2CGraphClient, B2CGraphClient>();
             services.AddTransient<IUsersManagementService, UsersManagementService>();
 
             RegisterRepositories(services);
-            
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(jwtOptions =>
+                {
+                    jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:Policy"]}/v2.0/";
+                    jwtOptions.Audience = Configuration["Authentication:AzureAdB2C:ClientId"];
+                    jwtOptions.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = AuthenticationFailed
+                    };
+                });
+            //services.AddAuthorization(options =>
+            //{
+            //    //options.AddPolicy("tipologiche.edit",
+            //    //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeTipologicheEdit, Configuration["STS:Issuer"])));
+            //    options.AddPolicy("UsersManagement",
+            //        policy => policy.AddRequirements(new HasScopeRequirement(Constants.ClaimStructureManaged, Configuration["STS:Issuer"])));
+            //    //options.AddPolicy("ProvisioningPolicy",
+            //    //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
+            //});
+
             services.AddMvc()
                 .AddFluentValidation();
-
-            services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-            })
-                .AddCookie()
-                .AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme, options =>
-                {
-                    options.Authority = Configuration["STS:Issuer"];
-                    options.ApiName = "palestregogo.api";
-                    options.RequireHttpsMetadata = false; //Disabilitare per la produzione
-                    options.EnableCaching = true;
-                    options.CacheDuration = new System.TimeSpan(0, 5, 0); //5 minuti cache
-                });
-
-            services.AddIdentity<AppUser, AppRole>(cfg =>
-            {
-                cfg.Password.RequiredLength = 4;
-                cfg.Password.RequireLowercase = false;
-                cfg.Password.RequireUppercase = false;
-                cfg.Password.RequireDigit = false;
-                cfg.Password.RequireNonAlphanumeric = false;
-
-                //Richiediamo la conferma dell'email
-                // Per ora disabilitato, dobbiamo implementare il servizio EmailSender prima di abilitarla
-                cfg.SignIn.RequireConfirmedEmail = true;
-                cfg.User.RequireUniqueEmail = true; //In caso di utente con registrazione locale e Google?
-
-            })
-             .AddEntityFrameworkStores<AppIdentityDbContext>()
-             .AddDefaultTokenProviders();
-
-            services.AddAuthorization(options =>
-            {
-                //options.AddPolicy("tipologiche.edit",
-                //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeTipologicheEdit, Configuration["STS:Issuer"])));
-                options.AddPolicy("UsersManagement",
-                    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ClaimStructureManaged, Configuration["STS:Issuer"])));
-                //options.AddPolicy("ProvisioningPolicy",
-                //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
-            });
 
             Mapper.Initialize(x =>
             {
@@ -137,7 +125,7 @@ namespace PalestreGoGo.WebAPI
             }
             app.UseAuthentication();
 
-            app.SetupUsersAndRoles();
+            //app.SetupUsersAndRoles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -147,6 +135,15 @@ namespace PalestreGoGo.WebAPI
             //app.UseCors()
             app.UseMvc();
 
+        }
+
+        private Task AuthenticationFailed(AuthenticationFailedContext arg)
+        {
+            // For debugging purposes only!
+            var s = $"AuthenticationFailed: {arg.Exception.Message}";
+            arg.Response.ContentLength = s.Length;
+            arg.Response.Body.Write(Encoding.UTF8.GetBytes(s), 0, s.Length);
+            return Task.FromResult(0);
         }
     }
 }

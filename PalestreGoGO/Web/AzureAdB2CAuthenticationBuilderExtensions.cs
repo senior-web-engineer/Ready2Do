@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
+using Web.Models;
 
 namespace Web
 {
@@ -105,6 +107,15 @@ namespace Web
                 var code = context.ProtocolMessage.Code;
 
                 string signedInUserID = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                //GT#20181007#Recuperiamo il claim
+                bool emailConfirmed = bool.Parse(context.Principal.FindFirst("extension_EmailConfirmed").Value);
+                if (!emailConfirmed)
+                {
+                    context.HandleResponse();
+                    context.Response.Redirect("/Account/MailToConfirm");
+                    return;
+                }
                 TokenCache userTokenCache = new MSALSessionCache(signedInUserID, context.HttpContext).GetMsalCacheInstance();
                 ConfidentialClientApplication cca = new ConfidentialClientApplication(AzureAdB2COptions.ClientId, AzureAdB2COptions.Authority, AzureAdB2COptions.RedirectUri, new ClientCredential(AzureAdB2COptions.ClientSecret), userTokenCache, null);
                 try
