@@ -117,9 +117,10 @@ namespace Web.Controllers.API
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteFile()
+        public IActionResult DeleteFile()
         {
-            return Ok();
+            throw new NotImplementedException();
+            //return Ok();
         }
     }
 }

@@ -38,6 +38,6 @@ FROM [Schedules] AS s
 	INNER JOIN [Locations] AS l ON s.[IdLocation] = l.[Id]
 	INNER JOIN [TipologieLezioni] AS tl ON s.[IdTipoLezione] = tl.[Id]
 WHERE s.IdCliente = @pIdCliente
-AND DATA BETWEEN @pStartDate AND @pEndDate
+AND Data BETWEEN @pStartDate AND @pEndDate
 AND ((@pIdLocation IS NULL) OR (s.IdLocation = @pIdLocation))
 END

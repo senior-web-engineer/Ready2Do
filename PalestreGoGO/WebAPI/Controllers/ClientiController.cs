@@ -190,7 +190,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return new BadRequestResult();
             }
-            var token = Guid.NewGuid().ToString("N");
+            var correlationId = Guid.NewGuid();
             // Step 1 - Salviamo i dati del Cliente
             var cliente = new DataModel.Clienti()
             {
@@ -204,10 +204,10 @@ namespace PalestreGoGo.WebAPI.Controllers
                 Indirizzo = newCliente.Indirizzo,
                 Nome = newCliente.Nome,
                 NumTelefono = newCliente.NumTelefono,
-                SecurityToken = token,
+                SecurityToken = correlationId.ToString("N"),
                 RagioneSociale = newCliente.RagioneSociale,
                 ZipOrPostalCode = newCliente.ZipOrPostalCode,
-                StorageContainer = token,
+                StorageContainer = correlationId.ToString("N"),
                 UrlRoute = newCliente.UrlRoute
             };
             //Aggiungiamo la Hero Image di default 
@@ -227,7 +227,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 Cognome = newCliente.NuovoUtente.Cognome,                
                 TelephoneNumber = newCliente.NuovoUtente.Telefono
             };
-            await _userManagementService.RegisterOwnerAsync(user, cliente.Id.ToString());
+            await _userManagementService.RegisterOwnerAsync(user, cliente.Id.ToString(), correlationId);
 
             return Ok();
         }

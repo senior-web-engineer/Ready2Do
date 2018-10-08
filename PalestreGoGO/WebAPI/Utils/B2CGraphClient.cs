@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PalestreGoGo.WebAPI.Utils
 {
@@ -59,11 +60,18 @@ namespace PalestreGoGo.WebAPI.Utils
             return response;
         }
 
-        public async Task<List<LocalAccountUser>> GetUserByMailAsync(string email)
+        public async Task<LocalAccountUser> GetUserById(string userId)
+        {
+            var response = await SendGraphGetRequestAsync($"{API_USERS}{userId}", null);
+            var result = (_msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value)).FirstOrDefault();
+            return result;
+        }
+
+        public async Task<LocalAccountUser> GetUserByMailAsync(string email)
         {
             string query = $"$filter=(signInNames/any(x:x/value eq '{email}')) or (userPrincipalName eq '{email}')";
             var response = await SendGraphGetRequestAsync(API_USERS, query);
-            var result = _msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value);
+            var result = _msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value).FirstOrDefault();
             return result;
         }
 

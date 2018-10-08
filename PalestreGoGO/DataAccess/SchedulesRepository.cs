@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Dapper;
+using System.Data.SqlClient;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -54,7 +55,7 @@ namespace PalestreGoGo.DataAccess
         public async Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null)
         {
             IEnumerable<Schedules> result = null;
-            using (var cn = _context.Database.GetDbConnection())
+            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
             {
                 result = await cn.QueryAsync<Schedules, Locations, TipologieLezioni, Schedules>("Schedules_GetForCliente",
                                     (s, l, tl) =>
@@ -65,7 +66,7 @@ namespace PalestreGoGo.DataAccess
                                     },
                                     splitOn: "IdLocation,IdTipoLezione",
                                     commandType: System.Data.CommandType.StoredProcedure,
-                                    param:new { pIdCliente = idCliente, pStartDate = startDate, pEndDate = endDate, pIdLocation = idLocation}
+                                    param: new { pIdCliente = idCliente, pStartDate = startDate, pEndDate = endDate, pIdLocation = idLocation }
                             );
             }
             return result;

@@ -16,7 +16,7 @@ namespace PalestreGoGo.DataAccess
         {
 
         }
-
+        
         public virtual DbSet<AbbonamentiUtenti> AbbonamentiUtenti { get; set; }
         public virtual DbSet<Appuntamenti> Appuntamenti { get; set; }
         public virtual DbSet<Clienti> Clienti { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
-using PalestreGoGo.DataAccess.Interfaces;
+using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Model;
 using SendGrid;

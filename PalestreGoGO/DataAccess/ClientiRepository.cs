@@ -235,7 +235,7 @@ namespace PalestreGoGo.DataAccess
         {
             List<ClienteUtenteConAbbonamento> result = new List<ClienteUtenteConAbbonamento>();
             ClienteUtenteConAbbonamento item;
-            using (var cn = _context.Database.GetDbConnection())
+            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[GetUtentiCliente]";

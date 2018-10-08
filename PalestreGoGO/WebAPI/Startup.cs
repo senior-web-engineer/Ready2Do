@@ -1,22 +1,16 @@
 ﻿using AutoMapper;
 using FluentValidation.AspNetCore;
-using IdentityServer4.AccessTokenValidation;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PalestreGoGo.DataAccess;
-using PalestreGoGo.DataAccess.Interfaces;
-using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using Swashbuckle.AspNetCore.Swagger;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,18 +31,12 @@ namespace PalestreGoGo.WebAPI
 
         }
 
-        private void RegisterRepositories(IServiceCollection services)
+        private void RegisterService(IServiceCollection services)
         {
-            services.AddTransient<IAbbonamentiRepository, AbbonamentiRepository>();
-            services.AddTransient<IAppuntamentiRepository, AppuntamentiRepository>();
-            services.AddTransient<IClientiRepository, ClientiRepository>();
-            services.AddTransient<ILocationsRepository, LocationsRepository>();
-            services.AddTransient<ISchedulesRepository, SchedulesRepository>();
-            services.AddTransient<ITipologieAbbonamentiRepository, TipologieAbbonamentiRepository>();
-            services.AddTransient<ITipologieClientiRepository, TipologieClientiRepository>();
-            services.AddTransient<ITipologieLezioniRepository, TipologieLezioniRepository>();
-            services.AddTransient<IMailTemplatesRepository, MailTemplatesRepository>();
-            services.AddTransient<IUtentiRepository, UtentiRepository>();
+            services.AddTransient<B2CGraphClient, B2CGraphClient>();
+            services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
+            services.AddTransient<IUserConfirmationService, UserConfirmationService>();
+            services.AddTransient<IUsersManagementService, UsersManagementService>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -59,22 +47,12 @@ namespace PalestreGoGo.WebAPI
 
             ApiConfigs.InitConfiguration(Configuration);
 
-            services.AddDbContext<AppIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"));
-            });
-
             services.AddDataAccessRepositories(opt =>
             {
                 opt.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
             });
 
-            services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
-            services.AddTransient<IUserConfirmationService, UserConfirmationService>();
-            services.AddTransient<B2CGraphClient, B2CGraphClient>();
-            services.AddTransient<IUsersManagementService, UsersManagementService>();
-
-            RegisterRepositories(services);
+            RegisterService(services);
 
             services.AddAuthentication(options =>
             {

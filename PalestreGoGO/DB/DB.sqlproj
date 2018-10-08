@@ -97,6 +97,8 @@
     <Build Include="dbo\Views\vAbbonamentiValidi.sql" />
     <Build Include="dbo\Stored Procedures\Schedules_GetForCliente.sql" />
     <Build Include="dbo\Tables\RichiesteRegistrazione.sql" />
+    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Complete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

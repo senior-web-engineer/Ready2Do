@@ -1,5 +1,4 @@
-﻿using PalestreGoGo.DataAccess.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using PalestreGoGo.DataModel;

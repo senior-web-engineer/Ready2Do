@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using PalestreGoGo.DataAccess.Interfaces;
 using PalestreGoGo.DataModel;
 using System;
 using System.Collections.Generic;

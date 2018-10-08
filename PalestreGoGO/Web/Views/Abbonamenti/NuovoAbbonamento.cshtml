@@ -6,7 +6,8 @@
     ViewData["Title"] = "Nuovo Abbonamento";
     Layout = "_LayoutClienti";
 }
-@Html.Partial("_MenuCliente", ViewData["IdCliente"])
+<partial name="_MenuCliente" model="ViewBag.IdCliente" />
+@*@Html.Partial("_MenuCliente", ViewData["IdCliente"])*@
 
 
 <div class="container">

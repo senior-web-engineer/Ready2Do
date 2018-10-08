@@ -1,30 +1,34 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using PalestreGoGo.DataAccess.Interfaces;
 using PalestreGoGo.DataModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Dapper;
+using System.Data.SqlClient;
 
 namespace PalestreGoGo.DataAccess
 {
     public class MailTemplatesRepository : IMailTemplatesRepository
     {
-        private readonly PalestreGoGoDbContext _context;
+        //private readonly PalestreGoGoDbContext _context;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<MailTemplatesRepository> _logger;
 
-        public MailTemplatesRepository(PalestreGoGoDbContext context, ILogger<MailTemplatesRepository> logger)
+        public MailTemplatesRepository(IConfiguration configuration, ILogger<MailTemplatesRepository> logger)
         {
             this._logger = logger;
-            this._context = context;
+            //this._context = context;
+            this._configuration = configuration;
         }
 
 
         public async Task<MailTemplate> GetTemplateAsync(MailType tipoMail)
         {
-            return await _context.MailTemplates.SingleOrDefaultAsync(m => m.TipoMail == (byte)tipoMail);
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                return await cn.QuerySingleAsync<MailTemplate>("SELECT * FROM MailTemplates WHERE TipoMail = @pTipoMail", new { pTipoMail = (byte)tipoMail });
+                //return await _context.MailTemplates.SingleOrDefaultAsync(m => m.TipoMail == (byte)tipoMail);
+            }
         }
     }
 }
