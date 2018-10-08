@@ -60,6 +60,15 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
         [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_EmailConfirmed")]
         public bool MailConfirmed { get; set; }
 
+
+        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_StruttureOwned")]
+        public string StruttureOwned { get; set; }
+
+        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_StruttureGestite")]
+        public string StruttureGestite { get; set; }
+
+        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_IsGlobalAdmin")]
+        public bool IsGlobalAdmin { get; set; }
         #endregion
 
         public LocalAccountUser()

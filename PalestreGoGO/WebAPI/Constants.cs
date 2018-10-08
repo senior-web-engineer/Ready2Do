@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI
@@ -14,11 +15,14 @@ namespace PalestreGoGo.WebAPI
 
         #region CLAIMS
         public const string ClaimRole = "role";
+
+        public const string ClaimGlobalAdmin = "role";
         public const string ClaimStructureOwned = "structure_owned";
         public const string ClaimStructureManaged = "structure_managed";
         public const string ClaimStructureAffiliated = "structure_affiliated";
 
-        public const string ClaimUserId = "uid";
+        public const string ClaimMailConfirmed = "";
+        public const string ClaimUserId = ClaimTypes.NameIdentifier; //"uid";
         #endregion
 
         #region SCOPES

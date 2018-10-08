@@ -104,17 +104,12 @@ namespace PalestreGoGo.WebAPI.Services
             //return this._userManager.FindByIdAsync(userId.ToString());
         }
 
-        public async Task<Guid> RegisterOwnerAsync(LocalAccountUser user, string password, string idCliente)
+        public async Task<Guid> RegisterOwnerAsync(LocalAccountUser user, string idCliente)
         {
-            //if (user == null) throw new ArgumentNullException(nameof(user));
-            //if (string.IsNullOrWhiteSpace(user.UserName)) throw new ArgumentNullException(nameof(user.UserName));
-            //if (string.IsNullOrWhiteSpace(user.FirstName)) throw new ArgumentNullException(nameof(user.FirstName));
-            //if (string.IsNullOrWhiteSpace(user.LastName)) throw new ArgumentNullException(nameof(user.LastName));
-            //if (string.IsNullOrWhiteSpace(user.PhoneNumber)) throw new ArgumentNullException(nameof(user.PhoneNumber));
-            //if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
-            //if (string.IsNullOrWhiteSpace(idCliente)) throw new ArgumentNullException(nameof(idCliente));
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (string.IsNullOrWhiteSpace(idCliente)) throw new ArgumentNullException(nameof(idCliente));
 
-            //var newUser = await internalCreateUserAsync(user, password, true);
+            var createdUser = await _b2cClient.CreateUserAsync(user);
 
             // Rendiamo l'utente OWNER della struttura (associando il claim all'utente)
             throw new NotImplementedException();

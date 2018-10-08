@@ -16,6 +16,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
@@ -220,16 +221,13 @@ namespace PalestreGoGo.WebAPI.Controllers
             await _repository.AddAsync(cliente);
 
             //Step 2 - Creiamo l'utente Owner
-            var user = new AppUser()
-            {
-                UserName = newCliente.NuovoUtente.Email,
-                FirstName = newCliente.NuovoUtente.Nome,
-                LastName = newCliente.NuovoUtente.Cognome,
-                Email = newCliente.NuovoUtente.Email,
-                PhoneNumber = newCliente.NuovoUtente.Telefono,
-                CreationToken = token
+            var user = new LocalAccountUser(newCliente.NuovoUtente.Email, newCliente.NuovoUtente.Password)
+            {                
+                Nome = newCliente.NuovoUtente.Nome,
+                Cognome = newCliente.NuovoUtente.Cognome,                
+                TelephoneNumber = newCliente.NuovoUtente.Telefono
             };
-           // await _userManagementService.RegisterOwnerAsync(user, newCliente.NuovoUtente.Password, cliente.Id.ToString());
+            await _userManagementService.RegisterOwnerAsync(user, cliente.Id.ToString());
 
             return Ok();
         }
