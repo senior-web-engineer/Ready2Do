@@ -11,6 +11,7 @@ namespace Web
 
         public const string ClaimStructureOwned = "structure_owned";
         public const string ClaimStructureManaged = "structure_managed";
+        public const string ClaimAccountConfirmedOn = "structure_managed";
         public const string ClaimRole = "role";
         public const string ClaimUserId = ClaimTypes.NameIdentifier;
 

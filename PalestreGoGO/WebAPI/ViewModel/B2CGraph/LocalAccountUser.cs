@@ -54,20 +54,20 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
          //TODO: Sarà pertanto necessario customizzare la serializzazione di queste proprietà
          */
 
-        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_Refereer")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_refereer")]
         public string Refereer { get; set; }
 
-        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_EmailConfirmed")]
-        public bool MailConfirmed { get; set; }
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_accountConfirmedOn")]
+        public string AccountConfirmedOn { get; set; }
 
 
-        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_StruttureOwned")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureOwned")]
         public string StruttureOwned { get; set; }
 
-        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_StruttureGestite")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureGestite")]
         public string StruttureGestite { get; set; }
 
-        [JsonProperty("extension_9ffd02bf4e6347e1b85574eef9015d78_IsGlobalAdmin")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_isGlobalAdmin")]
         public bool IsGlobalAdmin { get; set; }
         #endregion
 
@@ -77,7 +77,6 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
             this.CreationType = "LocalAccount";
             this.Enabled = true;
             this.SignInNames = new List<SignInName>();
-            this.MailConfirmed = false;
             this.Emails = new List<string>();
         }
 

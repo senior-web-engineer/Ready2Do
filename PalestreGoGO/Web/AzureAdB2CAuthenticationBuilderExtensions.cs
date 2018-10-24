@@ -109,8 +109,8 @@ namespace Web
                 string signedInUserID = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 //GT#20181007#Recuperiamo il claim
-                bool emailConfirmed = bool.Parse(context.Principal.FindFirst("extension_EmailConfirmed").Value);
-                if (!emailConfirmed)
+                string claimValue = context.Principal.FindFirstValue("extension_accountConfirmedOn");
+                if (string.IsNullOrEmpty(claimValue))
                 {
                     context.HandleResponse();
                     context.Response.Redirect("/Account/MailToConfirm");
