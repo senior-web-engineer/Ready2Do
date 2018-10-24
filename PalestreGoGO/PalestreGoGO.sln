@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STS", "STS\STS.csproj", "{7477142A-6563-46E0-AEFD-3BF545647D98}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FuncSendUserMailConfirmation", "FuncSendUserMailConfirmation\FuncSendUserMailConfirmation.csproj", "{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModel", "DataModel\DataModel.csproj", "{3C53DD5C-71BA-4E36-A65A-F5FE9AD16A21}"
@@ -15,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\Da
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{09F8146A-8D4E-489B-B244-53A73A5979DD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityModel", "IdentityModel\IdentityModel.csproj", "{B3AACC72-6744-43E2-873C-CB04591E08BA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.WebAPI", "Tests\Tests.WebAPI\Tests.WebAPI.csproj", "{FBA9B71D-314E-49FC-9570-2B2B1CC71261}"
 EndProject
@@ -36,10 +32,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7477142A-6563-46E0-AEFD-3BF545647D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7477142A-6563-46E0-AEFD-3BF545647D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7477142A-6563-46E0-AEFD-3BF545647D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7477142A-6563-46E0-AEFD-3BF545647D98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,10 +44,6 @@ Global
 		{39A5DC7E-A1AF-4753-886E-3B3AE7380D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39A5DC7E-A1AF-4753-886E-3B3AE7380D22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39A5DC7E-A1AF-4753-886E-3B3AE7380D22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3AACC72-6744-43E2-873C-CB04591E08BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3AACC72-6744-43E2-873C-CB04591E08BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3AACC72-6744-43E2-873C-CB04591E08BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3AACC72-6744-43E2-873C-CB04591E08BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBA9B71D-314E-49FC-9570-2B2B1CC71261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FBA9B71D-314E-49FC-9570-2B2B1CC71261}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBA9B71D-314E-49FC-9570-2B2B1CC71261}.Release|Any CPU.ActiveCfg = Release|Any CPU

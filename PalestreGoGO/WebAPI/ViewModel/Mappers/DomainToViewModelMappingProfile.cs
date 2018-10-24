@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using PalestreGoGo.DataModel;
-using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
@@ -67,11 +66,11 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                 .ForPath(x => x.PostiResidui, opt => opt.MapFrom(src => src.PostiDisponibili)); // PostiResidui == PostiDisponibili
                                                                                                 //                .ForPath(x => x.TipologiaLezione, opt => opt.MapFrom(src => src.TipologiaLezione));
 
-            CreateMap<AppUser, ClienteUtenteApiModel>()
-                .ForMember(d => d.Nome, opt => opt.MapFrom(src => src.FirstName))
-                .ForMember(d => d.Cognome, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(d => d.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(d => d.IdUtente, opt => opt.MapFrom(src => src.Id));
+            //CreateMap<AppUser, ClienteUtenteApiModel>()
+            //    .ForMember(d => d.Nome, opt => opt.MapFrom(src => src.FirstName))
+            //    .ForMember(d => d.Cognome, opt => opt.MapFrom(src => src.LastName))
+            //    .ForMember(d => d.Email, opt => opt.MapFrom(src => src.Email))
+            //    .ForMember(d => d.IdUtente, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<AbbonamentiUtenti, AbbonamentoViewModel>()
                 .ReverseMap()

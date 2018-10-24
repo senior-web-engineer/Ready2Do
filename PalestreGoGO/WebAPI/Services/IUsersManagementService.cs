@@ -1,5 +1,4 @@
-﻿using PalestreGoGo.IdentityModel;
-using PalestreGoGo.WebAPI.ViewModel;
+﻿using PalestreGoGo.WebAPI.ViewModel;
 using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using System;

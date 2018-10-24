@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.DataModel.Exceptions;
-using PalestreGoGo.IdentityModel;
 using PalestreGoGo.WebAPI.Model;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel;
