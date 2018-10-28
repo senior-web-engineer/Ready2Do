@@ -14,7 +14,7 @@ namespace Web
         public const string ClaimAccountConfirmedOn = "structure_managed";
         public const string ClaimRole = "role";
         public const string ClaimUserId = ClaimTypes.NameIdentifier;
-
+        public const string ClaimPolicy = "tfp";
         public const string ROLE_GLOBAL_ADMIN = "global_admin";
 
         public const string CUSTOM_HEADER_TOKEN_AUTH = "X-PalestreGoGO-AUTHToken";

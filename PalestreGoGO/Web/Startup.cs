@@ -51,30 +51,7 @@ namespace Web
             //services.AddDataProtection()
             //    .PersistKeysToAzureBlobStorage(new Uri("<blob URI including SAS token>"));
 
-
-            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            //})
-            //.AddCookie()
-            //.AddOpenIdConnect(options =>
-            //{
-            //    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    options.Authority = Configuration["AppConfig:STS:Authority"];
-            //    options.RequireHttpsMetadata = bool.Parse(Configuration["AppConfig:STS:RequireHttpsMetadata"]);
-            //    options.ClientId = Configuration["AppConfig:STS:ClientId"];
-            //    options.ClientSecret = Configuration["AppConfig:STS:ClientSecret"];
-            //    options.ResponseType = Configuration["AppConfig:STS:ResponseType"];
-            //    var scopes = Configuration.GetSection("AppConfig:STS:Scopes").GetChildren().Select(x => x.Value);
-            //    foreach (var s in scopes)
-            //    {
-            //        options.Scope.Add(s);
-            //    }
-            //    options.GetClaimsFromUserInfoEndpoint = true;
-            //    options.SaveTokens = true;
-            //});
+          
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

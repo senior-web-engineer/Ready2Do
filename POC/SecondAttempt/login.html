@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style media="screen">
+  body{
+    font-family: 'Roboto', sans-serif;
+    color: #757575;
+    font-weight: normal;
+    background-color: #e0e0e0; /* grey lighten-2 */
+  }
+  label{
+    color: #757575;
+  }
+  ========================================================================== */
+  /* Style Placeholders */
+  ::-webkit-input-placeholder {
+  color: #BDBDBD;
+  }
+  ::-moz-placeholder {
+  color: #BDBDBD;
+  }
+  :-ms-input-placeholder {
+  color: #BDBDBD;
+  }
+  ::-ms-input-placeholder {
+  color: #BDBDBD;
+  }
+  ::placeholder {
+  color: #BDBDBD;
+  }
+
+  .b2c-container {
+    /*
+    background-image:url('https://stgready2do.blob.core.windows.net/images/work/app-application-business-1093906.jpg');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    */
+  }
+  .logo{
+    height: 64px;
+    width: 300px;
+    background-image:url('https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H56.png');
+  }
+  /*Da materialize-social.css:
+  https://github.com/TerryMooreII/materialize-social/blob/master/materialize-social.css
+  */
+  .facebook {
+  background-color: #3b5998;
+  color: #fff !important;
+}
+.facebook i {
+  color: #fff !important;
+}
+.facebook:hover {
+  background-color: #4c70ba !important;
+}
+#FacebookExchange {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAaVBMVEU7W5z///85Wps3WJsiRo8xU5fw8vYyUpY0VZiAj70pS5OBkb0vUpb7+fwsTpTR1ud6irllerBPaqX09fnx8vfs7fSQoMZxg7VsgLNGY6FCX58ZP4v++/7r7vTZ3OupstGIlsFWcalDYaCK3qwDAAAAnklEQVQ4y+XQyw7CIBAFUBgc5VUoWGtb3/7/RyoYkyZAiSsXvdt7kstA/hRg/B0GpZ6byQ3Dw0NBaH+lMYRle3T0kwayACRdBrr/gnN+QtpQWv8cR4DswiUAjozlz4RdF8AmlnmwjaDQImoZwQkRedoToUS7D+ColGoTwQidx8oEQDMHN1MBva5MOL70SCHuE1TOhOpHrRt0FWAOP4IX8PsG2qEOR30AAAAASUVORK5CYII=);
+  background-repeat: no-repeat;
+  background-color: #3B5B9C;
+  cursor: pointer;
+  padding-left: 35px;
+  height: 35px;
+  width: 160px;
+  color: #fff !important;
+  text-decoration: none;
+  text-align: center;
+  letter-spacing: .5px;
+  border: none;
+  border-radius: 2px;
+
+  display: inline-block;
+ text-transform: uppercase;
+}
+
+#FacebookExchange:hover{
+  background-color: #4c70ba !important;
+}
+
+h2{
+  font-size: 1em;
+}
+.divider {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    height: auto;
+}
+
+.divider h2 {
+    display: table;
+    white-space: nowrap;
+    font-size: 1em;
+    font-weight: 700;
+    color: black;
+}
+.divider h2:after, .divider h2:before {
+    border-top: 1px solid #BDBDBD;
+    content: "";
+    display: table-cell;
+    position: relative;
+    top: .5em;
+    width: 50%;
+    margin: 30px
+}
+
+#next{
+  background-color: #FF4081;
+  cursor: pointer;
+  height: 35px;
+  width: 160px;
+  color: #fff !important;
+  text-decoration: none;
+  text-align: center;
+  letter-spacing: .5px;
+  border: none;
+  border-radius: 2px;
+
+  display: inline-block;
+ text-transform: uppercase;
+}
+
+#next:hover{
+  background-color: #f96899
+}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper indigo lighten-4">
+      <!-- Utilizzando il srcset l'immagine cambia compatibilmente con la barra NAV (64px-56px)-->
+      <img srcset="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H56.png 144w,
+                   https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H64.png 164w"
+     sizes="(max-width: 600px) 144px,
+            164px"
+     src="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H64.png" >
+    </div>
+  </nav>
+    <div>
+
+  </div>
+  <div class="container">
+    <div>
+      <h1> Accesso a Ready2Do</h1>
+    </div>
+    <div class="b2c-container">
+      <div id="api">
+        <!--QUESTA PARTE LA METTE AZURE B2C -->
+        <div class="social" aria-label="Sign in with your social account" role="form">
+          <div class="intro">
+            <h2>Sign in with your social account</h2>
+          </div>
+          <div class="options">
+            <div>
+              <button class="accountButton firstButton" id="FacebookExchange" tabindex="1">Facebook</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider">
+          <h2>OR</h2>
+        </div>
+
+        <div class="localAccount" aria-label="Sign in with your existing account" role="form">
+          <div class="intro">
+            <h2>
+              Sign in with your existing account
+            </h2>
+          </div>
+          <div class="error pageLevel" aria-hidden="true" style="display: none;">
+            <p role="alert"></p>
+          </div>
+          <div class="entry">
+            <div class="entry-item">
+              <label for="logonIdentifier">
+                Email Address
+              </label>
+              <div class="error itemLevel" aria-hidden="true" style="display: none;">
+                <p role="alert"></p>
+              </div>
+              <input type="email" id="logonIdentifier" name="Username or email address" pattern="^[a-zA-Z0-9.!#$%&amp;’'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" placeholder="Email Address" value="" tabindex="1">
+            </div>
+            <div class="entry-item">
+              <div class="password-label">
+                <label for="password">Password</label>
+                <a id="forgotPassword" tabindex="2" href="/ready2do.onmicrosoft.com/B2C_1_ready2do_sginupin/api/CombinedSigninAndSignup/forgotPassword?csrf_token=UDBDTVdzNDBHZUtHNlRRRHh3WnJtS2pJOTRtSlIrSzQyeVBkVFp5WmRaRE0vUEhnTFg3UnRNYUNKU0ZTUW42WSt5Ulk3d3RCczQ1Z05DWjlqY0NjR0E9PTsyMDE4LTEwLTI3VDE3OjE1OjI5LjU0ODUyMTRaO1VXUlVRTS8wUHpCVHM1amlTTmJBYXc9PTt7Ik9yY2hlc3RyYXRpb25TdGVwIjoxfQ==&amp;tx=StateProperties=eyJUSUQiOiI1NmZmZTJiYS1lOGRmLTQxZWQtYjVmMy02ZmQ3ZWEwNzhlYTUifQ&amp;p=B2C_1_ready2do_sginupin">Forgot your password?</a>
+              </div>
+              <div class="error itemLevel" aria-hidden="true" style="display: none;">
+                <p role="alert"></p>
+              </div>
+              <input type="password" id="password" name="Password" placeholder="Password" tabindex="1">
+            </div>
+            <div class="working"></div>
+            <div class="buttons">
+              <button id="next" tabindex="1">Sign in</button>
+            </div>
+          </div>
+
+          <div class="divider">
+            <h2>OR</h2>
+          </div>
+          <div class="create">
+            <p>
+              Don't have an account?<a id="createAccount" tabindex="1" href="/ready2do.onmicrosoft.com/B2C_1_ready2do_sginupin/api/CombinedSigninAndSignup/unified?local=signup&amp;csrf_token=UDBDTVdzNDBHZUtHNlRRRHh3WnJtS2pJOTRtSlIrSzQyeVBkVFp5WmRaRE0vUEhnTFg3UnRNYUNKU0ZTUW42WSt5Ulk3d3RCczQ1Z05DWjlqY0NjR0E9PTsyMDE4LTEwLTI3VDE3OjE1OjI5LjU0ODUyMTRaO1VXUlVRTS8wUHpCVHM1amlTTmJBYXc9PTt7Ik9yY2hlc3RyYXRpb25TdGVwIjoxfQ==&amp;tx=StateProperties=eyJUSUQiOiI1NmZmZTJiYS1lOGRmLTQxZWQtYjVmMy02ZmQ3ZWEwNzhlYTUifQ&amp;p=B2C_1_ready2do_sginupin">Sign up now</a>
+            </p>
+          </div>
+        </div>
+        <!-- FINE AZURE B2C -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>

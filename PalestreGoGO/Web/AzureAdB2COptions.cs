@@ -18,15 +18,22 @@ namespace Web
         public string ClientId { get; set; }
         public string AzureAdB2CInstance { get; set; }
         public string Tenant { get; set; }
-        public string SignUpSignInPolicyId { get; set; }
-        public string SignInPolicyId { get; set; }
-        public string SignUpPolicyId { get; set; }
-        public string ResetPasswordPolicyId { get; set; }
-        public string EditProfilePolicyId { get; set; }
+        /* POLICY STRUTTURE */
+        public string StrutturaSignInPolicyId { get; set; }
+        public string StrutturaResetPasswordPolicyId { get; set; }
+        /* FINE POLICY STRUTTURE */
+
+        /* POLICY PER GLI UTENTI */
+        public string UserSignUpSignInPolicyId { get; set; }
+        //public string UserSignInPolicyId { get; set; }
+        //public string UserSignUpPolicyId { get; set; }
+        public string UserResetPasswordPolicyId { get; set; }
+        //public string UserEditProfilePolicyId { get; set; }
+        /* FINE POLOCY UTENTI */
         public string RedirectUri { get; set; }
 
-        public string DefaultPolicy => SignUpSignInPolicyId;
-        public string Authority => $"{AzureAdB2CInstance}/{Tenant}/{DefaultPolicy}/v2.0";
+        public string DefaultPolicy => StrutturaSignInPolicyId;
+        public string Authority(string policyName) => $"{AzureAdB2CInstance}/{Tenant}/{policyName}/v2.0";
 
         public string ClientSecret { get; set; }
         public string ApiUrl { get; set; }

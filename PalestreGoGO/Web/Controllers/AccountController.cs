@@ -26,21 +26,23 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
+        private readonly AzureAdB2COptions _b2cOptions;
         private readonly AccountServices _account;
 
         private readonly WebAPIClient _apiClient;
 
-        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account, WebAPIClient apiClient)
+        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account, WebAPIClient apiClient, IOptions<AzureAdB2COptions> b2cOptions)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _account = account;
             _apiClient = apiClient;
+            _b2cOptions = b2cOptions.Value;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login(string returnUrl = null, bool asUser = true)
         {
             if (string.IsNullOrWhiteSpace(returnUrl))
             {
@@ -50,6 +52,15 @@ namespace Web.Controllers
             {
                 RedirectUri = returnUrl
             };
+            if (asUser)
+            {
+                authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.UserSignUpSignInPolicyId);
+            }
+            else
+            {
+                authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.StrutturaSignInPolicyId);
+            }
+
             return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
         }
 

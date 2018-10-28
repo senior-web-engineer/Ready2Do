@@ -58,25 +58,28 @@ namespace PalestreGoGo.WebAPI
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+            //Aggiungiamo due2 dsitinti JWTBeare per gestire le 2 authority (user/struttura)
+                //.AddJwtBearer(jwtOptions =>
+                //{
+                //    jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:UserPolicy"]}/v2.0/";
+                //    jwtOptions.Audience = Configuration["Authentication:AzureAdB2C:ClientId"];
+                //    jwtOptions.Events = new JwtBearerEvents
+                //    {
+                //        OnAuthenticationFailed = AuthenticationFailed,
+                //        OnMessageReceived = 
+                //    };
+                //})
                 .AddJwtBearer(jwtOptions =>
                 {
-                    jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:Policy"]}/v2.0/";
+                    jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:StrutturaPolicy"]}/v2.0/";
                     jwtOptions.Audience = Configuration["Authentication:AzureAdB2C:ClientId"];
                     jwtOptions.Events = new JwtBearerEvents
                     {
-                        OnAuthenticationFailed = AuthenticationFailed
+                        OnAuthenticationFailed = AuthenticationFailed,
+                        OnMessageReceived = MessageReceived
                     };
                 });
-            //services.AddAuthorization(options =>
-            //{
-            //    //options.AddPolicy("tipologiche.edit",
-            //    //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeTipologicheEdit, Configuration["STS:Issuer"])));
-            //    options.AddPolicy("UsersManagement",
-            //        policy => policy.AddRequirements(new HasScopeRequirement(Constants.ClaimStructureManaged, Configuration["STS:Issuer"])));
-            //    //options.AddPolicy("ProvisioningPolicy",
-            //    //    policy => policy.AddRequirements(new HasScopeRequirement(Constants.ScopeProvisioningClienti, Configuration["STS:Issuer"])));
-            //});
-
+           
             services.AddMvc()
                 .AddFluentValidation();
 
@@ -121,6 +124,11 @@ namespace PalestreGoGo.WebAPI
             var s = $"AuthenticationFailed: {arg.Exception.Message}";
             arg.Response.ContentLength = s.Length;
             arg.Response.Body.Write(Encoding.UTF8.GetBytes(s), 0, s.Length);
+            return Task.FromResult(0);
+        }
+
+        private Task MessageReceived(MessageReceivedContext context)
+        {
             return Task.FromResult(0);
         }
     }

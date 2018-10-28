@@ -32,7 +32,7 @@
                     @if (!User.Identity.IsAuthenticated)
                     {
                         <li>
-                            <a id="navLinkRegistration" asp-action="Login" asp-controller="Account">Entra</a>
+                            <a id="navLinkRegistration" asp-action="Login" asp-controller="Account" asp-route-asUser="false">Entra</a>
                         </li>
                     }
                 </ul>

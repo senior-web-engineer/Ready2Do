@@ -43,7 +43,8 @@ namespace Web
             public void Configure(string name, OpenIdConnectOptions options)
             {
                 options.ClientId = AzureAdB2COptions.ClientId;
-                options.Authority = AzureAdB2COptions.Authority;
+                options.Authority = AzureAdB2COptions.Authority(AzureAdB2COptions.DefaultPolicy);
+                options.SaveTokens = true;
                 options.UseTokenLifetime = true;
                 options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "name" };
 
@@ -51,7 +52,8 @@ namespace Web
                 {
                     OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
                     OnRemoteFailure = OnRemoteFailure,
-                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived
+                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived,
+                    OnAuthenticationFailed = OnAuthenticationFailed
                 };
             }
 
@@ -60,18 +62,26 @@ namespace Web
                 Configure(Options.DefaultName, options);
             }
 
+            public Task OnAuthenticationFailed(AuthenticationFailedContext context)
+            {
+                context.Response.Redirect("/Home/Error?message=" + context.Exception.Message);
+                return Task.FromResult(0);
+            }
+
             public Task OnRedirectToIdentityProvider(RedirectContext context)
             {
-                var defaultPolicy = AzureAdB2COptions.DefaultPolicy;
-                if (context.Properties.Items.TryGetValue(AzureAdB2COptions.PolicyAuthenticationProperty, out var policy) &&
-                    !policy.Equals(defaultPolicy))
+                if(!context.Properties.Items.TryGetValue(AzureAdB2COptions.PolicyAuthenticationProperty, out var policy))
                 {
-                    context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
-                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
-                    context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace(defaultPolicy.ToLower(), policy.ToLower());
-                    context.Properties.Items.Remove(AzureAdB2COptions.PolicyAuthenticationProperty);
+                    policy = AzureAdB2COptions.DefaultPolicy;
                 }
-                else if (!string.IsNullOrEmpty(AzureAdB2COptions.ApiUrl))
+                context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
+                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
+                context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace(AzureAdB2COptions.DefaultPolicy.ToLower(), policy.ToLower());
+                context.Properties.Items.Remove(AzureAdB2COptions.PolicyAuthenticationProperty);
+                
+                if (!string.IsNullOrEmpty(AzureAdB2COptions.ApiUrl) && (
+                    policy.Equals(AzureAdB2COptions.StrutturaSignInPolicyId, StringComparison.InvariantCultureIgnoreCase) ||
+                    policy.Equals(AzureAdB2COptions.UserSignUpSignInPolicyId, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     context.ProtocolMessage.Scope += $" offline_access {AzureAdB2COptions.ApiScopes}";
                     context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
@@ -110,14 +120,15 @@ namespace Web
 
                 //GT#20181007#Recuperiamo il claim
                 string claimValue = context.Principal.FindFirstValue("extension_accountConfirmedOn");
-                if (string.IsNullOrEmpty(claimValue))
-                {
-                    context.HandleResponse();
-                    context.Response.Redirect("/Account/MailToConfirm");
-                    return;
-                }
+                //if (string.IsNullOrEmpty(claimValue))
+                //{
+                //    context.HandleResponse();
+                //    context.Response.Redirect("/Account/MailToConfirm");
+                //    return;
+                //}
+                string currentPolicy = context.Principal.FindFirstValue(Constants.ClaimPolicy);
                 TokenCache userTokenCache = new MSALSessionCache(signedInUserID, context.HttpContext).GetMsalCacheInstance();
-                ConfidentialClientApplication cca = new ConfidentialClientApplication(AzureAdB2COptions.ClientId, AzureAdB2COptions.Authority, AzureAdB2COptions.RedirectUri, new ClientCredential(AzureAdB2COptions.ClientSecret), userTokenCache, null);
+                ConfidentialClientApplication cca = new ConfidentialClientApplication(AzureAdB2COptions.ClientId, AzureAdB2COptions.Authority(currentPolicy), AzureAdB2COptions.RedirectUri, new ClientCredential(AzureAdB2COptions.ClientSecret), userTokenCache, null);
                 try
                 {
                     AuthenticationResult result = await cca.AcquireTokenByAuthorizationCodeAsync(code, AzureAdB2COptions.ApiScopes.Split(' '));
@@ -125,7 +136,7 @@ namespace Web
 
                     context.HandleCodeRedemption(result.AccessToken, result.IdToken);
                 }
-                catch (Exception)
+                catch (Exception exc)
                 {
                     //TODO: Handle
                     throw;
