@@ -141,6 +141,12 @@ namespace Web
                     //TODO: Handle
                     throw;
                 }
+
+                //TODO: Gestire il redirect alla struttura gestita se il redirect è alla Home del sito (solo per i gestori ?)
+                //if(!string.IsNullOrEmpty(context.Properties.RedirectUri) && (!IsRedirectToHome(context.Properties.RedirectUri)))
+                //{
+                //    context.Response.Redirect()
+                //}
             }
         }
     }

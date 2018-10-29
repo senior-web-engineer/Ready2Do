@@ -94,6 +94,7 @@ namespace Web.Controllers
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
             ViewData["ClienteRoute"] = urlRoute;
             ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
+            ViewData["IdCliente"] = cliente.IdCliente;
             ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
             ViewBag.IsFollowing = false;
             if (ViewBag.UtenteNormale)
@@ -170,6 +171,7 @@ namespace Web.Controllers
                 return Forbid();
             }
             var vm = cliente.MapToProfileEditVM();
+            ViewData["IdCliente"] = cliente.IdCliente;
             ViewData["SASToken"] = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
             ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                                 _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",

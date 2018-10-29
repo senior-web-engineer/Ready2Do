@@ -1,4 +1,100 @@
-﻿.flex-caption {
+﻿/* La pagina principale è spostata 300px a destra per lasciare spazio alla sidebar */
+main.r2d-nav-padding {
+    padding-left: 300px;
+}
+
+main.r2d-no-padding {
+    padding-left: 0;
+}
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+        padding-left: 0;
+    }
+    main.r2d-nav-padding {
+        padding-left: 0;
+    }
+}
+
+/* La sidenav deve essere sotto la navbar*/
+.sidenav-fixed {
+    top: 58px;
+}
+
+@media only screen and (min-width:601px) {
+    .sidenav-fixed {
+        top: 66px;
+    }
+}
+
+.r2d-sidenav-topspacer {
+    height: 3rem;
+}
+/* Ridefiniamo lo stile degli item della sidenav*/
+.r2d-sidenav-item {
+    font-weight: 700 !important;
+}
+
+.r2d-nav-logo {
+    padding-left: 3% !important;
+}
+
+.r2d-nav-menu {
+    padding-right: 5%;
+}
+
+.r2-nav-dropdwonAccount {
+    width: 200px;
+}
+
+/* CUSTOMIZZAZIONE CALENDARIO */
+
+.fc-time-grid .fc-slats td {
+    height: 3em;
+}
+
+.r2d-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.r2d-swiper-image {
+    max-width: 711px;
+    max-height: 400px;
+}
+
+.swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+    /* Center slide text vertically */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+/* Stile per i banner pubblicitari*/
+.adsbanner_container {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+/********************* VECCHI STILI ****************/
+.flex-caption {
     width: 96%;
     padding: 2%;
     left: 0;
@@ -60,11 +156,4 @@
     display: inline-block;
     height: 100%;
     vertical-align: middle;
-}
-
-
-/* Stile per i banner pubblicitari*/
-.adsbanner_container {
-    padding-bottom: 4rem;
-    padding-top: 4rem;
 }

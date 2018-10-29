@@ -256,16 +256,17 @@ namespace PalestreGoGo.WebAPI.Controllers
             existing.OrarioApertura = JsonConvert.SerializeObject(profilo.OrarioApertura);
 
             //Se è una nuova immagine, sovrascriviamo la precedente (manteniamo l'Id della vecchia)
-            if(!profilo.ImmagineHome.Id.HasValue && profilo.ImmagineHome.Id.Value <= 0)
+            if(!profilo.ImmagineHome.Id.HasValue || profilo.ImmagineHome.Id.Value <= 0)
             {
                 var oldImg = existing.ClientiImmagini.SingleOrDefault(i=>i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini();
                 oldImg.IdCliente = idCliente;
                 oldImg.IdTipoImmagine = (int)TipoImmagine.Sfondo;
-                oldImg.Nome = profilo.ImmagineHome.Nome;
-                oldImg.Alt = profilo.ImmagineHome.Alt;
-                oldImg.Descrizione = profilo.ImmagineHome.Descrizione;
+                //oldImg.Nome = profilo.ImmagineHome.Nome;
+                //oldImg.Alt = profilo.ImmagineHome.Alt;
+                //oldImg.Descrizione = profilo.ImmagineHome.Descrizione;
                 oldImg.Ordinamento = 0;
                 oldImg.Url = profilo.ImmagineHome.Url;
+                await _repository.UpdateImageAsync(idCliente, oldImg);
             }
             await _repository.UpdateAsync(existing);
             return Ok();

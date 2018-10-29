@@ -4,14 +4,12 @@
 }
 
 @section Header{
-    <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/fine-uploader-new.min.css" integrity="sha256-I65PS+dIV5Bb65cOVYVn3UAbVeTONYAFwkkJPcPXNGI=" crossorigin="anonymous" />
 
-    <script src="~/azure.fine-uploader/azure.fine-uploader.core.js"></script>
+    @*<script src="~/azure.fine-uploader/azure.fine-uploader.core.js"></script>*@
 
-    <link href="~/css/ajax-modal.css" rel="stylesheet" />
+    @*<link href="~/css/ajax-modal.css" rel="stylesheet" />*@
 
-    <!-- Sortable Library from https://github.com/RubaXa/Sortable -->
-    @*<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>*@
     <style type="text/css">
         .spinner {
             position: fixed;
@@ -23,6 +21,7 @@
             width: 100%;
             height: 100%;
         }
+
         .img-spinner {
             position: fixed;
             top: 50%;
@@ -37,11 +36,11 @@
         }
     </style>
 }
-@Html.Partial("_MenuCliente", ViewData["IdCliente"])
+
 <section id="galleryEdit">
+    <h2 class="r2d-section-title">Gestione galleria immagine </h2>
     <input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />
 
-    <div class="container">
         @{Dictionary<string, string> parms;}
 
         @for (int row = 0; row < 3; row++)
@@ -58,7 +57,8 @@
                             <div class="gallery_item_container">
                                 <div class="thumb_container">
                                     <span class="valign_helper">
-                                        <img id='@string.Format("galleryImg-{0}",idx)' class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx)" />
+                                        <img id='@string.Format("galleryImg-{0}",idx)' class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx)" alt="Immagine @(@idx)" />
+                                        <span class="r2g-img-subtitle">Immagine @idx</span>
                                     </span>
                                 </div>
                                 @if (imgCurrent != null)
@@ -76,8 +76,8 @@
 </section>
 
 <div id="spinner" class="spinner" style="display:none;">
-        <img class="img-spinner" src="~/img/ajax-loader.gif" alt="Loading" />
-    </div>
+    <img class="img-spinner" src="~/img/ajax-loader.gif" alt="Loading" />
+</div>
 
 <!-- Dialog Modale per la conferma della cancellazione -->
 <div id="modalConfermaCanc" class="modal">
@@ -93,7 +93,9 @@
 <div class="ajax-modal"></div>
 
 @section Scripts{
-    <script src="~/js/jquery-ajax-modal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js" integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+
+    @*<script src="~/js/jquery-ajax-modal.js"></script>*@
 
     <script>
 

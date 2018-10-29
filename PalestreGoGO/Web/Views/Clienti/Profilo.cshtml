@@ -9,8 +9,9 @@
 }
 <head>
     @section Header{
-        <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
-        @*<link href="~/css/solved-by-flexbox-grid.css" rel="stylesheet">*@
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/fine-uploader-new.min.css" integrity="sha256-I65PS+dIV5Bb65cOVYVn3UAbVeTONYAFwkkJPcPXNGI=" crossorigin="anonymous" />
+
+
         <style type="text/css">
             #formEditProfile .input-field {
                 margin-top: 0px;
@@ -56,7 +57,7 @@
     }
 </head>
 <!-- Non dovrebbe esserci NavBar in questa pagina-->
-<partial name="_MenuCliente" for="IdCliente" />
+@*<partial name="_MenuCliente" for="IdCliente" />*@
 @*@Html.Partial("_MenuCliente", Model.IdCliente)*@
 <!-- Primo banner pubblicitario -->
 <section id="banner1">
@@ -132,12 +133,12 @@
                 </div>
             </div>
             @*<div class="row">
-                <div class="input-field col s10 offset-s1">
-                    <textarea asp-for="Descrizione" rows="5" class="materialize-textarea"></textarea>
-                    <label asp-for="Descrizione"></label>
-                    <span asp-validation-for="Descrizione"></span>
-                </div>
-            </div>*@
+                    <div class="input-field col s10 offset-s1">
+                        <textarea asp-for="Descrizione" rows="5" class="materialize-textarea"></textarea>
+                        <label asp-for="Descrizione"></label>
+                        <span asp-validation-for="Descrizione"></span>
+                    </div>
+                </div>*@
             <div class="row">
                 <div class="input-field col s10 offset-s1">
                     <input id="addressAutocomplete" type="text" asp-for="Indirizzo" />
@@ -147,25 +148,26 @@
             </div>
 
             <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-                    <img id="imgMap" class="img-responsive" src="@ViewBag.MapUrl" />
+                @*<div class="col-md-2"></div>
+                <div class="col-md-8">*@
+                <div class="center">
+                    <img id="imgMap" class="responsive-img" src="@ViewBag.MapUrl" />
                 </div>
-                <div class="col-md-2"></div>
+                @*<div class="col-md-2"></div>*@
             </div>
 
             @*<div class="row">
-                <div class="input-field col s6 offset-s1">
-                    <input type="text" asp-for="Citta" />
-                    <label asp-for="Citta"></label>
-                    <span asp-validation-for="Citta"></span>
-                </div>
-                <div class="input-field col s4">
-                    <input type="text" asp-for="CAP" />
-                    <label asp-for="CAP"></label>
-                    <span asp-validation-for="CAP"></span>
-                </div>
-            </div>*@
+                    <div class="input-field col s6 offset-s1">
+                        <input type="text" asp-for="Citta" />
+                        <label asp-for="Citta"></label>
+                        <span asp-validation-for="Citta"></span>
+                    </div>
+                    <div class="input-field col s4">
+                        <input type="text" asp-for="CAP" />
+                        <label asp-for="CAP"></label>
+                        <span asp-validation-for="CAP"></span>
+                    </div>
+                </div>*@
 
             <!-- ORARIO APERTURA -->
             <div class="row">
@@ -303,9 +305,10 @@
 
 
 @section Scripts{
-    <script src='~/js/moment.min.js'></script>
-    <script src="~/azure.fine-uploader/azure.fine-uploader.core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js" integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsApplicationConfiguration.Value.GoogleAPI.GoogleMapsAPIKey&libraries=places&language=it"></script>
+
     <script>
         var i18nTime = {
             cancel: 'Annulla',

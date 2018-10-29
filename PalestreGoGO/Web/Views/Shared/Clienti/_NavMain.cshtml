@@ -1,0 +1,80 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions;
+@using Web.Utils;
+
+<div class="navbar-fixed">
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-wrapper indigo">
+            <a href="#!" class="brand-logo r2d-nav-logo">
+                <img srcset="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H56.png 144w,
+                   https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H64.png 164w"
+                     sizes="(max-width: 600px) 144px,
+            164px"
+                     src="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H64.png">
+            </a>
+            <ul class="right r2d-nav-menu">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li>
+                        <a id="ddTrgNotifiche" href="#!" data-target="dropdwonNotifiche" class="dropdown-trigger waves-effect">
+                            <i class='material-icons large'>notifications</i>
+                        </a>
+                        <!-- TODO: Gestire le notifiche tramite PartialView separata-->
+                        <div id="dropdwonNotifiche" class="dropdown-content notifications" tabindex="0" style="">
+                            <div class="notifications-title" tabindex="0">notifications</div>
+                            <div class="card" tabindex="0">
+                                <div class="card-content">
+                                    <span class="card-title">Joe Smith made a purchase</span>
+                                    <p>Content</p>
+                                </div>
+                                <div class="card-action"><a href="#!">view</a><a href="#!">dismiss</a></div>
+                            </div>
+                            <div class="card" tabindex="0">
+                                <div class="card-content">
+                                    <span class="card-title">Daily Traffic Update</span>
+                                    <p>Content</p>
+                                </div>
+                                <div class="card-action"><a href="#!">view</a><a href="#!">dismiss</a></div>
+                            </div>
+                            <div class="card" tabindex="0">
+                                <div class="card-content">
+                                    <span class="card-title">New User Joined</span>
+                                    <p>Content</p>
+                                </div>
+                                <div class="card-action"><a href="#!">view</a><a href="#!">dismiss</a></div>
+                            </div>
+                        </div>
+                        <!-- FINE NOTIFICHE -->
+                    </li>
+
+                    <li>
+                        <a id="ddTrgAccount" href="#!" data-target="dropdwonAccount" class="dropdown-trigger waves-effect">
+                            <i class='material-icons large'>account_circle</i>
+                        </a>
+                        <ul id='dropdwonAccount' class='dropdown-content r2-nav-dropdwonAccount'>
+                            @*<li>
+                                    <a asp-action="Logout" asp-controller="Account">
+                                        <i class="material-icons large">edit</i>
+                                        Modifica Profilo
+                                    </a>
+                                </li>
+                                <li class="divider"></li>*@
+                            <li>
+                                <a asp-route="logout" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">
+                                    <i class="material-icons small">exit_to_app</i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()" class="waves-effect waves-light btn pink accent-2">Accedi</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+</div>

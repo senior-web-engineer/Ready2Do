@@ -98,10 +98,10 @@ namespace Web
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "logout",
-                    template: "logout",
-                    defaults: new { controller = "Account", action = "Logout" });
+                //routes.MapRoute(
+                //    name: "logout",
+                //    template: "logout",
+                //    defaults: new { controller = "Account", action = "Logout" });
                 routes.MapRoute(
                     name: "users",
                     template: "users/myprofile",

@@ -12,7 +12,7 @@ namespace PalestreGoGo.WebAPI.Utils
         {
             //TODO: Verificare come modellare questa info
             if (principal == null) return false;
-            if (principal.Claims.Any(c => c.Type.Equals(Constants.ClaimRole) && c.Value.Equals(Constants.RoleGlobalAdmin))) return true;
+            if (principal.Claims.Any(c => c.Type.Equals(Constants.ClaimGlobalAdmin) && c.Value.Equals(true.ToString(),StringComparison.InvariantCultureIgnoreCase))) return true;
             return false;
         }
         public static Guid? UserId(this ClaimsPrincipal principal)
@@ -27,17 +27,29 @@ namespace PalestreGoGo.WebAPI.Utils
         /*Ritorna una lista di IdClienti per cui il principal è l'owner*/
         public static IEnumerable<int> StructureOwned(this ClaimsPrincipal principal)
         {
+            List<int> result = new List<int>();
             if (principal == null) return null;
-            var clienti = principal.Claims.Where(c => c.Type.Equals(Constants.ClaimStructureOwned)).Select(c=>int.Parse(c.Value));
-            return clienti ;
+            var claim = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimStructureOwned));
+            if ((claim == null) || string.IsNullOrWhiteSpace(claim.Value)) return result;
+            foreach(var value in claim.Value.Split(','))
+            {
+                result.Add(int.Parse(value));
+            }
+            return result;
         }
 
         /*Ritorna una lista di IdClienti per cui il principal ha i permessi amministrativi */
         public static IEnumerable<int> StructureManaged(this ClaimsPrincipal principal)
         {
+            List<int> result = new List<int>();
             if (principal == null) return null;
-            var clienti = principal.Claims.Where(c => c.Type.Equals(Constants.ClaimStructureManaged)).Select(c => int.Parse(c.Value));
-            return clienti;
+            var claim = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimStructureManaged));
+            if ((claim == null) || string.IsNullOrWhiteSpace(claim.Value)) return result;
+            foreach (var value in claim.Value.Split(','))
+            {
+                result.Add(int.Parse(value));
+            }
+            return result;
         }
 
         public static bool CanEditTipologiche(this ClaimsPrincipal principal, int idCliente)

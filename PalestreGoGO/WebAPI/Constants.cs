@@ -16,10 +16,11 @@ namespace PalestreGoGo.WebAPI
         #region CLAIMS
         public const string ClaimRole = "role";
 
-        public const string ClaimGlobalAdmin = "role";
-        public const string ClaimStructureOwned = "structure_owned";
-        public const string ClaimStructureManaged = "structure_managed";
-        public const string ClaimStructureAffiliated = "structure_affiliated";
+        public const string ClaimGlobalAdmin = "extension_isGlobalAdmin";
+        public const string ClaimStructureOwned = "extension_struttureOwned";
+        public const string ClaimStructureManaged = "extension_struttureGestite";
+        public const string ClaimStructureAffiliated = "extension_refereer";
+        public const string ClaimAccountConfirmedOn = "extension_accountConfirmedOn";
 
         public const string ClaimMailConfirmed = "";
         public const string ClaimUserId = ClaimTypes.NameIdentifier; //"uid";

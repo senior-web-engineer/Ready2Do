@@ -65,7 +65,8 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Logout(string returnUrl = null)
+        [Route("/logout", Name ="logout")]
+        public async Task Logout(string returnUrl = null)
         {
             if (string.IsNullOrWhiteSpace(returnUrl))
             {
@@ -75,13 +76,9 @@ namespace Web.Controllers
             AuthenticationProperties props = new AuthenticationProperties()
             {
                 RedirectUri = returnUrl,
-            };           
-            SignOut(new string[]{
-                OpenIdConnectDefaults.AuthenticationScheme,
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                "AuthenticationTypes.Federation"
-            });
-            return Redirect(returnUrl);
+            };
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme, props);
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);            
         }
 
         //
@@ -208,6 +205,18 @@ namespace Web.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        //[HttpGet]
+        //public IActionResult UtenteEditProfile(string redirectUrl)
+        //{
+        //    if (string.IsNullOrWhiteSpace(redirectUrl))
+        //    {
+        //        redirectUrl = Url.Action(nameof(HomeController.Index), "Home");
+        //    }
+        //    var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        //    properties.Items[AzureAdB2COptions.PolicyAuthenticationProperty] = _b2cOptions. AzureAdB2COptions.EditProfilePolicyId;
+        //    return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+        //}
 
 
         [AllowAnonymous]

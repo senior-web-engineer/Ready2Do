@@ -86,6 +86,11 @@ namespace Web.Utils
 
     public static class ClaimsPrinciapalExtensions
     {
+        public static UserType GetUserTypeForCliente(this ClaimsPrincipal principal, string idCliente)
+        {
+            return principal.GetUserTypeForCliente(int.Parse(idCliente));
+        }
+
         public static UserType GetUserTypeForCliente(this ClaimsPrincipal principal, int idCliente)
         {
             if (principal == null) return UserType.Anonymous;
@@ -112,7 +117,7 @@ namespace Web.Utils
                     }
                 }
             }
-            if(principal.Claims.Any(c=>c.Type.Equals(Constants.ClaimRole) && c.Value.Equals(Constants.ROLE_GLOBAL_ADMIN)))
+            if(principal.Claims.Any(c=>c.Type.Equals(Constants.ClaimGlobalAdmin) && c.Value.Equals(true.ToString())))
             {
                 result = result | UserType.GlobalAdmin;
             }
@@ -136,6 +141,10 @@ namespace Web.Utils
             return null;
         }
 
+        public static bool CanViewSidebar(this ClaimsPrincipal principal, int idCliente)
+        {
+            return principal.Identity.IsAuthenticated && principal.GetUserTypeForCliente(idCliente).IsAtLeastAdmin();
+        }
 
     }
 }

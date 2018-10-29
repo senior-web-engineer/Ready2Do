@@ -46,7 +46,7 @@ namespace Web.Controllers
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, idCliente);
             var vm = new SchedulerViewModel();
             vm.Sale = await _apiClient.GetLocationsAsync(idCliente);
-            vm.IdActiveLocation = idActiveLocation ?? vm.Sale.First().Id;
+            vm.IdActiveLocation = idActiveLocation ?? vm.Sale.FirstOrDefault()?.Id;
             return View(vm);
         }
 

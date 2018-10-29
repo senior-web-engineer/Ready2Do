@@ -9,9 +9,10 @@ namespace Web
     public static class Constants
     {
 
-        public const string ClaimStructureOwned = "structure_owned";
-        public const string ClaimStructureManaged = "structure_managed";
-        public const string ClaimAccountConfirmedOn = "structure_managed";
+        public const string ClaimStructureOwned = "extension_struttureOwned";
+        public const string ClaimStructureManaged = "extension_struttureGestite";
+        public const string ClaimAccountConfirmedOn = "extension_accountConfirmedOn";
+        public const string ClaimGlobalAdmin = "extension_isGlobalAdmin";
         public const string ClaimRole = "role";
         public const string ClaimUserId = ClaimTypes.NameIdentifier;
         public const string ClaimPolicy = "tfp";

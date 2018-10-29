@@ -1,0 +1,38 @@
+﻿@*<div class="container ">*@
+    <a href="#" data-target="nav-mobile" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="sidenav sidenav-fixed grey darken-1">
+        <li>
+            <!-- spacer-->
+            <div class="r2d-sidenav-topspacer"></div>
+        </li>
+        <li>
+            <a class="white-text r2d-sidenav-item" asp-action="Index" asp-controller="Clienti">
+                Home
+            </a>
+        </li>
+        <li>
+            <a class="white-text r2d-sidenav-item" asp-action="ProfileEdit" asp-controller="Clienti">
+                Edita Dati Struttura
+            </a>
+        </li>
+        <li><a class="white-text r2d-sidenav-item" asp-action="Index" asp-controller="Scheduler">Gestione Calendari</a></li>
+        <li><a class="white-text r2d-sidenav-item" asp-action="GalleryEdit" asp-controller="Clienti">Gestione Immagini</a></li>
+        <li><a class="white-text r2d-sidenav-item" asp-action="Sale" asp-controller="Clienti">Gestione Sale</a></li>
+        <li><a class="white-text r2d-sidenav-item" asp-action="Lezioni" asp-controller="Clienti">Gestione Tipologie Lezioni</a></li>
+        <li><a class="white-text r2d-sidenav-item" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti">Gestione Tipologia Abbonamenti</a></li>
+        <li><a class="white-text r2d-sidenav-item" asp-action="GetUtentiCliente" asp-controller="Clienti">Gestione Utenti</a></li>
+        <li style="padding-top:20px;">
+            <div class="r2d-medium-rectangle">
+                <img src="https://dge4uaysoh8oy.cloudfront.net/public/templates/gallery/img/bx95bjcda/Toyota-Yaris-Banner-Template-Collection.jpg" alt="Toyota Yaris Banner Template Collection Medium Rectangle 300x250" style="opacity: 1; width: 300px; height: 250px;">
+            </div>
+        </li>
+    </ul>
+@*</div>*@
+
+<script>
+    /* Assume che JQuery sia già stato caricata */
+    $(document).ready(function () {
+        //INIT SIDENAV
+        $('.sidenav').sidenav();
+    });
+</script>
