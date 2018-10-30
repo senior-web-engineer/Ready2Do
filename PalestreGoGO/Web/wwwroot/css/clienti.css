@@ -30,9 +30,20 @@ main.r2d-no-padding {
 .r2d-sidenav-topspacer {
     height: 3rem;
 }
-/* Ridefiniamo lo stile degli item della sidenav*/
-.r2d-sidenav-item {
+
+.r2d-text-bold {
     font-weight: 700 !important;
+}
+/* Ridefiniamo lo stile degli item della sidenav*/
+.sidenav-fixed .collapsible .collapsible-header {
+    /* utiliziamo una maggiore specificità (3 classi) per fare l'override del padding di default*/
+    padding-left: 32px;
+}
+.sidenav .collapsible-body li a, .sidenav.fixed .collapsible-body li a .r2d-sidenav-item {
+    padding-left: 42px;
+}
+.r2d-sidenav-item {
+    /*font-weight: 700 !important;*/
 }
 
 .r2d-nav-logo {
@@ -92,6 +103,49 @@ main.r2d-no-padding {
     padding-bottom: 0.5rem;
     padding-top: 0.5rem;
 }
+
+/* STILI PAGINA PROFILO */
+
+#formEditProfile .input-field {
+    margin-top: 0px;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+/* STILI IMMAGINI  */
+.image_edit_container {
+    position: relative;
+}
+
+    .image_edit_container:hover .hero_edit_image {
+        opacity: 0.3;
+    }
+
+    .image_edit_container:hover .image_edit_btn {
+        opacity: 1;
+    }
+
+.hero_edit_image {
+    opacity: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: .5s ease;
+    backface-visibility: hidden;
+}
+
+.image_edit_btn {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+/* FINE STILI IMMIGINI */
 
 /********************* VECCHI STILI ****************/
 .flex-caption {

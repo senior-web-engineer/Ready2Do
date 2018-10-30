@@ -46,15 +46,6 @@
         {
             <partial name="_SideNav" view-data="ViewData" />
         }
-        else
-        {
-            <script>
-                //$(document).ready(function () {
-                //    //Se non è visibile la Sidebar rimuoviamo il padding a sinistra
-                //    $("main").css("padding-left", "0");
-                //});
-            </script>
-        }
     </header>
     <main class="@(@User.CanViewSidebar((int)ViewData["IdCliente"]) ? "r2d-nav-padding " : "r2d-no-padding ")">
         <div class="container">
