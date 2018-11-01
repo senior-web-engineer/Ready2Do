@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -14,6 +14,84 @@
     <Content Include="Controllers\EventiController.cs" />
     <Content Include="Controllers\HomeController.cs" />
     <Content Include="Controllers\SchedulerController.cs" />
+    <Content Include="wwwroot-src\app.js" />
+    <Content Include="wwwroot-src\css\clienti.scss" />
+    <Content Include="wwwroot-src\css\custom-styles.css" />
+    <Content Include="wwwroot-src\css\intro.css" />
+    <Content Include="wwwroot-src\css\style.css" />
+    <Content Include="wwwroot-src\materialize-src\js\anime.min.js" />
+    <Content Include="wwwroot-src\materialize-src\js\autocomplete.js" />
+    <Content Include="wwwroot-src\materialize-src\js\bin\materialize.js" />
+    <Content Include="wwwroot-src\materialize-src\js\bin\materialize.min.js" />
+    <Content Include="wwwroot-src\materialize-src\js\buttons.js" />
+    <Content Include="wwwroot-src\materialize-src\js\cards.js" />
+    <Content Include="wwwroot-src\materialize-src\js\carousel.js" />
+    <Content Include="wwwroot-src\materialize-src\js\cash.js" />
+    <Content Include="wwwroot-src\materialize-src\js\characterCounter.js" />
+    <Content Include="wwwroot-src\materialize-src\js\chips.js" />
+    <Content Include="wwwroot-src\materialize-src\js\collapsible.js" />
+    <Content Include="wwwroot-src\materialize-src\js\component.js" />
+    <Content Include="wwwroot-src\materialize-src\js\datepicker.js" />
+    <Content Include="wwwroot-src\materialize-src\js\dropdown.js" />
+    <Content Include="wwwroot-src\materialize-src\js\forms.js" />
+    <Content Include="wwwroot-src\materialize-src\js\global.js" />
+    <Content Include="wwwroot-src\materialize-src\js\materialbox.js" />
+    <Content Include="wwwroot-src\materialize-src\js\modal.js" />
+    <Content Include="wwwroot-src\materialize-src\js\parallax.js" />
+    <Content Include="wwwroot-src\materialize-src\js\pushpin.js" />
+    <Content Include="wwwroot-src\materialize-src\js\range.js" />
+    <Content Include="wwwroot-src\materialize-src\js\scrollspy.js" />
+    <Content Include="wwwroot-src\materialize-src\js\select.js" />
+    <Content Include="wwwroot-src\materialize-src\js\sidenav.js" />
+    <Content Include="wwwroot-src\materialize-src\js\slider.js" />
+    <Content Include="wwwroot-src\materialize-src\js\tabs.js" />
+    <Content Include="wwwroot-src\materialize-src\js\tapTarget.js" />
+    <Content Include="wwwroot-src\materialize-src\js\timepicker.js" />
+    <Content Include="wwwroot-src\materialize-src\js\toasts.js" />
+    <Content Include="wwwroot-src\materialize-src\js\tooltip.js" />
+    <Content Include="wwwroot-src\materialize-src\js\waves.js" />
+    <Content Include="wwwroot-src\materialize-src\LICENSE" />
+    <Content Include="wwwroot-src\materialize-src\README.md" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_checkboxes.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_file-input.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_forms.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_input-fields.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_radio-buttons.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_range.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_select.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\forms\_switches.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_badges.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_buttons.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_cards.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_carousel.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_chips.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_collapsible.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_color-classes.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_color-variables.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_datepicker.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_dropdown.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_global.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_grid.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_icons-material-design.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_materialbox.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_modal.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_navbar.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_normalize.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_preloader.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_pulse.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_sidenav.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_slider.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_table_of_contents.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_tabs.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_tapTarget.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_timepicker.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_toast.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_tooltip.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_transitions.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_typography.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_variables.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\components\_waves.scss" />
+    <Content Include="wwwroot-src\materialize-src\sass\materialize.scss" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +103,10 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\dist\js.bundle.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,4 +128,34 @@
     </Content>
   </ItemGroup>
 
+  <!-- Gestione WEBPACK -->
+  <Target Name="CleanupWebpack" BeforeTargets="Clean">
+    <Message Importance="high" Text="Cleaning wwwroot/dist folder" />
+    <RemoveDir Directories="wwwroot/dist" />
+  </Target>
+  
+  <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug'">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <!-- Cancellazio -->
+    <!--<Exec Command="node node_modules/webpack/bin/webpack.js ==config webpack.config.vendor.js" />-->
+    <Exec ConsoleToMsBuild="true" Command="node node_modules/webpack/bin/webpack.js --mode=development --config webpack.config.js" />
+  </Target>
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec Command="npm install" />
+    <!-- <Exec Command="node node_modules/webpack/bin/webpack.js ==config webpack.config.vendor.js ==env.prod" />-->
+    <Exec Command="node node_modules/webpack/bin/webpack.js --mode=production --config webpack.config.js" />
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="wwwroot\dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 </Project>
