@@ -106,10 +106,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\dist\js.bundle.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WebAPIModel\WebAPIModel.csproj" />
   </ItemGroup>
 
@@ -120,12 +116,28 @@
     <Content Update="appsettings.Production.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <Content Update="Views\ProfiloCliente\BannerEdit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\ProfiloCliente\Profilo.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Shared\Clienti\_SideNav.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Shared\Components\SideNav\Default.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Shared\_Banner_MezzaPagina.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_Banner_RettangoloMedio.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 
   <!-- Gestione WEBPACK -->

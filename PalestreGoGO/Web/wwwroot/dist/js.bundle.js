@@ -162,7 +162,7 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./materialize-src/sass/materialize.scss */ \"./wwwroot-src/materialize-src/sass/materialize.scss\");\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/clienti.scss */ \"./wwwroot-src/css/clienti.scss\");\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_clienti_scss__WEBPACK_IMPORTED_MODULE_1__);\n\n\n\n__webpack_require__(/*! ./js/ready2do */ \"./wwwroot-src/js/ready2do.js\");\n\n//# sourceURL=webpack:///./wwwroot-src/app.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./materialize-src/sass/materialize.scss */ \"./wwwroot-src/materialize-src/sass/materialize.scss\");\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/global-format.scss */ \"./wwwroot-src/css/global-format.scss\");\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./css/clienti.scss */ \"./wwwroot-src/css/clienti.scss\");\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__);\n\n\n\n\n__webpack_require__(/*! ./js/ready2do */ \"./wwwroot-src/js/ready2do.js\");\n\n//# sourceURL=webpack:///./wwwroot-src/app.js?");
 
 /***/ }),
 
@@ -174,6 +174,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mat
 /***/ (function(module, exports, __webpack_require__) {
 
 eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwroot-src/css/clienti.scss?");
+
+/***/ }),
+
+/***/ "./wwwroot-src/css/global-format.scss":
+/*!********************************************!*\
+  !*** ./wwwroot-src/css/global-format.scss ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwroot-src/css/global-format.scss?");
 
 /***/ }),
 

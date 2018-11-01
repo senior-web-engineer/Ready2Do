@@ -6525,6 +6525,9 @@ input[type=range]::-ms-thumb {
     text-align: center;
     margin-top: 1.2rem; } }
 
+.r2d-margin-top-neg-20 {
+  margin-top: -20px; }
+
 @charset "UTF-8";
 /* La pagina principale è spostata 300px a destra per lasciare spazio alla sidebar */
 main.r2d-nav-padding {
@@ -6549,6 +6552,12 @@ main.r2d-no-padding {
 
 .r2d-sidenav-topspacer {
   height: 3rem; }
+
+.r2d-actionset-v {
+  display: flex;
+  align-items: center; }
+  .r2d-actionset-v ul li {
+    padding-top: 4px; }
 
 .r2d-text-bold {
   font-weight: 700 !important; }
@@ -6611,6 +6620,9 @@ main.r2d-no-padding {
 .adsbanner_container {
   padding-bottom: 0.5rem;
   padding-top: 0.5rem; }
+
+.r2d-banner-leaderboard {
+  text-align: center; }
 
 /* STILI PAGINA PROFILO */
 #formEditProfile .input-field {

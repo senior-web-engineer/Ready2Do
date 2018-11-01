@@ -1,0 +1,322 @@
+﻿@model ClienteHeaderViewModel;
+@{
+    Layout = "_LayoutClienti";
+}
+
+<head>
+    @section Header{
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/fine-uploader-new.min.css"
+              integrity="sha256-I65PS+dIV5Bb65cOVYVn3UAbVeTONYAFwkkJPcPXNGI=" crossorigin="anonymous" />
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css"
+              integrity="sha256-d2pK8EVd0fI3O9Y+/PYWrCfAZ9hyNvInLoUuD7qmWC8=" crossorigin="anonymous" />
+
+        <style>
+            .img-container,
+            .img-preview {
+                /* background-color: #e8eaf6; */
+                text-align: center;
+                width: 100%;
+            }
+
+            .img-container {
+                margin-bottom: 1rem;
+                height: 120px;
+            }
+
+                .img-container > img {
+                    width: 100%;
+                }
+
+
+          
+            .img-preview {
+                /*float: left;*/
+                margin-bottom: .5rem;
+                margin-right: .5rem;
+                overflow: hidden;
+            }
+
+            .actual-banner {
+                max-height: 120px;
+                width: 100%;
+            }
+
+            .img-preview > img {
+                max-width: 100%;
+            }
+
+            .preview-lg {
+                height: 90px;
+                width: 90%;
+            }
+
+            .preview-md {
+                height: 4.5rem;
+                width: 8rem;
+            }
+
+            .preview-sm {
+                height: 2.25rem;
+                width: 4rem;
+            }
+
+            .preview-xs {
+                height: 1.125rem;
+                margin-right: 0;
+                width: 2rem;
+            }
+
+            .col .row.r2d-inner-row {
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            r2d-margin
+        </style>
+    }
+</head>
+
+
+
+<section id="editBanner">
+    @*<input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />*@
+    <form asp-controller="ProfiloCliente" asp-action="SaveBanner" method="post" id="formEditBanner">
+        <input type="hidden" asp-for="IdCliente" />
+        <div class="row center">
+            <h3>Modifica banner</h3>
+        </div>
+        <!-- BANNER ATTUALE -->
+        <div class="row">
+            <div class="col s2 offset-s1">
+                <span class="r2d-label">Banner Attuale:</span>
+            </div>
+            <div class="col s8">
+                <div class="docs-preview clearfix">
+                    <div class="">
+                        <img class="actual-banner" src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s2 offset-s1">
+                <span class="r2d-label">Selezione Immagine</span>
+            </div>
+            <div class="col s8 ">
+                <div class="row r2d-inner-row">
+                    <div class="img-container grey lighten-4">
+                        <img id="imgToCrop" alt="Caricare l'immagine da utilizzare come banner" crossorigin>
+                    </div>
+                    <div class="row center">
+                        <label class="waves-effect waves-light btn-small r2d-margin-top-neg-20" onclick="">
+                            <input id="fileSelect" type="file" accept="image/*" style="display:none" />
+                            <i class="material-icons left">file_upload</i>Carica Immagine
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- PREVIEW -->
+        @*<div class="row valign-wrapper">
+            <div class="col s2 offset-s1">
+                <span class="r2d-label">Anteprima</span>
+            </div>
+            <div class="col s8">
+                <div class="docs-preview clearfix">
+                    <div class="img-preview preview-lg"></div>
+                </div>
+            </div>
+        </div>*@
+
+        <div class="row">
+            <div class="input-field col s10 offset-s1 center">
+                <input type="button" class="btn waves-effect waves-light" id="btnPublishImage">
+                    Pubblica Modifiche
+                    <i class="material-icons right">cloud_upload</i>
+                </inputbutton>
+            </div>
+        </div>
+    </form>
+</section>
+
+<!-- Secondo banner pubblicitario -->
+@*<section id="banner2">
+        <div class="container">
+            <div class="row center-align">
+                <div class="adsbanner_container">
+                    <img src="~/img/placeholders/google/leaderboard_728x90.png" />
+                </div>
+            </div>
+        </div>
+    </section>*@
+
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js"
+            integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"
+            integrity="sha256-xqnUCb6f1p7h5IqwwOJ7kHsGm9bRUgsrUe3VQNuqzUE=" crossorigin="anonymous"></script>
+    <!-- CROPPER SCRIPT-->
+    <script>
+        window.onload = function () {
+            'use strict';
+            var Cropper = window.Cropper;
+            var URL = window.URL || window.webkitURL;
+            var container = document.querySelector('.img-container');
+            var image = document.getElementById('imgToCrop');
+
+            var options = {
+                //aspectRatio: 16 / 9,
+                preview: '.img-preview',
+                ready: function (e) {
+                    console.log(e.type);
+                },
+                cropstart: function (e) {
+                    console.log(e.type, e.detail.action);
+                },
+                cropmove: function (e) {
+                    console.log(e.type, e.detail.action);
+                },
+                cropend: function (e) {
+                    console.log(e.type, e.detail.action);
+                },
+                crop: function (e) {
+                    var data = e.detail;
+
+                    console.log(e.type);
+                    //dataX.value = Math.round(data.x);
+                    //dataY.value = Math.round(data.y);
+                    //dataHeight.value = Math.round(data.height);
+                    //dataWidth.value = Math.round(data.width);
+                    //dataRotate.value = typeof data.rotate !== 'undefined' ? data.rotate : '';
+                    //dataScaleX.value = typeof data.scaleX !== 'undefined' ? data.scaleX : '';
+                    //dataScaleY.value = typeof data.scaleY !== 'undefined' ? data.scaleY : '';
+                },
+                zoom: function (e) {
+                    console.log(e.type, e.detail.ratio);
+                }
+            };
+
+            var cropper = new Cropper(image, options);
+            var originalImageURL = image.src;
+            var uploadedImageType = 'image/jpeg';
+            var uploadedImageName = '@(Model.ImmagineHome!= null?Model.ImmagineHome.Caption : "")';
+            var uploadedImageURL;
+
+            document.body.onkeydown = function (event) {
+                var e = event || window.event;
+
+                if (e.target !== this || !cropper || this.scrollTop > 300) {
+                    return;
+                }
+
+                switch (e.keyCode) {
+                    case 37:
+                        e.preventDefault();
+                        cropper.move(-1, 0);
+                        break;
+
+                    case 38:
+                        e.preventDefault();
+                        cropper.move(0, -1);
+                        break;
+
+                    case 39:
+                        e.preventDefault();
+                        cropper.move(1, 0);
+                        break;
+
+                    case 40:
+                        e.preventDefault();
+                        cropper.move(0, 1);
+                        break;
+                }
+            };
+
+            // Import image
+            var inputImage = document.getElementById('fileSelect');
+
+            if (URL) {
+                inputImage.onchange = function () {
+                    var files = this.files;
+                    var file;
+
+                    if (cropper && files && files.length) {
+                        file = files[0];
+
+                        if (/^image\/\w+/.test(file.type)) {
+                            uploadedImageType = file.type;
+                            uploadedImageName = file.name;
+
+                            if (uploadedImageURL) {
+                                URL.revokeObjectURL(uploadedImageURL);
+                            }
+
+                            image.src = uploadedImageURL = URL.createObjectURL(file);
+                            cropper.destroy();
+                            cropper = new Cropper(image, options);
+                            inputImage.value = null;
+                        } else {
+                            window.alert('Please choose an image file.');
+                        }
+                    }
+                };
+            }
+
+            //Upload Image
+            var uploader = new qq.azure.FineUploaderBasic({
+            autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+            debug: true,
+            multiple: false,
+            cors: {
+                allowXdr: false,
+                expected: true,
+                sendCredentials: false
+            },
+            request: {
+                endpoint: "@ViewBag.ContainerUrl"
+            },
+            signature: {
+                endpoint: "/api/fileupload",
+                customHeaders: {
+                    "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
+                }
+            },
+            callbacks: {
+                onComplete: function uploadComplete(id, name, response, xhr) {
+                    let containerUrl = "@ViewBag.ContainerUrl";
+                    if (response.success === true) {
+                        let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
+                        document.getElementById('urlImageHome').value = fullUrl;
+                        document.getElementById('imgHeroEdit').src = fullUrl;
+                        document.getElementById('idImageHome').value = -1;
+                        console.log("New Hero image uploaded to: " + fullUrl);
+                    }
+                    else {
+                        let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
+                        console.log(message);
+                        alert(message);
+
+                    }
+                }
+            }
+
+            });
+
+            var btnUplod = document.getElementById('btnPublishImage');
+            btnUplod.onclick = function (event) {
+                let cropper = $('#imgToCrop').data('cropper');
+                let canvas = cropper('getCroppedCanvas');
+
+                //var canvas = cropper.getCroppedCanvas();
+                if (canvas) {
+                    canvas.toBlob((blob) => {
+                        uploader.reset();
+                        uploader.addFiles([blob]);
+                    })
+                }
+            }
+        }
+    </script>
+}

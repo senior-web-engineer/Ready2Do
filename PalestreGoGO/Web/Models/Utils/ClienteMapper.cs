@@ -203,5 +203,25 @@ namespace Web.Models.Utils
             };
         }
 
+
+        public static ClienteHeaderViewModel MapToClienteHeaderVM(this ClienteWithImagesViewModel model)
+        {
+            if (model == null) { throw new ArgumentNullException(nameof(model)); }
+            var result = new ClienteHeaderViewModel()
+            {
+                IdCliente = model.IdCliente,
+                ImmagineHome = new ImageViewModel()
+                {
+                    Alt = model.ImmagineHome?.Alt,
+                    Caption = model.ImmagineHome?.Nome,
+                    Id = model.ImmagineHome?.Id,
+                    Ordinamento = (model.ImmagineHome?.Ordinamento) ?? 0,
+                    Url = model.ImmagineHome?.Url
+                }
+            };
+
+            return result;
+        }
+
     }
 }

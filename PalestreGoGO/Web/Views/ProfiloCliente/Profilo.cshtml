@@ -1,0 +1,420 @@
+﻿@using Microsoft.Extensions.Options;
+@using Web.Configuration;
+
+@model ClienteProfileEditViewModel;
+@inject IOptions<AppConfig> OptionsApplicationConfiguration
+
+@{
+    Layout = "_LayoutClienti";
+}
+<head>
+    @section Header{
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/fine-uploader-new.min.css" integrity="sha256-I65PS+dIV5Bb65cOVYVn3UAbVeTONYAFwkkJPcPXNGI=" crossorigin="anonymous" />
+    }
+</head>
+
+<!-- Primo banner pubblicitario -->
+<section id="banner1">
+    <div class="row center-align">
+        <div class="adsbanner_container">
+            <img src="~/img/placeholders/google/leaderboard_728x90.png" />
+        </div>
+    </div>
+</section>
+
+<section id="editProfile">
+    <div class="container">
+        <input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />
+        <form asp-action="ProfileEdit" method="post" id="formEditProfile">
+            <input id="esitoLookup" type="hidden" asp-for="EsitoLookup" />
+            <input type="hidden" asp-for="IdCliente" />
+            <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
+            <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
+            <input id="inputCitta" type="hidden" asp-for="Citta" />
+            <input id="inputCountry" type="hidden" asp-for="Country" />
+            <input id="inputCAP" type="hidden" asp-for="CAP" />
+
+            <div class="row">
+                <div class="col s4">Immagine: </div>
+                <div class="col s3 offset-s1">
+                    <div class="image_edit_container">
+                        <input id="urlImageHome" type="hidden" asp-for="ImmagineHome.Url" />
+                        <input id="idImageHome" type="hidden" asp-for="ImmagineHome.Id" />
+                        <img id="imgHeroEdit" src='@(Model.ImmagineHome?.Url ?? "/img/no-image-available.png")' alt="@Model.ImmagineHome?.Alt" class="hero_edit_image" />
+                        <div>
+                            <a class="image_edit_btn waves-effect waves-light btn-small" onclick="choseImage(this)"><i class="material-icons">edit</i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-field col s9 offset-s1">
+                    <!-- TODO: Implementare upload immagine Home-->
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col s10 offset-s1 center-align">
+                    <h6>Modifica Anagrafica</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="text" asp-for="Nome" />
+                    <label asp-for="Nome"></label>
+                    <span asp-validation-for="Nome"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="email" asp-for="Email" readonly />
+                    <label asp-for="Email"></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="text" asp-for="RagioneSociale" />
+                    <label asp-for="RagioneSociale"></label>
+                    <span asp-validation-for="RagioneSociale"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input type="tel" asp-for="NumTelefono" />
+                    <label asp-for="NumTelefono"></label>
+                    <span asp-validation-for="NumTelefono"></span>
+                </div>
+            </div>
+            @*<div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <textarea asp-for="Descrizione" rows="5" class="materialize-textarea"></textarea>
+                        <label asp-for="Descrizione"></label>
+                        <span asp-validation-for="Descrizione"></span>
+                    </div>
+                </div>*@
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input id="addressAutocomplete" type="text" asp-for="Indirizzo" />
+                    <label asp-for="Indirizzo"></label>
+                    <span asp-validation-for="Indirizzo"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                @*<div class="col-md-2"></div>
+                    <div class="col-md-8">*@
+                <div class="center">
+                    <img id="imgMap" class="responsive-img" src="@ViewBag.MapUrl" />
+                </div>
+                @*<div class="col-md-2"></div>*@
+            </div>
+
+            @*<div class="row">
+                    <div class="input-field col s6 offset-s1">
+                        <input type="text" asp-for="Citta" />
+                        <label asp-for="Citta"></label>
+                        <span asp-validation-for="Citta"></span>
+                    </div>
+                    <div class="input-field col s4">
+                        <input type="text" asp-for="CAP" />
+                        <label asp-for="CAP"></label>
+                        <span asp-validation-for="CAP"></span>
+                    </div>
+                </div>*@
+
+            <!-- ORARIO APERTURA -->
+            <div class="row">
+                <div class="col s10 offset-s1 center-align">
+                    <h6>Orario Apartura</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s1 offset-s1"><span>Giorno</span></div>
+                <div class="col s2 center-align"><span>Mattina</span></div>
+                <div class="col s2 center-align"><span>Pomeriggio</span></div>
+                <div class="col s8"></div>
+            </div>
+            <div class="row" id="orarioLunVen">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Lun. - Ven.</span>
+                </div>
+                <div class="col s1 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.LunVen.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field" disableOnOrarioCont="true">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.LunVen.Mattina.Fine">Alle</label>
+                </div>
+                <div class="col s1 input-field" disableOnOrarioCont="true">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Fine">Alle</label>
+                </div>
+                <div class="col s3 input-field">
+                    <label for="lunediContinuativo">
+                        <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioLunVen')" />
+                        <span>Orario Continuato</span>
+                    </label>
+                </div>
+                <div class="col s3 input-field">
+                    <label for="lunediChiuso">
+                        <input id="lunediChiuso" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsChiuso" onchange="checkChiusoChanged(this, 'orarioLunVen')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row" id="orarioSabato">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Sabato</span>
+                </div>
+                <div class="col s1 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field" disableOnOrarioCont="true">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Mattina.Fine">Alle</label>
+                </div>
+                <div class="col s1 input-field" disableOnOrarioCont="true">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine">Alle</label>
+                </div>
+                <div class="col s3 input-field">
+                    <label for="sabatoContinuativo">
+                        <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioSabato')" />
+                        <span>Orario Continuato</span>
+                    </label>
+                </div>
+                <div class="col s3 input-field">
+                    <label for="sabatoChiuso">
+                        <input id="sabatoChiuso" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsChiuso" onchange="checkChiusoChanged(this, 'orarioSabato')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row" id="orarioDomenica">
+                <div class="col s1 right-align offset-s1 mt-10">
+                    <span>Domenica</span>
+                </div>
+                <div class="col s1 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Mattina.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field" disableOnOrarioCont="true">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Mattina.Fine" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Mattina.Fine">Alle</label>
+                </div>
+                <div class="col s1 input-field" disableOnOrarioCont="true">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Inizio">Dalle</label>
+                </div>
+                <div class="col s1 input-field">
+                    <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine" />
+                    <label asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine">Alle</label>
+                </div>
+                <div class="col s3 input-field">
+                    <label for="domenicaContinuativo">
+                        <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioDomenica')" />
+                        <span>Orario Continuato</span>
+                    </label>
+                </div>
+                <div class="col s3 input-field">
+                    <label for="domenicaChiuso">
+                        <input id="domenicaChiuso" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsChiuso" onchange="checkChiusoChanged(this, 'orarioDomenica')" />
+                        <span>Chiuso tutto il giorno</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1 center">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">
+                        Salva
+                        <i class="material-icons right">save</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Secondo banner pubblicitario -->
+<section id="banner2">
+    <div class="container">
+        <div class="row center-align">
+            <div class="adsbanner_container">
+                <img src="~/img/placeholders/google/leaderboard_728x90.png" />
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js" integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@OptionsApplicationConfiguration.Value.GoogleAPI.GoogleMapsAPIKey&libraries=places&language=it"></script>
+
+    <script>
+        var i18nTime = {
+            cancel: 'Annulla',
+            clear: 'Cancella',
+            done: 'Ok'
+        };
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var elems = document.getElementsByClassName('timepicker');
+            var instances = [];
+            for (i = 0; i < elems.length; i++) {
+                var instance = M.Timepicker.init(elems[i], {
+                    twelveHour: false,
+                    i18n: i18nTime
+                });
+                instance.time = elems[i].value;
+                instances.push(instance);
+            }
+        });
+
+        /// GOOGLE AUTOCOMPLETE ///
+        var input = document.getElementById('addressAutocomplete');
+        var options = {
+            type: ['(address)'],
+            componentRestrictions: { country: 'it' }
+        };
+
+        autocomplete = new google.maps.places.Autocomplete(input, options);
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+            debugger;
+            if (place.geometry) {
+                document.getElementById('esitoLookup').value = 1;
+                document.getElementById('inputLatitudine').value = place.geometry.location.lat();
+                document.getElementById('inputLongitudine').value = place.geometry.location.lng();
+
+                var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
+                if (tmp) {
+                    document.getElementById('inputCAP').value = tmp.long_name;
+                }
+                tmp = place.address_components.find(function (c) { return c.types[0] === "locality"; });
+                if (tmp) {
+                    document.getElementById('inputCountry').value = tmp.long_name;
+                }
+                tmp = place.address_components.find(function (c) { return c.types[0] === "administrative_area_level_1"; });
+                if (tmp) {
+                    document.getElementById('inputCitta').value = tmp.long_name;
+                }
+                //Dobbiamo rieseguire la validazione perché quando arriva qui è già stata eseguita con i valori "errati"
+                $("#formEditProfile").validate().element("#addressAutocomplete");
+            } else {
+                document.getElementById('esitoLookup').value = 0;
+            }
+        });
+
+        function checkChiusoChanged(check, divParent) {
+            if (check.checked) {
+                $("#" + divParent + " :input").attr("disabled", true);
+            } else {
+                $("#" + divParent + " :input").attr("disabled", false);
+            }
+            check.disabled = false;
+        }
+
+        function checkContinuativoChanged(check, divParent) {
+            if (check.checked) {
+                $("#" + divParent + " [disableOnOrarioCont] :input").attr("disabled", true);
+                $("#" + divParent + " [disableOnOrarioCont]").hide();
+            } else {
+                $("#" + divParent + " [disableOnOrarioCont] :input").attr("disabled", false);
+                $("#" + divParent + " [disableOnOrarioCont]").show();
+            }
+            check.disabled = false;
+        }
+
+        @*function uploadFile(file, idx) {
+            uploaders[0].addFiles(file, { fileOrder: idx });
+        }
+
+
+
+        var uploaders = [];
+
+
+        }));*@
+
+        var btnFileSelect = document.getElementById('fileSelect');
+        var uploader = new qq.azure.FineUploaderBasic({
+            autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+            debug: true,
+            multiple: false,
+            cors: {
+                allowXdr: false,
+                expected: true,
+                sendCredentials: false
+            },
+            request: {
+                endpoint: "@ViewBag.ContainerUrl"
+            },
+            signature: {
+                endpoint: "/api/fileupload",
+                customHeaders: {
+                    "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
+                }
+            },
+            callbacks: {
+                onComplete: function uploadComplete(id, name, response, xhr) {
+                    let containerUrl = "@ViewBag.ContainerUrl";
+                    if (response.success === true) {
+                        let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
+                        document.getElementById('urlImageHome').value = fullUrl;
+                        document.getElementById('imgHeroEdit').src = fullUrl;
+                        document.getElementById('idImageHome').value = -1;
+                        console.log("New Hero image uploaded to: " + fullUrl);
+                    }
+                    else {
+                        let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
+                        console.log(message);
+                        alert(message);
+
+                    }
+                }
+            }
+
+        });
+
+        function choseImage(e) {
+            let selectedFile;
+            if (btnFileSelect) {
+                btnFileSelect.click()
+            }
+            return false;
+        }
+
+        function handleFiles(files) {
+            @*var baseContainerUrl = "@ViewBag.ContainerUrl";*@
+            if (files) {
+                uploader.reset();
+                uploader.addFiles(files[0]);
+            }
+        }
+
+    </script>
+    <!-- Scrip per la validazione dell'inidirizzo -->
+    <script>
+        $(function () {
+            $.validator.addMethod('googleaddress', function (value, element, params) {
+                $.validator.messages.googleaddress = "E' necessario selezionare un indirizzo tra quelli proposti";
+                return $(params).val() == 1;
+            });
+
+            $.validator.unobtrusive.adapters.add('googleaddress', ['esitolookupField'], function (options) {
+                options.rules['googleaddress'] = '#esitoLookup';// + options.params.esitolookupField;
+                options.messages['googleaddress'] = options.message;
+            });
+        }(jQuery));
+    </script>
+}

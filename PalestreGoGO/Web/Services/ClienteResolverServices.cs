@@ -34,6 +34,13 @@ namespace Web.Services
             return $"IdCliente-{idCliente}";
         }
 
+        public int? TryGetIdClienteFromRoute(string clienteRoute)
+        {
+            int? idCliente;
+            _cache.TryGetValue(clienteRoute, out idCliente);            
+            return idCliente;
+        }
+
         public async Task<int> GetIdClienteFromRouteAsync(string clienteRoute)
         {
             int idCliente;

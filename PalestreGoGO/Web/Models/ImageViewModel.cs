@@ -12,5 +12,7 @@ namespace Web.Models
         public string Alt { get; set; }
         public string Caption { get; set; }
         public int Ordinamento { get; set; }
+        public string ContentType { get; set; }
+
     }
 }

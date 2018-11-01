@@ -31,6 +31,16 @@ main.r2d-no-padding {
     height: 3rem;
 }
 
+.r2d-actionset-v {
+    display: flex;
+    align-items: center;
+    ul {
+        li{
+            padding-top: 4px;
+        }
+    }
+}
+
 .r2d-text-bold {
     font-weight: 700 !important;
 }
@@ -105,8 +115,15 @@ main.r2d-no-padding {
     padding-top: 0.5rem;
 }
 
-/* STILI PAGINA PROFILO */
+.r2d-banner-leaderboard{
+    text-align: center;
+}
 
+.r2d-banner-mezzapagina{
+
+}
+
+/* STILI PAGINA PROFILO */
 #formEditProfile .input-field {
     margin-top: 0px;
 }
