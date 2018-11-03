@@ -3,7 +3,7 @@
 	[Id]			INT				NOT NULL IDENTITY(1,1),
 	[IdCliente]		INT				NOT NULL,
 	[Nome]			NVARCHAR(100)	NOT NULL,
-	[Descrizione]	NVARCHAR(100)	NOT NULL,
+	[Descrizione]	NVARCHAR(MAX)	NULL,
 	[CapienzaMax]	SMALLINT		NULL,
 	
 	CONSTRAINT PK_Locations PRIMARY KEY (Id),

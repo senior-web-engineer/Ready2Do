@@ -43,7 +43,6 @@ namespace Web.Controllers
         #region Gestione Tipologie Abbonamenti
 
         [HttpGet("{cliente}/abbonamenti/tipologie/checkname")]
-        //[AllowAnonymous]
         [Produces("application/json")]
         public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name ="Nome")]string nomeAbbonamento)
         {
@@ -77,13 +76,15 @@ namespace Web.Controllers
             ViewData["IdCliente"] = idCliente;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             var abbonamenti= (await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente,accessToken)).MapToWebViewModel();
-            return View("TipologieAbbonamenti", abbonamenti.ToList());
+            return View("ListaTipologieAbbonamenti", abbonamenti.ToList());
         }
 
         [HttpGet("{cliente}/abbonamenti/tipologie/new")]
-        public async Task<IActionResult> TipoAbbonamentoAdd([FromRoute(Name = "cliente")]string urlRoute)
+        public async Task<IActionResult> TipoAbbonamentoNew([FromRoute(Name = "cliente")]string urlRoute)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            ViewData["IdCliente"] = idCliente;
+            ViewData["Title"] = "Nuovo tipo bbonamento";
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -105,6 +106,7 @@ namespace Web.Controllers
                 return Forbid();
             }
             ViewData["IdCliente"] = idCliente;
+            ViewData["Title"] = "Modifica tipo abbonamento";
             Models.TipologiaAbbonamentoViewModel tipologiaAbbonamento = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idTipoAbbonamento > 0)
@@ -140,7 +142,7 @@ namespace Web.Controllers
             return RedirectToAction("TipoAbbonamenti");
         }
 
-        [HttpGet("{cliente}/abbonamenti/tipologie/{id}/delete")]
+        [HttpGet("{cliente}/abbonamenti/tipologie/delete/{id}")]
         public async Task<IActionResult> TipoAbbonamentoDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")] int idTipoAbbonamento)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);

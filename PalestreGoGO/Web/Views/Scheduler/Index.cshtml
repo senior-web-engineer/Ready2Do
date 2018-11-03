@@ -1,8 +1,8 @@
 ﻿@model SchedulerViewModel;
-
 @{
     Layout = "_LayoutClienti";
 }
+
 @section Header{
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
     <style>
@@ -24,30 +24,25 @@
     </style>
 }
 
-
-@Html.Partial("_MenuCliente", ViewData["IdCliente"])
-@*<input type="hidden" id="token" value="@ViewBag.AuthToken"/>*@
-<div class="container">
-    <!-- TABS SALE-->
-    <div class="row">
-        <div class="col s12">
-            <ul id="tabsContainer" class="tabs">
-                @foreach (var s in Model.Sale)
-                {
-                    <li class="tab col s3">
-                        <a target="_self" asp-action="Index" asp-route-lid="@s.Id" class='@(Model.IdActiveLocation.HasValue && Model.IdActiveLocation.Value.Equals(s.Id) ? "active": "")'>
-                            @(s.Nome)
-                        </a>
-                    </li>
-                }
-            </ul>
-        </div>
+<!-- TABS SALE-->
+<div class="row">
+    <div class="col s12">
+        <ul id="tabsContainer" class="tabs">
+            @foreach (var s in Model.Sale)
+            {
+                <li class="tab col s3">
+                    <a target="_self" asp-action="Index" asp-route-lid="@s.Id" class='@(Model.IdActiveLocation.HasValue && Model.IdActiveLocation.Value.Equals(s.Id) ? "active": "")'>
+                        @(s.Nome)
+                    </a>
+                </li>
+            }
+        </ul>
     </div>
-    <div>
-        <input type="button" value="Nuovo Evento" onclick="onNewEventoClick(this)" />
-        <div id="calendar">
+</div>
+<div>
+    <input type="button" value="Nuovo Evento" onclick="onNewEventoClick(this)" />
+    <div id="calendar">
 
-        </div>
     </div>
 </div>
 
