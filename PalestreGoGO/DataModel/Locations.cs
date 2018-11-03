@@ -15,8 +15,7 @@ namespace PalestreGoGo.DataModel
         [Required]
         [StringLength(100)]
         public string Nome { get; set; }
-        [Required]
-        [StringLength(100)]
+
         public string Descrizione { get; set; }
         public short? CapienzaMax { get; set; }
 
