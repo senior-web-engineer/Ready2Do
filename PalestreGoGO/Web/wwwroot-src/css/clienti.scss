@@ -69,8 +69,12 @@ main.r2d-no-padding {
     width: 200px;
 }
 
-/* CUSTOMIZZAZIONE CALENDARIO */
+//Messaggi di errore
+.field-validation-error{
+    color: red;
+}
 
+/* CUSTOMIZZAZIONE CALENDARIO */
 .fc-time-grid .fc-slats td {
     height: 3em;
 }

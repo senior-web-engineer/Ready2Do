@@ -66,6 +66,12 @@
         $(document).ready(function () {
             $('input#inputNome, textarea#textAreaDescrizione').characterCounter();
             $('select').formSelect();
+            /*Disabilitiamo il pulsante Submit dopo il click (per evitare submit multipli)*/
+            $('#formEditLezione').submit(function () {
+                $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+                return true;
+            });
+
         });
     </script>
 }

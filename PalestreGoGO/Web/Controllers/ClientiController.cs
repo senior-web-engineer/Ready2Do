@@ -99,7 +99,7 @@ namespace Web.Controllers
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
-            if (cliente == null) { return RedirectToAction("Index", "Home"); }
+            if (cliente == null) { return Redirect("/"); }
             var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
 
             ViewData["ReturnUrl"] = Request.Path.ToString();

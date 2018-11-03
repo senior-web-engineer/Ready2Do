@@ -6582,6 +6582,9 @@ main.r2d-no-padding {
 .r2-nav-dropdwonAccount {
   width: 200px; }
 
+.field-validation-error {
+  color: red; }
+
 /* CUSTOMIZZAZIONE CALENDARIO */
 .fc-time-grid .fc-slats td {
   height: 3em; }

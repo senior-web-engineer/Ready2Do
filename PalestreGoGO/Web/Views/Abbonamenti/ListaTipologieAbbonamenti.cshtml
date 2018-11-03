@@ -1,4 +1,4 @@
-﻿@model List<TipologieLezioniViewModel>
+﻿@model List<TipologiaAbbonamentoViewModel>
 @{
     Layout = "_LayoutClienti";
 }
@@ -18,57 +18,55 @@
         }
     }
 </style>
-
 @if ((Model == null) || (Model.Count == 0))
 {
     <div class="row">
         <div class="col s4 offset-s4">
-            <partial name="_NoLezioni" model="Model" />
+            <partial name="_NoAbbonamenti" model="Model" />
         </div>
     </div>
 }
 else
 {
     <div class="row">
-        <div class="col s9 offset-s1 center">
-            <h5>Gestione Tipologie Lezioni</h5>
+        <div class="col s8 offset-s2 center">
+            <h5>Gestione Tipologie Abbonamenti</h5>
         </div>
     </div>
     <div class="row">
         <div class="col s9 offset-s1">
             <div style="position:relative">
-                <a asp-action="LezioneAdd" asp-controller="TipologieLezioni" class="btn-floating btn-large halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+                <a asp-action="TipoAbbonamentoNew" asp-controller="Abbonamenti" class="btn-floating btn-large halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
             </div>
             <br />
         </div>
     </div>
-
+    <!-- INTESTAZIONE COLONNE -->
     <div class="row">
-        <div class="col s4 offset-s1 left">
-            <strong>Tipo Lezione</strong>
+        <div class="col s4 offset-s1">
+            <strong>Tipo Abbonamento</strong>
         </div>
-        <div class="col s1 left">
-            <strong>Durata</strong>
+        <div class="col s2 ">
+            <strong>Durata Mesi</strong>
         </div>
-        <div class="col s1 left hide-on-small-and-down">
-            <strong>Capienza</strong>
+        <div class="col s2 ">
+            <strong>Prezzo</strong>
         </div>
-        <div class="col s3 right">
+        <div class="col s2 right">
             <strong>Azioni</strong>
         </div>
     </div>
     <div class="row">
-        <div class="divider col s9 offset-s1"></div>
+        <div class="divider col s10 offset-s1"></div>
     </div>
-
 
     @foreach (var s in Model)
     {
         <div class="row">
             <div class="col s4 offset-s1 left" data-id-item="@s.Id">@s.Nome</div>
-            <div class="col s1 left">@((new TimeSpan(0, s.Durata, 0)).ToString("hh\\:mm"))</div>
-            <div class="col s1 left hide-on-small-and-down">@s.MaxPartecipanti</div>
-            <div class="col s3 right">
+            <div class="col s2 left">@s.DurataMesi</div>
+            <div class="col s2 left hide-on-small-and-down">@s.Costo €</div>
+            <div class="col s2 right">
                 <div style="position:relative">
                     <div class="fixed-action-btn" style="position:relative;display: inline-block; bottom: 0;">
                         <a class="btn-floating ">
@@ -76,10 +74,10 @@ else
                         </a>
                         <ul style="right: 50px;">
                             <li style="margin-top: 0; margin-right: 2px;">
-                                <a class="btn-floating red" asp-action="LezioneDelete" asp-controller="TipologieLezioni" asp-route-id="@s.Id" onclick="confermaCancellazione(event, @s.Id)"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating red" asp-action="TipoAbbonamentoDelete" asp-controller="Abbonamenti" asp-route-id="@s.Id" onclick="confermaCancellazione(event, @s.Id)"><i class="material-icons">delete</i></a>
                             </li>
                             <li style="margin-top: 0; margin-right: 2px;">
-                                <a class="btn-floating blue" asp-action="LezioneEdit" asp-controller="TipologieLezioni" asp-route-id="@s.Id"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating blue" asp-action="TipoAbbonamentoEdit" asp-controller="Abbonamenti" asp-route-id="@s.Id"><i class="material-icons">edit</i></a>
                             </li>
                         </ul>
                     </div>
@@ -87,15 +85,15 @@ else
             </div>
         </div>
         <div class="row">
-            <div class="divider col s9 offset-s1"></div>
+            <div class="divider col s10 offset-s1"></div>
         </div>
 
         <!-- Modal Structure -->
         <div id="modalConfirmCancellazione" class="modal modal-fixed-footer">
             <div class="modal-content center">
-                <h4>Conferma cancellazione Tipologia Lezione <span id="mdlItemName"></span></h4>
+                <h4>Conferma cancellazione Tipologia Abbonamento <span id="mdlItemName"></span></h4>
                 <br />
-                <p>L'operazione di cancellazione è irreversibile ed è possibile solo in assenza di lezioni pianificate.</p>
+                <p>L'operazione di cancellazione è irreversibile ed è possibile solo non è mai stato associato ad un Utente.</p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn"><i class="material-icons left hide-on-small-and-down">cancel</i>Annulla</a>
@@ -135,3 +133,4 @@ else
         }
     </script>
 }
+

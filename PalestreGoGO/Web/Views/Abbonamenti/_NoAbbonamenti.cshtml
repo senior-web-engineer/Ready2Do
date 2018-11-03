@@ -1,0 +1,17 @@
+﻿@if ((Model == null) || (Model.Count == 0))
+{
+<div class="card">
+    <div class="card-content">
+        <span class="card-title center"><strong>Ancora nessuna tipo di Abbonamento creato</strong></span>
+        <br />
+        <p>Sembrerebbe che al momento non sia state ancora definite nessun tipo di Abbonamento.</p>
+        <br />
+        <p>Inizia ad inserirne almeno uno per poterlo poi associare ai tuoi utenti.</p>
+        <br />
+        <a asp-action="TipoAbbonamentoNew" asp-controller="Abbonamenti" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+    </div>
+    @*<div class="card-action">
+        <a href="#">This is a link</a>
+    </div>*@
+</div>
+}

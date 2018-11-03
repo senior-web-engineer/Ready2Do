@@ -21,14 +21,14 @@
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="text" asp-for="Nome" />
+                <input type="text" asp-for="Nome" data-length="500" id="inputNome"/>
                 <label>Nome della Sala</label>
                 <span asp-validation-for="Nome"></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="text" asp-for="Descrizione" />
+                <textarea type="text" asp-for="Descrizione"  class="materialize-textarea" data-length="500" id="textAreaDescrizione"></textarea>
                 <label asp-for="Descrizione"></label>
                 <span asp-validation-for="Descrizione"></span>
             </div>
@@ -55,6 +55,7 @@
     {
     <script>
         $(document).ready(function () {
+            $('input#inputNome, textarea#textAreaDescrizione').characterCounter();
             /*Disabilitiamo il pulsante Submit dopo il click (per evitare submit multipli)*/
             $('#formEditSala').one('submit', function () {
                 $(this).find('input[type="submit"]').attr('disabled', 'disabled');

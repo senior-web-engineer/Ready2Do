@@ -144,6 +144,9 @@
     <Content Update="Views\Shared\_Banner_RettangoloMedio.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Abbonamenti\_NoAbbonamenti.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\TipologieLezioni\_NoLezioni.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
