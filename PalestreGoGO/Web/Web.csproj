@@ -8,7 +8,6 @@
   <ItemGroup>
     <Content Remove="wwwroot\js\jquery-cropper.common.js" />
     <Content Remove="wwwroot\js\jquery-cropper.esm.js" />
-    <Content Remove="wwwroot\js\jquery-cropper.js" />
     <Content Remove="wwwroot\js\jquery-cropper.min.js" />
   </ItemGroup>
 
@@ -153,7 +152,6 @@
   <ItemGroup>
     <None Include="wwwroot\js\jquery-cropper.common.js" />
     <None Include="wwwroot\js\jquery-cropper.esm.js" />
-    <None Include="wwwroot\js\jquery-cropper.js" />
     <None Include="wwwroot\js\jquery-cropper.min.js" />
   </ItemGroup>
 
