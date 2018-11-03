@@ -147,6 +147,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\TipologieLezioni\" />
     <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 
