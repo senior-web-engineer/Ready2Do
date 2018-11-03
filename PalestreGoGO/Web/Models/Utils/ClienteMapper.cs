@@ -94,22 +94,28 @@ namespace Web.Models.Utils
                     Ordinamento = (model.ImmagineHome?.Ordinamento) ?? 0,
                     Url = model.ImmagineHome?.Url
                 },
-                OrarioApertura = new PalestreGoGo.WebAPIModel.OrarioAperturaViewModel()
-                {
-                    Lunedi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
-                    Martedi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
-                    Mercoledi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
-                    Giovedi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
-                    Venerdi = model.OrarioAperturaVM?.LunVen?.MapGiornoOrarioApertura(),
-                    Sabato = model.OrarioAperturaVM?.Sabato?.MapGiornoOrarioApertura(),
-                    Domenica = model.OrarioAperturaVM?.Domenica?.MapGiornoOrarioApertura(),
-                }
+                OrarioApertura = model.OrarioAperturaVM.MapToApiModel()
             };
 
             return result;
         }
 
-        private static OrarioAperturaViewModel MapOrarioApertura(this PalestreGoGo.WebAPIModel.OrarioAperturaViewModel apiModel)
+        public static PalestreGoGo.WebAPIModel.OrarioAperturaViewModel MapToApiModel(this Models.OrarioAperturaViewModel vm)
+        {
+            if (vm == null) { return null; }
+            return new PalestreGoGo.WebAPIModel.OrarioAperturaViewModel()
+            {
+                Lunedi = vm?.LunVen?.MapGiornoOrarioApertura(),
+                Martedi = vm?.LunVen?.MapGiornoOrarioApertura(),
+                Mercoledi = vm?.LunVen?.MapGiornoOrarioApertura(),
+                Giovedi = vm?.LunVen?.MapGiornoOrarioApertura(),
+                Venerdi = vm?.LunVen?.MapGiornoOrarioApertura(),
+                Sabato = vm?.Sabato?.MapGiornoOrarioApertura(),
+                Domenica = vm?.Domenica?.MapGiornoOrarioApertura()
+            };
+        }
+
+        public static OrarioAperturaViewModel MapOrarioApertura(this PalestreGoGo.WebAPIModel.OrarioAperturaViewModel apiModel)
         {
             if (apiModel == null) return null;
             var result = new OrarioAperturaViewModel();
@@ -130,23 +136,22 @@ namespace Web.Models.Utils
             if (apiModel == null) return null;
             var result = new GiornoViewModel()
             {
-                IsChiuso = apiModel.IsChiuso,
-                IsContinuato = apiModel.IsContinuato
+                TipoOrario =  (TipoOrarioViewModel)apiModel.TipoOrario
             };
             if (apiModel.Mattina != null)
             {
                 result.Mattina = new FasciaOrariaViewmodel()
                 {
-                    Inizio = apiModel.Mattina.Inizio.ToString(@"hh\:mm"),
-                    Fine = apiModel.Mattina.Fine.ToString(@"hh\:mm")
+                    Inizio = apiModel.Mattina.Inizio?.ToString(@"hh\:mm"),
+                    Fine = apiModel.Mattina.Fine?.ToString(@"hh\:mm")
                 };
             }
             if (apiModel.Pomeriggio != null)
             {
                 result.Pomeriggio = new FasciaOrariaViewmodel()
                 {
-                    Inizio = apiModel.Pomeriggio.Inizio.ToString(@"hh\:mm"),
-                    Fine = apiModel.Pomeriggio.Fine.ToString(@"hh\:mm")
+                    Inizio = apiModel.Pomeriggio.Inizio?.ToString(@"hh\:mm"),
+                    Fine = apiModel.Pomeriggio.Fine?.ToString(@"hh\:mm")
                 };
             }
             return result;
@@ -157,8 +162,7 @@ namespace Web.Models.Utils
             if (webDayModel == null) return null;
             var result = new PalestreGoGo.WebAPIModel.GiornoViewModel()
             {
-                IsChiuso = webDayModel.IsChiuso,
-                IsContinuato = webDayModel.IsContinuato
+                TipoOrario = (PalestreGoGo.WebAPIModel.TipoOrarioViewModel)webDayModel.TipoOrario                
             };
             if (webDayModel.Mattina != null)
             {
@@ -186,7 +190,7 @@ namespace Web.Models.Utils
                 {
                     var parts = webDayModel.Pomeriggio.Fine.Split(':');
                     result.Pomeriggio.Fine = new TimeSpan(int.Parse(parts[0]), int.Parse(parts[1]), 0);
-                }                
+                }
             }
             return result;
         }

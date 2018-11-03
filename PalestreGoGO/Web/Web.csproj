@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\jquery-cropper.common.js" />
+    <Content Remove="wwwroot\js\jquery-cropper.esm.js" />
+    <Content Remove="wwwroot\js\jquery-cropper.js" />
+    <Content Remove="wwwroot\js\jquery-cropper.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Controllers\AbbonamentiController.cs" />
     <Content Include="Controllers\AccountController.cs" />
     <Content Include="Controllers\API\BlobUploadController.cs" />
@@ -119,7 +126,10 @@
     <Content Update="Views\ProfiloCliente\BannerEdit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\ProfiloCliente\Profilo.cshtml">
+    <Content Update="Views\ProfiloCliente\OrariApertura.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\ProfiloCliente\Anagrafica.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Shared\Clienti\_SideNav.cshtml">
@@ -138,6 +148,13 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\dist\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\jquery-cropper.common.js" />
+    <None Include="wwwroot\js\jquery-cropper.esm.js" />
+    <None Include="wwwroot\js\jquery-cropper.js" />
+    <None Include="wwwroot\js\jquery-cropper.min.js" />
   </ItemGroup>
 
   <!-- Gestione WEBPACK -->

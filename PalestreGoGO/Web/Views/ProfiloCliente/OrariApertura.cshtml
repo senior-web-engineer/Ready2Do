@@ -1,0 +1,185 @@
+﻿@model OrarioAperturaViewModel;
+@{
+    Layout = "_LayoutClienti";
+}
+<style>
+    .r2d-vcenter {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+
+<section id="editOrarioApertura">
+    <form asp-action="SaveOrarioApertura" asp-controller="ProfiloCliente" method="post" id="formEditOrarioApertura">
+        <!-- ORARIO APERTURA -->
+        <div class="row">
+            <div class="col s12 center-align">
+                <h4>Modifica Orario Apartura</h4>
+            </div>
+        </div>
+
+        <div class="row valign-wrapper" id="orarioLunVen" data-r2d-orario-container>
+            <div class="col s1 right-align m1 offset-m1">
+                <div>Lun-Ven</div>
+            </div>
+            <div class="col s2 input-field">
+                <select id="selTipoOrarioLunVen" asp-for="LunVen.TipoOrario" asp-items="Model.TipiFasceOrarie" onchange="tipoOrarioChanged(this, event)" data-r2d-orario-giorni="LunVen"></select>
+                <label>Tipo Orario</label>
+            </div>
+            <div class="col s2 m1 input-field">
+                <input type="text" class="timepicker" asp-for="LunVen.Mattina.Inizio" data-r2d-orario="mattina" />
+                <label asp-for="LunVen.Mattina.Inizio">Dalle</label>
+            </div>
+            <div class="col s2 m1 input-field" disableOnOrarioCont="true">
+                <input type="text" class="timepicker" asp-for="LunVen.Mattina.Fine" data-r2d-orario="mattina" />
+                <label asp-for="LunVen.Mattina.Fine">Alle</label>
+            </div>
+            <div class="col s2 m1 input-field" disableOnOrarioCont="true">
+                <input type="text" class="timepicker" asp-for="LunVen.Pomeriggio.Inizio" data-r2d-orario="pomeriggio" />
+                <label asp-for="LunVen.Pomeriggio.Inizio">Dalle</label>
+            </div>
+            <div class="col s2 m1 input-field">
+                <input type="text" class="timepicker" asp-for="LunVen.Pomeriggio.Fine" data-r2d-orario="pomeriggio" />
+                <label asp-for="LunVen.Pomeriggio.Fine">Alle</label>
+            </div>
+            <div class="col m4 hide-on-small-and-down"></div>
+            <div class="col s1 hide-on-med-and-up"></div>
+        </div>
+        <div class="row valign-wrapper" id="orarioSabato" data-r2d-orario-container>
+            <div class="col s1 right-align m1 offset-m1">
+                <span>Sabato</span>
+            </div>
+            <div class="col s2 input-field">
+                <select id="selTipoOrarioSab" asp-for="Sabato.TipoOrario" asp-items="Model.TipiFasceOrarie" onchange="tipoOrarioChanged(this, event)" data-r2d-orario-giorni="Sab"></select>
+                <label>Tipo Orario</label>
+            </div>
+            <div class="col s2 m1 input-field">
+                <input type="text" class="timepicker" asp-for="Sabato.Mattina.Inizio" data-r2d-orario="mattina" />
+                <label asp-for="Sabato.Mattina.Inizio">Dalle</label>
+            </div>
+            <div class="col s2 m1 input-field" disableOnOrarioCont="true">
+                <input type="text" class="timepicker" asp-for="Sabato.Mattina.Fine" data-r2d-orario="mattina" />
+                <label asp-for="Sabato.Mattina.Fine">Alle</label>
+            </div>
+            <div class="col s2 m1 input-field" disableOnOrarioCont="true">
+                <input type="text" class="timepicker" asp-for="Sabato.Pomeriggio.Inizio" data-r2d-orario="pomeriggio" />
+                <label asp-for="Sabato.Pomeriggio.Inizio">Dalle</label>
+            </div>
+            <div class="col s2 m1 input-field">
+                <input type="text" class="timepicker" asp-for="Sabato.Pomeriggio.Fine" data-r2d-orario="pomeriggio" />
+                <label asp-for="Sabato.Pomeriggio.Fine">Alle</label>
+            </div>
+            <div class="col m4 hide-on-small-and-down"></div>
+            <div class="col s1 hide-on-med-and-up"></div>
+        </div>
+        <div class="row valign-wrapper" id="orarioDomenica" data-r2d-orario-container>
+            <div class="col s1 right-align m1 offset-m1">
+                <span>Domenica</span>
+            </div>
+            <div class="col s2 input-field">
+                <select id="selTipoOrarioDom" asp-for="Domenica.TipoOrario" asp-items="Model.TipiFasceOrarie" onchange="tipoOrarioChanged(this, event)" data-r2d-orario-giorni="Dom"></select>
+                <label>Tipo Orario</label>
+            </div>
+            <div class="col  m1 input-field">
+                <input type="text" class="timepicker" asp-for="Domenica.Mattina.Inizio" data-r2d-orario="mattina" />
+                <label asp-for="Domenica.Mattina.Inizio">Dalle</label>
+            </div>
+            <div class="col s2 m1 input-field" disableOnOrarioCont="true">
+                <input type="text" class="timepicker" asp-for="Domenica.Mattina.Fine" data-r2d-orario="mattina" />
+                <label asp-for="Domenica.Mattina.Fine">Alle</label>
+            </div>
+            <div class="col s2 m1 input-field" disableOnOrarioCont="true">
+                <input type="text" class="timepicker" asp-for="Domenica.Pomeriggio.Inizio" data-r2d-orario="pomeriggio" />
+                <label asp-for="Domenica.Pomeriggio.Inizio">Dalle</label>
+            </div>
+            <div class="col s2 m1 input-field">
+                <input type="text" class="timepicker" asp-for="Domenica.Pomeriggio.Fine" data-r2d-orario="pomeriggio" />
+                <label asp-for="Domenica.Pomeriggio.Fine">Alle</label>
+            </div>
+            <div class="col m4 hide-on-small-and-down"></div>
+            <div class="col s1 hide-on-med-and-up"></div>
+        </div>
+
+        <div class="row">
+            <div class="offset-s1"></div>
+            <div class="input-field col s10 offset-s1 center">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    Salva
+                    <i class="material-icons right">save</i>
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var i18nTime = {
+                cancel: 'Annulla',
+                clear: 'Cancella',
+                done: 'Ok'
+            };
+            $('select').formSelect();
+            $('.timepicker').timepicker({
+                twelveHour: false,
+                i18n: i18nTime
+            });
+
+            $('[data-r2d-orario-giorni]').each(function () {
+                tipoOrarioChanged(this, null);
+            })
+        });
+
+        function tipoOrarioChanged(src, event) {
+
+            let giorni = $(src).attr('data-r2d-orario-giorni');
+            let selVal = $(src).val();
+            switch (selVal) {
+                case "1": //Orario Spezzato
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario]').each(function () {
+                        this.disabled = false; //Abilitiamo tutti i textbox<
+                    });
+                    break;
+                case "2": //Orario Continuato
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario]').each(function () {
+                        this.disabled = false; //Abilitiamo tutti i textbox<
+                    });
+                    let m1 = $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario="mattina"]')[1];
+                    $(m1).val('');
+                    $(m1).prop("disabled", true);
+                    let m2 = $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario="pomeriggio"]')[0];
+                    $(m2).val('');
+                    $(m2).prop("disabled", true);
+                    break;
+                case "3": //Solo mattina
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario="pomeriggio"]').each(function () {
+                        this.disabled = true;
+                        $(this).val('');
+                    });
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario="mattina"]').each(function () {
+                        this.disabled = false;                        
+                    });
+                    break;
+                case "4": //Solo Pomeriggio
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario="mattina"]').each(function () {
+                        this.disabled = true;
+                        $(this).val('');
+                    });
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario="pomeriggio"]').each(function () {
+                        this.disabled = false;
+                    });
+                    break;
+                case "5":
+                    $(src).parents('div[data-r2d-orario-container]').find('[data-r2d-orario]').each(function () {
+                        this.disabled = true; //Disabilitiamo tutti i textbox
+                        $(this).val('');
+                    });
+                    break;
+            }
+        }
+    </script>
+}

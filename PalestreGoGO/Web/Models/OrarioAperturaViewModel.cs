@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
+    public enum TipoOrarioViewModel
+    {
+        Spezzato = 1,
+        Continuato = 2,
+        Mattina = 3,
+        Pomeriggio = 4,
+        Chiuso = 5
+    }
+
     public class FasciaOrariaViewmodel
     {
         [RegularExpression("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")]
@@ -20,7 +30,7 @@ namespace Web.Models
         {
             Mattina = new FasciaOrariaViewmodel();
             Pomeriggio = new FasciaOrariaViewmodel();
-            IsContinuato = true;
+            TipoOrario = TipoOrarioViewModel.Spezzato;
         }
 
         public GiornoViewModel(string nome) : base()
@@ -31,12 +41,12 @@ namespace Web.Models
         public string Nome { get; set; }
         public FasciaOrariaViewmodel Mattina { get; set; }
         public FasciaOrariaViewmodel Pomeriggio { get; set; }
-        public bool IsContinuato { get; set; }
-        public bool IsChiuso { get; set; }
+        public TipoOrarioViewModel TipoOrario { get; set; }
     }
 
     public class OrarioAperturaViewModel
     {
+
         public OrarioAperturaViewModel()
         {
             //Lunedi = new GiornoViewModel("Lunedì");
@@ -58,5 +68,13 @@ namespace Web.Models
         public GiornoViewModel Sabato { get; set; }
         public GiornoViewModel Domenica { get; set; }
 
+        public List<SelectListItem> TipiFasceOrarie { get; } = new List<SelectListItem>()
+        {
+            new SelectListItem("Spezzato", "1"),
+            new SelectListItem("Continuato" , "2"),
+            new SelectListItem("Mattina" , "3"),
+            new SelectListItem("Pomeriggio" , "4"),
+            new SelectListItem("Chiuso" , "5")
+        };
     }
 }

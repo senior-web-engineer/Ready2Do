@@ -185,6 +185,35 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task ClienteSalvaBanner(int idCliente, ImmagineViewModel banner, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/banner");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Content = new StringContent(JsonConvert.SerializeObject(banner), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task ClienteSalvaOrarioApertura(int idCliente, PalestreGoGo.WebAPIModel.OrarioAperturaViewModel orario, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Content = new StringContent(JsonConvert.SerializeObject(orario), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task ClienteSalvaAnagrafica(int idCliente, AnagraficaClienteApiModel anagrafica, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/anagrafica");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Content = new StringContent(JsonConvert.SerializeObject(anagrafica), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
 
         public async Task SaveTipologiaLezioneAsync(int idCliente, Models.TipologieLezioniViewModel tipoLezione, string access_token)
         {
@@ -318,9 +347,10 @@ namespace Web.Utils
             return bool.Parse((await response.Content.ReadAsStringAsync()));
         }
 
-        public async Task<bool> CheckUrlRoute(string urlRoute)
+        public async Task<bool> CheckUrlRoute(string urlRoute, int? idCliente = null)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}");
+            string tmpqs = idCliente.HasValue ? $"&idCliente={idCliente}" : "";
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}{tmpqs}");
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(uri);
             response.EnsureSuccessStatusCode();

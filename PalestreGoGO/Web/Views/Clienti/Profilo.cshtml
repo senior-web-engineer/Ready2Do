@@ -153,7 +153,7 @@
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Fine" />
                     <label asp-for="OrarioAperturaVM.LunVen.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col s3 input-field">
+                @*<div class="col s3 input-field">
                     <label for="lunediContinuativo">
                         <input id="lunediContinuativo" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioLunVen')" />
                         <span>Orario Continuato</span>
@@ -164,7 +164,7 @@
                         <input id="lunediChiuso" type="checkbox" asp-for="OrarioAperturaVM.LunVen.IsChiuso" onchange="checkChiusoChanged(this, 'orarioLunVen')" />
                         <span>Chiuso tutto il giorno</span>
                     </label>
-                </div>
+                </div>*@
             </div>
             <div class="row" id="orarioSabato">
                 <div class="col s1 right-align offset-s1 mt-10">
@@ -186,7 +186,7 @@
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine" />
                     <label asp-for="OrarioAperturaVM.Sabato.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col s3 input-field">
+                @*<div class="col s3 input-field">
                     <label for="sabatoContinuativo">
                         <input id="sabatoContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioSabato')" />
                         <span>Orario Continuato</span>
@@ -197,7 +197,7 @@
                         <input id="sabatoChiuso" type="checkbox" asp-for="OrarioAperturaVM.Sabato.IsChiuso" onchange="checkChiusoChanged(this, 'orarioSabato')" />
                         <span>Chiuso tutto il giorno</span>
                     </label>
-                </div>
+                </div>*@
             </div>
             <div class="row" id="orarioDomenica">
                 <div class="col s1 right-align offset-s1 mt-10">
@@ -219,7 +219,7 @@
                     <input type="text" class="timepicker" asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine" />
                     <label asp-for="OrarioAperturaVM.Domenica.Pomeriggio.Fine">Alle</label>
                 </div>
-                <div class="col s3 input-field">
+                <div c@*lass="col s3 input-field">
                     <label for="domenicaContinuativo">
                         <input id="domenicaContinuativo" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsContinuato" onchange="checkContinuativoChanged(this, 'orarioDomenica')" />
                         <span>Orario Continuato</span>
@@ -230,7 +230,7 @@
                         <input id="domenicaChiuso" type="checkbox" asp-for="OrarioAperturaVM.Domenica.IsChiuso" onchange="checkChiusoChanged(this, 'orarioDomenica')" />
                         <span>Chiuso tutto il giorno</span>
                     </label>
-                </div>
+                </div>*@
             </div>
             <div class="row">
                 <div class="input-field col s10 offset-s1 center">

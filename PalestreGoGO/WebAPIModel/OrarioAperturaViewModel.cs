@@ -1,14 +1,27 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
+    public enum TipoOrarioViewModel
+    {
+        Spezzato = 1,
+        Continuato = 2,
+        Mattina = 3,
+        Pomeriggio = 4,
+        Chiuso = 5
+    }
+
     public class FasciaOrariaViewmodel
     {
-        public TimeSpan Inizio { get; set; }
-        public TimeSpan Fine { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public TimeSpan? Inizio { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public TimeSpan? Fine { get; set; }
     }
 
     public class GiornoViewModel
@@ -17,13 +30,13 @@ namespace PalestreGoGo.WebAPIModel
         {
             Mattina = new FasciaOrariaViewmodel();
             Pomeriggio = new FasciaOrariaViewmodel();
-            IsContinuato = true;
+            TipoOrario = TipoOrarioViewModel.Spezzato;
         }
 
         public FasciaOrariaViewmodel Mattina { get; set; }
         public FasciaOrariaViewmodel Pomeriggio { get; set; }
-        public bool IsContinuato { get; set; }
-        public bool IsChiuso { get; set; }
+        public TipoOrarioViewModel TipoOrario { get; set; }
+
     }
 
     public class OrarioAperturaViewModel

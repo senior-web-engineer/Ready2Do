@@ -49,11 +49,11 @@ namespace Web.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Produces("application/json")]
-        public async Task<IActionResult> CheckUrl(string url)
+        public async Task<IActionResult> CheckUrl([FromQuery(Name ="UrlRoute")]string url,[FromQuery(Name="IdCliente")] int? idCliente)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
-                return BadRequest();
+                return Json(data: $"Richiesta di validazione non valida.");
             }
             if (!Uri.IsWellFormedUriString(url, UriKind.Relative))
             {
@@ -65,10 +65,23 @@ namespace Web.Controllers
             }
             if (url.Contains("?"))
             {
-                return Json(data: $"Non è possibile specificare una qurystring");
+                return Json(data: $"Non è possibile specificare una querystring");
             }
-
-            bool urlIsValid = await _apiClient.CheckUrlRoute(url);
+            //Se viene passato un idCliente da escludere dalla validazione deve essere quello gestito dall'utente chiamante
+            if (idCliente.HasValue && !User.GetUserTypeForCliente(idCliente.Value).IsAtLeastAdmin())
+            {
+                return Json(data: $"Richiesta di validazione non valida.");
+            }
+            bool urlIsValid = false;
+            try
+            {
+                urlIsValid = await _apiClient.CheckUrlRoute(url, idCliente);
+            }
+            catch(Exception exc)
+            {
+                _logger.LogError(exc, $"Errore durante la validazione del Url {url}");
+                urlIsValid = false;
+            }
             if (!urlIsValid)
             {
                 return Json(data: $"L'URL specificato risulta già utilizzato. Inserirne un altro.");
@@ -91,7 +104,7 @@ namespace Web.Controllers
 
             ViewData["ReturnUrl"] = Request.Path.ToString();
             ViewData["Sale"] = locations;
-            ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, cliente.IdCliente);
+            ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(urlRoute, cliente.IdCliente, _appConfig.EncryptKey);
             ViewData["ClienteRoute"] = urlRoute;
             ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
             ViewData["IdCliente"] = cliente.IdCliente;
@@ -120,7 +133,7 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
             if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin()) { return Forbid(); }
-            ViewData["SASToken"] = GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
             ViewData["IdCliente"] = cliente.IdCliente;
             var vm = new GalleryEditViewModel();
             vm.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
@@ -172,7 +185,7 @@ namespace Web.Controllers
             }
             var vm = cliente.MapToProfileEditVM();
             ViewData["IdCliente"] = cliente.IdCliente;
-            ViewData["SASToken"] = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
+            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
             ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                                 _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                                cliente.StorageContainer);
@@ -462,40 +475,40 @@ namespace Web.Controllers
         }
         #endregion
 
-        #region Helpers
-        /// <summary>
-        /// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax
-        /// </summary>
-        /// <param name="secuirtyToken"></param>
-        /// <param name="storageContainer"></param>
-        /// <returns></returns>
-        private string GenerateSASAuthenticationToken(string secuirtyToken, string storageContainer)
-        {
-            var token = new SASTokenModel()
-            {
-                SecurityToken = secuirtyToken,
-                ContainerName = storageContainer,
-                CreationTime = DateTime.Now
-            };
-            string json = JsonConvert.SerializeObject(token, Formatting.None);
-            //Cifriamo il json ottenuto
-            var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
-            return result;
-        }
+        //#region Helpers
+        ///// <summary>
+        ///// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax
+        ///// </summary>
+        ///// <param name="secuirtyToken"></param>
+        ///// <param name="storageContainer"></param>
+        ///// <returns></returns>
+        //private string GenerateSASAuthenticationToken(string secuirtyToken, string storageContainer)
+        //{
+        //    var token = new SASTokenModel()
+        //    {
+        //        SecurityToken = secuirtyToken,
+        //        ContainerName = storageContainer,
+        //        CreationTime = DateTime.Now
+        //    };
+        //    string json = JsonConvert.SerializeObject(token, Formatting.None);
+        //    //Cifriamo il json ottenuto
+        //    var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
+        //    return result;
+        //}
 
-        private string GenerateAuthenticationToken(string clientRouteUrl, int idCliente)
-        {
-            var token = new AuthTokenModel()
-            {
-                ClientRoute = clientRouteUrl,
-                CreationTime = DateTime.Now,
-                IdCliente = idCliente
-            };
-            string json = JsonConvert.SerializeObject(token, Formatting.None);
-            //Cifriamo il json ottenuto
-            var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
-            return result;
-        }
-        #endregion
+        //private string GenerateAuthenticationToken(string clientRouteUrl, int idCliente)
+        //{
+        //    var token = new AuthTokenModel()
+        //    {
+        //        ClientRoute = clientRouteUrl,
+        //        CreationTime = DateTime.Now,
+        //        IdCliente = idCliente
+        //    };
+        //    string json = JsonConvert.SerializeObject(token, Formatting.None);
+        //    //Cifriamo il json ottenuto
+        //    var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
+        //    return result;
+        //}
+        //#endregion
     }
 }

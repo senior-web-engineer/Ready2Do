@@ -1,9 +1,11 @@
-﻿using System;       
+﻿using Newtonsoft.Json;
+using System;       
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Web.Models;
 
@@ -12,6 +14,40 @@ namespace Web.Utils
     public static  class SecurityUtils
     {
         private const short KEY_SIZE = 256;
+
+        /// <summary>
+        /// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax
+        /// </summary>
+        /// <param name="secuirtyToken"></param>
+        /// <param name="storageContainer"></param>
+        /// <returns></returns>
+        public static string GenerateSASAuthenticationToken(string secuirtyToken, string storageContainer, string encryptKey)
+        {
+            var token = new SASTokenModel()
+            {
+                SecurityToken = secuirtyToken,
+                ContainerName = storageContainer,
+                CreationTime = DateTime.Now
+            };
+            string json = JsonConvert.SerializeObject(token, Formatting.None);
+            //Cifriamo il json ottenuto
+            var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(encryptKey));
+            return result;
+        }
+
+        public static string GenerateAuthenticationToken(string clientRouteUrl, int idCliente, string encryptKey)
+        {
+            var token = new AuthTokenModel()
+            {
+                ClientRoute = clientRouteUrl,
+                CreationTime = DateTime.Now,
+                IdCliente = idCliente
+            };
+            string json = JsonConvert.SerializeObject(token, Formatting.None);
+            //Cifriamo il json ottenuto
+            var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(encryptKey));
+            return result;
+        }
 
         public static string EncryptStringWithAes(string plainText, byte[] Key)
         {

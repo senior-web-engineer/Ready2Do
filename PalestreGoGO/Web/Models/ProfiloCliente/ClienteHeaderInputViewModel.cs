@@ -8,6 +8,7 @@ namespace Web.Models
     public class ClienteHeaderInputViewModel
     {
         public int IdCliente { get; set; }
-        public ImageViewModel ImmagineHome { get; set; }
+        public string UrlImmagineHome { get; set; }
+        //public ImageViewModel ImmagineHome { get; set; }
     }
 }

@@ -8,9 +8,11 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/fine-uploader-new.min.css"
               integrity="sha256-I65PS+dIV5Bb65cOVYVn3UAbVeTONYAFwkkJPcPXNGI=" crossorigin="anonymous" />
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css"
-              integrity="sha256-d2pK8EVd0fI3O9Y+/PYWrCfAZ9hyNvInLoUuD7qmWC8=" crossorigin="anonymous" />
+        @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css"
+            integrity="sha256-d2pK8EVd0fI3O9Y+/PYWrCfAZ9hyNvInLoUuD7qmWC8=" crossorigin="anonymous" />*@
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css"
+              integrity="sha256-/KLAk4A9xEOKGyr4umt11boYQJtP40gBLT+WrfWImuY=" crossorigin="anonymous" />
         <style>
             .img-container,
             .img-preview {
@@ -29,7 +31,7 @@
                 }
 
 
-          
+
             .img-preview {
                 /*float: left;*/
                 margin-bottom: .5rem;
@@ -83,6 +85,7 @@
     @*<input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />*@
     <form asp-controller="ProfiloCliente" asp-action="SaveBanner" method="post" id="formEditBanner">
         <input type="hidden" asp-for="IdCliente" />
+        <input type="hidden" value="@(Model.ImmagineHome?.Url ?? "")" id="inputUrlImageHome" name="UrlImmagineHome"/>
         <div class="row center">
             <h3>Modifica banner</h3>
         </div>
@@ -119,22 +122,22 @@
         </div>
         <!-- PREVIEW -->
         @*<div class="row valign-wrapper">
-            <div class="col s2 offset-s1">
-                <span class="r2d-label">Anteprima</span>
-            </div>
-            <div class="col s8">
-                <div class="docs-preview clearfix">
-                    <div class="img-preview preview-lg"></div>
+                <div class="col s2 offset-s1">
+                    <span class="r2d-label">Anteprima</span>
                 </div>
-            </div>
-        </div>*@
+                <div class="col s8">
+                    <div class="docs-preview clearfix">
+                        <div class="img-preview preview-lg"></div>
+                    </div>
+                </div>
+            </div>*@
 
         <div class="row">
-            <div class="input-field col s10 offset-s1 center">
-                <input type="button" class="btn waves-effect waves-light" id="btnPublishImage">
-                    Pubblica Modifiche
-                    <i class="material-icons right">cloud_upload</i>
-                </inputbutton>
+            <div class="input-field col s10 offset-s1 center ">
+                <div class="btn waves-effect waves-light" id="btnPublishImage">
+                    @*<input type="button" class="" id="btnPublishImage">*@
+                    <i class="material-icons left">cloud_upload</i>Pubblica Modifiche
+                </div>
             </div>
         </div>
     </form>
@@ -155,11 +158,110 @@
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js"
             integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"
             integrity="sha256-xqnUCb6f1p7h5IqwwOJ7kHsGm9bRUgsrUe3VQNuqzUE=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js" 
+            integrity="sha256-CeBz6ph2imsCxljJfaQYaMRiRYRtW/TP5kH7REY3qvQ=" crossorigin="anonymous"></script>
+
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"
+        integrity="sha256-QT8oUxSZbywEwAPBgej6iNFH1ephgQV3q2pzjIso5pk=" crossorigin="anonymous"></script>*@
+
+    <script src="~/js/jquery-cropper.js"></script>
+
     <!-- CROPPER SCRIPT-->
     <script>
-        window.onload = function () {
+        var uploadedImageURL;
+        var cropperOtions = {
+
+        }
+
+        $(document).ready(function () {
+            let imgToCrop = $('#imgToCrop');
+            imgToCrop.cropper(cropperOtions);
+
+            $('#fileSelect').change(function () {
+                let files = this.files;
+                let file;
+                let image = $('#imgToCrop');
+                let cropper = image.data('cropper');
+                if (!cropper || !files || files.length == 0) { return; }
+                file = files[0];
+
+                if (/^image\/\w+/.test(file.type)) {
+                    let uploadedImageType = file.type;
+                    let uploadedImageName = file.name;
+
+                    if (uploadedImageURL) {
+                        URL.revokeObjectURL(uploadedImageURL);
+                    }
+                    uploadedImageURL = URL.createObjectURL(file);
+                    image.cropper('destroy').attr('src', uploadedImageURL).cropper(cropperOtions);
+                    $('#fileSelect').val('');
+                } else {
+                    window.alert('Please choose an image file.');
+                }
+            }
+            );
+
+            //Upload Image
+            var uploader = new qq.azure.FineUploaderBasic({
+                autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+                debug: true,
+                multiple: false,
+                cors: {
+                    allowXdr: false,
+                    expected: true,
+                    sendCredentials: false
+                },
+                request: {
+                    endpoint: "@ViewBag.ContainerUrl"
+                },
+                signature: {
+                    endpoint: "/api/fileupload",
+                    customHeaders: {
+                        "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
+                    }
+                },
+                callbacks: {
+                    onComplete: function uploadComplete(id, name, response, xhr) {
+                        let containerUrl = "@ViewBag.ContainerUrl";
+                        if (response.success === true) {
+                            let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
+                            $('#inputUrlImageHome').val(fullUrl);
+                            $("form:first").submit();
+                            //document.getElementById('urlImageHome').value = fullUrl;
+                            //document.getElementById('imgHeroEdit').src = fullUrl;
+                            //document.getElementById('idImageHome').value = -1;
+                            //console.log("New Hero image uploaded to: " + fullUrl);
+                        }
+                        else {
+                            let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
+                            console.log(message);
+                            alert(message);
+
+                        }
+                    }
+                }
+
+            });
+
+            $('#btnPublishImage').click(function (event) {
+                let cropper = $('#imgToCrop').data('cropper');
+                //let canvas = cropper('getCroppedCanvas');
+
+                let canvas = cropper.getCroppedCanvas();
+                if (canvas) {
+                    canvas.toBlob((blob) => {
+                        uploader.reset();
+                        uploader.addFiles([blob]);
+                    })
+                }
+            });
+        });
+
+        @*window.onload = function () {
             'use strict';
             var Cropper = window.Cropper;
             var URL = window.URL || window.webkitURL;
@@ -264,59 +366,7 @@
                 };
             }
 
-            //Upload Image
-            var uploader = new qq.azure.FineUploaderBasic({
-            autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
-            debug: true,
-            multiple: false,
-            cors: {
-                allowXdr: false,
-                expected: true,
-                sendCredentials: false
-            },
-            request: {
-                endpoint: "@ViewBag.ContainerUrl"
-            },
-            signature: {
-                endpoint: "/api/fileupload",
-                customHeaders: {
-                    "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
-                }
-            },
-            callbacks: {
-                onComplete: function uploadComplete(id, name, response, xhr) {
-                    let containerUrl = "@ViewBag.ContainerUrl";
-                    if (response.success === true) {
-                        let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
-                        document.getElementById('urlImageHome').value = fullUrl;
-                        document.getElementById('imgHeroEdit').src = fullUrl;
-                        document.getElementById('idImageHome').value = -1;
-                        console.log("New Hero image uploaded to: " + fullUrl);
-                    }
-                    else {
-                        let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
-                        console.log(message);
-                        alert(message);
 
-                    }
-                }
-            }
-
-            });
-
-            var btnUplod = document.getElementById('btnPublishImage');
-            btnUplod.onclick = function (event) {
-                let cropper = $('#imgToCrop').data('cropper');
-                let canvas = cropper('getCroppedCanvas');
-
-                //var canvas = cropper.getCroppedCanvas();
-                if (canvas) {
-                    canvas.toBlob((blob) => {
-                        uploader.reset();
-                        uploader.addFiles([blob]);
-                    })
-                }
-            }
-        }
+        }*@
     </script>
 }

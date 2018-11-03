@@ -19,6 +19,10 @@ namespace PalestreGoGo.DataAccess
 
         Task UpdateAsync(Clienti cliente);
 
+        Task<UrlValidationResultDM> CheckUrlRouteValidity(string urlRoute, int? idCliente = null);
+        Task UpdateAnagraficaAsync(AnagraficaClienteDM anagrafica);
+        Task UpdateOrarioAperturaAsync(int idCliente, string orarioApertura);
+
         #region Immagini
         Task AddImagesAsync(int idCliente, IEnumerable<ClientiImmagini> immagine);
         Task DeleteImageAsync(int idCliente, int idImmagine);

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using System.Data;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -113,7 +115,7 @@ namespace PalestreGoGo.DataAccess
                                 .Include(c => c.ClientiMetadati)
                                 .Where(c => (c.IdUserOwner.Equals(idOwner)))
                                 .SingleOrDefaultAsync();
-            if ((cliente!= null) && includeImages)
+            if ((cliente != null) && includeImages)
             {
                 //Leggiamo anche le immagini
                 var immagini = _context.ClientiImmagini
@@ -161,6 +163,62 @@ namespace PalestreGoGo.DataAccess
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateAnagraficaAsync(AnagraficaClienteDM anagrafica)
+        {
+            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Clienti_AnagraficaSave]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = anagrafica.IdCliente;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = anagrafica.Nome;
+                cmd.Parameters.Add("@pRagioneSociale", SqlDbType.NVarChar, 100).Value = anagrafica.RagioneSociale;
+                cmd.Parameters.Add("@pEmail", SqlDbType.NVarChar, 100).Value = anagrafica.Email;
+                cmd.Parameters.Add("@pNumTelefono", SqlDbType.NVarChar, 50).Value = anagrafica.NumTelefono;
+                cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, 1000).Value = anagrafica.Descrizione;
+                cmd.Parameters.Add("@pIndirizzo", SqlDbType.NVarChar, 250).Value = anagrafica.Indirizzo;
+                cmd.Parameters.Add("@pCitta", SqlDbType.NVarChar, 100).Value = anagrafica.Citta;
+                cmd.Parameters.Add("@pPostalCode", SqlDbType.NVarChar, 10).Value = anagrafica.PostalCode;
+                cmd.Parameters.Add("@pCountry", SqlDbType.NVarChar, 100).Value = anagrafica.Country;
+                cmd.Parameters.Add("@pLatitudine", SqlDbType.Float).Value = anagrafica.Latitudine;
+                cmd.Parameters.Add("@pLongitudine", SqlDbType.Float).Value = anagrafica.Longitudine;
+                cmd.Parameters.Add("@pUrlRoute", SqlDbType.VarChar, 205).Value = anagrafica.UrlRoute;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task UpdateOrarioAperturaAsync(int idCliente, string orarioApertura)
+        {
+            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Clienti_OrarioSave]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pOrarioApertura", SqlDbType.VarChar, -1).Value = orarioApertura;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<UrlValidationResultDM> CheckUrlRouteValidity(string urlRoute, int? idCliente = null)
+        {
+            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
+            {
+                SqlParameter paramOut = new SqlParameter("@pResult", SqlDbType.Int);
+                paramOut.Direction = ParameterDirection.Output;
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Clienti_RouteValidate]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pUrlRoute", SqlDbType.VarChar, 200).Value = urlRoute;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = (object)idCliente ?? DBNull.Value;
+                cmd.Parameters.Add(paramOut);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                return (UrlValidationResultDM)paramOut.Value;
+            }
+        }
 
         #region Immagini
         public async Task AddImagesAsync(int idCliente, IEnumerable<ClientiImmagini> immagini)
@@ -181,7 +239,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task UpdateImageAsync(int idCliente, ClientiImmagini immagine)
         {
-            if(immagine == null) { throw new ArgumentNullException(nameof(immagine)); }
+            if (immagine == null) { throw new ArgumentNullException(nameof(immagine)); }
             if (immagine.IdCliente != idCliente) throw new ArgumentException("Invalid Tenant");
             EntityEntry dbEntityEntry = _context.Entry<ClientiImmagini>(immagine);
             dbEntityEntry.State = EntityState.Modified;
@@ -282,7 +340,7 @@ namespace PalestreGoGo.DataAccess
                                     IdClienteNavigation = null,
                                     MaxLivCorsi = reader["MaxLivCorsi"] == System.DBNull.Value ? null : (short?)reader["MaxLivCorsi"],
                                     Nome = reader["Nome"] as string,
-                                    NumIngressi = reader["NumIngressi"] == System.DBNull.Value ? null : (short?)reader["NumIngressi"]                                    
+                                    NumIngressi = reader["NumIngressi"] == System.DBNull.Value ? null : (short?)reader["NumIngressi"]
                                 }
                             };
                         }

@@ -33,6 +33,7 @@ namespace Web.Models
         [Required]
         [Display(Name = "Url struttura")]
         [Remote("CheckUrl", "Clienti")]
+        [MinLength(3)]
         public string URL { get; set; }
 
         /* DATI STRUTTURA */
