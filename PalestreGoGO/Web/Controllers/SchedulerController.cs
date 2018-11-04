@@ -14,6 +14,7 @@ using Web.Services;
 using Web.Configuration;
 using Newtonsoft.Json;
 using System.Text;
+using Web.Models.Utils;
 
 namespace Web.Controllers
 {
@@ -42,11 +43,16 @@ namespace Web.Controllers
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "lid")] int? idActiveLocation)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
             ViewData["IdCliente"] = idCliente;
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, idCliente);
             var vm = new SchedulerViewModel();
             vm.Sale = await _apiClient.GetLocationsAsync(idCliente);
             vm.IdActiveLocation = idActiveLocation ?? vm.Sale.FirstOrDefault()?.Id;
+
+            cliente.OrarioApertura.MapOrarioApertura().GetMinMax(out TimeSpan? min, out TimeSpan? max);
+            vm.MinTime = min;
+            vm.MaxTime = max;
             return View(vm);
         }
 

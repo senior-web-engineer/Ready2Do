@@ -4,11 +4,12 @@
 }
 
 @section Header{
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" integrity="sha256-Tu3DN+5kwrhzlzhNUMuGht2h7cR6ARgKcYemB9u5SzA=" crossorigin="anonymous" />
     <style>
         .fc-time-grid .fc-slats td {
             height: 3em;
         }
+
         .spinner {
             position: fixed;
             top: 50%;
@@ -21,12 +22,24 @@
             width: 100px; /* width of the spinner gif */
             height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
         }
+        
+        .fc-header-toolbar h2{
+            font-size: 1.5rem;
+        }
+
+        .fc-day-header {
+            font-size: 0.8rem;
+        }
+
+        .fc-axis {
+            font-size: 0.8rem;
+        }
     </style>
 }
 
 <!-- TABS SALE-->
 <div class="row">
-    <div class="col s12">
+    <div class="col s10 offset-s1">
         <ul id="tabsContainer" class="tabs">
             @foreach (var s in Model.Sale)
             {
@@ -39,10 +52,17 @@
         </ul>
     </div>
 </div>
-<div>
-    <input type="button" value="Nuovo Evento" onclick="onNewEventoClick(this)" />
-    <div id="calendar">
-
+<div class="row">
+    <div class="col s10 offset-s1">
+    </div>
+</div>
+<div class="row">
+    <div class="col s8 offset-s1">
+        @*<input type="button" value="Nuovo Evento" onclick="onNewEventoClick(this)" />*@
+        <div class="calendar-container">
+            <div id="calendar">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -52,18 +72,17 @@
 
 
 @section Scripts{
-    <script src="~/js/jquery-2.1.3.min.js"></script>
-    <script src='~/js/moment.min.js'></script>
-    <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    @*<script src="~/materialize/js/materialize.min.js"></script>*@
-    <script src="~/materialize-v1.0.0-alpha.4/js/materialize.min.js"></script>
-    <script src="~/js/menuzord.js"></script>
-    <script src="~/js/scripts.js"></script>
-    <script src="~/fullcalendar-3.8.2/fullcalendar.min.js"></script>
-    <script src="~/fullcalendar-3.8.2/locale/it.js"></script>
+    <!-- MomentJS e FullCalendar-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js" integrity="sha256-CutOzxCRucUsn6C6TcEYsauvvYilEniTXldPa6/wu0k=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/it.js" integrity="sha256-D8y560ZGsKY1LoAajKkQCG7y0Vkye361MH4yFv2K5kk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js" integrity="sha256-QvhPq+evNjd8JyxSOU5KL3jPYTD7+gWVev1OH763SL0=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/locale/it.js" integrity="sha256-Y2D8xTTlSrBTcjPKKOeBs0zxdp9rupAIQiQZkbxVAfo=" crossorigin="anonymous"></script>
+
     <script>
         // Init Tabs
-        var instance = M.Tabs.init(document.getElementById('tabsContainer'), {});
+        var instance = M.Tabs.init(document.getElementById('tabsContainer'), {
+            
+        });
 
 
         function onNewEventoClick(src) {
@@ -94,12 +113,31 @@
 
             // page is now ready, initialize the calendar...
             $('#calendar').fullCalendar({
+                /*Button custom per aggiungere un evento*/
+                customButtons: {
+                    newEventButton: {
+                        text: 'Nuovo Evento',
+                        click: function () {
+                            addEvento(null);
+                        }
+                    }
+                },
+                header: {
+                    left: 'prev,next today newEventButton',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                allDaySlot: false,
                 // put your options and callbacks here
                 lang: "it",
                 weekends: true,
                 defaultView: "agendaWeek",
+                minTime: '@(Model.MinTime?.ToString() ?? "00:00:00")',
+                maxTime: '@(Model.MaxTime?.ToString() ?? "24:00:00")',
                 slotDuration: "01:00:00",
-                agendaEventMinHeight: 120,
+                slotLabelInterval: "01:00",
+                agendaEventMinHeight: 30,
+                height: 'auto',
                 events: {
                     url: 'eventi/feeds',
                     type: 'GET',

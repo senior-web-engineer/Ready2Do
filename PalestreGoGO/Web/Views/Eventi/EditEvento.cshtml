@@ -6,7 +6,6 @@
 }
 <head>
     @section Header{
-        <link href="~/azure.fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
         <style type="text/css">
             #formEditProfile .input-field {
                 margin-top: 0px;
@@ -20,104 +19,91 @@
     }
 </head>
 
-@Html.Partial("_MenuCliente", ViewData["IdCliente"]);
-
-<div class="container">
-    <div class="row">
-        <form class="col s12" asp-action='@(Model.Id.HasValue ? Html.Raw("edit") : Html.Raw("new"))' asp-route-id="@Model.Id" method="post">
-            <input id="idEvento" type="hidden" asp-for="@Model.Id" />
-            <div class="row">
-                <div class="input-field col s10">
+<div class="row">
+    <form class="col s12" asp-action='@(Model.Id.HasValue ? Html.Raw("edit") : Html.Raw("new"))' asp-route-id="@Model.Id" method="post">
+        <input id="idEvento" type="hidden" asp-for="@Model.Id" />
+        <div class="row">
+            <div class="col s8 offset-s2">
+                <div class="input-field">
                     <input type="text" asp-for="@Model.Title" />
                     <label asp-for="Title"></label>
                     <span asp-validation-for="Title" />
                 </div>
             </div>
-            <div class="row">
-                <div class="input-field col s5">
-                    <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
-                    <label asp-for="Data" ></label>
-                    <span asp-validation-for="Data" />
-                </div>
-                <div class="input-field col s5">
-                    <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
-                    <label asp-for="OraInizio"></label>
-                    <span asp-validation-for="OraInizio" />
-                </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s2 offset-s2">
+                <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
+                <label asp-for="Data"></label>
+                <span asp-validation-for="Data" />
             </div>
-            <div class="row">
-                <div class="input-field col s10">
-                    <select asp-for="IdLocation" asp-items="ViewBag.Locations" class=""></select>
-                    <label asp-for="IdLocation"></label>
-                    <span asp-validation-for="IdLocation" />
-                </div>
+            <div class="input-field col s2 ">
+                <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
+                <label asp-for="OraInizio"></label>
+                <span asp-validation-for="OraInizio" />
             </div>
-            <div class="row">
-                <div class="input-field col s10">
-                    <select asp-for="IdTipoLezione" asp-items="ViewBag.TipologieLezioni" class=""></select>
-                    <label asp-for="IdTipoLezione"></label>
-                    <span asp-validation-for="IdTipoLezione" />
-                </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s8 offset-s2">
+                <select asp-for="IdLocation" asp-items="ViewBag.Locations" class=""></select>
+                <label asp-for="IdLocation"></label>
+                <span asp-validation-for="IdLocation" />
             </div>
-            <div class="row">
-                <div class="input-field col s10">
-                    <input type="text" asp-for="PostiDisponibili" />
-                    <label asp-for="PostiDisponibili"></label>
-                    <span asp-validation-for="PostiDisponibili" />
-                </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s8 offset-s2">
+                <select asp-for="IdTipoLezione" asp-items="ViewBag.TipologieLezioni" class=""></select>
+                <label asp-for="IdTipoLezione"></label>
+                <span asp-validation-for="IdTipoLezione" />
             </div>
-            <div class="row">
-                <div class="input-field col s5">
-                    <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
-                    <label asp-for="DataCancellazioneMax"></label>
-                    <span asp-validation-for="DataCancellazioneMax" />
-                </div>
-                <div class="input-field col s5">
-                    <input id="oraCancellazione" type="time" asp-for='OraCancellazioneMax' class="timepicker" />
-                    <label asp-for="OraCancellazioneMax"></label>
-                    <span asp-validation-for="OraCancellazioneMax" />
-                </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s3 offset-s2">
+                <input type="text" asp-for="PostiDisponibili" />
+                <label asp-for="PostiDisponibili"></label>
+                <span asp-validation-for="PostiDisponibili" />
             </div>
-            <div class="row">
-                <div class="input-field col s10">
-                    <input type="text" asp-for="Istruttore" />
-                    <label asp-for="Istruttore"></label>
-                    <span asp-validation-for="Istruttore" />
-                </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s3 offset-s2">
+                <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
+                <label asp-for="DataCancellazioneMax"></label>
+                <span asp-validation-for="DataCancellazioneMax" />
             </div>
-            <div class="row">
-                <div class="input-field col s10">
-                    <textarea asp-for="Note" class="materialize-textarea"></textarea>
-                    <label asp-for="Note"></label>
-                    <span asp-validation-for="Note" />
-                </div>
+            <div class="input-field col s3">
+                <input id="oraCancellazione" type="time" asp-for='OraCancellazioneMax' class="timepicker" />
+                <label asp-for="OraCancellazioneMax"></label>
+                <span asp-validation-for="OraCancellazioneMax" />
             </div>
-            <div class="row">
+        </div>
+        <div class="row">
+            <div class="input-field col s8 offset-s2">
+                <input type="text" asp-for="Istruttore" />
+                <label asp-for="Istruttore"></label>
+                <span asp-validation-for="Istruttore" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s8 offset-s2">
+                <textarea asp-for="Note" class="materialize-textarea"></textarea>
+                <label asp-for="Note"></label>
+                <span asp-validation-for="Note" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1 center">
                 <button class="btn waves-effect waves-light" type="submit" name="action">
                     Salva
                     <i class="material-icons save">save</i>
                 </button>
             </div>
-        </form>
-    </div>
+        </div>
+</form>
 </div>
 
 @section Scripts{
-    <!-- jQuery -->
-    <script src='~/js/moment.min.js'></script>
-    <script src="~/bootstrap/js/bootstrap.min.js"></script>
-    <script src="~/materialize-v1.0.0/js/materialize.min.js"></script>
-    <script src="~/js/menuzord.js"></script>
-    <script src="~/js/bootstrap-tabcollapse.min.js"></script>
-    <script src="~/js/jquery.easing.min.js"></script>
-    <script src="~/js/jquery.sticky.min.js"></script>
-    <script src="~/js/smoothscroll.min.js"></script>
-    <script src="~/js/smooth-menu.js"></script>
-    <script src="~/js/jquery.stellar.min.js"></script>
-    <script src="~/js/imagesloaded.js"></script>
-    <script src="~/js/jquery.inview.min.js"></script>
-    <script src="~/js/jquery.shuffle.min.js"></script>
-    <script src="~/js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js" integrity="sha256-CutOzxCRucUsn6C6TcEYsauvvYilEniTXldPa6/wu0k=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/it.js" integrity="sha256-D8y560ZGsKY1LoAajKkQCG7y0Vkye361MH4yFv2K5kk=" crossorigin="anonymous"></script>
 
     <script>
         var i18nDate = {
@@ -139,8 +125,6 @@
 
         $(document).ready(function () {
             $('select').formSelect();
-
-            //$('.timepicker').timepicker();
 
             var elemDataEvento = document.getElementById('dataEvento');
             var elemOraEvento = document.getElementById('oraEvento');

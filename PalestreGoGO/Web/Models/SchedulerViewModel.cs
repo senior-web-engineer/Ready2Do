@@ -10,5 +10,8 @@ namespace Web.Models
         public IEnumerable<LocationViewModel> Sale { get; set; }
 
         public int? IdActiveLocation { get; set; }            
+
+        public TimeSpan? MinTime { get; set; }
+        public TimeSpan? MaxTime { get; set; }
     }
 }
