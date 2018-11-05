@@ -10,13 +10,13 @@
 
   <ItemGroup>
     <Compile Remove="IdentityModel\**" />
+    <Compile Remove="wwwroot\**" />
     <Content Remove="IdentityModel\**" />
+    <Content Remove="wwwroot\**" />
     <EmbeddedResource Remove="IdentityModel\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
     <None Remove="IdentityModel\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <None Remove="wwwroot\**" />
   </ItemGroup>
 
   <ItemGroup>

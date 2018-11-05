@@ -83,8 +83,11 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                 //.ForMember(d=>d.UserId, opt=>opt.MapFrom(src=>src.UserId));
 
 
-            CreateMap<ClienteUtenteConAbbonamento, ClienteUtenteWithAbbonamentoApiModel>();                
+            CreateMap<ClienteUtenteConAbbonamento, ClienteUtenteWithAbbonamentoApiModel>();
 
+            CreateMap<UserReferenceDM, UserReferenceApiModel>().ReverseMap();
+            CreateMap<NotificaDM, NotificaApiModel>().ReverseMap();
+            CreateMap<NotificaConTipoDM, NotificaConTipoApiModel>().ReverseMap();
         }
 
     }
