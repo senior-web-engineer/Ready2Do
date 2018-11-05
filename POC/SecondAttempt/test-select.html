@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<style>
+    header, main, footer {
+          padding-left: 300px;
+        }
+
+        @media only screen and (max-width : 992px) {
+          header, main, footer {
+            padding-left: 0;
+          }
+        }
+  </style>
+    <title>Test Select</title>
+</head>
+  <body>
+    <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">Logo</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="sass.html">Sass</a></li>
+        <li><a href="#!" class="dropdown-trigger" data-target="dropdown1"><i class="material-icons">notifications</i></a></li>
+        <li><a href="collapsible.html">JavaScript</a></li>
+      </ul>
+    </div>
+  </nav>
+  <ul id="slide-out" class="sidenav sidenav-fixed">
+    <li><a href="#!">First Sidebar Link</a></li>
+    <li><a href="#!">Second Sidebar Link</a></li>
+  </ul>
+  <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+
+<!-- Notifiche -->
+<div id="dropdown1" class="dropdown-content red">
+  <div style="max-height: 300px;">
+  <div class="notifications-title" tabindex="0">notifications</div>
+  <div class="card" tabindex="0">
+    <div class="card-content"><span class="card-title">Joe Smith made a purchase</span>
+      <p>Content</p>
+    </div>
+    <div class="card-action"><a href="#!">view</a><a href="#!">dismiss</a></div>
+  </div>
+  <div class="card" tabindex="0">
+    <div class="card-content"><span class="card-title">Daily Traffic Update</span>
+      <p>Content</p>
+    </div>
+    <div class="card-action"><a href="#!">view</a><a href="#!">dismiss</a></div>
+  </div>
+  <div class="card" tabindex="0">
+    <div class="card-content"><span class="card-title">New User Joined</span>
+      <p>Content</p>
+    </div>
+    <div class="card-action"><a href="#!">view</a><a href="#!">dismiss</a></div>
+  </div>
+  </div>
+</div>
+
+<main>
+
+</main>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+     var elems = document.querySelectorAll('.sidenav');
+     var instances = M.Sidenav.init(elems, {});
+   });
+   document.addEventListener('DOMContentLoaded', function() {
+     var elems = document.querySelectorAll('.dropdown-trigger');
+     var instances = M.Dropdown.init(elems, {
+       coverTrigger: false,
+       constrainWidth: false
+     });
+   });
+
+</script>
+  </body>
+</html>

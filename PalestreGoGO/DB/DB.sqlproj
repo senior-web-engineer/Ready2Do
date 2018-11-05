@@ -104,6 +104,8 @@
     <Build Include="dbo\Tables\ReservedRoutes.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_RouteValidate.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_OrarioSave.sql" />
+    <Build Include="dbo\Tables\Notifiche.sql" />
+    <Build Include="dbo\Tables\TipologieNotifiche.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
