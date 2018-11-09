@@ -7,7 +7,7 @@ Il parametro @pStatoNotifica indica quali notifiche si volgiono in output e può
 */
 CREATE PROCEDURE [dbo].[Notifiche_Lista]
 	@pIdUtente		VARCHAR(100) = NULL,
-	@pIdCliente		INT,
+	@pIdCliente		INT = NULL,
 	@pStatoNotifica	TINYINT = 1
 AS
 BEGIN
@@ -18,6 +18,8 @@ BEGIN
 			n.DataCreazione,
 			n.DataDismissione,
 			n.DataPrimaVisualizzazione,
+			n.DataInizioVisibilita,
+			n.DataFineVisibilita,
 			n.IdUtente,
 			tn.Id AS IdTipo,
 			tn.Code	AS Code,
@@ -26,7 +28,12 @@ BEGIN
 			tn.Priority
 	FROM Notifiche n
 		INNER JOIN TipologieNotifiche tn ON n.IdTipo = tn.Id
-	WHERE (((COALESCE(@pStatoNotifica, 1) =1) AND (n.DataDismissione IS NULL)) OR
-		   ((@pStatoNotifica = 2) AND  (n.DataDismissione IS NULL) AND (n.DataPrimaVisualizzazione IS NULL)) OR
-		   (@pStatoNotifica = 0))
+	WHERE (@pIdCliente IS NULL OR @pIdCliente = n.IdCliente) AND
+		(((COALESCE(@pStatoNotifica, 1) =1) AND (n.DataDismissione IS NULL) AND
+				(COALESCE(n.DataFineVisibilita, SYSDATETIME()) >= SYSDATETIME())) 
+		   OR ((@pStatoNotifica = 2) AND  
+				(n.DataDismissione IS NULL) AND (n.DataPrimaVisualizzazione IS NULL) AND
+				(COALESCE(n.DataFineVisibilita, SYSDATETIME()) >= SYSDATETIME())
+		   ) 
+		   OR (@pStatoNotifica = 0))
 END

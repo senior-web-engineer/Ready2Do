@@ -1,4 +1,8 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
+
+/* Dato che le varibiali in MaterializeCSS sono inizializzate con il !default, se noi le valoriziamo prima non 
+    usano il valore di default ma quello custom*/
+@import "r2do-customization.scss";
 
 // Color
 @import "components/color-variables";

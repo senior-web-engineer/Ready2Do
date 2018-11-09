@@ -109,6 +109,12 @@
     <Build Include="dbo\Stored Procedures\Notifiche_Add.sql" />
     <Build Include="dbo\Stored Procedures\Notifiche_Lista.sql" />
     <Build Include="dbo\Stored Procedures\Notifiche_Aggiorna.sql" />
+    <None Include="Scripts\Prepop\Prepop.Test.TipologieNotifiche.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieLezioni_Add.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieLezioni_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieLezioni_Modifica.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieLezioni_Lista.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieLezioni_CheckNome.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

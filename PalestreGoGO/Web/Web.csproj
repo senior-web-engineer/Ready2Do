@@ -134,6 +134,12 @@
     <Content Update="Views\Shared\Clienti\_SideNav.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Shared\Components\Navbar\Default.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\Components\Notifiche\Default.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Shared\Components\SideNav\Default.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

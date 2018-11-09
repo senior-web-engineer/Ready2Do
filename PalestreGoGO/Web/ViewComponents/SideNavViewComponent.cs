@@ -3,17 +3,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Models;
+using Web.Utils;
 
 namespace Web.ViewComponents
 {
     
     public class SideNavViewComponent: ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke(int ?idClienteCorrente)
         {
-            /**/
-            return View();
+            SideNavViewModel vm = new SideNavViewModel();
+            vm.IsVisible = UserClaimsPrincipal.CanViewSidebar(idClienteCorrente.Value);
+            if (vm.IsVisible)
+            {
+                vm.CurrentController = ViewContext.RouteData.Values["Controller"].ToString().ToLowerInvariant();
+                vm.CurrentAction = ViewContext.RouteData.Values["Action"].ToString().ToLowerInvariant();
+            }
+            return View(vm);
         }
-
     }
 }

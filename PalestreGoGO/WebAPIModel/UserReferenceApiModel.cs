@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PalestreGoGo.DataModel
+namespace PalestreGoGo.WebAPIModel
 {
     public class UserReferenceApiModel
     {

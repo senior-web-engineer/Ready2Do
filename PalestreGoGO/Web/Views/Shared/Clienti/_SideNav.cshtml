@@ -1,58 +1,62 @@
-﻿@*<div class="container ">*@
-<a href="#" data-target="nav-mobile" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a>
-<ul id="nav-mobile" class="sidenav sidenav-fixed grey darken-1">
-    <!-- spacer-->
-    <li class="no-padding ">
-        <div class="r2d-sidenav-topspacer"></div>
-    </li>
-    <li class="no-padding">
-        <a class="white-text r2d-text-bold" asp-action="Index" asp-controller="Clienti">
-            Home
-        </a>
-    </li>
-    <li class="">
-        <ul class="collapsible collapsible-accordion grey darken-1">
-            <li>
-                <a class="collapsible-header waves-effect white-text r2d-text-bold">Modifica Dati Struttura</a>
-                <div class="collapsible-body grey darken-1">
-                    <ul>
-                        <li>
-                            <a class="white-text r2d-sidenav-item" asp-action="GetAnagrafica" asp-controller="ProfiloCliente">
-                                Anagrafica
-                            </a>
-                        </li>
-                        <li>
-                            <a class="white-text r2d-sidenav-item" asp-action="GetBanner" asp-controller="ProfiloCliente">
-                                Immagine Profilo
-                            </a>
-                        </li>
-                        <li>
-                            <a class="white-text r2d-sidenav-item" asp-action="GetOrarioApertura" asp-controller="ProfiloCliente">
-                                Orario Apertura
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-        </ul>
-    </li>
-    <li><a class="white-text r2d-text-bold" asp-action="Index" asp-controller="Scheduler">Gestione Calendari</a></li>
-    <li><a class="white-text r2d-text-bold" asp-action="GalleryEdit" asp-controller="Clienti">Gestione Immagini</a></li>
-    <li><a class="white-text r2d-text-bold" asp-action="ListaSale" asp-controller="Sale">Gestione Sale</a></li>
-    <li><a class="white-text r2d-text-bold" asp-action="ListaLezioni" asp-controller="TipologieLezioni">Gestione Tipologie Lezioni</a></li>
-    <li><a class="white-text r2d-text-bold" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti">Gestione Tipologia Abbonamenti</a></li>
-    <li><a class="white-text r2d-text-bold" asp-action="GetUtentiCliente" asp-controller="Clienti">Gestione Utenti</a></li>
-    <li>
-        <partial name="_Banner_RettangoloMedio" />
-    </li>
-</ul>
-@*</div>*@
+﻿@model SideNavViewModel;
 
-<script>
-    /* Assume che JQuery sia già stato caricata */
-    $(document).ready(function () {
-        //INIT SIDENAV
-        $('.sidenav').sidenav();
-        $('.collapsible').collapsible();
-    });
-</script>
+@if (Model.IsVisible)
+{
+    <a href="#" data-target="nav-mobile" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="sidenav sidenav-fixed grey darken-1">
+        <!-- spacer-->
+        <li class="no-padding ">
+            <div class="r2d-sidenav-topspacer"></div>
+        </li>
+        <li class="no-padding">
+            <a class="white-text r2d-text-bold" asp-action="Index" asp-controller="Clienti">
+                Home
+            </a>
+        </li>
+        <li class="@(Model.CurrentController.Equals("profilocliente") ? "active" : "")">
+            <ul class="collapsible collapsible-accordion">
+                <li>
+                    <a class="collapsible-header waves-effect">Modifica Dati Struttura</a>
+                    <div class="collapsible-body">
+                        <ul>
+                            <li>
+                                <a class="r2d-sidenav-item" asp-action="GetAnagrafica" asp-controller="ProfiloCliente">
+                                    Anagrafica
+                                </a>
+                            </li>
+                            <li>
+                                <a class="r2d-sidenav-item" asp-action="GetBanner" asp-controller="ProfiloCliente">
+                                    Immagine Profilo
+                                </a>
+                            </li>
+                            <li>
+                                <a class="r2d-sidenav-item" asp-action="GetOrarioApertura" asp-controller="ProfiloCliente">
+                                    Orario Apertura
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li><a class="white-text r2d-text-bold" asp-action="Index" asp-controller="Scheduler">Calendari</a></li>
+        <li><a class="white-text r2d-text-bold" asp-action="GalleryEdit" asp-controller="Clienti">Galleria Immagini</a></li>
+        <li><a class="white-text r2d-text-bold" asp-action="ListaSale" asp-controller="Sale">Sale e Trainer</a></li>
+        <li><a class="white-text r2d-text-bold" asp-action="ListaLezioni" asp-controller="TipologieLezioni">Tipologie Lezioni</a></li>
+        <li><a class="white-text r2d-text-bold" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti">Tipologia Abbonamenti</a></li>
+        <li><a class="white-text r2d-text-bold" asp-action="GetUtentiCliente" asp-controller="Clienti">Utenti</a></li>
+        <li>
+            <partial name="_Banner_RettangoloMedio" />
+        </li>
+    </ul>
+
+
+    <script>
+        /* Assume che JQuery sia già stato caricata */
+        $(document).ready(function () {
+            //INIT SIDENAV
+            $('.sidenav').sidenav();
+            $('.collapsible').collapsible();
+        });
+    </script>
+}

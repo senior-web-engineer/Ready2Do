@@ -32,13 +32,16 @@
 </head>
 <body>
     <header>
-        <partial name="_NavMain" view-data="ViewData" />
+        @*@await Component.InvokeAsync("Navbar", (int)ViewData["IdCliente"]);*@
+        <vc:navbar id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:navbar>
+        @*<partial name="_NavMain" view-data="ViewData" />*@
 
+        <vc:side-nav id-cliente="@((int)ViewData["IdCliente"])"></vc:side-nav>
         <!-- SIDEBAR (solo se è un Admin) -->
-        @if (User.CanViewSidebar((int)ViewData["IdCliente"]))
+        @*@if (User.CanViewSidebar((int)ViewData["IdCliente"]))
         {
             <partial name="_SideNav" view-data="ViewData" />
-        }
+        }*@
     </header>
     <main class="@(@User.CanViewSidebar((int)ViewData["IdCliente"]) ? "r2d-nav-padding " : "r2d-no-padding ")">
         <div class="container-fluid">

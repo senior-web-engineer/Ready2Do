@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PalestreGoGo.DataModel
+namespace PalestreGoGo.WebAPIModel
 {
     public class NotificaConTipoApiModel : NotificaApiModel
     {
-        public TipologiaNotifica Tipo { get; set; }
+        public TipologiaNotificaApiModel Tipo { get; set; }
     }
 }

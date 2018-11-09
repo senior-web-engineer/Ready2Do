@@ -1,88 +1,13 @@
-﻿/* La pagina principale è spostata 300px a destra per lasciare spazio alla sidebar */
-main.r2d-nav-padding {
-    padding-left: 300px;
-}
+﻿@import "components/variables";
+@import "components/common";
+@import "components/banners";
+@import "components/notifiche";
+@import "components/sidenav";
+@import "components/navbar";
+@import "components/calendar";
 
-main.r2d-no-padding {
-    padding-left: 0;
-}
 
-@media only screen and (max-width : 992px) {
-    header, main, footer {
-        padding-left: 0;
-    }
-    main.r2d-nav-padding {
-        padding-left: 0;
-    }
-}
 
-/* La sidenav deve essere sotto la navbar*/
-.sidenav-fixed {
-    top: 58px;
-}
-
-@media only screen and (min-width:601px) {
-    .sidenav-fixed {
-        top: 66px;
-    }
-}
-
-.r2d-sidenav-topspacer {
-    height: 3rem;
-}
-
-.r2d-actionset-v {
-    display: flex;
-    align-items: center;
-    ul {
-        li{
-            padding-top: 4px;
-        }
-    }
-}
-
-.r2d-text-bold {
-    font-weight: 700 !important;
-}
-/* Ridefiniamo lo stile degli item della sidenav*/
-.sidenav-fixed .collapsible .collapsible-header {
-    /* utiliziamo una maggiore specificità (3 classi) per fare l'override del padding di default*/
-    padding-left: 32px;
-}
-.sidenav .collapsible-body li a, .sidenav.fixed .collapsible-body li a .r2d-sidenav-item {
-    padding-left: 42px;
-}
-
-.r2d-sidenav-item {
-    /*font-weight: 700 !important;*/
-}
-
-.r2d-nav-logo {
-    padding-left: 3% !important;
-}
-
-.r2d-nav-menu {
-    padding-right: 5%;
-}
-
-.r2-nav-dropdwonAccount {
-    width: 200px;
-}
-
-//Messaggi di errore
-.field-validation-error{
-    color: red;
-}
-
-/* CUSTOMIZZAZIONE CALENDARIO */
-.fc-time-grid .fc-slats td {
-    height: 3em;
-}
-
-.r2d-section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-}
 
 .r2d-swiper-image {
     max-width: 711px;
@@ -113,19 +38,7 @@ main.r2d-no-padding {
     align-items: center;
 }
 
-/* Stile per i banner pubblicitari*/
-.adsbanner_container {
-    padding-bottom: 0.5rem;
-    padding-top: 0.5rem;
-}
 
-.r2d-banner-leaderboard{
-    text-align: center;
-}
-
-.r2d-banner-mezzapagina{
-
-}
 
 /* STILI PAGINA PROFILO */
 #formEditProfile .input-field {

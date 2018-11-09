@@ -1,60 +1,140 @@
-﻿using PalestreGoGo.DataModel;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using PalestreGoGo.DataModel;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq.Expressions;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
     public class TipologieLezioniRepository : ITipologieLezioniRepository
     {
-        private readonly PalestreGoGoDbContext _context;
+        //private readonly PalestreGoGoDbContext _context;
 
-        public TipologieLezioniRepository(PalestreGoGoDbContext context) 
+        private IConfiguration _configuration;
+        private readonly ILogger<TipologieLezioniRepository> _logger;
+
+        public TipologieLezioniRepository(IConfiguration configuration, ILogger<TipologieLezioniRepository> logger)
         {
-            this._context = context;
+            _configuration = configuration;
+            _logger = logger;
         }
 
-        public virtual IEnumerable<TipologieLezioni> GetAll(int idTenant)
+        public async Task<IEnumerable<TipologieLezioni>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000)
         {
-            return _context.Set<TipologieLezioni>().Where(e => e.IdCliente.Equals(idTenant)).AsNoTracking();
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                return await cn.QueryAsync<TipologieLezioni>("[dbo].[TipologieLezioni_Lista]",
+                                                                new
+                                                                {
+                                                                    pIdCliente = idTenant,
+                                                                    pPageSize = pageSize,
+                                                                    pPageNumber = pageNumber,
+                                                                    pSortColumn = sortColumn,
+                                                                    pOrderAscending = sortAsc
+                                                                },
+                                                                commandType: CommandType.StoredProcedure);
+            }
         }
 
-        public virtual int Count(int idTenant)
+        public async Task<int> CountAsync(int idTenant)
         {
-            return _context.Set<TipologieLezioni>().Count(e => e.IdCliente == idTenant);
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                return await cn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM [dbo].[TipologieLezioni] WHERE DataCancellazione IS NULL");
+            }
         }
 
-        public TipologieLezioni GetSingle(int idTenant, int itemKey)
+        public async Task<TipologieLezioni> GetAsync(int idTenant, int itemKey)
         {
-            return _context.Set<TipologieLezioni>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant));
+            TipologieLezioni result = null;
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var list = await cn.QueryAsync<TipologieLezioni>("[dbo].[TipologieLezioni_Lista]",
+                                                            new
+                                                            {
+                                                                pIdCliente = idTenant,
+                                                                pId = itemKey
+                                                            },
+                                                            commandType: CommandType.StoredProcedure);
+
+                if (list != null)
+                {
+                    result = list.FirstOrDefault();
+                }
+            }
+            return result;
         }
 
-        public void Add(int idTenant, TipologieLezioni entity)
+
+        public async Task<int> AddAsync(int idTenant, TipologieLezioni entity)
         {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
             if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
-            _context.Set<TipologieLezioni>().Add(entity);
-            _context.SaveChanges();
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
+                parId.Direction = ParameterDirection.Output;
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieLezioni_Add]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = entity.IdCliente;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = entity.Nome;
+                cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, 500).Value = entity.Descrizione;
+                cmd.Parameters.Add("@pDurata", SqlDbType.Int).Value = entity.Durata;
+                cmd.Parameters.Add("@pMaxPartecipanti", SqlDbType.Int).Value = entity.MaxPartecipanti;
+                cmd.Parameters.Add("@pLimiteCancellazioneMinuti", SqlDbType.SmallInt).Value = entity.LimiteCancellazioneMinuti;
+                cmd.Parameters.Add("@pLivello", SqlDbType.Int).Value = entity.Livello;
+                cmd.Parameters.Add(parId);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                entity.Id = (int)parId.Value;
+            }
+            return entity.Id;
         }
 
-        public void Update(int idTenant, TipologieLezioni entity)
+        public async Task UpdateAsync(int idTenant, TipologieLezioni entity)
         {
-            //Attenzione! Non verifichiamo il tenant
-            if(entity.IdCliente != idTenant) throw new ArgumentException("idTenant not valid"); 
-            EntityEntry dbEntityEntry = _context.Entry<TipologieLezioni>(entity);
-            dbEntityEntry.State = EntityState.Modified;
-            _context.SaveChanges();
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieLezioni_Modifica]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = entity.Id;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = entity.IdCliente;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = entity.Nome;
+                cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, 500).Value = entity.Descrizione;
+                cmd.Parameters.Add("@pDurata", SqlDbType.Int).Value = entity.Durata;
+                cmd.Parameters.Add("@pMaxPartecipanti", SqlDbType.Int).Value = entity.MaxPartecipanti;
+                cmd.Parameters.Add("@pLimiteCancellazioneMinuti", SqlDbType.SmallInt).Value = entity.LimiteCancellazioneMinuti;
+                cmd.Parameters.Add("@pLivello", SqlDbType.Int).Value = entity.Livello;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
-        public virtual void Delete(int idTenant, int entityKey)
+        public async Task DeleteAsync(int idTenant, int entityKey)
         {
-            var entity = _context.TipologieLezioni.Where(tl => tl.IdCliente.Equals(idTenant) && tl.Id.Equals(entityKey)).Single();
-            var entry = _context.Entry(entity);
-            entry.State = EntityState.Deleted;
-            _context.SaveChanges();
-        }        
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieLezioni_Modifica]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = idTenant;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = entityKey;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
     }
 }

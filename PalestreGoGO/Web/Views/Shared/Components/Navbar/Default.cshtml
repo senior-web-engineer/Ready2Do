@@ -1,0 +1,85 @@
+﻿@model Web.Models.ViewComponents.NavbarViewModel;
+
+<div class="navbar-fixed">
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#!" class="brand-logo r2d-nav-logo">
+                <img srcset="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H56.png 144w,
+                   https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H64.png 164w"
+                     sizes="(max-width: 600px) 144px,
+            164px"
+                     src="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H64.png">
+            </a>
+            <ul class="right r2d-nav-menu">
+                @if (Model.UserIsAuthenticated)
+                {
+                    <!-- NOTIFICHE -->
+                    <li>
+                        <a id="ddTrgNotifiche" href="#!" data-target="dropdownNotifiche" class="dropdown-trigger waves-effect">
+                            <i class='material-icons large'>@(Model.NumNotifichePresenti > 0 ? "notifications" : "notifications_noen")</i>
+                            @if (Model.NumNotifichePresenti > 0)
+                            {
+                                <span class="@(Model.NumNuovNotifichePresenti> 0 ? "new ": "")badge">@Model.NumNotifichePresenti</span>
+                            }
+                        </a>
+                    </li>
+                    <!-- FINE NOTIFICHE -->
+
+                    <!-- PROFILO -->
+                    <li>
+                        <a id="ddTrgAccount" href="#!" data-target="dropdownAccount" class="dropdown-trigger waves-effect">
+                            <i class='material-icons large'>account_circle</i>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl" class="waves-effect waves-light btn pink accent-2">Accedi</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+</div>
+
+<!-- TODO: Gestire le notifiche tramite PartialView separata-->
+<div id="dropdownNotifiche" class="dropdown-content notifications" tabindex="0" style="">
+    <!-- Il contenuto verrà caricato tramite chiamata ajax all'open-->
+    <vc:notifiche id-cliente="@Model.IdClienteCorrente"></vc:notifiche>
+</div>
+
+<div id="dropdownAccount" class="dropdown-content" tabindex="0" style="">
+    <div>
+        <ul>
+            <li><a asp-action="EditProfilo" asp-controller="Users">Profilo</a></li>
+            <li class="divider"></li>
+            <li>
+                <a asp-route="logout" asp-route-returnUrl="@Model.ReturnUrl">
+                    <i class="material-icons small">exit_to_app</i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ddNotifiche = document.getElementById('ddTrgNotifiche');
+        var instances = M.Dropdown.init(ddNotifiche, {
+            constrainWidth = false,
+            coverTrigger = false,
+       //     onOpenStart = getNotifications
+        });
+    });
+
+    @*function getNotifications(instance, elem) {
+        $.ajax('@(Url.Action("GetNotificheViewComponent", "Notifiche"))')
+            .done(function (data, textStatus, jqXHR) {
+                elem.html(data);
+            });
+    }*@
+</script>

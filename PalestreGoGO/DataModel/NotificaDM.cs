@@ -17,6 +17,8 @@ namespace PalestreGoGo.DataModel
         public string Testo { get; set; }
         public DateTime DataCreazione { get; set; }
         public DateTime? DataDismissione { get; set; }
+        public DateTime? DataInizioVisibilita { get; set; }
+        public DateTime? DataFineVisibilita { get; set; }       
         public DateTime? DataPrimaVisualizzazione { get; set; }
     }
 }

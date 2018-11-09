@@ -1,18 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
-using PalestreGoGo.WebAPI.ViewModel;
 using PalestreGoGo.WebAPIModel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
@@ -27,13 +23,16 @@ namespace PalestreGoGo.WebAPI.Controllers
 
         public TipoLezioniController(ITipologieLezioniRepository repository, ILogger<TipoLezioniController> logger)
         {
-            this._logger = logger;
-            this._repository = repository;
+            _logger = logger;
+            _repository = repository;
         }
 
         [AllowAnonymous]
         [HttpGet()]
-        public IActionResult GetAll([FromRoute]int idCliente)
+        public async Task<IActionResult> GetList([FromRoute]int idCliente, [FromQuery(Name = "page")] int pageNumber = 1,
+                                                 [FromQuery(Name = "pageSize")] int pageSize = 100,
+                                                 [FromQuery(Name = "sortby")] string sortColumn = null,
+                                                 [FromQuery(Name = "sortype")] string sortType = "asc")
         {
             //TODO: Rivedere la gestione della security
             //bool authorized = GetCurrentUser().CanReadTipologiche(idCliente);
@@ -41,21 +40,21 @@ namespace PalestreGoGo.WebAPI.Controllers
             //{
             //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             //}
-            var tipoLezioni = _repository.GetAll(idCliente);
+            var tipoLezioni = await _repository.GetListAsync(idCliente, sortColumn, (sortType ?? "asc").ToLowerInvariant() == "asc", pageNumber, pageSize);
             var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
             return new OkObjectResult(result);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}", Name = "GetTipoLezione")]
-        public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
+        public async Task<IActionResult> GetOne([FromRoute]int idCliente, [FromRoute]int id)
         {
             bool authorized = GetCurrentUser().CanReadTipologiche(idCliente);
             if (!authorized)
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
-            var tipoLezione = _repository.GetSingle(idCliente, id);
+            var tipoLezione = await _repository.GetAsync(idCliente, id);
             if ((tipoLezione == null) || (tipoLezione.IdCliente != idCliente))
             {
                 return BadRequest();
@@ -66,7 +65,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 
 
         [HttpPost()]
-        public IActionResult Create([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public async Task<IActionResult> CreateAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
         {
 
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
@@ -80,13 +79,13 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
             m.IdCliente = idCliente;
-            _repository.Add(idCliente, m);
+            await _repository.AddAsync(idCliente, m);
             //return CreatedAtAction("GetTipoLezione", new { idCliente, id = m.Id });
             return Ok();
         }
 
         [HttpPut()]
-        public IActionResult Modify([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public async Task<IActionResult> ModifyAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -98,23 +97,23 @@ namespace PalestreGoGo.WebAPI.Controllers
                 return BadRequest();
             }
             var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
-            var oldEntity = _repository.GetSingle(idCliente, m.Id);
-            if (oldEntity == null)
-            {
-                return BadRequest();
-            }
-            oldEntity.Descrizione = model.Descrizione;
-            oldEntity.Durata = model.Durata;
-            oldEntity.Livello = model.Livello;
-            oldEntity.MaxPartecipanti = model.MaxPartecipanti;
-            oldEntity.Nome = model.Nome;
-            oldEntity.LimiteCancellazioneMinuti = model.LimiteCancellazioneMinuti;
-            _repository.Update(idCliente, oldEntity);
+            //var oldEntity = _repository.GetSingle(idCliente, m.Id);
+            //if (oldEntity == null)
+            //{
+            //    return BadRequest();
+            //}
+            //oldEntity.Descrizione = model.Descrizione;
+            //oldEntity.Durata = model.Durata;
+            //oldEntity.Livello = model.Livello;
+            //oldEntity.MaxPartecipanti = model.MaxPartecipanti;
+            //oldEntity.Nome = model.Nome;
+            //oldEntity.LimiteCancellazioneMinuti = model.LimiteCancellazioneMinuti;
+            await _repository.UpdateAsync(idCliente, m);
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute]int idCliente, [FromQuery] int id)
+        public async Task<IActionResult> DeleteAsync([FromRoute]int idCliente, [FromQuery] int id)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -125,7 +124,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            _repository.Delete(idCliente, id);
+            await _repository.DeleteAsync(idCliente, id);
             return new NoContentResult();
         }
     }

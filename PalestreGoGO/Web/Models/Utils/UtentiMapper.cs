@@ -57,11 +57,42 @@ namespace Web.Models.Utils
         {
             if (cfEnum == null) throw new ArgumentNullException(nameof(cfEnum));
 
-            foreach(var item in cfEnum) {
-                yield return item.MapToClienteFollowed(); 
+            foreach (var item in cfEnum)
+            {
+                yield return item.MapToClienteFollowed();
             }
         }
 
 
+        private static string MapToIcon(this TipologiaNotificaApiModel tipo)
+        {
+            if ((tipo == null) || (tipo.Code == null)) return null;
+            switch (tipo.Code.Trim().ToUpper())
+            {
+                case "ACCOUNT_TO_CONFIRM":
+                    return "warning";
+                default:
+                    return null;
+            }
+        }
+
+        public static List<NotificaViewModel> MapToViewModel(this IEnumerable<NotificaConTipoApiModel> apiModel)
+        {
+            if (apiModel == null) { return null; }
+            List<NotificaViewModel> result = new List<NotificaViewModel>();
+            foreach (var item in apiModel.OrderBy(i => i.Tipo.Priority))
+            {
+                result.Add(new NotificaViewModel()
+                {
+                    Id = item.Id.Value,
+                    DataCreazione = item.DataCreazione,
+                    IsNew = !item.DataPrimaVisualizzazione.HasValue,
+                    Testo = item.Testo,
+                    Titolo = item.Titolo,
+                    IconName = item.Tipo.MapToIcon()
+                });
+            }
+            return result;
+        }
     }
 }

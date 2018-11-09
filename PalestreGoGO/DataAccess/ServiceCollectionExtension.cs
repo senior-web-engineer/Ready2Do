@@ -29,7 +29,7 @@ namespace PalestreGoGo.DataAccess
             services.AddTransient<ITipologieClientiRepository, TipologieClientiRepository>();
             services.AddTransient<IMailTemplatesRepository, MailTemplatesRepository>();
             services.AddTransient<IUtentiRepository, UtentiRepository>();
-
+            services.AddTransient<INotificheRepository, NotificheRepository>();
             return services;
         }
     }

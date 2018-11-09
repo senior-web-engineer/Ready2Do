@@ -525,5 +525,19 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
         }
+
+        #region NOTIFICHE
+        public async Task<List<NotificaViewModel>> GetNotificheForUserAsync(string access_token, int? idCliente = null) {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/users/notifiche");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<NotificaConTipoApiModel>>(responseString, _serializerSettings);
+            return result.MapToViewModel();
+        }
+        #endregion
     }
 }

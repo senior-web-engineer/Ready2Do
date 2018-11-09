@@ -1,14 +1,31 @@
 ﻿CREATE PROCEDURE [dbo].[Notifiche_Add]
-	@pIdTipo		INT,
-	@pIdUtente		VARCHAR(100),
-	@pIdCliente		INT = NULL,
-	@pTitolo		NVARCHAR(50),
-	@pTesto			NVARCHAR(250),
-	@pIdNotitifica	BIGINT OUTPUT
+	@pIdTipo				INT,
+	@pIdUtente				VARCHAR(100),
+	@pIdCliente				INT = NULL,
+	@pTitolo				NVARCHAR(50),
+	@pTesto					NVARCHAR(250),
+	@pDataInizioVisibilita	DATETIME2 = NULL,
+	@pDataFineVisibilita	DATETIME2 = NULL,
+	@pIdNotitifica			BIGINT OUTPUT
 AS
 BEGIN
-	INSERT INTO Notifiche(IdTipo, IdUtente, IdCliente, Titolo, Testo)
-		VALUES (@pIdTipo, @pIdUtente, @pIdCliente, @pTitolo, @pTesto);
+	DECLARE @autodismissAfter	BIGINT,
+			@dtEndVis			DATETIME2
+	IF (@pDataInizioVisibilita IS NULL)
+	BEGIN
+		SELECT @autodismissAfter = tn.AutoDismissAfter 
+			FROM TipologieNotifiche tn WHERE Id = @pIdTipo;
+		IF @autodismissAfter IS NOT NULL
+		BEGIN
+			SET @pDataFineVisibilita = DATEADD(SECOND, @autodismissAfter, SYSDATETIME())
+		END
+	END
+	ELSE
+	BEGIN
+		SET @dtEndVis = @pDataFineVisibilita;
+	END
+	INSERT INTO Notifiche(IdTipo, IdUtente, IdCliente, Titolo, Testo, DataInizioVisibilita, DataFineVisibilita)
+		VALUES (@pIdTipo, @pIdUtente, @pIdCliente, @pTitolo, @pTesto, @pDataInizioVisibilita, @dtEndVis);
 
 	SET @pIdNotitifica = SCOPE_IDENTITY();
 END

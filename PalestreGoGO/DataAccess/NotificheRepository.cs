@@ -8,7 +8,6 @@ using Dapper;
 using System.Data.SqlClient;
 using PalestreGoGo.DataModel.Exceptions;
 using Microsoft.Extensions.Configuration;
-using PalestreGoGo.DataAccess.Interfaces;
 using Dapper;
 
 namespace PalestreGoGo.DataAccess
@@ -37,7 +36,9 @@ namespace PalestreGoGo.DataAccess
                                                         pIdUtente = notifica.UserRef.UserId,
                                                         pIdCliente = notifica.IdCliente,
                                                         pTitolo = notifica.Titolo,
-                                                        pTesto = notifica.Testo
+                                                        pTesto = notifica.Testo,
+                                                        pDataInizioVisibilita = notifica.DataInizioVisibilita,
+                                                        pDataFineVisibilita = notifica.DataFineVisibilita,
                                                     }, commandType: System.Data.CommandType.StoredProcedure);
             }
         }

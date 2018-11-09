@@ -10,7 +10,8 @@
 	[Istruttore]			NVARCHAR(150)	NULL,
 	[PostiDisponibili]		INT				NOT NULL,	-- Posti inizilamente disponibili
 	[PostiResidui]			INT				NOT NULL,	-- Contatore dei posti ancora disponibili
-	[CancellabileFinoAl]	DATETIME2		NOT NULL,	
+	[CancellabileFinoAl]	DATETIME2		NOT NULL,
+	--[PrenotabileFinoAl]		DATETIME2		NOT NULL,
 	[DataCancellazione]		DATETIME2		NULL,		-- Valorizzata se la classe è stata cancellata dalla palestra
 	[UserIdOwner]			NVARCHAR(450)	NULL,	-- Utente titolare della classe (se valorizzato è l'unico che può editare la classe)
 	[Note]					NVARCHAR(1000)	NULL,

@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PalestreGoGo.DataAccess;
@@ -36,8 +37,12 @@ namespace Tests.WebAPI.Tipologiche
         private Mock<TipoLezioniController> SetupController(ClaimsPrincipal principal)
         {
             var loggerMock = new Mock<ILogger<TipoLezioniController>>();
-            var dbCtx = Utils.BuildDbContext();
-            var repo = new TipologieLezioniRepository(dbCtx);
+            var loggerRepoMock = new Mock<ILogger<TipologieLezioniRepository>>();
+            var configMock = new Mock<IConfiguration>(new MockBehavior()
+            {
+                
+            });
+            var repo = new TipologieLezioniRepository(configMock.Object, loggerRepoMock.Object);
             var controllerMocked = new Mock<TipoLezioniController>(repo, loggerMock.Object);
             controllerMocked.CallBase = true;
             controllerMocked.Setup(x => x.GetCurrentUser()).Returns(principal);
@@ -59,7 +64,7 @@ namespace Tests.WebAPI.Tipologiche
                 MaxPartecipanti = s_random.Next(5, 20),
                 LimiteCancellazioneMinuti = (short)s_random.Next(60, 120)
             };
-            var result = controller.Object.Create(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione);
+            var result = controller.Object.CreateAsync(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione).Result;
             var okResult = result.Should().BeOfType<CreatedAtActionResult>().Subject;
             var id = okResult.Value.Should().BeAssignableTo<int>().Subject;
             id.Should().BeGreaterThan(0);
@@ -96,7 +101,7 @@ namespace Tests.WebAPI.Tipologiche
             _tipoLezioneFixture.TipoLezione.Durata = 90;
             _tipoLezioneFixture.TipoLezione.LimiteCancellazioneMinuti = 600;
             _tipoLezioneFixture.TipoLezione.Livello = 200;
-            var result = controller.Object.Modify(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione);
+            var result = controller.Object.ModifyAsync(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione).Result;
             var okResult = result.Should().BeOfType<OkResult>().Subject;
         }
 
@@ -106,7 +111,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Modify_tipo_lezione ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.Modify(Utils.ID_CLIENTE_TEST_1 + 10, _tipoLezioneFixture.TipoLezione);
+            var result = controller.Object.ModifyAsync(Utils.ID_CLIENTE_TEST_1 + 10, _tipoLezioneFixture.TipoLezione).Result;
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -145,7 +150,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Get_all_tipi_lezioni ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.GetAll(Utils.ID_CLIENTE_TEST_1);
+            var result = controller.Object.GetList(Utils.ID_CLIENTE_TEST_1).Result;
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
             var tipiLezioni = okResult.Value.Should().BeAssignableTo<IEnumerable<TipologieLezioniViewModel>>().Subject;
             tipiLezioni.Count().Should().BeGreaterThan(1);
@@ -165,7 +170,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Delete_tipo_lezione ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var result = controller.Object.Delete(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value);
+            var result = controller.Object.DeleteAsync(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value).Result;
             var okResult = result.Should().BeOfType<NoContentResult>().Subject;
         }
     }
