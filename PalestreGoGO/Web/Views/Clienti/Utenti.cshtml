@@ -2,15 +2,12 @@
 
 @{
     ViewData["Title"] = "Index";
-    //TODO: gestire layout specifico per l'utente (??)
     Layout = "_LayoutClienti";
 }
 
-@Html.Partial("_MenuCliente", ViewData["IdCliente"])
-
-<div class="container">
     <div class="row">
-        <h2>Utenti Associati</h2>
+        <h6>Utenti Associati</h6>
+
 
         <table>
             <thead>

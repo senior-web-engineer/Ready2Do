@@ -85,6 +85,9 @@ namespace Web.Utils
             return result;
         }
 
+
+
+
         public async Task<IEnumerable<TipologiaClienteViewModel>> GetTipologiClientiAsync()
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/tipologie");
@@ -163,10 +166,10 @@ namespace Web.Utils
             return result;
         }
 
-        public async Task<Models.TipologieLezioniViewModel> GetOneTipologiaLezione(int idCliente, int idLocation, string access_token)
+        public async Task<Models.TipologieLezioniViewModel> GetOneTipologiaLezione(int idCliente, int idTipologia, string access_token)
         {
             HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{idLocation}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{idTipologia}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -174,6 +177,21 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<Models.TipologieLezioniViewModel>(responseString, _serializerSettings);
             return result;
         }
+
+
+        //checkname/{nome:string}
+        public async Task<bool> CheckNameTipologiaLezioneAsync(int idCliente, string nome, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/checkname/{nome}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<bool>(responseString, _serializerSettings);
+            return result;
+        }
+
 
         public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloViewModel profilo, string access_token)
         {

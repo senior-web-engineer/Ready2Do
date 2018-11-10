@@ -25,14 +25,21 @@
 
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="text" asp-for="Nome" id="inputNomeStruttura" />
+                <input type="text" asp-for="Nome" id="inputNomeStruttura" data-length="100"/>
                 <label>Nome della struttura</label>
                 <span asp-validation-for="Nome"></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="text" asp-for="UrlRoute">
+                <textarea asp-for="Descrizione" id="textAreaDescrizione" class="materialize-textarea" data-length="1000"></textarea>
+                <label>Descrizione della struttura</label>
+                <span asp-validation-for="Descrizione" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s8 offset-s2">
+                <input type="text" id="inputUrlRoute" asp-for="UrlRoute" data-length="205">
                 <div class="helper-text">
                     Identificativo che formerà  l'indirizzo web a cui sarà visibile la pagina della struttura.
                     E' possibile personalizzare solo la parte finale dell'indirizzo web.
@@ -45,27 +52,27 @@
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="email" asp-for="Email" />
+                <input type="email" id="inputEmail" asp-for="Email" data-length="100"/>
                 <label>Indirizzo email della struttura</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="tel" asp-for="NumTelefono" />
+                <input type="tel" id="inputTelefono" asp-for="NumTelefono" data-length="50"/>
                 <label>Numeri di Telefono della Struttura</label>
                 <span asp-validation-for="NumTelefono"></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="text" asp-for="RagioneSociale" />
+                <input type="text" id="inputRagioneSociale" asp-for="RagioneSociale" data-length="100"/>
                 <label>Ragione Sociale della Struttura</label>
                 <span asp-validation-for="RagioneSociale"></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" />
+                <input id="addressAutocomplete" id="inputIndirizzo" type="text" asp-for="Indirizzo" data-length="250"/>
                 <label asp-for="Indirizzo"></label>
                 <span asp-validation-for="Indirizzo"></span>
             </div>
@@ -94,6 +101,7 @@
 
         $(document).ready(function () {
             $('.tooltipped').tooltip();
+            $('input#inputNomeStruttura, input#inputUrlRoute, input#inputEmail, input#inputTelefono, input#inputRagioneSociale, input#inputIndirizzo, textarea#textAreaDescrizione').characterCounter();
 
             /// GOOGLE AUTOCOMPLETE ///
             var input = document.getElementById('addressAutocomplete');

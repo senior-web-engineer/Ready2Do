@@ -14,17 +14,8 @@
             <ul class="right r2d-nav-menu">
                 @if (Model.UserIsAuthenticated)
                 {
-                    <!-- NOTIFICHE -->
-                    <li>
-                        <a id="ddTrgNotifiche" href="#!" data-target="dropdownNotifiche" class="dropdown-trigger waves-effect">
-                            <i class='material-icons large'>@(Model.NumNotifichePresenti > 0 ? "notifications" : "notifications_noen")</i>
-                            @if (Model.NumNotifichePresenti > 0)
-                            {
-                                <span class="@(Model.NumNuovNotifichePresenti> 0 ? "new ": "")badge">@Model.NumNotifichePresenti</span>
-                            }
-                        </a>
-                    </li>
-                    <!-- FINE NOTIFICHE -->
+                    <!-- FOLLOW / UNFOLLOW-->
+                    <!-- TODO -->
 
                     <!-- PROFILO -->
                     <li>
@@ -32,6 +23,17 @@
                             <i class='material-icons large'>account_circle</i>
                         </a>
                     </li>
+                    <!-- NOTIFICHE -->
+                    <li>
+                        <a id="ddTrgNotifiche" href="#!" data-target="dropdownNotifiche" class="dropdown-trigger waves-effect pulse new">
+                            <i class='material-icons large'>@(Model.NumNotifichePresenti > 0 ? "notifications_active" : "notifications_none")</i>
+                        </a>
+                        @*@if (Model.NumNotifichePresenti > 0)
+                        {
+                            <span class="r2d-nav-badge @(Model.NumNuovNotifichePresenti> 0 ? "new ": "")badge">@Model.NumNotifichePresenti</span>
+                        }*@
+                    </li>
+                    <!-- FINE NOTIFICHE -->
                 }
                 else
                 {
@@ -47,14 +49,22 @@
 
 <!-- TODO: Gestire le notifiche tramite PartialView separata-->
 <div id="dropdownNotifiche" class="dropdown-content notifications" tabindex="0" style="">
-    <!-- Il contenuto verrà caricato tramite chiamata ajax all'open-->
-    <vc:notifiche id-cliente="@Model.IdClienteCorrente"></vc:notifiche>
+    @if (Model.UserIsAuthenticated)
+    {
+        <!-- Il contenuto verrà caricato tramite chiamata ajax all'open-->
+        <vc:notifiche id-cliente="@Model.IdClienteCorrente" notifiche="@Model.Notifiche"></vc:notifiche>
+    }
 </div>
 
 <div id="dropdownAccount" class="dropdown-content" tabindex="0" style="">
     <div>
         <ul>
-            <li><a asp-action="EditProfilo" asp-controller="Users">Profilo</a></li>
+            <li>
+                <a asp-action="EditProfilo" asp-controller="Users">
+                    <i class="material-icons small">account_box</i>
+                    Profilo
+                </a>
+            </li>
             <li class="divider"></li>
             <li>
                 <a asp-route="logout" asp-route-returnUrl="@Model.ReturnUrl">
@@ -69,10 +79,15 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var ddNotifiche = document.getElementById('ddTrgNotifiche');
-        var instances = M.Dropdown.init(ddNotifiche, {
-            constrainWidth = false,
-            coverTrigger = false,
-       //     onOpenStart = getNotifications
+        M.Dropdown.init(ddNotifiche, {
+            constrainWidth: false,
+            coverTrigger: false,
+        });
+
+        var ddAccount = document.getElementById('ddTrgAccount');
+        M.Dropdown.init(ddAccount, {
+            constrainWidth: false,
+            coverTrigger: false,
         });
     });
 

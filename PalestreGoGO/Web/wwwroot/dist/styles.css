@@ -8148,6 +8148,16 @@ input[type=range]::-ms-thumb {
   font-size: 1.5rem;
   font-weight: 700; }
 
+.r2d-box-info-right {
+  line-height: 1.1rem; }
+
+.r2d-box-info-right > .divider {
+  margin-top: 10px;
+  margin-bottom: 10px; }
+
+.r2d-box-info-right > div {
+  line-height: 1.5rem; }
+
 /* Stile per i banner pubblicitari*/
 .adsbanner_container {
   padding-bottom: 0.5rem;
@@ -9797,9 +9807,48 @@ main.r2d-nav-padding {
 .r2d-nav-menu {
   padding-right: 5%; }
 
-/* CUSTOMIZZAZIONE CALENDARIO */
+.r2d-nav-badge {
+  position: relative;
+  top: 50%; }
+
+.r2d-notification-box {
+  max-width: 300px; }
+
+/* CUSTOMIZZAZIONE CALENDARIO FULLCALENDAR*/
 .fc-time-grid .fc-slats td {
   height: 3em; }
+
+.fc-time-grid .fc-slats td {
+  height: 3em; }
+
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px;
+  /* half width of the spinner gif */
+  margin-top: -50px;
+  /* half height of the spinner gif */
+  text-align: center;
+  z-index: 1234;
+  overflow: auto;
+  width: 100px;
+  /* width of the spinner gif */
+  height: 102px;
+  /*hight of the spinner gif +2px to fix IE8 issue */ }
+
+.fc-header-toolbar h2 {
+  font-size: 1.5rem; }
+
+.fc-day-header {
+  font-size: 0.8rem; }
+
+.fc-axis {
+  font-size: 0.8rem; }
+
+/*classe utilizzata nella home del cliente dal div che contiente i calendari all'interno del tabl*/
+.r2d-calendar-container {
+  padding-top: 12px; }
 
 .r2d-swiper-image {
   max-width: 711px;
@@ -9826,6 +9875,9 @@ main.r2d-nav-padding {
   -ms-flex-align: center;
   -webkit-align-items: center;
   align-items: center; }
+
+.r2d-slideshow {
+  padding-top: 30px; }
 
 /* STILI PAGINA PROFILO */
 #formEditProfile .input-field {
@@ -9892,8 +9944,7 @@ main.r2d-nav-padding {
 .clientHeroes {
   min-height: 160px;
   max-height: 160px;
-  height: 160px;
-  background-color: red; }
+  height: 160px; }
 
 .gallery_item_container {
   display: inline; }

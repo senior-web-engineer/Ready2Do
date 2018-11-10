@@ -11,5 +11,27 @@ namespace Web.Models
 
         public string CurrentController { get; set; }
         public string CurrentAction { get; set; }
+
+        public string ActiveSectionName
+        {
+            get
+            {
+                return CurrentController;
+            }
+        }
+
+        public int OpenedSectionIndex
+        {
+            get
+            {
+                switch (CurrentController)
+                {
+                    case "profilocliente":
+                        return 0;
+                    default:
+                        return -1;
+                }
+            }
+        }
     }
 }

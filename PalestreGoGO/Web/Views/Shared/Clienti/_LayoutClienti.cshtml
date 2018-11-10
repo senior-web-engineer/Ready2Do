@@ -36,7 +36,7 @@
         <vc:navbar id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:navbar>
         @*<partial name="_NavMain" view-data="ViewData" />*@
 
-        <vc:side-nav id-cliente="@((int)ViewData["IdCliente"])"></vc:side-nav>
+        <vc:side-nav id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:side-nav>
         <!-- SIDEBAR (solo se è un Admin) -->
         @*@if (User.CanViewSidebar((int)ViewData["IdCliente"]))
         {
@@ -78,8 +78,8 @@
         $(document).ready(function () {
             //INIT SIDENAV
             $(".sidenav").sidenav();
-            $("ddTrgNotifiche").dropdown();
-            $("#ddTrgAccount").dropdown({ alignment: "left" });
+            //$("ddTrgNotifiche").dropdown();
+            //$("#ddTrgAccount").dropdown({ alignment: "left" });
         });
     </script>
 

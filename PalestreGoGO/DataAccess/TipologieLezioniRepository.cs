@@ -136,5 +136,26 @@ namespace PalestreGoGo.DataAccess
                 await cmd.ExecuteNonQueryAsync();
             }
         }
+
+        /// <summary>
+        /// Verifica se il nome specificato è già stato utilizzato
+        /// </summary>
+        /// <param name="idTenant"></param>
+        /// <param name="nome"></param>
+        /// <returns>True se il nome è disponibile, False se già utilizzato</returns>
+        public async Task<bool> CheckNameAsync(int idTenant, string nome)
+        {
+            var parameters = new DynamicParameters(new
+            {
+                pIdCliente = idTenant,
+                pNomeTipoLezione = nome
+            });
+            parameters.Add("pResult", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await cn.ExecuteAsync("[dbo].[TipologieLezioni_CheckNome]", parameters, commandType: CommandType.StoredProcedure);
+                return parameters.Get<bool>("pResult");
+            }
+        }
     }
 }

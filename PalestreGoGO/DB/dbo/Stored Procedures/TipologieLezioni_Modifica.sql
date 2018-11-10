@@ -20,7 +20,8 @@ BEGIN
 			Livello = @pLivello			
 	WHERE Id = @pId
 	AND IdCliente = @pIdCliente
-	
+	AND DataCancellazione IS NULL
+
 	IF @@ROWCOUNT = 0
 	BEGIN
 		RAISERROR('Parametri non validi!', 16, 0);

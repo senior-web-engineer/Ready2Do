@@ -100,31 +100,34 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return Redirect("/"); }
-            var locations = await _apiClient.GetLocationsAsync(cliente.IdCliente);
-
-            ViewData["ReturnUrl"] = Request.Path.ToString();
-            ViewData["Sale"] = locations;
+            var vm = cliente.MapToHomeViewModel();
+            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.IdCliente))?.ToList();
+            vm.EventsBaseUrl = string.Format("/{0}/eventi/", urlRoute);
+            vm.GoogleStaticMapUrl = GoogleAPIUtils.GetStaticMapUrl(cliente.Nome, cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine, _appConfig.GoogleAPI.GoogleMapsAPIKey);
+            vm.ExternalGoogleMapUrl = GoogleAPIUtils.GetExternalMapUrl(cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine);
+            //vm.GoogleStaticMapUrl = this.BuildMapUrlForCliente(cliente);
+            //ViewData["ReturnUrl"] = Request.Path.ToString();
+            //ViewData["Sale"] = locations;
             ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(urlRoute, cliente.IdCliente, _appConfig.EncryptKey);
-            ViewData["ClienteRoute"] = urlRoute;
-            ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
+            //ViewData["ClienteRoute"] = urlRoute;
+            //ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
             ViewData["IdCliente"] = cliente.IdCliente;
-            ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
-            ViewBag.IsFollowing = false;
-            if (ViewBag.UtenteNormale)
-            {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-                var follwed = await _apiClient.ClientiFollowedByUserAsync(User.UserId().Value, accessToken);
-                if (follwed.Any(f => f.IdCliente.Equals(cliente.IdCliente))){
-                    ViewBag.IsFollowing = true;
-                }
-            }
+            //ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
+            vm.Latitude = cliente.Indirizzo.Coordinate.Latitudine;
+            vm.Longitude = cliente.Indirizzo.Coordinate.Longitudine;
+            vm.DataMinima = DateTime.Now.ToString("yyyy-MM-dd");
+            vm.DataMassima = DateTime.Now.AddMonths(2).ToString("yyyy-MM-dd");
+            //ViewBag.IsFollowing = false;
+            //if (ViewBag.UtenteNormale)
+            //{
+            //    var accessToken = await HttpContext.GetTokenAsync("access_token");
+            //    var follwed = await _apiClient.ClientiFollowedByUserAsync(User.UserId().Value, accessToken);
+            //    if (follwed.Any(f => f.IdCliente.Equals(cliente.IdCliente))){
+            //        ViewBag.IsFollowing = true;
+            //    }
+            //}
             //ViewData["UserRole"] = User.GetUserRoleForCliente(cliente.IdCliente);
-            return View(cliente.MapToHomeViewModel());
-        }
-
-        private object BuildMapUrlForCliente(ClienteWithImagesViewModel cliente)
-        {
-            return $"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Clabel:{WebUtility.UrlEncode(cliente.Nome)}%7C{cliente.Indirizzo.Coordinate.Latitudine},{cliente.Indirizzo.Coordinate.Longitudine}&size=640x250&scale=2&maptype=roadmap&zoom=14&key={_appConfig.GoogleAPI.GoogleMapsAPIKey}";
+            return View(vm);
         }
 
         [HttpGet("{cliente}/gallery")]
@@ -173,59 +176,59 @@ namespace Web.Controllers
         }
 
 
-        [HttpGet("{cliente}/profilo")]
-        public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute)
-        {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-            var userType = User.GetUserTypeForCliente(cliente.IdCliente);
-            if (!userType.IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
-            var vm = cliente.MapToProfileEditVM();
-            ViewData["IdCliente"] = cliente.IdCliente;
-            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
-            ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
-                                                _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
-                                               cliente.StorageContainer);
-            ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
+        //[HttpGet("{cliente}/profilo")]
+        //public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute)
+        //{
+        //    var cliente = await _apiClient.GetClienteAsync(urlRoute);
+        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
+        //    var userType = User.GetUserTypeForCliente(cliente.IdCliente);
+        //    if (!userType.IsAtLeastAdmin())
+        //    {
+        //        return Forbid();
+        //    }
+        //    var vm = cliente.MapToProfileEditVM();
+        //    ViewData["IdCliente"] = cliente.IdCliente;
+        //    ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
+        //    ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+        //                                        _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+        //                                       cliente.StorageContainer);
+        //    ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
 
-            return View("Profilo", vm);
-        }
+        //    return View("Profilo", vm);
+        //}
 
-        [HttpPost("{cliente}/profilo")]
-        public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute, ClienteProfileEditViewModel profilo)
-        {
-            float latitudine, longitudine;
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                return Forbid();
-            }
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-            var userType = User.GetUserTypeForCliente(cliente.IdCliente);
-            if (!userType.IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
-            if (!ModelState.IsValid)
-            {
-                return View("Profilo", profilo);
-            }
-            //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
-            if (!float.TryParse(profilo.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out latitudine) ||
-                !float.TryParse(profilo.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out longitudine))
-            {
-                ModelState.AddModelError(string.Empty, "Coordinate non valide");
-                return View("Profilo", profilo);
-            }
-            //Salviamo il profilo
-            var apiModel = profilo.MapToAPIModel();
-            await _apiClient.ClienteSalvaProfilo(cliente.IdCliente, apiModel, accessToken);
-            return RedirectToAction("ProfileEdit", new { cliente = urlRoute });
-        }
+        //[HttpPost("{cliente}/profilo")]
+        //public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute, ClienteProfileEditViewModel profilo)
+        //{
+        //    float latitudine, longitudine;
+        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
+        //    if (string.IsNullOrEmpty(accessToken))
+        //    {
+        //        return Forbid();
+        //    }
+        //    var cliente = await _apiClient.GetClienteAsync(urlRoute);
+        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
+        //    var userType = User.GetUserTypeForCliente(cliente.IdCliente);
+        //    if (!userType.IsAtLeastAdmin())
+        //    {
+        //        return Forbid();
+        //    }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View("Profilo", profilo);
+        //    }
+        //    //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
+        //    if (!float.TryParse(profilo.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out latitudine) ||
+        //        !float.TryParse(profilo.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out longitudine))
+        //    {
+        //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
+        //        return View("Profilo", profilo);
+        //    }
+        //    //Salviamo il profilo
+        //    var apiModel = profilo.MapToAPIModel();
+        //    await _apiClient.ClienteSalvaProfilo(cliente.IdCliente, apiModel, accessToken);
+        //    return RedirectToAction("ProfileEdit", new { cliente = urlRoute });
+        //}
 
         
         #region Gestione Associazione Utenti

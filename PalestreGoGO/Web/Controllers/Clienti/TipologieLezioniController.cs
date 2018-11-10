@@ -127,6 +127,23 @@ namespace Web.Controllers.Clienti
             return RedirectToAction("ListaLezioni");
         }
 
+        [Produces("application/json")]
+        [HttpGet("checkname")]
+        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nome)
+        {
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            bool isValid = await _apiClient.CheckNameTipologiaLezioneAsync(idCliente, nome, accessToken);
+            if (isValid)
+            {
+                return Json(data: true);
+            }
+            else
+            {
+                return Json(data: "Esiste già una Tipologia di lezione con lo stesso nome");
+            }
+        }
+
         #endregion
     }
 }

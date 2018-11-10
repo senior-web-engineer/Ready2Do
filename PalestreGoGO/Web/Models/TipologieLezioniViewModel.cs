@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,6 +31,7 @@ namespace Web.Models
         public int? Id { get; set; }
         [Required]
         [StringLength(100)]
+        [Remote("CheckNome", "TipologieLezioni")]
         public string Nome { get; set; }
 
         [StringLength(500)]

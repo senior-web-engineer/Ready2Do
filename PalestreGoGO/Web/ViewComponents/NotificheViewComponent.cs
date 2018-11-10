@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Models;
 using Web.Services;
 using Web.Utils;
 
@@ -25,7 +26,7 @@ namespace Web.ViewComponents
         //    _clientiResolver = clientiResolver;
         //}
 
-        public async Task<IViewComponentResult> InvokeAsync(int? idCliente, List<NotificheViewComponent> notifiche)
+        public async Task<IViewComponentResult> InvokeAsync(int? idCliente, List<NotificaViewModel> notifiche)
         {
             //var accessToken = await HttpContext.GetTokenAsync("access_token");
             //var vm = await _apiClient.GetNotificheForUserAsync(accessToken);

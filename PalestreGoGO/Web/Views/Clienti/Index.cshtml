@@ -15,126 +15,157 @@
     </environment>
 
 }
-
 <section id="clientHeroes" class="">
     <div class="row">
-        <div class="clientHeroes text-center" style="background-image: url('@Model.ImmagineHome.Url'); background-size:cover;">
-            <h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <div class="clientHeroes text-center" style="background-image: url('@Model.ImmagineHome.Url'); background-size:cover;">
+                @*<h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>*@
+            </div>
         </div>
     </div>
 
-    @if (ViewBag.UtenteNormale)
-    {
-        <div class="row right-align">
-            @if (ViewBag.IsFollowing)
-            {
-                <form asp-action="RemoveAssociazioneUserToCliente" asp-controller="Clienti" method="post">
-                    <button class="btn waves-effect waves-light medium" type="submit" name="action">
-                        <i class="Large material-icons">favorite</i> Unfollow
-                    </button>
-                </form>
-            }
-            else
-            {
-                <form asp-action="AddAssociazioneUserToCliente" asp-controller="Clienti" method="post">
-                    <button class="btn waves-effect waves-light medium" type="submit" name="action">
-                        <i class="Large material-icons">favorite_border</i> Follow
-                    </button>
-                </form>
-            }
-        </div>
-    }
-</section>
-
-<section id="banner1">
-    <div class="row center-align">
-        <div class="adsbanner_container">
-            <img src="~/img/placeholders/google/leaderboard_728x90.png" />
-        </div>
-    </div>
-</section>
-
-<section id="slideshow" class="padding-top-110">
-    <div class="row">
-        <div class="swiper-container">
-            <div class="swiper-wrapper">
-                @foreach (var i in Model.Images)
+    @*@if (ViewBag.UtenteNormale)
+        {
+            <div class="row right-align">
+                @if (ViewBag.IsFollowing)
                 {
-                    <div class="swiper-slide center">
-                        <img class="r2d-swiper-image center" src="@i.Url" alt="@i.Alt">
-                    </div>
+                    <form asp-action="RemoveAssociazioneUserToCliente" asp-controller="Clienti" method="post">
+                        <button class="btn waves-effect waves-light medium" type="submit" name="action">
+                            <i class="Large material-icons">favorite</i> Unfollow
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="AddAssociazioneUserToCliente" asp-controller="Clienti" method="post">
+                        <button class="btn waves-effect waves-light medium" type="submit" name="action">
+                            <i class="Large material-icons">favorite_border</i> Follow
+                        </button>
+                    </form>
                 }
             </div>
-            <!-- Add Pagination -->
-            <div class="swiper-pagination"></div>
-            <!-- Add Arrows -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-        </div>
-    </div>
+        }*@
 </section>
 
 <section id="descCliente" class="padding-top-10 mt-10">
     <div class="row">
-        <div class="col-sm-1 col-md2">&nbsp;</div>
-        <div class="col-sm10 col-md8">
-            <h1>@Model.Nome</h1>
-            <h3>
-                @Model.Descrizione
-            </h3>
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <h3>@Model.Nome</h3>
         </div>
-        <div class="col-sm-1 col-md2">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col s6 l5 offset-s1 offset-l2">
+            <p>@Model.Descrizione</p>
+        </div>
+        <div class="col s4 l3">
+            <div class="r2d-box-info-right" style="display:flex; flex-direction:column">
+                <div><h6>Orario Apertura</h6></div>
+                <div>Len-Ven: @Model.OrarioApertura.LunVen.ToString()</div>
+                <div>Sabato: @Model.OrarioApertura.Sabato.ToString()</div>
+                <div>Domenica: @Model.OrarioApertura.Domenica.ToString()</div>
+                <div class="divider"></div>
+                <div>Telefono: @Model.NumTelefono</div>
+                <div>Email: @Model.Email</div>
+            </div>
+        </div>
     </div>
 </section>
 
+<div class="row">
+    <div class="col s10 l8 offset-s1 offset-l2">
+        <div class="divider"></div>
+    </div>
+</div>
 
-<section id="banner2">
-    <div class="row center-align">
-        <div class="adsbanner">
-            <img src="~/img/placeholders/google/leaderboard_728x90.png" />
+<section id="slideshow" class="r2d-slideshow">
+    <div class="row">
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    @foreach (var i in Model.Images)
+                    {
+                        <div class="swiper-slide center">
+                            <img class="r2d-swiper-image center" src="@i.Url" alt="@i.Alt">
+                        </div>
+                    }
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Arrows -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
         </div>
     </div>
 </section>
+
+<div class="row">
+    <div class="col s10 l8 offset-s1 offset-l2">
+        <div class="divider"></div>
+    </div>
+</div>
+
 
 <section id="calendars">
     <div class="row">
-        @if (ViewBag.Sale != null && ViewBag.Sale.Count > 0)
-        {
-            <!-- TABS SALE-->
-            <div class="col s12">
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <h6 class="r2d-section-title">I nostri corsi</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s10 l8 offset-s1 offset-l2">
+            @if (Model.Locations != null && Model.Locations.Count > 0)
+            {
+                <!-- TABS SALE-->
                 <ul id="tabsContainer" class="tabs tabs-fixed-width">
-                    @foreach (var s in ViewBag.Sale)
+                    @for (int i = 0; i < Model.Locations.Count; i++)
                     {
-                        <li class="tab col s3">
-                            <a href='@(String.Format("#calendar-{0}",s.Id))'>@s.Nome</a>
+                        <li class="tab col s3 @(i==0?"active":"")">
+                            <a href='@(String.Format("#calendar-{0}",Model.Locations[i].Id))'>@Model.Locations[i].Nome</a>
                         </li>
                     }
                 </ul>
-            </div>
-            <!-- Un DIV per ciascuna sala con il calendario per quella sala -->
-            @foreach (var s in ViewBag.Sale)
-            {
-                <div id="@(String.Format("calendar-container-{0}",s.Id))">
-                    <div id='@(String.Format("calendar-{0}",s.Id))'>
+                <!-- Un DIV per ciascuna sala con il calendario per quella sala -->
+                @foreach (var s in Model.Locations)
+                {
+                    <div id="@(String.Format("calendar-container-{0}",s.Id))" class="r2d-calendar-container">
+                        <div id='@(String.Format("calendar-{0}",s.Id))'>
 
+                        </div>
                     </div>
-                </div>
+                }
             }
-        }
-        else
-        {
-            <h4><a asp-controller="Clienti" asp-action="SalaNew">Configurare</a> almeno una Sala per poter iniziare ad inserire gli eventi.</h4>
-        }
+            else
+            {
+                <h4><a asp-controller="Clienti" asp-action="SalaNew">Configurare</a> almeno una Sala per poter iniziare ad inserire gli eventi.</h4>
+            }
+        </div>
     </div>
 </section>
 
+<div class="row">
+    <div class="col s10 l8 offset-s1 offset-l2">
+        <div class="divider"></div>
+    </div>
+</div>
+
 <section id="whereare">
     <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <img class="responsive-img" src="@ViewBag.MapUrl" />
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <h6 class="r2d-section-title">Dove siamo</h6>
         </div>
-        <div class="col-md-2"></div>
+    </div>
+    <div class="row">
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <a target="_blank" href="@Html.Raw(Model.ExternalGoogleMapUrl)">
+                <img class="responsive-img" src="@Model.GoogleStaticMapUrl" />
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s10 l8 offset-s1 offset-l2">
+            <p>@Model.Indrizzo</p>
+        </div>
     </div>
 </section>
 
@@ -195,28 +226,38 @@
             //    gridwidth: 1230,
             //    gridheight: 720
             //});
-             @foreach (var s in ViewBag.Sale)
+             @foreach (var s in Model.Locations)
              {
                 <text>
-                $('@(String.Format("#calendar-{0}", s.Id))').fullCalendar({
-                    lang: "it",
-                    weekends: true,
-                    defaultView: "agendaWeek",
-                    slotDuration: "01:00:00",
-                    allDaySlot: false,
-                    aspectRatio: 2,
-                    agendaEventMinHeight: 120,
-                    events: {
-                        url: '@(string.Format("/{0}/eventi/feeds", ViewBag.ClienteRoute))',
-                        type: 'GET',
-                        data: { lid: '@s.Id' }
-                    },
-                    eventClick: function (calEvent, jsEvent, view) {
-                        $("#spinner").show();
-                        var url = '@Html.Raw(ViewBag.ClienteRoute)/eventi/' + calEvent.id +"/appuntamento";
-                        window.location = url;
-                        //TODO: Caricare loader!
-                    }
+            $('@(String.Format("#calendar-{0}", s.Id))').fullCalendar({
+                header: {
+                    left: 'today',
+                    center: 'title',
+                    right: 'prev,next'
+                },
+                lang: "it",
+                weekends: true,
+                defaultView: "agendaWeek",
+                slotDuration: "01:00:00",
+                slotLabelInterval: "01:00",
+                agendaEventMinHeight: 30,
+                nowIndicator: true,
+                allDaySlot: false,
+                contentHeight: "auto",
+                validRange: {
+                    start: '@Model.DataMinima',
+                    end: '@Model.DataMassima'
+                },
+                events: {
+                    url: '@Html.Raw(Model.EventsBaseUrl + "feeds")',
+                    type: 'GET',
+                    data: { lid: '@s.Id' }
+                },
+                eventClick: function (calEvent, jsEvent, view) {
+                    $("#spinner").show();
+                    var url = '@Html.Raw(Model.EventsBaseUrl)' + calEvent.id + "/appuntamento";
+                    window.location = url;
+                }
                 });
                 </text>
             }

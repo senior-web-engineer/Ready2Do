@@ -1,6 +1,17 @@
-﻿CREATE PROCEDURE [dbo].[TipologieLezioni_CheckNome]
-	@param1 int = 0,
-	@param2 int
+﻿/*
+	Verifica se il nome passato esiste già per il cliente.
+	Ritorna (nel parametro di Out):
+	1: Nome non trovato
+	0: Nome già in uso
+*/
+CREATE PROCEDURE [dbo].[TipologieLezioni_CheckNome]
+	@pIdCliente			int,
+	@pNomeTipoLezione	NVARCHAR(100),
+	@pResult			BIT OUT
 AS
-	SELECT @param1, @param2
-RETURN 0
+BEGIN
+	IF EXISTS(SELECT * FROM TipologieLezioni WHERE IdCliente = @pIdCliente AND Nome = @pNomeTipoLezione)
+		SET @pResult = 0
+	ELSE
+		SET @pResult = 1;
+END

@@ -42,6 +42,25 @@ namespace Web.Models
         public FasciaOrariaViewmodel Mattina { get; set; }
         public FasciaOrariaViewmodel Pomeriggio { get; set; }
         public TipoOrarioViewModel TipoOrario { get; set; }
+
+        public override string ToString()
+        {
+            switch (TipoOrario)
+            {
+                case TipoOrarioViewModel.Chiuso:
+                    return "Chiuso";
+                case TipoOrarioViewModel.Continuato:
+                    return string.Format("{0} - {1}", Mattina.Inizio, Pomeriggio.Fine);
+                case TipoOrarioViewModel.Mattina:
+                    return string.Format("{0} - {1}", Mattina.Inizio, Mattina.Fine);
+                case TipoOrarioViewModel.Pomeriggio:
+                    return string.Format("{0} - {1}", Pomeriggio.Inizio, Pomeriggio.Fine);
+                case TipoOrarioViewModel.Spezzato:
+                    return string.Format("{0} - {1} , {2} - {3}", Mattina.Inizio, Mattina.Fine, Pomeriggio.Inizio, Pomeriggio.Fine);
+                default:
+                    return "";
+            }
+        }
     }
 
     public class OrarioAperturaViewModel

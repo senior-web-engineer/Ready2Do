@@ -20,6 +20,7 @@ namespace Web.Models
         public string Descrizione { get; set; }
 
         public string Indrizzo { get; set; }
+
         public OrarioAperturaViewModel OrarioApertura { get; set; }
 
         public ImageViewModel ImmagineHome { get; set; }
@@ -27,5 +28,17 @@ namespace Web.Models
         public List<ImageViewModel> Images { get; set; }
 
         public List<LocationViewModel> Locations { get; set; }
+
+        public string GoogleStaticMapUrl { get; set; }
+        public string ExternalGoogleMapUrl { get; set; }
+
+        public string EventsBaseUrl { get; set; }
+
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
+
+        public string DataMinima { get; set; }
+        public string DataMassima { get; set; }
+
     }
 }
