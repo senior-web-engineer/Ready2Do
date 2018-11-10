@@ -15,6 +15,7 @@ CREATE TABLE [dbo].[AbbonamentiUtenti]
 	[IngressiResidui]			SMALLINT			NULL,
 	[ScadenzaCertificato]		DATE				NULL,
 	[StatoPagamento]			TINYINT				NULL,	--??
+	[DataCreazione]				DATETIME2(2)		NOT NULL	CONSTRAINT DEF_AbbonamentiUtenti_DtCreazione DEFAULT (SYSDATETIME()),
 
 	CONSTRAINT PK_AbbonamentiUtenti PRIMARY KEY (Id),
 	CONSTRAINT FK_AbbonamentiUtenti_Clienti FOREIGN KEY(IdCliente) REFERENCES [Clienti]([Id]),

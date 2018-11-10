@@ -7,6 +7,10 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel.Exceptions;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Dapper;
+using System.Data;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -14,84 +18,66 @@ namespace PalestreGoGo.DataAccess
     {
         private readonly PalestreGoGoDbContext _context;
         private readonly ILogger<AppuntamentiRepository> _logger;
+        private readonly IConfiguration _config;
 
-        public AppuntamentiRepository(ILogger<AppuntamentiRepository> logger, PalestreGoGoDbContext context)
+        public AppuntamentiRepository(ILogger<AppuntamentiRepository> logger, PalestreGoGoDbContext context, IConfiguration config)
         {
             _logger = logger;
             _context = context;
+            _config = config;
         }
 
         public async Task<int> AddAppuntamentoAsync(int idCliente, Appuntamenti appuntamento)
         {
             if (appuntamento == null) throw new ArgumentNullException(nameof(appuntamento));
             if (!appuntamento.IdCliente.Equals(idCliente)) throw new ArgumentException("Wrong Tenant");
-            using (var trans = await _context.Database.BeginTransactionAsync())
+            using(var cn = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
-                try
-                {
-                    var schedule = await _context.Schedules.FirstOrDefaultAsync(s => s.IdCliente.Equals(idCliente) && (s.Id.Equals(appuntamento.ScheduleId)));
-                    if (schedule == null) throw new ArgumentException("Ivalid Schedule");
-                    //Se non è un guest ==> deve avere un abbonamento da cui scalare gli ingressi
-                    if (appuntamento.UserId != null)
-                    {
-                        //recupero l'abbonamento per l'utente, non deve essere scaduto ed avere ancora ingressi disponibili
-                        var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(a => a.IdCliente.Equals(idCliente) &&
-                                                                                                    a.UserId.Equals(appuntamento.UserId) &&
-                                                                                                    a.Scadenza >= schedule.Data &&
-                                                                                                    a.IngressiResidui > 0);
-                        if (abbonamento == null)
-                        {
-                            _logger.LogWarning($"Cliente {idCliente} - non è stato trovato un abbonamento valido per l'utente {appuntamento.UserId}.");
-                            throw new AbbonamentoNotFoundedException($"Cliente {idCliente} - non è stato trovato un abbonamento valido per l'utente {appuntamento.UserId}.");
-                        }
-                        _context.Appuntamenti.Add(appuntamento); //Salviamo l'appuntamento
-                        abbonamento.IngressiResidui--; //decrementiamo gli ingressi
-                    }
-                    schedule.PostiResidui--; //decrementiamo i posti disponibili
-                    await _context.SaveChangesAsync();
-                    trans.Commit();
-                }
-                catch (Exception exc)
-                {
-                    _logger.LogError(exc, $"Errore durante l'aggiunta dell'appuntamento. IdCliente: {idCliente}, IdUser:{appuntamento?.UserId }, ScheduleId:{appuntamento?.ScheduleId}");
-                    trans.Rollback();
-                    throw;
-                }
+                var retVal = new SqlParameter();
+                retVal.Direction = ParameterDirection.ReturnValue;
+                var parId = new SqlParameter("@pId", SqlDbType.Int);
+                parId.Direction = ParameterDirection.Output;
+
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Appuntamenti_Add]";
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 50).Value = appuntamento.UserId?.ToString();
+                cmd.Parameters.Add("@pScheduleId", SqlDbType.Int).Value = appuntamento.ScheduleId;
+                cmd.Parameters.Add("@pIdAbbonamento", SqlDbType.Int).Value = appuntamento.IdAbbonamento;
+                cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = appuntamento.Note;
+                cmd.Parameters.Add("@pNominativo", SqlDbType.NVarChar, 200).Value = appuntamento.Nominativo;
+                cmd.Parameters.Add(parId);
+                cmd.Parameters.Add(retVal);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                appuntamento.Id = (int)parId.Value;
             }
+
             return appuntamento.Id;
         }
 
         public async Task CancelAppuntamentoAsync(int idCliente, int idAppuntamento)
         {
-            using (var trans = await _context.Database.BeginTransactionAsync())
+
+            using (var cn = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
-                try
-                {
-                    var appuntamento = await _context.Appuntamenti.SingleAsync(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idAppuntamento));
-                    var schedule = await _context.Schedules.SingleAsync(s => s.Id.Equals(appuntamento.ScheduleId));
-                    appuntamento.DataCancellazione = DateTime.Now;
-                    //Se la cancellazione avviene entro il termine previsto, rimborsiamo l'ingresso
-                    if (schedule.CancellabileFinoAl >= DateTime.Now)
-                    {
-                        var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(appuntamento.UserId));
-                        // Avoid overflow
-                        if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
-                        {
-                            abbonamento.IngressiResidui++;
-                        }
-                    }
-                    schedule.PostiResidui++;
-                    await _context.SaveChangesAsync();
-                    trans.Commit();
-                }
-                catch (Exception exc)
-                {
-                    _logger?.LogError(exc, $"Errore durante la cancellazione dell'appuntamento. IdCliente: {idCliente}, IdAppuntamento:{idAppuntamento}");
-                    trans.Rollback();
-                    throw;
-                }
+                var retVal = new SqlParameter();
+                retVal.Direction = ParameterDirection.ReturnValue;
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Appuntamenti_Delete]";
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdAppuntamento", SqlDbType.Int).Value = idAppuntamento;
+                cmd.Parameters.Add(retVal);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                //if((int)retVal.Value != 1)
+                //{
+                //    throw new InvalidOperationException("Impossibile annullare l'appuntamento.");
+                //}
             }
         }
+
+
 
         public IEnumerable<Appuntamenti> GetAppuntamentiForSchedule(int idCliente, int idSchedule)
         {

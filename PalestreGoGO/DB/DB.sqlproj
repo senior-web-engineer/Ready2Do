@@ -115,6 +115,10 @@
     <Build Include="dbo\Stored Procedures\TipologieLezioni_Modifica.sql" />
     <Build Include="dbo\Stored Procedures\TipologieLezioni_Lista.sql" />
     <Build Include="dbo\Stored Procedures\TipologieLezioni_CheckNome.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Add.sql" />
+    <Build Include="dbo\Tables\AbbonamentiTransazioni.sql" />
+    <Build Include="dbo\Tables\ClientiPreferenze.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
@@ -125,5 +129,12 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>

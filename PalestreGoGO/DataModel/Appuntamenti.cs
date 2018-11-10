@@ -11,6 +11,7 @@ namespace PalestreGoGo.DataModel
         public int IdCliente { get; set; }        
         public Guid? UserId { get; set; }
         public int ScheduleId { get; set; }
+        public int? IdAbbonamento { get; set; }
         public DateTime DataPrenotazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
         [StringLength(1000)]

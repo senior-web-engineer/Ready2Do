@@ -26,6 +26,7 @@ namespace PalestreGoGo.DataModel
         public int? PostiResidui { get; set; }
 
         public DateTime CancellabileFinoAl { get; set; }
+        public DateTime DataChiusuraIscrizione { get; set; }
         public DateTime? DataCancellazione { get; set; }
         [StringLength(450)]
         public string UserIdOwner { get; set; }
