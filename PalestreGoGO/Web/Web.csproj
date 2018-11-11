@@ -155,9 +155,13 @@
     <Content Update="Views\TipologieLezioni\_NoLezioni.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\UtentiCliente\_NoUtenti.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\ProfiloUtente\" />
     <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 

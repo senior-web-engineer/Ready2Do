@@ -54,8 +54,8 @@
         <li class="@(Model.CurrentController.Equals("abbonamenti") ? "active" : "")">
             <a class="r2d-text-bold" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti">Tipologia Abbonamenti</a>
         </li>
-        <li class="@(Model.CurrentController.Equals("clienti") && Model.CurrentAction.Equals("getutenticlienti")  ? "active" : "")">
-            <a class="r2d-text-bold" asp-action="GetUtentiCliente" asp-controller="Clienti">Utenti</a>
+        <li class="@(Model.CurrentController.Equals("utenticliente")  ? "active" : "")">
+            <a class="r2d-text-bold" asp-action="GetListaUtenti" asp-controller="UtentiCliente">Utenti</a>
         </li>
         <li>
             <partial name="_Banner_RettangoloMedio" />

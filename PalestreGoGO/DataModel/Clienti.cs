@@ -49,7 +49,7 @@ namespace PalestreGoGo.DataModel
         public double? Longitudine { get; set; }
         [Column(TypeName = "datetime2(2)")]
         public DateTime DataCreazione { get; set; }
-        public Guid IdUserOwner { get; set; }
+        public string IdUserOwner { get; set; }
         [Required]
         [StringLength(500)]
         public string SecurityToken { get; set; }

@@ -164,7 +164,7 @@ namespace Web.Controllers
             ViewBag.IdCliente = idCliente;
             ViewBag.Cliente = urlRoute;
             ViewBag.IdEvento = idEvento;
-            var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId().Value, accessToken)).FirstOrDefault(cf=>cf.IdCliente.Equals(idCliente));
+            var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf=>cf.IdCliente.Equals(idCliente));
             ViewBag.ClienteFollowed = followInfo != null;
             ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;                   
             var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
@@ -179,7 +179,7 @@ namespace Web.Controllers
             var apiModel = new NuovoAppuntamentoApiModel()
             {
                 IdEvento = idEvento,
-                IdUtente = User.UserId().Value
+                IdUtente = User.UserId()
             };
             await _apiClient.SalvaAppuntamentoForCurrentUser(idCliente, apiModel, access_token);
             return RedirectToAction("GetAppuntamentoEvento", new { cliente = urlRoute, idEvento = idEvento });

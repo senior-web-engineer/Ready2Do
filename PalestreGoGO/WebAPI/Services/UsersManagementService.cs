@@ -61,15 +61,15 @@ namespace PalestreGoGo.WebAPI.Services
                 _logger.LogWarning($"ConfirmUserAsync -> Failed validation for user: {username} with code: [{code}]");
                 return new UserConfirmationViewModel()
                 {
-                    IdUser = user.Id.Value
+                    IdUser = user.Id
                 };
             }
-            var result = new UserConfirmationViewModel(user.Id.Value);
+            var result = new UserConfirmationViewModel(user.Id);
             var claimStructureOwned = user.StruttureOwned;
             //Se è un owner ==> facciamo il provisioning del cliente
             if (!string.IsNullOrWhiteSpace(claimStructureOwned))
             { 
-                await _clientiProvisioner.ProvisionClienteAsync(richiesta.CorrelationId.ToString(), user.Id.Value);
+                await _clientiProvisioner.ProvisionClienteAsync(richiesta.CorrelationId.ToString(), user.Id);
                 result.IdStrutturaAffiliate = int.Parse(claimStructureOwned);
             }
             else
@@ -78,7 +78,7 @@ namespace PalestreGoGo.WebAPI.Services
                 if (!string.IsNullOrWhiteSpace(user.Refereer))
                 {
                     int idStrutturaAffiliata = int.Parse(user.Refereer);
-                    await _repository.AddUtenteFollowerAsync(idStrutturaAffiliata, user.Id.Value);
+                    await _repository.AddUtenteFollowerAsync(idStrutturaAffiliata, user.Id, string.Format("{0} {1}", user.Cognome, user.Nome), user.DisplayName);
                     result.IdStrutturaAffiliate = idStrutturaAffiliata;
                 }
 
@@ -112,7 +112,7 @@ namespace PalestreGoGo.WebAPI.Services
             return await _b2cClient.GetUserById(userId);
         }
 
-        public async Task<Guid> RegisterOwnerAsync(LocalAccountUser user, string idCliente, Guid correlationId)
+        public async Task<string> RegisterOwnerAsync(LocalAccountUser user, string idCliente, Guid correlationId)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (string.IsNullOrWhiteSpace(idCliente)) throw new ArgumentNullException(nameof(idCliente));
@@ -122,17 +122,17 @@ namespace PalestreGoGo.WebAPI.Services
             //var createdUser = await _b2cClient.CreateUserAsync(user);
             var createdUser = await internalCreateUserAsync(user, false);
             _logger.LogInformation($"Created a new owner. UserId: {createdUser.Id}");
-            return createdUser.Id.Value;
+            return createdUser.Id;
         }
 
-        public async Task<Guid> RegisterUserAsync(LocalAccountUser user)
+        public async Task<string> RegisterUserAsync(LocalAccountUser user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             //var createdUser = await _b2cClient.CreateUserAsync(user);
             var createdUser = await internalCreateUserAsync(user, false);
             _logger.LogInformation($"Created a new user (UserId: {createdUser.UserPrincipalName}) affiliated with referer: {createdUser.Refereer}");
 
-            return createdUser.Id.Value;
+            return createdUser.Id;
         }
 
         protected async Task<LocalAccountUser> internalCreateUserAsync(LocalAccountUser user, bool isCliente, Guid? correlationId = null)

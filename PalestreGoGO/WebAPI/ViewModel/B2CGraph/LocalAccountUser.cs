@@ -9,7 +9,7 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
     public class LocalAccountUser
     {
         [JsonProperty(PropertyName = "objectId", NullValueHandling= NullValueHandling.Ignore)]
-        public Guid? Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("accountEnabled")]
         public bool Enabled { get; set; }

@@ -11,9 +11,9 @@ namespace PalestreGoGo.WebAPI.Services
 {
     public interface IUsersManagementService
     {
-        Task<Guid> RegisterOwnerAsync(LocalAccountUser user, string idCliente, Guid correlationId);
+        Task<string> RegisterOwnerAsync(LocalAccountUser user, string idCliente, Guid correlationId);
 
-        Task<Guid> RegisterUserAsync(LocalAccountUser user);
+        Task<string> RegisterUserAsync(LocalAccountUser user);
 
         Task<UserConfirmationViewModel> ConfirmUserAsync(string username, string code);
 

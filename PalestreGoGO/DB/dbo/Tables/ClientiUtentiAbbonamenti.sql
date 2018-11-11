@@ -5,7 +5,7 @@ NOTA: Al momento non viene utilizzata! Ha lo scopo di gestire lo storico degli a
 CREATE TABLE [dbo].[ClientiUtentiAbbonamenti]
 (
 	[IdCliente]					INT					NOT NULL,
-	[UserId]					UNIQUEIDENTIFIER	NOT NULL,
+	[UserId]					VARCHAR(50)			NOT NULL,
 	[IdAbbonamentiUtente]		INT					NOT NULL,
 
 	CONSTRAINT PK_ClientiUtentiAbbonamenti PRIMARY KEY ([IdCliente], [UserId], [IdAbbonamentiUtente]),

@@ -36,7 +36,7 @@ namespace PalestreGoGo.DataAccess
             await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<AbbonamentiUtenti> GetAbbonamentiForUser(int idCliente, Guid userId)
+        public IEnumerable<AbbonamentiUtenti> GetAbbonamentiForUser(int idCliente, string userId)
         {
             var result = _context.AbbonamentiUtenti.Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId)).AsNoTracking();
             return result;

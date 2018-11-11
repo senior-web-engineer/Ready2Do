@@ -34,7 +34,7 @@ namespace Tests.WebAPI
         public static readonly int ID_TIPO_LEZIONE_1_CLIENTE_2 = 3;
 
 
-        public static readonly Guid USERID_DUMMY = new Guid("4C2B9D40-D0AC-429F-A28D-76D8E6E2C2CB");
+        public static readonly string USERID_DUMMY = new Guid("4C2B9D40-D0AC-429F-A28D-76D8E6E2C2CB").ToString();
 
         public static readonly IConfigurationRoot Config;
 

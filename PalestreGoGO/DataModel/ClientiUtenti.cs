@@ -10,7 +10,7 @@ namespace PalestreGoGo.DataModel
     {
         public int IdCliente { get; set; }
 
-        public Guid IdUtente { get; set; }
+        public string IdUtente { get; set; }
 
         public DateTime DataCreazione { get; set; }
 

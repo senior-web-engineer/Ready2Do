@@ -9,7 +9,7 @@ namespace Web.Models
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public TipologiaAbbonamentoViewModel TipoAbbonamento { get; set; }
         public DateTime DataInizioValidita { get; set; }
         public DateTime? Scadenza { get; set; }

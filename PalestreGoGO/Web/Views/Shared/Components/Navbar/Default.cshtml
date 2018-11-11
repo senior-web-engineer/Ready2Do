@@ -15,8 +15,23 @@
                 @if (Model.UserIsAuthenticated)
                 {
                     <!-- FOLLOW / UNFOLLOW-->
-                    <!-- TODO -->
-
+                    if (Model.IdClienteCorrente.HasValue)
+                    {
+                    <li>
+                        @if (!Model.UserIsFollowingCliente.HasValue || !Model.UserIsFollowingCliente.Value)
+                        {
+                            <form id="frmNavAssociaCliente" asp-action="AssociaToCliente" asp-controller="Users" asp-route-idCliente="@Model.IdClienteCorrente" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                <a class="waves-effect waves-light btn pink" onclick="navSubmitForm(event,'frmNavAssociaCliente'); return false;"><i class="material-icons left">favorite_border</i>Follow</a>
+                            </form>
+                        }
+                        else
+                        {
+                            <form id="frmNavRemoveAssociazioneCliente" asp-action="RemoveAssociazioneToCliente" asp-controller="Users" asp-route-idCliente="@Model.IdClienteCorrente" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                <a class="waves-effect waves-light btn pink" onclick="navSubmitForm(event,'frmNavRemoveAssociazioneCliente'); return false;"><i class="material-icons left">favorite</i>Unfollow</a>
+                            </form>
+                        }
+                    </li>
+                    }
                     <!-- PROFILO -->
                     <li>
                         <a id="ddTrgAccount" href="#!" data-target="dropdownAccount" class="dropdown-trigger waves-effect">
@@ -29,9 +44,9 @@
                             <i class='material-icons large'>@(Model.NumNotifichePresenti > 0 ? "notifications_active" : "notifications_none")</i>
                         </a>
                         @*@if (Model.NumNotifichePresenti > 0)
-                        {
-                            <span class="r2d-nav-badge @(Model.NumNuovNotifichePresenti> 0 ? "new ": "")badge">@Model.NumNotifichePresenti</span>
-                        }*@
+                            {
+                                <span class="r2d-nav-badge @(Model.NumNuovNotifichePresenti> 0 ? "new ": "")badge">@Model.NumNotifichePresenti</span>
+                            }*@
                     </li>
                     <!-- FINE NOTIFICHE -->
                 }
@@ -90,6 +105,10 @@
             coverTrigger: false,
         });
     });
+    function navSubmitForm(event, formName) {
+        event.preventDefault();
+        document.getElementById(formName).submit();
+    }
 
     @*function getNotifications(instance, elem) {
         $.ajax('@(Url.Action("GetNotificheViewComponent", "Notifiche"))')

@@ -10,5 +10,6 @@ namespace PalestreGoGo.DataAccess
         public const string SP_RICHIESTE_REGISTRAZIONE_COMPLETA = "RichiestaRegistrazione_Complete";
         
         public const string SP_USER_CLIENTI_FOLLOWED = "Utenti_ClientiFollowed";
+        public const string SP_USER_FOLLOW_CLIENTE = "Utenti_ClienteIsFollowed";
     }
 }

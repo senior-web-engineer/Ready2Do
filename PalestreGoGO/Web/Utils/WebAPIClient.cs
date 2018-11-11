@@ -48,7 +48,7 @@ namespace Web.Utils
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<ClienteViewModel> GetClienteAsync(int idCliente)
+        public async Task<ClienteWithImagesViewModel> GetClienteAsync(int idCliente)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}");
@@ -56,7 +56,7 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteViewModel>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
             return result;
         }
 
@@ -84,9 +84,6 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
             return result;
         }
-
-
-
 
         public async Task<IEnumerable<TipologiaClienteViewModel>> GetTipologiClientiAsync()
         {
@@ -446,7 +443,7 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<AppuntamentoUserApiModel>> GetAppuntamentiForCurrentUserAsync(Guid userId, string access_token)
+        public async Task<List<AppuntamentoUserApiModel>> GetAppuntamentiForCurrentUserAsync(string userId, string access_token)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage();
@@ -464,12 +461,12 @@ namespace Web.Utils
         }
 
         /// <summary>
-        /// Verifica se un utente sia già un Follower di un determinato cliente
+        /// Ritorna la lista dei clienti followed dall'utente corrente
         /// </summary>
         /// <param name="idCliente"></param>
         /// <param name="access_token"></param>
         /// <returns></returns>
-        public async Task<List<ClienteFollowed>> ClientiFollowedByUserAsync(Guid userId, string access_token)
+        public async Task<List<ClienteFollowed>> ClientiFollowedByUserAsync(string userId, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/{userId}/clientifollowed");
             HttpClient client = new HttpClient();
@@ -482,6 +479,25 @@ namespace Web.Utils
             return apiResult?.MapToEnumerableClienteFollowed().ToList();
         }
 
+        
+        /// <summary>
+        /// Verifica se un utente sia già un Follower di un determinato cliente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="access_token"></param>
+        /// <returns></returns>
+        public async Task<bool> ClienteIsFollowedByUserAsync(int idCliente, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/follow/{idCliente}");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            var apiResult = JsonConvert.DeserializeObject<bool>(responseString, _serializerSettings);
+            return apiResult;
+        }
 
         public async Task ClienteFollowAsync(int idCliente, string access_token)
         {

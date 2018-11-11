@@ -16,10 +16,10 @@ namespace PalestreGoGo.DataAccess
 
         Task<Appuntamenti> GetAppuntamentoAsync(int idCliente, int idAppuntamento);
 
-        Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, Guid userId);
+        Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, string userId);
 
-        IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, Guid userId, bool includePast = false);
+        IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, string userId, bool includePast = false);
 
-        IEnumerable<Appuntamenti> GetAppuntamentiForUser(Guid userId, bool includePast = false);
+        IEnumerable<Appuntamenti> GetAppuntamentiForUser(string userId, bool includePast = false);
     }
 }

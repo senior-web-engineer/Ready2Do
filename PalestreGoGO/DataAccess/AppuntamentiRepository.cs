@@ -90,12 +90,12 @@ namespace PalestreGoGo.DataAccess
             return await _context.Appuntamenti.Where(a => a.IdCliente.Equals(idCliente) && a.Id.Equals(idAppuntamento)).FirstOrDefaultAsync();
         }
 
-        public async Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, Guid userId)
+        public async Task<Appuntamenti> GetAppuntamentoForScheduleAsync(int idCliente, int idSchedule, string userId)
         {
             return await _context.Appuntamenti.Where(a => a.IdCliente.Equals(idCliente) && a.ScheduleId.Equals(idSchedule) && a.UserId.Equals(userId)).FirstOrDefaultAsync();
         }
 
-        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, Guid userId, bool includePast=false)
+        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(int idCliente, string userId, bool includePast=false)
         {
             return _context
                     .Appuntamenti
@@ -106,7 +106,7 @@ namespace PalestreGoGo.DataAccess
                     .Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId) );
         }
 
-        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(Guid userId, bool includePast)
+        public IEnumerable<Appuntamenti> GetAppuntamentiForUser(string userId, bool includePast)
         {
             return _context
                     .Appuntamenti

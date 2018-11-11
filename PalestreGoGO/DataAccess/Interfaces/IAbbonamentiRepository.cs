@@ -10,7 +10,7 @@ namespace PalestreGoGo.DataAccess
     {
         Task<int> AddAbbonamentoAsync(int idCliente, AbbonamentiUtenti abbonamento);
         Task UpdateAbbonamentoAsync(int idCliente, AbbonamentiUtenti abbonamento);
-        IEnumerable<AbbonamentiUtenti> GetAbbonamentiForUser(int idCliente, Guid userId);
+        IEnumerable<AbbonamentiUtenti> GetAbbonamentiForUser(int idCliente, string userId);
         Task<AbbonamentiUtenti> GetAbbonamentoAsync(int idCliente, int idAbbonamento);
 
     }

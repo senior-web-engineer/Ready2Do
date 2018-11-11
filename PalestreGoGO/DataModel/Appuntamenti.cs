@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataModel
     {
         public int Id { get; set; }
         public int IdCliente { get; set; }        
-        public Guid? UserId { get; set; }
+        public string UserId { get; set; }
         public int ScheduleId { get; set; }
         public int? IdAbbonamento { get; set; }
         public DateTime DataPrenotazione { get; set; }

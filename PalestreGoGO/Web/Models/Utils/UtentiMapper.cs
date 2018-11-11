@@ -17,11 +17,10 @@ namespace Web.Models.Utils
             {
                 item = new ClienteUtenteViewModel()
                 {
-                    Cognome = u.Cognome,
-                    Email = u.Email,
+                    Nominativo = u.Nominativo,
+                    DisplayName = u.DisplayName,
                     IdCliente = u.IdCliente,
-                    IdUtente = u.IdUtente,
-                    Nome = u.Nome
+                    IdUtente = u.IdUtente
                 };
                 result.Add(item);
                 if (u.Abbonamento == null) { continue; }

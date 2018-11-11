@@ -4,10 +4,14 @@ Tabella che tiene traccia delle associazioni tra gli utenti registrati ed i clie
 CREATE TABLE [dbo].[ClientiUtenti]
 (
 	[IdCliente]			INT					NOT NULL,
-	[IdUtente]			UNIQUEIDENTIFIER	NOT NULL,
-	--[TipoAssociazione]	TINYINT				NOT NULL CONSTRAINT DEF_ClientiUtenti_TipoAss DEFAULT (1),,
+	[IdUtente]			VARCHAR(50)			NOT NULL,
+	[NominativoUser]	NVARCHAR(250)		NOT NULL,
+	[UserDisplayName]	NVARCHAR(100)		NOT NULL,
+	[DataAggiornamento] DATETIME2(2)		NOT NULL CONSTRAINT DEF_ClientiUtenti_DtAggiorn DEFAULT (SYSDATETIME()),
 	[DataCreazione]		DATETIME2(2)		NOT NULL CONSTRAINT DEF_ClientiUtenti_DtCreaz DEFAULT (SYSDATETIME()),
+	[DataCancellazione] DATETIME2(2)		NULL,
 	CONSTRAINT PK_ClientiUtenti PRIMARY KEY(IdCliente, IdUtente),
 	CONSTRAINT FK_ClientiUtenti_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti](Id),
-	--CONSTRAINT CHK_ClientiUtenti_TipoAss CHECK (TipoAssociazione IN (1))
+	INDEX UQX_ClientiUtenti UNIQUE (IdCliente, IdUtente) WHERE DataCancellazione IS NULL -- Solo un'associazione attiva
 )
+GO

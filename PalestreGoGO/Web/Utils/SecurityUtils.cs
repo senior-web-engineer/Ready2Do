@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;       
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +11,7 @@ using Web.Models;
 
 namespace Web.Utils
 {
-    public static  class SecurityUtils
+    public static class SecurityUtils
     {
         private const short KEY_SIZE = 256;
 
@@ -135,7 +135,7 @@ namespace Web.Utils
             //Valutiamo i claim STRUCTURE_OWNED e STRUCTURE_MANAGED per determinare se l'utente corrente è un Admin per il cliente
             foreach (var c in principal.Claims.Where(c => c.Type.Equals(Constants.ClaimStructureManaged)))
             {
-                foreach(var cliente in c.Value.Split(','))
+                foreach (var cliente in c.Value.Split(','))
                 {
                     if (int.Parse(cliente).Equals(idCliente))
                     {
@@ -153,7 +153,7 @@ namespace Web.Utils
                     }
                 }
             }
-            if(principal.Claims.Any(c=>c.Type.Equals(Constants.ClaimGlobalAdmin) && c.Value.Equals(true.ToString())))
+            if (principal.Claims.Any(c => c.Type.Equals(Constants.ClaimGlobalAdmin) && c.Value.Equals(true.ToString())))
             {
                 result = result | UserType.GlobalAdmin;
             }
@@ -168,13 +168,34 @@ namespace Web.Utils
             return false;
         }
 
-        public static Guid? UserId(this ClaimsPrincipal principal)
+        public static string UserId(this ClaimsPrincipal principal)
         {
             if (principal == null) return null;
-            Guid result;
-            string userId = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimUserId))?.Value;
-            if (Guid.TryParse(userId, out result)) return result;
-            return null;
+            return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimUserId))?.Value;
+        }
+
+        public static string DisplayName(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimDisplayName))?.Value;
+        }
+
+        public static string Email(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimEmail))?.Value;
+        }
+
+        public static string Nome(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimNome))?.Value;
+        }
+
+        public static string Cognome(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimCognome))?.Value;
         }
 
         public static bool CanViewSidebar(this ClaimsPrincipal principal, int idCliente)

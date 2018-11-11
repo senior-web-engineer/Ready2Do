@@ -46,7 +46,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet()]
-        public IActionResult GetAbbonamentiForUser([FromRoute]int idCliente, [FromQuery]Guid idUtente)
+        public IActionResult GetAbbonamentiForUser([FromRoute]int idCliente, [FromQuery]string idUtente)
         {
             var entity = _repository.GetAbbonamentiForUser(idCliente, idUtente);
             var result = Mapper.Map<IEnumerable<AbbonamentiUtenti>, IEnumerable<AbbonamentoViewModel>>(entity);

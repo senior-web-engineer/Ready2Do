@@ -91,6 +91,36 @@ namespace Web.Controllers
                 return Json(data: urlIsValid);
             }
         }
+        [HttpGet]
+        [Route("/{idCliente:int}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Index([FromRoute(Name = "idCliente")]int idCliente)
+        {
+            var cliente = await _apiClient.GetClienteAsync(idCliente);
+            //Se non troviamo il cliente redirect alla home
+            if (cliente == null) { return Redirect("/"); }
+            var vm = cliente.MapToHomeViewModel();
+            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.IdCliente))?.ToList();
+            vm.EventsBaseUrl = string.Format("/{0}/eventi/", cliente.UrlRoute);
+            vm.GoogleStaticMapUrl = GoogleAPIUtils.GetStaticMapUrl(cliente.Nome, cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine, _appConfig.GoogleAPI.GoogleMapsAPIKey);
+            vm.ExternalGoogleMapUrl = GoogleAPIUtils.GetExternalMapUrl(cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine);
+            //vm.GoogleStaticMapUrl = this.BuildMapUrlForCliente(cliente);
+            //ViewData["ReturnUrl"] = Request.Path.ToString();
+            //ViewData["Sale"] = locations;
+            ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(cliente.UrlRoute, cliente.IdCliente, _appConfig.EncryptKey);
+            //ViewData["ClienteRoute"] = urlRoute;
+            //ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
+            ViewData["IdCliente"] = cliente.IdCliente;
+            //ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
+            vm.Latitude = cliente.Indirizzo.Coordinate.Latitudine;
+            vm.Longitude = cliente.Indirizzo.Coordinate.Longitudine;
+            vm.DataMinima = DateTime.Now.ToString("yyyy-MM-dd");
+            vm.DataMassima = DateTime.Now.AddMonths(2).ToString("yyyy-MM-dd");
+           
+            return View(vm);
+        }
+
+
 
         [HttpGet]
         [Route("/{cliente}", Name = "HomeCliente")]
@@ -231,68 +261,28 @@ namespace Web.Controllers
         //}
 
         
-        #region Gestione Associazione Utenti
-
-        /// <summary>
-        /// Associa l'utente corrente alla struttura (cliente)
-        /// </summary>
-        /// <param name="urlRoute"></param>
-        /// <returns></returns>
-        [HttpPost("{cliente}/associa")]
-        public async Task<IActionResult> AddAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name ="returnUrl")]string returnUrl)
-        {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            await _apiClient.ClienteFollowAsync(idCliente, accessToken);
-            if (!string.IsNullOrWhiteSpace(returnUrl))
-            {
-                //Possibile problema di sicurezza? (Open Redirect?)
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction("Index", new { cliente = urlRoute });
-            }
-        }
-
-        /// <summary>
-        /// Associa l'utente corrente alla struttura (cliente)
-        /// </summary>
-        /// <param name="urlRoute"></param>
-        /// <returns></returns>
-        [HttpPost("{cliente}/disassocia")]
-        public async Task<IActionResult> RemoveAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute)
-        {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            await _apiClient.ClienteUnFollowAsync(idCliente, accessToken);
-            return RedirectToAction("Index", new { cliente = urlRoute });
-        }
-        #endregion
-
+  
         #region Gestione Utenti del Cliente
-        [HttpGet("{cliente}/users")]
-        public async Task<IActionResult> GetUtentiCliente([FromRoute(Name = "cliente")]string urlRoute)
-        {
-            var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            //Verifichiamo che solo gli Admin possano accedere alla pagina di gestione degli utenti
-            var userType = User.GetUserTypeForCliente(idCliente);
-            if (!userType.IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var tipologieAbbnamenti = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
-            var vm = await _apiClient.GetUtentiClienteConAbbonamenti(idCliente, accessToken);
-            ViewBag.IdCliente = idCliente;
-            if (tipologieAbbnamenti != null && tipologieAbbnamenti.Count() > 0)
-            {
-                ViewBag.TipologieAbbonamenti = tipologieAbbnamenti.Select(ta => new KeyValuePair<int, string>(ta.Id.Value, ta.Nome));
-            }
-            return View("Utenti",vm);
-        }
+        //[HttpGet("{cliente}/users")]
+        //public async Task<IActionResult> GetUtentiCliente([FromRoute(Name = "cliente")]string urlRoute)
+        //{
+        //    var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di gestione degli utenti
+        //    var userType = User.GetUserTypeForCliente(idCliente);
+        //    if (!userType.IsAtLeastAdmin())
+        //    {
+        //        return Forbid();
+        //    }
+        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
+        //    var tipologieAbbnamenti = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+        //    var vm = await _apiClient.GetUtentiClienteConAbbonamenti(idCliente, accessToken);
+        //    ViewBag.IdCliente = idCliente;
+        //    if (tipologieAbbnamenti != null && tipologieAbbnamenti.Count() > 0)
+        //    {
+        //        ViewBag.TipologieAbbonamenti = tipologieAbbnamenti.Select(ta => new KeyValuePair<int, string>(ta.Id.Value, ta.Nome));
+        //    }
+        //    return View("Utenti",vm);
+        //}
         #endregion
 
         //#region Helpers

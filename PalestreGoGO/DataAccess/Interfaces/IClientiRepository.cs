@@ -10,12 +10,12 @@ namespace PalestreGoGo.DataAccess
     {
         Task<int> AddAsync(Clienti cliente);
 
-        Task ConfermaProvisioningAsync(string provisioningToken, Guid userId);
+        Task ConfermaProvisioningAsync(string provisioningToken, string userId);
 
         Task<Clienti> GetAsync(int idCliente);
         Task<Clienti> GetByUrlAsync(string urlRoute);
         Task<Clienti> GetByTokenAsync(string urlRoute);
-        Task<Clienti> GetByIdUserOwnerAsync(Guid idOwner, bool includeImages = false);
+        Task<Clienti> GetByIdUserOwnerAsync(string idOwner, bool includeImages = false);
 
         Task UpdateAsync(Clienti cliente);
 
@@ -33,10 +33,10 @@ namespace PalestreGoGo.DataAccess
         #endregion
 
         #region Followers
-        Task AddUtenteFollowerAsync(int idCliente, Guid idUtente);
-        Task RemoveUtenteFollowerAsync(int idCliente, Guid idUtente);
+        Task AddUtenteFollowerAsync(int idCliente, string idUtente, string nominativoUtente, string displayName);
+        Task RemoveUtenteFollowerAsync(int idCliente, string idUtente);
         IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente);
-        Task<ClientiUtenti> GetFollowerAsync(int idCliente, Guid idUtente);
+        Task<ClientiUtenti> GetFollowerAsync(int idCliente, string idUtente);
         Task<IEnumerable<ClienteUtenteConAbbonamento>> GetAllFollowersWithAbbonamenti(int idCliente);
 
         #endregion

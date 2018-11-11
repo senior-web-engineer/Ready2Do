@@ -8,7 +8,7 @@ namespace PalestreGoGo.WebAPIModel
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public TipologieAbbonamentiViewModel TipoAbbonamento { get; set; }
         public int? IdTipoAbbonamento { get; set; }
         public DateTime DataInizioValidita { get; set; }

@@ -162,9 +162,9 @@ namespace Web.Controllers
 
         #region Gestione Abbonamenti Utenti
         //TODO: da implementare
-        [HttpGet("{cliente}/abbonamenti/add/{userId:guid}")]
+        [HttpGet("{cliente}/abbonamenti/add/{userId}")]
         public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute, 
-                                                              [FromRoute(Name = "userId")]Guid userId, 
+                                                              [FromRoute(Name = "userId")]string userId, 
                                                               [FromQuery(Name ="tipoAbb")] int idTipoAbbonamento)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
@@ -198,9 +198,9 @@ namespace Web.Controllers
             return View("NuovoAbbonamento", vm);
         }
 
-        [HttpPost("{cliente}/abbonamenti/add/{userId:guid}")]
+        [HttpPost("{cliente}/abbonamenti/add/{userId}")]
         public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
-                                                              [FromRoute(Name = "userId")]Guid userId,
+                                                              [FromRoute(Name = "userId")]string userId,
                                                               [FromForm]EditAbbonamentoUtenteInputModel model)
         {
             if (!ModelState.IsValid)

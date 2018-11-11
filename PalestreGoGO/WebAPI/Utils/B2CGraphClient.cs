@@ -62,7 +62,7 @@ namespace PalestreGoGo.WebAPI.Utils
 
         public async Task<LocalAccountUser> GetUserById(string userId)
         {
-            var response = await SendGraphGetRequestAsync($"{API_USERS}{userId}", null);
+            var response = await SendGraphGetRequestAsync($"{API_USERS}/{userId}", null);
             var result = (_msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value)).FirstOrDefault();
             return result;
         }

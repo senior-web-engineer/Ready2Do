@@ -14,7 +14,7 @@
 	[Latitudine]		FLOAT				NULL,
 	[Longitudine]		FLOAT				NULL,
 	[DataCreazione]		DATETIME2(2)		NOT NULL CONSTRAINT DEF_Clienti_DataCreaz DEFAULT(SYSDATETIME()),
-	[IdUserOwner]		UNIQUEIDENTIFIER	NULL, --Utente che ha fatto la registrazione del Cliente (valorizzato solo al provisioning)
+	[IdUserOwner]		VARCHAR(50)			NULL, --Utente che ha fatto la registrazione del Cliente (valorizzato solo al provisioning)
 	-- Valore casuale utilizzato come meccanismo di sicurezza per la validazione
 	[SecurityToken]		NVARCHAR(500)		NOT NULL CONSTRAINT DEF_Clienti_ProvToken DEFAULT(CAST(NEWID() AS NVARCHAR(100))),
 	-- Valorizzata solo dopo la conferma dell'utente che l'ha creata e dopo che il sistema ha eseguito il provisioning

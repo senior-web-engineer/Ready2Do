@@ -30,7 +30,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IUsersManagementService _userManagementService;
         private readonly IConfiguration _config;
 
-        public ClientiController(IConfiguration config, 
+        public ClientiController(IConfiguration config,
                                  ILogger<ClientiController> logger,
                                  IUsersManagementService userManagementService,
                                  IClientiRepository repository)
@@ -108,7 +108,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
 
             var result = await _repository.CheckUrlRouteValidity(url, idCliente);
-            return Ok(result == UrlValidationResultDM.OK); 
+            return Ok(result == UrlValidationResultDM.OK);
             //var cliente = await _repository.GetByUrlAsync(url);
             //return Ok(cliente == null);
         }
@@ -225,9 +225,9 @@ namespace PalestreGoGo.WebAPI.Controllers
 
             //Step 2 - Creiamo l'utente Owner
             var user = new LocalAccountUser(newCliente.NuovoUtente.Email, newCliente.NuovoUtente.Password)
-            {                
+            {
                 Nome = newCliente.NuovoUtente.Nome,
-                Cognome = newCliente.NuovoUtente.Cognome,                
+                Cognome = newCliente.NuovoUtente.Cognome,
                 TelephoneNumber = newCliente.NuovoUtente.Telefono
             };
             await _userManagementService.RegisterOwnerAsync(user, cliente.Id.ToString(), correlationId);
@@ -266,7 +266,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            if(anagrafica.IdCliente != idCliente) { return BadRequest(); }
+            if (anagrafica.IdCliente != idCliente) { return BadRequest(); }
 
 
             await _repository.UpdateAnagraficaAsync(anagrafica.ToDM());
@@ -278,7 +278,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         {
             if (orario == null) { return BadRequest(); }
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid){return BadRequest();}            
+            if (!ModelState.IsValid) { return BadRequest(); }
             await _repository.UpdateOrarioAperturaAsync(idCliente, JsonConvert.SerializeObject(orario));
             return Ok();
         }
@@ -309,9 +309,9 @@ namespace PalestreGoGo.WebAPI.Controllers
             existing.OrarioApertura = JsonConvert.SerializeObject(profilo.OrarioApertura);
 
             //Se è una nuova immagine, sovrascriviamo la precedente (manteniamo l'Id della vecchia)
-            if(!profilo.ImmagineHome.Id.HasValue || profilo.ImmagineHome.Id.Value <= 0)
+            if (!profilo.ImmagineHome.Id.HasValue || profilo.ImmagineHome.Id.Value <= 0)
             {
-                var oldImg = existing.ClientiImmagini.SingleOrDefault(i=>i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini();
+                var oldImg = existing.ClientiImmagini.SingleOrDefault(i => i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini();
                 oldImg.IdCliente = idCliente;
                 oldImg.IdTipoImmagine = (int)TipoImmagine.Sfondo;
                 //oldImg.Nome = profilo.ImmagineHome.Nome;
@@ -332,7 +332,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (immagine == null) { return BadRequest(); }
             if (immagine.Id.HasValue) { return BadRequest(); } //Non deve avere un Id essendo una nuova immagine
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid){return BadRequest();}
+            if (!ModelState.IsValid) { return BadRequest(); }
             var images = new ClientiImmagini[]{
                 new ClientiImmagini()
                 {
@@ -350,18 +350,18 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPut("{idCliente:int}/gallery/{idImage}")]
-        public async Task<IActionResult> ClienteUpdateImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name ="idImage")] int idImage, [FromBody] ImmagineViewModel immagine)
+        public async Task<IActionResult> ClienteUpdateImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idImage")] int idImage, [FromBody] ImmagineViewModel immagine)
         {
             if (immagine == null) { return BadRequest(); }
             if (!immagine.Id.HasValue || !immagine.Id.Value.Equals(idImage)) { return BadRequest(); } //Deve avere un Id essendo una immagine esistente
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
             if (!ModelState.IsValid) { return BadRequest(); }
-            var existing = _repository.GetImage(idCliente, idImage);            
+            var existing = _repository.GetImage(idCliente, idImage);
             existing.Alt = immagine.Alt;
             existing.Descrizione = immagine.Descrizione;
             existing.Nome = immagine.Nome;
             existing.Ordinamento = immagine.Ordinamento;
-                    existing.Url = immagine.Url;
+            existing.Url = immagine.Url;
             await _repository.UpdateImageAsync(idCliente, existing);
             return Ok();
         }
@@ -418,8 +418,9 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> Follow([FromRoute] int idCliente)
         {
             var userId = this.GetCurrentUser().UserId();
-            if (!userId.HasValue) return Forbid();    //Se non ho trovato l'utente ritorniamo 403 - Forbidden
-            await _repository.AddUtenteFollowerAsync(idCliente, userId.Value);
+            if (string.IsNullOrWhiteSpace(userId)) return Forbid();    //Se non ho trovato l'utente ritorniamo 403 - Forbidden
+            var userInfo = await _userManagementService.GetUserByIdAsync(userId);
+            await _repository.AddUtenteFollowerAsync(idCliente, userId, $"{userInfo.Cognome} {userInfo.Nome}", userInfo.DisplayName);
             return Ok();
         }
 
@@ -432,8 +433,8 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> UnFollow([FromRoute] int idCliente)
         {
             var userId = this.GetCurrentUser().UserId();
-            if (!userId.HasValue) return Forbid();    //Se non ho trovato l'utente ritorniamo 403 - Forbidden
-            await _repository.RemoveUtenteFollowerAsync(idCliente, userId.Value);
+            if (!string.IsNullOrWhiteSpace(userId)) return Forbid();    //Se non ho trovato l'utente ritorniamo 403 - Forbidden
+            await _repository.RemoveUtenteFollowerAsync(idCliente, userId);
             return Ok();
         }
 

@@ -8,6 +8,7 @@ using Dapper;
 using System.Data.SqlClient;
 using PalestreGoGo.DataModel.Exceptions;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -53,15 +54,29 @@ namespace PalestreGoGo.DataAccess
                 using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     return await cn.QuerySingleAsync<RichiestaRegistrazione>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_COMPLETA,
-                        new { pUserCode = code, pUsername = username},
+                        new { pUserCode = code, pUsername = username },
                         commandType: System.Data.CommandType.StoredProcedure);
                 }
             }
             catch (SqlException exc)
             {
-                throw new UserConfirmationException($"Impossibile confemrare la registrazione dell'utente [{username}] con il codice [{code}]", exc);
+                throw new UserConfirmationException($"Impossibile confermare la registrazione dell'utente [{username}] con il codice [{code}]", exc);
             }
+        }
 
+        public async Task<bool> UserFollowClienteAsync(string userId, int idCliente)
+        {
+            var parameters = new DynamicParameters(new
+            {
+                pUserId = userId,
+                pIdCliente = idCliente
+            });
+            parameters.Add("pResult", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await cn.ExecuteAsync(StoredProcedure.SP_USER_FOLLOW_CLIENTE, parameters, commandType: CommandType.StoredProcedure);
+                return parameters.Get<bool>("pResult");
+            }
         }
     }
 }

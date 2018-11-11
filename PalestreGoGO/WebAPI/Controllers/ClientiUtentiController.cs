@@ -61,7 +61,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserDetails([FromRoute] int idCliente, [FromRoute]Guid id)
+        public async Task<IActionResult> GetUserDetails([FromRoute] int idCliente, [FromRoute]string id)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             var follower = await _clientiRepo.GetFollowerAsync(idCliente, id);

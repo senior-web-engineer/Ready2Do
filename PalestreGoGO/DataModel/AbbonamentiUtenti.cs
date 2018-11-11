@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataModel
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public int IdTipoAbbonamento { get; set; }
         [Column(TypeName = "date")]
         public DateTime DataInizioValidita { get; set; }

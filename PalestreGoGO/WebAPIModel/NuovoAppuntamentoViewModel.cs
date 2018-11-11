@@ -18,7 +18,7 @@ namespace PalestreGoGo.WebAPIModel
     public class NuovoAppuntamentoApiModel: NuovoAppuntamentoBaseApiModel
     {
         [JsonProperty("user", Required = Required.Always)]
-        public Guid IdUtente { get; set; }
+        public string IdUtente { get; set; }
 
     }
 

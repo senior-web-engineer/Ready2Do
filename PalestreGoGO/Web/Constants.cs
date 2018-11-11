@@ -16,6 +16,11 @@ namespace Web
         public const string ClaimRole = "role";
         public const string ClaimUserId = ClaimTypes.NameIdentifier;
         public const string ClaimPolicy = "tfp";
+        public const string ClaimNome = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
+        public const string ClaimCognome = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
+        public const string ClaimDisplayName = "name";
+        public const string ClaimEmail = "emails";
+
         public const string ROLE_GLOBAL_ADMIN = "global_admin";
 
         public const string CUSTOM_HEADER_TOKEN_AUTH = "X-PalestreGoGO-AUTHToken";

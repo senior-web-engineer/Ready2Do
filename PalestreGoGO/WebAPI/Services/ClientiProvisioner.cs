@@ -15,7 +15,7 @@ namespace PalestreGoGo.WebAPI.Services
             _repositoryClienti = repositoryClienti;
         }
 
-        public async Task ProvisionClienteAsync(string provisioningToken, Guid userId)
+        public async Task ProvisionClienteAsync(string provisioningToken, string userId)
         {
             //Che deve fare il provisioning?
             //1. Aggiorniamo lo stato sul DB

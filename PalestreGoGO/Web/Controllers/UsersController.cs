@@ -40,11 +40,11 @@ namespace Web.Controllers
         {
             string accessToken = await HttpContext.GetTokenAsync("access_token");
             var userId = User.UserId();
-            if (!userId.HasValue)
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 return Forbid();
             }
-            var items = await _apiClient.GetAppuntamentiForCurrentUserAsync(userId.Value, accessToken);
+            var items = await _apiClient.GetAppuntamentiForCurrentUserAsync(userId, accessToken);
             var vm = new UserProfileViewModel();
             var appuntamenti = new List<AppuntamentoUtenteViewModel>();
             vm.Appuntamenti = appuntamenti;
@@ -67,5 +67,55 @@ namespace Web.Controllers
             }
             return View(vm);
         }
+
+        #region Gestione Associazione Utenti
+
+        /// <summary>
+        /// Associa l'utente corrente alla struttura (cliente)
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <returns></returns>
+        [HttpPost("associa/{idCliente:int}")]
+        public async Task<IActionResult> AssociaToCliente([FromRoute]int idCliente, [FromQuery(Name = "returnUrl")]string returnUrl)
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
+//            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _apiClient.ClienteFollowAsync(idCliente, accessToken);
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                //Possibile problema di sicurezza? (Open Redirect?)
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", new { idCliente = idCliente});
+            }
+        }
+
+        /// <summary>
+        /// Associa l'utente corrente alla struttura (cliente)
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <returns></returns>
+        [HttpPost("disassocia/{idCliente:int}")]
+        public async Task<IActionResult> RemoveAssociazioneToCliente([FromRoute]int idCliente, [FromQuery(Name = "returnUrl")]string returnUrl)
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
+  //          int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _apiClient.ClienteUnFollowAsync(idCliente, accessToken);
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                //Possibile problema di sicurezza? (Open Redirect?)
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", new { idCliente = idCliente });
+            }
+        }
+        #endregion
+
     }
 }

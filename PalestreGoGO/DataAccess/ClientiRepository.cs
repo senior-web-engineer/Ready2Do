@@ -47,7 +47,7 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task ConfermaProvisioningAsync(string provisioningToken, Guid userId)
+        public async Task ConfermaProvisioningAsync(string provisioningToken, string userId)
         {
             var user = _context.Set<Clienti>().First(c => c.SecurityToken.Equals(provisioningToken, StringComparison.InvariantCulture));
             if (user == null) throw new ArgumentException(nameof(provisioningToken));
@@ -106,7 +106,7 @@ namespace PalestreGoGo.DataAccess
             return Task.FromResult(cliente);
         }
 
-        public async Task<Clienti> GetByIdUserOwnerAsync(Guid idOwner, bool includeImages = false)
+        public async Task<Clienti> GetByIdUserOwnerAsync(string idOwner, bool includeImages = false)
         {
             var cliente = await _context
                                 .Clienti
@@ -264,24 +264,34 @@ namespace PalestreGoGo.DataAccess
         #endregion
 
         #region Followers (UtentiClienti)
-        public async Task AddUtenteFollowerAsync(int idCliente, Guid idUtente)
+        public async Task AddUtenteFollowerAsync(int idCliente, string idUtente, string nominativo, string displayName)
         {
-            var entity = new ClientiUtenti()
+            var parameters = new DynamicParameters(new
             {
-                IdCliente = idCliente,
-                IdUtente = idUtente
-            };
-            await _context.ClientiUtenti.AddAsync(entity);
-            await _context.SaveChangesAsync();
+                pUserId = idUtente,
+                pIdCliente = idCliente,
+                pNominativo = nominativo,
+                pDisplayName = displayName
+            });
+            parameters.Add("pResult", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+            using (var cn = new SqlConnection(this._context.Database.GetDbConnection().ConnectionString))
+            {
+                await cn.ExecuteAsync("[dbo].[Clienti_Utenti_Associa]", parameters, commandType: CommandType.StoredProcedure);
+                //return parameters.Get<bool>("pResult");
+            }           
         }
 
-        public async Task RemoveUtenteFollowerAsync(int idCliente, Guid idUtente)
+        public async Task RemoveUtenteFollowerAsync(int idCliente, string idUtente)
         {
-            var entity = await _context.ClientiUtenti.Where(tl => tl.IdCliente.Equals(idCliente) && tl.IdUtente.Equals(idUtente)).FirstOrDefaultAsync();
-            if (entity == null) throw new ArgumentException("Invalid Tenant or Id");
-            var entry = _context.Entry(entity);
-            entry.State = EntityState.Deleted;
-            await _context.SaveChangesAsync();
+            var parameters = new DynamicParameters(new
+            {
+                pUserId = idUtente,
+                pIdCliente = idCliente,
+            });
+            using (var cn = new SqlConnection(this._context.Database.GetDbConnection().ConnectionString))
+            {
+                await cn.ExecuteAsync("[dbo].[Clienti_Utenti_Disassocia]", parameters, commandType: CommandType.StoredProcedure);
+            }
         }
 
         public IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente)
@@ -296,7 +306,7 @@ namespace PalestreGoGo.DataAccess
             using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
             {
                 var cmd = cn.CreateCommand();
-                cmd.CommandText = "[dbo].[GetUtentiCliente]";
+                cmd.CommandText = "[dbo].[Clienti_Utenti_Lista]";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@pIdCliente", idCliente));
                 await cn.OpenAsync();
@@ -307,12 +317,11 @@ namespace PalestreGoGo.DataAccess
                     {
                         item = new ClienteUtenteConAbbonamento()
                         {
-                            Cognome = reader["LastName"] as string,
-                            Nome = reader["FirstName"] as string,
-                            IdUtente = (Guid)reader["Id"],
+                            Nominativo = reader["NominativoUser"] as string,
+                            DisplayName = reader["UserDisplayName"] as string,
+                            IdUtente = reader["Id"] as string,
                             IdCliente = idCliente,
-                            DataAssociazione = (DateTime)reader["DataAssociazione"],
-                            Email = reader["Email"] as string
+                            DataAssociazione = (DateTime)reader["DataAssociazione"]
                         };
                         result.Add(item);
                         //Se ci sono i dati sull'abbonamento li andiamo a leggere
@@ -349,7 +358,7 @@ namespace PalestreGoGo.DataAccess
                 return result;
             }
         }
-        public async Task<ClientiUtenti> GetFollowerAsync(int idCliente, Guid idUtente)
+        public async Task<ClientiUtenti> GetFollowerAsync(int idCliente, string idUtente)
         {
             return await _context.ClientiUtenti.Where(cu => cu.IdCliente.Equals(idCliente) && cu.IdUtente.Equals(idUtente)).SingleOrDefaultAsync();
         }

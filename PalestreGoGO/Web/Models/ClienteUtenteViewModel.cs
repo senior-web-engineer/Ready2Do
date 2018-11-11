@@ -17,10 +17,9 @@ namespace Web.Models
     public class ClienteUtenteViewModel
     {
         public int IdCliente { get; set; }
-        public Guid IdUtente { get; set; }
-        public string Nome { get; set; }
-        public string Cognome { get; set; }
-        public string Email { get; set; }
+        public string IdUtente { get; set; }
+        public string Nominativo { get; set; }
+        public string DisplayName { get; set; }
 
         public StatoAbbonamento StatoAbbonamento
         {

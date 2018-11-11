@@ -15,13 +15,12 @@ namespace PalestreGoGo.WebAPI.Utils
             if (principal.Claims.Any(c => c.Type.Equals(Constants.ClaimGlobalAdmin) && c.Value.Equals(true.ToString(),StringComparison.InvariantCultureIgnoreCase))) return true;
             return false;
         }
-        public static Guid? UserId(this ClaimsPrincipal principal)
+        public static string UserId(this ClaimsPrincipal principal)
         {
             if (principal == null) return null;
-            Guid result;
             string userId = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimUserId))?.Value;
-            if (Guid.TryParse(userId, out result)) return result;
-            return null;
+            //if (Guid.TryParse(userId, out result)) return result;
+            return userId;
         }
 
         /*Ritorna una lista di IdClienti per cui il principal è l'owner*/

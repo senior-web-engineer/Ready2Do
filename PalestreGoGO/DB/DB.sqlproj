@@ -119,6 +119,10 @@
     <Build Include="dbo\Tables\AbbonamentiTransazioni.sql" />
     <Build Include="dbo\Tables\ClientiPreferenze.sql" />
     <Build Include="dbo\Stored Procedures\Appuntamenti_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Utenti_ClienteIsFollowed.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_Lista.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_Associa.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_Disassocia.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

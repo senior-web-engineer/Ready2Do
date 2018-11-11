@@ -26,13 +26,20 @@ namespace Web.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync(int? idClienteCorrente)
         {
             NavbarViewModel vm = new NavbarViewModel();
+            vm.UserDisplayName = UserClaimsPrincipal.DisplayName();
+            vm.UserEmail = UserClaimsPrincipal.Email();
             vm.IdClienteCorrente = idClienteCorrente;
             vm.UserIsAuthenticated = User.Identity.IsAuthenticated;
             vm.ReturnUrl = HttpContext.Request.GetDisplayUrl();
             if (vm.UserIsAuthenticated)
             {
                 var accessToken = await HttpContext.GetTokenAsync("access_token");
+                string userId = UserClaimsPrincipal.UserId();
                 vm.Notifiche = await _apiClient.GetNotificheForUserAsync(accessToken);
+                if (idClienteCorrente.HasValue)
+                {
+                    vm.UserIsFollowingCliente = await _apiClient.ClienteIsFollowedByUserAsync(idClienteCorrente.Value, accessToken);
+                }
             }
             return View(vm);
         }

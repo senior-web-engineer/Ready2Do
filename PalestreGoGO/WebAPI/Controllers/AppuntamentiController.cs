@@ -75,9 +75,9 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var idUser = User.UserId();
-                if (idUser.HasValue)
+                if (!string.IsNullOrWhiteSpace(idUser))
                 {
-                    var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idEvento, idUser.Value);
+                    var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idEvento, idUser);
                     if (appuntuamento != null)
                     {
                         result.IdAppuntamento = appuntuamento.Id;
@@ -93,7 +93,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         {
             if (model == null) return BadRequest();
             //Se è un amministratore può inserire appuntamenti anche per conto di altri utenti, altrimenti può inserire appuntamenti solo per se stesso
-            if (!User.CanManageStructure(idCliente) && (User.UserId() != model.IdUtente)) { return BadRequest(); }
+            if (!User.CanManageStructure(idCliente) && (!User.UserId().Equals(model.IdUtente))) { return BadRequest(); }
             //Per creare un appuntamento l'utente deve avere una bbonamento al cliente            
             var appuntamento = new Appuntamenti();
             appuntamento.DataPrenotazione = DateTime.Now;
@@ -128,9 +128,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (appuntamento == null) return NotFound();
             bool authorized = false;
             if (User.CanManageStructure(idCliente)) { authorized = true; }
-            if (!authorized && (appuntamento.UserId.HasValue) && (appuntamento.UserId.Value.Equals(User.UserId()))) { authorized = true; }
+            if (!authorized && (!string.IsNullOrWhiteSpace(appuntamento.UserId)) && (appuntamento.UserId.Equals(User.UserId()))) { authorized = true; }
             if (!authorized) { return Forbid(); }
-
             await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntmento);
             return Ok();
         }

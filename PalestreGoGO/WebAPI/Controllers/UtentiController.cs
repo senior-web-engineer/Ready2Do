@@ -119,11 +119,11 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(esitoConfirmation);
         }
 
-        [HttpGet("{userId:guid}/appuntamenti")]
-        public IActionResult GetAppuntamentiForUser([FromRoute] Guid userId, [FromQuery] bool includePast = false)
+        [HttpGet("{userId}/appuntamenti")]
+        public IActionResult GetAppuntamentiForUser([FromRoute] string userId, [FromQuery] bool includePast = false)
         {
             //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
-            if (!User.UserId().HasValue || !User.UserId().Value.Equals(userId))
+            if (string.IsNullOrWhiteSpace(User.UserId()) || !User.UserId().Equals(userId))
             {
                 return Forbid();
             }
@@ -151,7 +151,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetClientiFollowedForUserAsync([FromRoute] Guid userId)
         {
             //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
-            if (!User.UserId().HasValue || !User.UserId().Value.Equals(userId))
+            if (string.IsNullOrWhiteSpace(User.UserId()) || !User.UserId().Equals(userId))
             {
                 return Forbid();
             }            
@@ -171,6 +171,20 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("follow/{idCliente:int}")]
+        public async Task<IActionResult> UserFollowCliente([FromRoute] int idCliente)
+        {
+            string userId = User.UserId();
+            //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Forbid();
+            }
+            //Recupero i dati dell'utente da B2C
+            var userInfo = await _userManagementService.GetUserByIdAsync(userId);
+            bool result = await _repositoryUtenti.UserFollowClienteAsync(userId, idCliente);
+            return Ok(result);
+        }
     }
 }
 

@@ -16,13 +16,13 @@ namespace PalestreGoGo.WebAPIModel
             Esito = esito;
         }
 
-        public UserConfirmationViewModel(Guid idUser)
+        public UserConfirmationViewModel(string idUser)
         {
             this.Esito = true;
             IdUser = idUser;
         }
         public bool Esito { get; set; }
-        public Guid IdUser { get; set; }
+        public string IdUser { get; set; }
 
         /// <summary>
         /// Valorizzato SOLO PER GLI UTENTI ORDINARI e solo se in fase di registrazione 
