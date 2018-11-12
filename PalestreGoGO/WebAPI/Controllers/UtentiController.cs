@@ -73,7 +73,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 return new BadRequestResult();
             }
             var token = Guid.NewGuid().ToString("N");
-            var appUser = new LocalAccountUser(newUser.Email, newUser.Password)
+            var appUser = new AzureUser(newUser.Email, newUser.Password)
             {
                 Cognome = newUser.Cognome,
                 Nome = newUser.Nome,

@@ -53,25 +53,26 @@ namespace PalestreGoGo.WebAPI.Utils
             this._msGraphSerializer = new Serializer();
         }
 
-        public async Task<LocalAccountUser> CreateUserAsync(LocalAccountUser user)
+        public async Task<AzureUser> CreateUserAsync(AzureUser user)
         {
-            var response = await SendGraphPostRequestAsync<LocalAccountUser>(API_USERS, JsonConvert.SerializeObject(user));
+            var response = await SendGraphPostRequestAsync<AzureUser>(API_USERS, JsonConvert.SerializeObject(user));
             //var result = _msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value);
             return response;
         }
 
-        public async Task<LocalAccountUser> GetUserById(string userId)
+        public async Task<AzureUser> GetUserById(string userId)
         {
             var response = await SendGraphGetRequestAsync($"{API_USERS}/{userId}", null);
-            var result = (_msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value)).FirstOrDefault();
+            var result = _msGraphSerializer.DeserializeObject<AzureUser>(response);
             return result;
         }
 
-        public async Task<LocalAccountUser> GetUserByMailAsync(string email)
+        public async Task<AzureUser> GetUserByMailAsync(string email)
         {
             string query = $"$filter=(signInNames/any(x:x/value eq '{email}')) or (userPrincipalName eq '{email}')";
             var response = await SendGraphGetRequestAsync(API_USERS, query);
-            var result = _msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value).FirstOrDefault();
+            var resp = JsonConvert.DeserializeObject<GraphResponse>(response);
+            var result = _msGraphSerializer.DeserializeObject<List<AzureUser>>(resp.Value).FirstOrDefault();
             return result;
         }
 
@@ -98,7 +99,7 @@ namespace PalestreGoGo.WebAPI.Utils
             return JsonConvert.DeserializeObject<T>(reply);
         }
 
-        public async Task<GraphResponse> SendGraphGetRequestAsync(string api, string query)
+        public async Task<string> SendGraphGetRequestAsync(string api, string query)
         {
             // First, use ADAL to acquire a token using the app's identity (the credential)
             // The first parameter is the resource we want an access_token for; in this case, the Graph API.
@@ -123,8 +124,8 @@ namespace PalestreGoGo.WebAPI.Utils
                 object formatted = JsonConvert.DeserializeObject(error);
                 throw new WebException("Error Calling the Graph API: \n" + JsonConvert.SerializeObject(formatted, Formatting.Indented));
             }
-
-            return JsonConvert.DeserializeObject<GraphResponse>(await response.Content.ReadAsStringAsync());
+            return await response.Content.ReadAsStringAsync();
+            //return JsonConvert.DeserializeObject<GraphResponse>(await response.Content.ReadAsStringAsync());
         }
 
         private async Task<string> SendGraphPatchRequest(string api, string json)

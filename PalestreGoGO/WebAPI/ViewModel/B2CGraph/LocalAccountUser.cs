@@ -6,17 +6,25 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
 {
-    public class LocalAccountUser
+    public class AzureUser
     {
         [JsonProperty(PropertyName = "objectId", NullValueHandling= NullValueHandling.Ignore)]
         public string Id { get; set; }
+
+        [JsonProperty(PropertyName = "city", NullValueHandling = NullValueHandling.Ignore)]
+        public string City { get; set; }
+
+        [JsonProperty(PropertyName = "country", NullValueHandling = NullValueHandling.Ignore)]
+        public string Country { get; set; }
+
+        [JsonProperty(PropertyName = "createdDateTime", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? CreatedDateTime { get; set; }
 
         [JsonProperty("accountEnabled")]
         public bool Enabled { get; set; }
 
         [JsonProperty("creationType")]
         public string CreationType { get; private set; }
-
 
         [JsonProperty("givenName")]
         public string Nome { get; set; }
@@ -33,11 +41,26 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
             }
         }
 
+        [JsonProperty("mobile")]
+        public string Mobile { get; private set; }
+
         [JsonProperty("otherMails")]
         public List<string> Emails { get; set; }
 
         [JsonProperty("passwordProfile")]
         public PasswordProfile PasswordProfile { get; set; }
+
+        [JsonProperty("preferredLanguage")]
+        public string PreferredLanguage { get; set; }
+        
+        [JsonProperty("postalCode")]
+        public string PostalCode { get; private set; }
+
+        [JsonProperty("state")]
+        public string State { get; private set; }
+
+        [JsonProperty("streetAddress")]
+        public string streetAddress { get; private set; }
 
         [JsonProperty("signInNames")]
         public List<SignInName> SignInNames { get; set; }
@@ -71,7 +94,7 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
         public bool IsGlobalAdmin { get; set; }
         #endregion
 
-        public LocalAccountUser()
+        public AzureUser()
         {
             // Deve essere valorizzate sempre a LocalAccount
             this.CreationType = "LocalAccount";
@@ -80,7 +103,7 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
             this.Emails = new List<string>();
         }
 
-        public LocalAccountUser(string email, string password) : this()
+        public AzureUser(string email, string password) : this()
         {
             this.SignInNames.Add(new SignInName(SignInNameType.emailAddress) { Value = email });
             this.Emails.Add(email);

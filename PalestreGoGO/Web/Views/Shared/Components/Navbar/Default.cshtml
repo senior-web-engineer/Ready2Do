@@ -15,7 +15,7 @@
                 @if (Model.UserIsAuthenticated)
                 {
                     <!-- FOLLOW / UNFOLLOW-->
-                    if (Model.IdClienteCorrente.HasValue)
+                    if (Model.UserCanFollow)
                     {
                     <li>
                         @if (!Model.UserIsFollowingCliente.HasValue || !Model.UserIsFollowingCliente.Value)

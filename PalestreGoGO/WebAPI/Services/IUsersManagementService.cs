@@ -11,17 +11,17 @@ namespace PalestreGoGo.WebAPI.Services
 {
     public interface IUsersManagementService
     {
-        Task<string> RegisterOwnerAsync(LocalAccountUser user, string idCliente, Guid correlationId);
+        Task<string> RegisterOwnerAsync(AzureUser user, string idCliente, Guid correlationId);
 
-        Task<string> RegisterUserAsync(LocalAccountUser user);
+        Task<string> RegisterUserAsync(AzureUser user);
 
         Task<UserConfirmationViewModel> ConfirmUserAsync(string username, string code);
 
-        Task<LocalAccountUser> GetUserByMailAsync(string email);
+        Task<AzureUser> GetUserByMailAsync(string email);
 
         //Task<LocalAccountUser> GetUserByUsernameAsync(string username);
 
-        Task<LocalAccountUser> GetUserByIdAsync(string id);
+        Task<AzureUser> GetUserByIdAsync(string id);
 
         //Task<IList<Claim>> GetUserCalimsAsync(LocalAccountUser user);
     }
