@@ -26,6 +26,10 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DB", "DB\DB.sqlproj", "{409
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{2F71C1A7-0132-47A8-9678-6594882B4886}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notifications", "{ACDF3030-0899-497A-8480-68F63A40E1AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuncNotificationHandler", "FuncNotificationHandler\FuncNotificationHandler.csproj", "{6AB54057-004B-45B8-9199-CAD46B1F7440}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +74,10 @@ Global
 		{2F71C1A7-0132-47A8-9678-6594882B4886}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F71C1A7-0132-47A8-9678-6594882B4886}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F71C1A7-0132-47A8-9678-6594882B4886}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AB54057-004B-45B8-9199-CAD46B1F7440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AB54057-004B-45B8-9199-CAD46B1F7440}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AB54057-004B-45B8-9199-CAD46B1F7440}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB54057-004B-45B8-9199-CAD46B1F7440}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +85,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FBA9B71D-314E-49FC-9570-2B2B1CC71261} = {09F8146A-8D4E-489B-B244-53A73A5979DD}
 		{149C1A16-3F34-499E-84DB-E47E979E87FC} = {09F8146A-8D4E-489B-B244-53A73A5979DD}
+		{6AB54057-004B-45B8-9199-CAD46B1F7440} = {ACDF3030-0899-497A-8480-68F63A40E1AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A8513D0-18D0-4389-8361-A77E68BFE9C2}
