@@ -224,7 +224,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             await _repository.AddAsync(cliente);
 
             //Step 2 - Creiamo l'utente Owner
-            var user = new LocalAccountUser(newCliente.NuovoUtente.Email, newCliente.NuovoUtente.Password)
+            var user = new AzureUser(newCliente.NuovoUtente.Email, newCliente.NuovoUtente.Password)
             {
                 Nome = newCliente.NuovoUtente.Nome,
                 Cognome = newCliente.NuovoUtente.Cognome,

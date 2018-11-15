@@ -87,7 +87,7 @@ namespace PalestreGoGo.WebAPI.Services
             return result;
         }
 
-        public async Task<LocalAccountUser> GetUserByMailAsync(string email)
+        public async Task<AzureUser> GetUserByMailAsync(string email)
         {
             return await this._b2cClient.GetUserByMailAsync(email);
         }
@@ -107,12 +107,12 @@ namespace PalestreGoGo.WebAPI.Services
         //}
 
 
-        public async Task<LocalAccountUser> GetUserByIdAsync(string userId)
+        public async Task<AzureUser> GetUserByIdAsync(string userId)
         {
             return await _b2cClient.GetUserById(userId);
         }
 
-        public async Task<string> RegisterOwnerAsync(LocalAccountUser user, string idCliente, Guid correlationId)
+        public async Task<string> RegisterOwnerAsync(AzureUser user, string idCliente, Guid correlationId)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (string.IsNullOrWhiteSpace(idCliente)) throw new ArgumentNullException(nameof(idCliente));
@@ -125,7 +125,7 @@ namespace PalestreGoGo.WebAPI.Services
             return createdUser.Id;
         }
 
-        public async Task<string> RegisterUserAsync(LocalAccountUser user)
+        public async Task<string> RegisterUserAsync(AzureUser user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             //var createdUser = await _b2cClient.CreateUserAsync(user);
@@ -135,7 +135,7 @@ namespace PalestreGoGo.WebAPI.Services
             return createdUser.Id;
         }
 
-        protected async Task<LocalAccountUser> internalCreateUserAsync(LocalAccountUser user, bool isCliente, Guid? correlationId = null)
+        protected async Task<AzureUser> internalCreateUserAsync(AzureUser user, bool isCliente, Guid? correlationId = null)
         {
             var createdUser = await _b2cClient.CreateUserAsync(user);
             _logger.LogDebug($"User with email: {user.Emails[0]} created");
@@ -148,7 +148,7 @@ namespace PalestreGoGo.WebAPI.Services
             return createdUser;
         }
 
-        protected string GenerateEmailConfirmationToken(LocalAccountUser user)
+        protected string GenerateEmailConfirmationToken(AzureUser user)
         {
             //TODO: Generare il token in modo sicuro
             return s_random.Next(1000000, 9999999).ToString();

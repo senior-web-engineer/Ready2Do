@@ -11,6 +11,7 @@ namespace Web.Models.ViewComponents
         public string UserDisplayName { get; set; }
         public string UserEmail { get; set; }
         public bool UserIsAuthenticated { get; set; }
+        public bool UserCanFollow { get; set; }
         public int NumNotifichePresenti { get { return Notifiche?.Count ?? 0; } }
         public int NumNuovNotifichePresenti { get { return Notifiche?.Count(n => n.IsNew) ?? 0; } }
         public List<NotificaViewModel> Notifiche { get; set; }

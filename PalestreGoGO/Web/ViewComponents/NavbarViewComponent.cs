@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Models;
 using Web.Models.ViewComponents;
 using Web.Utils;
 
@@ -31,6 +32,7 @@ namespace Web.ViewComponents
             vm.IdClienteCorrente = idClienteCorrente;
             vm.UserIsAuthenticated = User.Identity.IsAuthenticated;
             vm.ReturnUrl = HttpContext.Request.GetDisplayUrl();
+            UserType userType4Cliente = UserType.Anonymous;
             if (vm.UserIsAuthenticated)
             {
                 var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -38,6 +40,18 @@ namespace Web.ViewComponents
                 vm.Notifiche = await _apiClient.GetNotificheForUserAsync(accessToken);
                 if (idClienteCorrente.HasValue)
                 {
+                    userType4Cliente = UserClaimsPrincipal.GetUserTypeForCliente(idClienteCorrente.Value);
+                    switch (userType4Cliente)
+                    {
+                        case UserType.Owner:
+                        case UserType.Admin:
+                        case UserType.GlobalAdmin:
+                            vm.UserCanFollow = true;
+                            break;
+                        default:
+                            vm.UserCanFollow = false;
+                            break;
+                    }
                     vm.UserIsFollowingCliente = await _apiClient.ClienteIsFollowedByUserAsync(idClienteCorrente.Value, accessToken);
                 }
             }
