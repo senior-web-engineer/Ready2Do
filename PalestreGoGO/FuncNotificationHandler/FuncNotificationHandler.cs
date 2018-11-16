@@ -5,22 +5,21 @@ using Newtonsoft.Json;
 using System.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
+using FuncNotificationHandler.Handlers;
+using System.Threading.Tasks;
 
 namespace FuncNotificationHandler
 {
     public static class FuncNotificationHandler
     {
         [FunctionName("FuncNotificationHandler")]
-        public static void Run([QueueTrigger("r2d-notifiche", Connection = "QUEUE_CONNECTION")]string notifica, TraceWriter log)
+        public static async Task Run([QueueTrigger("r2d-notifiche", Connection = "QUEUE_CONNECTION")]string notifica, TraceWriter log)
         {
             try
             {
                 var message = JsonConvert.DeserializeObject<NotificationMessage>(notifica);
-                switch (message.TipoNotifica)
-                {
-                    case "AccountCreato":
-                        break;
-                }
+                INotificationHandler handler = NotificationHandlerFactory.CreateHandler(message);
+                await handler.HandleNotificationAsync();
             }
             catch (Exception ex) when (ex is JsonSerializationException|| ex is JsonReaderException)
             {

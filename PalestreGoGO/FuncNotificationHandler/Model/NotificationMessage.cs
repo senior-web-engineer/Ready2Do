@@ -16,7 +16,7 @@ namespace FuncNotificationHandler
         public string SubType { get; set; }
 
         [JsonProperty("idCliente")]
-        public long IdCliente { get; set; }
+        public int IdCliente { get; set; }
 
         [JsonProperty("users")]
         public string[] UsersId { get; set; }
