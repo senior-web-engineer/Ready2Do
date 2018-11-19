@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Web.Models
+{
+    /// <summary>
+    /// Non tutte le combinazioni di stati sono valide, 
+    /// la coerenza è demndata al codice applicativo
+    /// </summary>
+    [Flags]
+    public enum ClienteUtenteStatoViewModel: int
+    {
+        Unknown             =       0,
+
+        NessunAbbonamento   = 1 <<  0,
+        AbbonamentoValido   = 1 <<  1,
+        AbbonamenoScaduto   = 1 <<  2,
+
+        CertificatoNonPresentato = 1 << 6,
+        CertificatoValido = 1 << 7,
+        CertificatoScaduto = 1 <<  8,
+
+        NessunPagamentoDovuto= 1 << 10,
+        PagamentoDovuto = 1 << 11
+    }
+}

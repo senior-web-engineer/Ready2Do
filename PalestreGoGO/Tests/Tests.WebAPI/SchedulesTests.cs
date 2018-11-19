@@ -56,12 +56,11 @@ namespace Tests.WebAPI
             {
                 IdCliente = Utils.ID_CLIENTE_TEST_1,
                 CancellabileFinoAl = DateTime.Now.AddDays(3),
-                Data = DateTime.Now.AddDays(5).Date,
+                DataOraInizio = DateTime.Now.AddDays(5).Date,
                 IdLocation = Utils.ID_LOCATION_1_CLIENTE_1,
                 IdTipoLezione = Utils.ID_TIPO_LEZIONE_1_CLIENTE_1,
                 Istruttore = "Yogi",
                 Note = "Bubu non viene",
-                OraInizio = new TimeSpan(19,0,0),
                 PostiDisponibili = 20
             };
             var result = await controller.Object.AddSchedule(Utils.ID_CLIENTE_TEST_1, schedule);
@@ -88,11 +87,11 @@ namespace Tests.WebAPI
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
             _fixture.Entity.CancellabileFinoAl.AddDays(1);
-            _fixture.Entity.Data.AddDays(1);
+            _fixture.Entity.DataOraInizio.AddDays(1);
             _fixture.Entity.IdLocation = Utils.ID_LOCATION_2_CLIENTE_1;
             _fixture.Entity.Istruttore = "Orso Yogi";
             _fixture.Entity.Note += "MODIFIED";
-            _fixture.Entity.OraInizio.Add(TimeSpan.FromMinutes(30));
+            //_fixture.Entity.OraInizio.Add(TimeSpan.FromMinutes(30));
             _fixture.Entity.PostiDisponibili += 10;
             var result = await controller.Object.UpdateSchedule(Utils.ID_CLIENTE_TEST_1, _fixture.Entity);
             var okResult = result.Should().BeOfType<OkResult>().Subject;

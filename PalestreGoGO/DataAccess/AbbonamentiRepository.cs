@@ -1,51 +1,89 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class AbbonamentiRepository: IAbbonamentiRepository
+    public class AbbonamentiRepository : IAbbonamentiRepository
     {
-        private readonly PalestreGoGoDbContext _context;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<AbbonamentiRepository> _logger;
 
-        public AbbonamentiRepository(PalestreGoGoDbContext context, ILogger<AbbonamentiRepository> logger)
+        public AbbonamentiRepository(IConfiguration configuration, ILogger<AbbonamentiRepository> logger)
         {
             this._logger = logger;
-            this._context = context;
+            this._configuration = configuration;
         }
 
-        public async Task<int> AddAbbonamentoAsync(int idCliente, AbbonamentiUtenti abbonamento)
+        public async Task<int> SaveAbbonamentoAsync(int idCliente, UtenteClienteAbbonamentoDM abbonamento)
         {
-            if (abbonamento == null) throw new ArgumentNullException(nameof(abbonamento));
-            if (abbonamento.IdCliente != idCliente) throw new ArgumentException("Invalid Tenant");
-            _context.AbbonamentiUtenti.Add(abbonamento);
-            await _context.SaveChangesAsync();
+            var parametri = new DynamicParameters(
+                    new
+                    {
+                        pIdCliente = abbonamento.IdCliente,
+                        pUserId = abbonamento.UserId,
+                        pIdTipoAbbonamento = abbonamento.IdTipoAbbonamento,
+                        pDataInizioValidita = abbonamento.DataInizioValidita,
+                        pScadenza = abbonamento.Scadenza,
+                        pIngressiIniziali = abbonamento.IngressiIniziali,
+                        pIngressiResidui = abbonamento.IngressiResidui,
+                        pImporto = abbonamento.Importo,
+                        pImportoPagato = abbonamento.ImportoPagato
+                    });
+            parametri.Add("pIdAbbonamento", abbonamento.Id, DbType.Int32, ParameterDirection.InputOutput);
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await cn.ExecuteAsync("[Clienti_Utenti_AbbonamentoSave]", parametri, commandType: CommandType.StoredProcedure);
+                abbonamento.Id = parametri.Get<int>("pIdAbbonamento");
+            }
             return abbonamento.Id.Value;
         }
 
-        public async Task UpdateAbbonamentoAsync(int idCliente, AbbonamentiUtenti abbonamento)
+        public async Task DeleteAbbonamentoAsync(int idCliente, string userId, int idAbbonamento)
         {
-            if (abbonamento.IdCliente != idCliente) throw new ArgumentException("Invalid Tenant");
-            _context.AbbonamentiUtenti.Update(abbonamento);
-            await _context.SaveChangesAsync();
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await cn.ExecuteAsync("[Clienti_Utenti_AbbonamentoDelete", new
+                {
+                    pIdCliente = idCliente,
+                    pUserId = userId,
+                    pIdAbbonamento = idAbbonamento
+                }, commandType: CommandType.StoredProcedure);
+            }
+        }
+        public async Task<IEnumerable<UtenteClienteAbbonamentoDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted)
+        {
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                return await cn.QueryAsync<UtenteClienteAbbonamentoDM>("[Clienti_Utenti_AbbonamentoList]", new
+                {
+                    pIdCliente = idCliente,
+                    pUserId = userId,
+                    pIncludeDeleted = includeDeleted,
+                    pIncludeExpired = includeExpired
+                }, commandType: CommandType.StoredProcedure);
+            }
         }
 
-        public IEnumerable<AbbonamentiUtenti> GetAbbonamentiForUser(int idCliente, string userId)
+        public async Task<UtenteClienteAbbonamentoDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento)
         {
-            var result = _context.AbbonamentiUtenti.Where(a => a.IdCliente.Equals(idCliente) && a.UserId.Equals(userId)).AsNoTracking();
-            return result;
-        }
-
-        public async Task<AbbonamentiUtenti> GetAbbonamentoAsync(int idCliente, int idAbbonamento)
-        {
-            var result = await _context.AbbonamentiUtenti.SingleOrDefaultAsync(au => au.Id.Equals(idAbbonamento) && au.IdCliente.Equals(idCliente));
-            return result;
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                return await cn.QuerySingleAsync<UtenteClienteAbbonamentoDM>("[Clienti_Utenti_AbbonamentoGet]", new
+                {
+                    pIdCliente = idCliente,
+                    pIdAbbonamento = idAbbonamento
+                }, commandType: CommandType.StoredProcedure);
+            }
         }
     }
 }

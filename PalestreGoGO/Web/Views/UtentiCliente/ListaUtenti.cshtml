@@ -22,50 +22,85 @@ else
         </div>
     </div>
     <div class="row">
-        <div class="col s5 offset-s1 l4 offset-l2">
+        <div class="col s4 offset-s1 l2 offset-l1">
             <strong>Nominativo (Cognome Nome)</strong>
         </div>
         <div class="col s2 l2">
-            <strong>Stato</strong>
+            <strong>Data Associazione</strong>
         </div>
         <div class="col s3 l2">
+            <strong>Stato</strong>
+        </div>
+        <div class="col s2 l1">
             <strong>Azioni</strong>
         </div>
     </div>
     <div class="row">
-        <div class="divider col s10 l8 offset-s1 offset-l2"></div>
+        <div class="divider col s10 l8 offset-s1 offset-l1"></div>
     </div>
     @foreach (var s in Model)
     {
         <div class="row">
-            <div class="col s5 offset-s2 left" data-id-item="@s.IdUtente">@s.Nominativo</div>
-            <div class="col s5 offset-s2 left">@s.StatoAbbonamento</div>
-            <div class="col s3 right">
-                @switch (s.StatoAbbonamento)
+            <div class="col s4 offset-s1 l2 offset-l1" data-id-item="@s.IdUtente">@s.Cognome @s.Nome  </div>
+            <div class="col s2 l2 ">@s.DataAssociazione</div>
+            <div class="col s3 l2">
+                @if (s.Stato != ClienteUtenteStatoViewModel.Unknown)
                 {
-                    case StatoAbbonamento.NessunAbbonamento:
-                        <a class='dropdown-trigger btn @Html.Raw(ViewBag.TipologieAbbonamenti == null ? "disabled" : "")' href='#' data-target='@Html.Raw(string.Format("ddAddAbb-{0}", s.IdUtente));'>Nuovo Abbonamento</a>
-                        <!-- Dropdown Structure -->
-                        <ul id='@Html.Raw(string.Format("ddAddAbb-{0}", s.IdUtente));' class='dropdown-content'>
-                            @foreach (var ta in (ViewBag.TipologieAbbonamenti as IEnumerable<KeyValuePair<int, string>>))
-                            {
-                                <li>
-                                    <a asp-controller="Abbonamenti" asp-action="AddAbbonamentoToUser"
-                                       asp-route-userId="@s.IdUtente" asp-route-tipoAbb="@ta.Key">@ta.Value</a>
-                                </li>
-                            }
-                        </ul>
-                        break;
-                    default:
-                        <a asp-controller="Abbonamenti" asp-action="ManageAbbonamentoUtente"
-                           asp-route-userId="@s.IdUtente" class="waves-effect waves-light btn disabled">Gestione Abbonamento</a>
-                        break;
+                    @if (!s.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
+                    {
+                        <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente non ha nessun Abbonamento Attivo">do_not_disturb_alt</i>
+                    }
+                    else if (s.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
+                    {
+                        <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente ha un abbonamento Attivo">done</i>
+                    }
+                    @if (s.Stato.HasFlag(ClienteUtenteStatoViewModel.PagamentoDovuto))
+                    {
+                        <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente ha dei pagamenti in sospeso">euro_symbol</i>
+                    }
+                    else
+                    {
+                        <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente è in regola con i pagamenti">euro_symbol</i>
+                    }
+                    @if (!s.Stato.HasFlag(ClienteUtenteStatoViewModel.CertificatoValido))
+                    {
+                        <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente non ha un certificato valido">local_hospital</i>
+                    }
+                    else
+                    {
+                        <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente ha un certificato valido">local_hospital</i>
+                    }
                 }
+                @*@switch (s.StatoAbbonamento)
+                    {
+                        case StatoAbbonamento.NessunAbbonamento:
+                            <a class='dropdown-trigger btn @Html.Raw(ViewBag.TipologieAbbonamenti == null ? "disabled" : "")' href='#' data-target='@Html.Raw(string.Format("ddAddAbb-{0}", s.IdUtente));'>Nuovo Abbonamento</a>
+                            <ul id='@Html.Raw(string.Format("ddAddAbb-{0}", s.IdUtente));' class='dropdown-content'>
+                                @foreach (var ta in (ViewBag.TipologieAbbonamenti as IEnumerable<KeyValuePair<int, string>>))
+                                {
+                                    <li>
+                                        <a asp-controller="Abbonamenti" asp-action="AddAbbonamentoToUser"
+                                           asp-route-userId="@s.IdUtente" asp-route-tipoAbb="@ta.Key">@ta.Value</a>
+                                    </li>
+                                }
+                            </ul>
+                            break;
+                        default:
+                            <a asp-controller="Abbonamenti" asp-action="ManageAbbonamentoUtente"
+                               asp-route-userId="@s.IdUtente" class="waves-effect waves-light btn disabled">Gestione Abbonamento</a>
+                            break;
+                    }*@
+            </div>
+            <div class="col s2 l1">
+                <a asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.IdUtente">
+                    <i class="material-icons blue-text">account_circle</i>
+                </a>
             </div>
         </div>
         <div class="row">
-            <div class="divider col s8 offset-s2"></div>
+            <div class="divider col s10 l8 offset-s1 offset-l1"></div>
         </div>
+
     }
 
 }

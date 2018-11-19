@@ -134,7 +134,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 result.Add(new AppuntamentoUserApiModel()
                 {
-                    DataOra = a.Schedule.Data.Add(a.Schedule.OraInizio),
+                    DataOra = a.Schedule.DataOraInizio,
                     DataOraCancellazione = a.DataCancellazione,
                     DataOraIscrizione = a.DataPrenotazione,
                     IdAppuntamento = a.Id,

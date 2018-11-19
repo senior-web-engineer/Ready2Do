@@ -521,31 +521,30 @@ namespace Web.Utils
 
 
 
-        public async Task<List<ClienteUtenteViewModel>> GetUtentiClienteConAbbonamenti(int idCliente, string access_token)
+        public async Task<List<ClienteUtenteViewModel>> GetUtentiCliente(int idCliente, string access_token, bool includeStatus, int page = 1, int pageSize = 2000, string sortBy = "Cognome", bool asc=true )
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users");
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users?stato={includeStatus}&page={page}&pageSize={pageSize}&sortby={sortBy}&asc={asc}");
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<ClienteUtenteWithAbbonamentoApiModel>>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<IEnumerable<ClienteUtenteApiModel>>(responseString, _serializerSettings);
             return result.MapToClienteUtenteViewModel();
         }
 
-        public async Task EditAbbonamentoCliente(int idCliente, AbbonamentoUtenteApiModel abbonamento, string access_token)
+        public async Task<ClienteUtenteViewModel> GetUtenteCliente(int idCliente, string userId, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti");
-            var content = new StringContent(JsonConvert.SerializeObject(abbonamento), Encoding.UTF8, "application/json");
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}");
             HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage();
-            request.RequestUri = uri;
-            request.Method = (!abbonamento.Id.HasValue) ? HttpMethod.Post : HttpMethod.Put;
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Content = content;
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ClienteUtenteApiModel>(responseString, _serializerSettings);
+            return result.MapToClienteUtenteViewModel();
         }
 
         public async Task DeleteAppuntamentoAsync(int idCliente, int idAppuntamento, string access_token)
@@ -572,6 +571,59 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<IEnumerable<NotificaConTipoApiModel>>(responseString, _serializerSettings);
             return result.MapToViewModel();
         }
+        #endregion
+
+        #region ABBONAMENTI UTENTI-CLIENTI
+
+        public async Task EditAbbonamentoClienteAsync(int idCliente, AbbonamentoUtenteApiModel abbonamento, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti");
+            var content = new StringContent(JsonConvert.SerializeObject(abbonamento), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.RequestUri = uri;
+            request.Method = (!abbonamento.Id.HasValue) ? HttpMethod.Post : HttpMethod.Put;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Content = content;
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteAbbonamentoClienteAsync(int idCliente, int idAbbonamento, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/abbonamenti/{idAbbonamento}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<IEnumerable<AbbonamentoUtenteApiModel>> GetAbbonamentiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti?incExp={includeExpired}&incDel={includeDeleted}");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<AbbonamentoUtenteApiModel>>(responseString, _serializerSettings);
+            return result;
+        }
+
+        public async Task<AbbonamentoUtenteApiModel> GetAbbonamentoAsync(int idCliente, int idAbbonamento, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti/{idAbbonamento}");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<AbbonamentoUtenteApiModel>(responseString, _serializerSettings);
+            return result;
+        }
+
         #endregion
     }
 }

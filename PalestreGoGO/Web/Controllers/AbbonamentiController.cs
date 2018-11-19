@@ -44,7 +44,7 @@ namespace Web.Controllers
 
         [HttpGet("{cliente}/abbonamenti/tipologie/checkname")]
         [Produces("application/json")]
-        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name ="Nome")]string nomeAbbonamento)
+        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nomeAbbonamento)
         {
             //ViewData["ReturnUrl"] = returnUrl;
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
@@ -75,7 +75,7 @@ namespace Web.Controllers
 
             ViewData["IdCliente"] = idCliente;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var abbonamenti= (await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente,accessToken)).MapToWebViewModel();
+            var abbonamenti = (await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken)).MapToWebViewModel();
             return View("ListaTipologieAbbonamenti", abbonamenti.ToList());
         }
 
@@ -95,7 +95,7 @@ namespace Web.Controllers
         }
 
 
-         
+
         [HttpGet("{cliente}/abbonamenti/tipologie/{id:int}")]
         public async Task<IActionResult> TipoAbbonamentoEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idTipoAbbonamento)
         {
@@ -143,7 +143,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("{cliente}/abbonamenti/tipologie/delete/{id}")]
-        public async Task<IActionResult> TipoAbbonamentoDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")] int idTipoAbbonamento)
+        public async Task<IActionResult> TipoAbbonamentoDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")] int idTipoAbbonamento)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
@@ -160,60 +160,60 @@ namespace Web.Controllers
         #endregion
 
 
-        #region Gestione Abbonamenti Utenti
-        //TODO: da implementare
-        [HttpGet("{cliente}/abbonamenti/add/{userId}")]
-        public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute, 
-                                                              [FromRoute(Name = "userId")]string userId, 
-                                                              [FromQuery(Name ="tipoAbb")] int idTipoAbbonamento)
-        {
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            //Verifichiamo che solo gli Admin possano accedere alla pagina di Gestione Abbonamenti
-            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var tipoAbbonamento = await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
-            if(tipoAbbonamento == null) { return BadRequest(); }
+        //#region Gestione Abbonamenti Utenti
+        ////TODO: da implementare
+        //[HttpGet("{cliente}/abbonamenti/add/{userId}")]
+        //public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
+        //                                                      [FromRoute(Name = "userId")]string userId,
+        //                                                      [FromQuery(Name = "tipoAbb")] int idTipoAbbonamento)
+        //{
+        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Gestione Abbonamenti
+        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+        //    {
+        //        return Forbid();
+        //    }
+        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
+        //    var tipoAbbonamento = await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
+        //    if (tipoAbbonamento == null) { return BadRequest(); }
 
-            EditAbbonamentoUtenteInputModel vm = new EditAbbonamentoUtenteInputModel()
-            {
-                Id = null,
-                IdCliente = idCliente,
-                IdUtente = userId,
-                DataInizioValidita = DateTime.Now,
-                IdTipologiaAbbonamento = idTipoAbbonamento,
-                IngressiResidui = tipoAbbonamento.NumIngressi,
-                Scadenza = tipoAbbonamento.DurataMesi.HasValue ? DateTime.Now.AddMonths(tipoAbbonamento.DurataMesi.Value): (DateTime?)null,
-                ScadenzaCertificato = null,
-                Pagato = false
-            };
+        //    EditAbbonamentoUtenteInputModel vm = new EditAbbonamentoUtenteInputModel()
+        //    {
+        //        Id = null,
+        //        IdCliente = idCliente,
+        //        IdUtente = userId,
+        //        DataInizioValidita = DateTime.Now,
+        //        IdTipoAbbonamento = idTipoAbbonamento,
+        //        IngressiIniziali = tipoAbbonamento.NumIngressi,
+        //        IngressiResidui = tipoAbbonamento.NumIngressi,
+        //        Scadenza = tipoAbbonamento.DurataMesi.HasValue ? DateTime.Now.AddMonths(tipoAbbonamento.DurataMesi.Value) : (DateTime?)null,
+        //        Importo = tipoAbbonamento?.Costo ?? 0,
+        //    };
 
-            ViewBag.IdCliente = idCliente;
-            ViewBag.IdUtente = userId;
-            ViewBag.ClienteUrl = urlRoute;
-            ViewBag.TipologiaAbbonamento = tipoAbbonamento.Nome;
+        //    ViewBag.IdCliente = idCliente;
+        //    ViewBag.IdUtente = userId;
+        //    ViewBag.ClienteUrl = urlRoute;
+        //    ViewBag.TipologiaAbbonamento = tipoAbbonamento.Nome;
 
-            return View("NuovoAbbonamento", vm);
-        }
+        //    return View("NuovoAbbonamento", vm);
+        //}
 
-        [HttpPost("{cliente}/abbonamenti/add/{userId}")]
-        public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
-                                                              [FromRoute(Name = "userId")]string userId,
-                                                              [FromForm]EditAbbonamentoUtenteInputModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View("NuovoAbbonamento", model);
-            }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            if((model.IdCliente != idCliente) || (model.IdUtente != userId)) { return BadRequest(); }
-            await _apiClient.EditAbbonamentoCliente(idCliente, model.MapToAPIModel(), accessToken);
-            return RedirectToAction("GetUtentiCliente", "Clienti",new { cliente = urlRoute});
-        }
+        //[HttpPost("{cliente}/abbonamenti/add/{userId}")]
+        //public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
+        //                                                      [FromRoute(Name = "userId")]string userId,
+        //                                                      [FromForm]EditAbbonamentoUtenteInputModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View("NuovoAbbonamento", model);
+        //    }
+        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
+        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+        //    if ((model.IdCliente != idCliente) || (model.IdUtente != userId)) { return BadRequest(); }
+        //    await _apiClient.EditAbbonamentoCliente(idCliente, model.MapToAPIModel(), accessToken);
+        //    return RedirectToAction("GetUtentiCliente", "Clienti", new { cliente = urlRoute });
+        //}
 
-        #endregion
+        //#endregion
     }
 }

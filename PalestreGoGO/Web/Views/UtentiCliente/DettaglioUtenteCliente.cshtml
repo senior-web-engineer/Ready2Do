@@ -1,0 +1,81 @@
+﻿@model ClienteUtenteViewModel;
+
+@{
+    Layout = "_LayoutClienti";
+}
+
+<div class="row">
+    <div class="col s10 offset-s1">
+        <div class="card-panel">
+            <div class="row valign-wrapper">
+                <div class="col s2">
+                    <i class="large material-icons">person</i>
+                </div>
+                <div class="col s10">
+                    <div class="row">
+                        <div class="col s4">
+                            <span class="r2d-label">Nominativo: </span>
+                        </div>
+                        <div class="col s8">
+                            <span class="r2d-value">@Model.Cognome @Model.Nome</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s4">
+                            <span class="r2d-label">Nick: </span>
+                        </div>
+                        <div class="col s8">
+                            <span class="r2d-value">@Model.DisplayName</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s4">
+                            <span class="r2d-label">Email: </span>
+                        </div>
+                        <div class="col s8">
+                            <span class="r2d-value">@Model.Email</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s4">
+                            <span class="r2d-label">Telefono: </span>
+                        </div>
+                        <div class="col s8">
+                            <span class="r2d-value">@Model.NumTelefono</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="row">
+                <div class="col s10 offset-s1">
+                    <ul id="tabDetCliente" class="tabs">
+                        <li class="tab"><a href="#tabAbbonamento">Abbonamento</a></li>
+                        <li class="tab"><a href="">Certificati</a></li>
+                        <li class="tab"><a href="">Prenotazione</a></li>
+                        <li class="tab"><a href="">Storico</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@if (ViewBag.TabId == 0)
+{
+    <div id="tabAbbonamento">
+        <partial name="_UtenteViewAbbonamento" />
+    </div>
+}
+
+</div>
+
+@section Scripts{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.getElementById('tabDetCliente');
+            var instance = M.Tabs.init(elems, {});
+        });
+    </script>
+}

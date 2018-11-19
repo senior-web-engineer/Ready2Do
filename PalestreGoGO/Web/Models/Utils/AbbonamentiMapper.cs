@@ -68,12 +68,11 @@ namespace Web.Models.Utils
                 DataInizioValidita = model.DataInizioValidita,
                 Id = model.Id,
                 IdCliente = model.IdCliente,
-                IdTipoAbbonamento = model.TipoAbbonamento.Id,
+                IdTipoAbbonamento = model.IdTipoAbbonamento,
                 UserId = model.UserId,
+                IngressiIniziali = model.IngressiIniziali,
                 IngressiResidui = model.IngressiResidui,
                 Scadenza = model.Scadenza,
-                ScadenzaCertificato = model.ScadenzaCertificato,
-                StatoPagamento = model.StatoPagamento,
                 TipoAbbonamento = null
             };
             return result;
@@ -87,12 +86,13 @@ namespace Web.Models.Utils
                 DataInizioValidita = model.DataInizioValidita,
                 Id = model.Id,
                 IdCliente = model.IdCliente,
-                IdTipoAbbonamento = model.IdTipologiaAbbonamento,
+                IdTipoAbbonamento = model.IdTipoAbbonamento,
                 UserId = model.IdUtente,
                 IngressiResidui = model.IngressiResidui,
                 Scadenza = model.Scadenza,
-                ScadenzaCertificato = model.ScadenzaCertificato,
-                StatoPagamento = model.Pagato ? (byte)1 : (byte)0,
+                Importo = model.Importo,
+                ImportoPagato = model.ImportoPagato,
+                IngressiIniziali = model.IngressiIniziali,
                 TipoAbbonamento = null
             };
             return result;

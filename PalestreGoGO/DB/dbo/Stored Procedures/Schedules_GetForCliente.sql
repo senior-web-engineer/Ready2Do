@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Schedules_GetForCliente]
 	@pIdCliente		INT,
-	@pStartDate		DATE = NULL,
-	@pEndDate		DATE = NULL,
+	@pStartDate		DATETIME2(2) = NULL,
+	@pEndDate		DATETIME2(2) = NULL,
 	@pIdLocation	INT	= NULL
 AS
 BEGIN
@@ -9,14 +9,13 @@ BEGIN
 	SET @pEndDate = COALESCE(@pEndDate, '9999-01-01')
 	SELECT s.[Id], 
 		   s.[CancellabileFinoAl], 
-		   s.[Data], 
+		   s.[DataOraInizio], 
 		   s.[DataCancellazione], 
 		   s.[IdCliente], 
 		   s.[IdLocation], 
 		   s.[IdTipoLezione], 
 		   s.[Istruttore], 
 		   s.[Note], 
-		   s.[OraInizio], 
 		   s.[PostiDisponibili], 
 		   s.[PostiResidui], 
 		   s.[Title], 
@@ -38,6 +37,6 @@ FROM [Schedules] AS s
 	INNER JOIN [Locations] AS l ON s.[IdLocation] = l.[Id]
 	INNER JOIN [TipologieLezioni] AS tl ON s.[IdTipoLezione] = tl.[Id]
 WHERE s.IdCliente = @pIdCliente
-AND Data BETWEEN @pStartDate AND @pEndDate
+AND DataOraInizio BETWEEN @pStartDate AND @pEndDate
 AND ((@pIdLocation IS NULL) OR (s.IdLocation = @pIdLocation))
 END

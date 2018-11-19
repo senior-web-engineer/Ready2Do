@@ -47,8 +47,8 @@ namespace PalestreGoGo.DataAccess
                                     .Include(s => s.TipologiaLezione)
                                     .Include(s => s.Location)
                                     .Where(s => (s.IdCliente.Equals(idCliente) &&
-                                           (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) >= startDate) &&
-                                           (Utils.DateTimeFromDateAndTime(s.Data, s.OraInizio) <= endDate)));
+                                           (s.DataOraInizio >= startDate) &&
+                                           (s.DataOraInizio <= endDate)));
             return result;
         }
 
@@ -77,7 +77,7 @@ namespace PalestreGoGo.DataAccess
                                 .Include(s => s.Appuntamenti)
                                 .Single(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idSchedule));
             if (entity == null) throw new ArgumentException("Invalid Tenant");
-            if (Utils.DateTimeFromDateAndTime(entity.Data, entity.OraInizio) <= DateTime.Now)
+            if (entity.DataOraInizio <= DateTime.Now)
             {
                 throw new InvalidOperationException("Impossibile cancellare uno schedule passato.");
             }

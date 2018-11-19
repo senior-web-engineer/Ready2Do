@@ -62,6 +62,7 @@ BEGIN TRANSACTION
 		FROM AbbonamentiUtenti au WITH (UPDLOCK)
 		WHERE au.IdCliente = @pIdCliente 
 		AND au.UserId = @pUserId
+		AND au.DataCancellazione IS NULL
 		AND au.Scadenza < @dtOperazione
 		AND ((au.IngressiResidui IS NULL) OR (au.IngressiResidui > 0))
 		AND ((@pIdAbbonamento IS NULL) OR (au.Id = @pIdAbbonamento))

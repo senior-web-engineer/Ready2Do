@@ -17,9 +17,8 @@ namespace PalestreGoGo.DataModel
 
         public int IdTipoLezione { get; set; }
         public int IdLocation { get; set; }
-        [Column(TypeName = "date")]
-        public DateTime Data { get; set; }
-        public TimeSpan OraInizio { get; set; }
+        public DateTime DataOraInizio { get; set; }
+        //public TimeSpan OraInizio { get; set; }
         [StringLength(150)]
         public string Istruttore { get; set; }
         public int PostiDisponibili { get; set; }

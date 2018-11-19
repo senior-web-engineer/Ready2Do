@@ -4,7 +4,7 @@
 	@pResult		bit OUTPUT
 AS
 BEGIN
-	IF EXISTS(SELECT * FROM ClientiUtenti WHERE IdCliente = @pIdCliente AND IdUtente = @pUserId)
+	IF EXISTS(SELECT * FROM ClientiUtenti WHERE IdCliente = @pIdCliente AND UserId = @pUserId)
 		SET @pResult = 1;
 	ELSE
 		SET @pResult = 0

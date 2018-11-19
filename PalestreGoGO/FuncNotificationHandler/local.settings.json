@@ -1,5 +1,5 @@
 {
-    "IsEncrypted": false,
+  "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=stgready2do;AccountKey=N8Z5r8E+RCgct2AK6bKQuZhoF3ZnqCZS+DKguUdr732GXwxZSMGVPsjgcf4UuLqw4bKSua5B8cF+n/meAbcs7A==;BlobEndpoint=https://stgready2do.blob.core.windows.net/;TableEndpoint=https://stgready2do.table.core.windows.net/;QueueEndpoint=https://stgready2do.queue.core.windows.net/;FileEndpoint=https://stgready2do.file.core.windows.net/",
     "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=stgready2do;AccountKey=N8Z5r8E+RCgct2AK6bKQuZhoF3ZnqCZS+DKguUdr732GXwxZSMGVPsjgcf4UuLqw4bKSua5B8cF+n/meAbcs7A==;BlobEndpoint=https://stgready2do.blob.core.windows.net/;TableEndpoint=https://stgready2do.table.core.windows.net/;QueueEndpoint=https://stgready2do.queue.core.windows.net/;FileEndpoint=https://stgready2do.file.core.windows.net/",

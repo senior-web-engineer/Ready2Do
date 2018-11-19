@@ -8,36 +8,33 @@ namespace Web.Models.Utils
 {
     public static class UtentiMapper
     {
-        public static List<ClienteUtenteViewModel> MapToClienteUtenteViewModel(this IEnumerable<ClienteUtenteWithAbbonamentoApiModel> utenti)
+        public static List<ClienteUtenteViewModel> MapToClienteUtenteViewModel(this IEnumerable<ClienteUtenteApiModel> utenti)
         {
             if (utenti == null) return null;
             var result = new List<ClienteUtenteViewModel>();
             ClienteUtenteViewModel item;
             foreach (var u in utenti)
             {
-                item = new ClienteUtenteViewModel()
-                {
-                    Nominativo = u.Nominativo,
-                    DisplayName = u.DisplayName,
-                    IdCliente = u.IdCliente,
-                    IdUtente = u.IdUtente
-                };
-                result.Add(item);
-                if (u.Abbonamento == null) { continue; }
-
-                item.Abbonamento = new AbbonamentoUtenteViewModel()
-                {
-                    DataInizioValidita = u.Abbonamento.DataInizioValidita,
-                    Id = u.Abbonamento.Id,
-                    IngressiResidui = u.Abbonamento.IngressiResidui,
-                    Scadenza = u.Abbonamento.Scadenza,
-                    ScadenzaCertificato = u.Abbonamento.ScadenzaCertificato,
-                    StatoPagamento = u.Abbonamento.StatoPagamento,
-                    TipoAbbonamento = u.Abbonamento.TipoAbbonamento.MapToWebViewModel()
-                };
-
+                result.Add(u.MapToClienteUtenteViewModel());
             }
             return result;
+        }
+
+        public static ClienteUtenteViewModel MapToClienteUtenteViewModel(this ClienteUtenteApiModel utente)
+        {
+            if (utente == null) return null;
+            return new ClienteUtenteViewModel()
+            {
+                Nome = utente.Nome,
+                Cognome = utente.Cognome,
+                Email = utente.Email,
+                NumTelefono = utente.TelephoneNumber,
+                Stato = (ClienteUtenteStatoViewModel)((int)utente.Stato),
+                DisplayName = utente.DisplayName,
+                IdCliente = utente.IdCliente,
+                IdUtente = utente.IdUtente,
+                DataAssociazione = utente.DataAssociazione
+            };
         }
 
         public static ClienteFollowed MapToClienteFollowed(this ClienteFollowedApiModel cf)

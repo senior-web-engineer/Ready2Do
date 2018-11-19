@@ -110,13 +110,13 @@ namespace Web.Controllers
                 ScheduleViewModel apiVM = new ScheduleViewModel()
             {
                 CancellabileFinoAl = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value),
-                Data = evento.Data.Value,
+                DataOraInizio = (evento.Data.Value).Add(evento.OraInizio.Value),
                 Title = evento.Title,
                 IdCliente = idCliente,
                 IdLocation = evento.IdLocation.Value,
                 Istruttore = evento.Istruttore,
                 Note = evento.Note,
-                OraInizio = evento.OraInizio.Value,
+             //   OraInizio = evento.OraInizio.Value,
                 PostiDisponibili = evento.PostiDisponibili,
                 IdTipoLezione = evento.IdTipoLezione.Value,
                 Id = evento.Id
@@ -211,12 +211,12 @@ namespace Web.Controllers
                 DataCancellazioneMax = apiModel.CancellabileFinoAl.Date,
                 OraCancellazioneMax = apiModel.CancellabileFinoAl.TimeOfDay,
                 Title = apiModel.Title,
-                Data = apiModel.Data,
+                Data = apiModel.DataOraInizio.Date,
                 IdLocation = apiModel.IdLocation,
                 IdTipoLezione = apiModel.IdTipoLezione,
                 Istruttore = apiModel.Istruttore,
                 Note = apiModel.Note,
-                OraInizio = apiModel.OraInizio,
+                OraInizio = apiModel.DataOraInizio.TimeOfDay,
                 PostiDisponibili = apiModel.PostiDisponibili,
                 Id = apiModel.Id
             };

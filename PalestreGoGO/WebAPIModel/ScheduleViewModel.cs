@@ -12,8 +12,7 @@ namespace PalestreGoGo.WebAPIModel
         public string Title { get; set; }
         public int IdTipoLezione { get; set; }
         public int IdLocation { get; set; }
-        public DateTime Data { get; set; }
-        public TimeSpan OraInizio { get; set; }
+        public DateTime DataOraInizio { get; set; }
         public string Istruttore { get; set; }
         public int PostiDisponibili { get; set; }
         public DateTime CancellabileFinoAl { get; set; }

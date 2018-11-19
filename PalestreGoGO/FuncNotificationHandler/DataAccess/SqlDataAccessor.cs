@@ -21,12 +21,12 @@ namespace FuncNotificationHandler.DataAccess
             }
         }
 
-        public async static Task<long> AddSystemNotificationAsync(int idTipo, string idUtente, int idCliente, string titolo, string testo )
+        public async static Task<long> AddSystemNotificationAsync(int idTipo, string userId, int idCliente, string titolo, string testo )
         {
             var parameters = new DynamicParameters(new
             {
                 pIdTipo = idTipo,
-                pIdUtente = idUtente,
+                pUserId = userId,
                 pIdCliente = idCliente,
                 pTitolo = titolo,
                 pTesto = testo

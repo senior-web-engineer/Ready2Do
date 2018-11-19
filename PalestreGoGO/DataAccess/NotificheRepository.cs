@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Dapper;
 using System.Data.SqlClient;
-using PalestreGoGo.DataModel.Exceptions;
-using Microsoft.Extensions.Configuration;
-using Dapper;
+using System.Threading.Tasks;
+
 
 namespace PalestreGoGo.DataAccess
 {
@@ -33,7 +31,7 @@ namespace PalestreGoGo.DataAccess
                                                     new
                                                     {
                                                         pIdTipo = notifica.IdTipo,
-                                                        pIdUtente = notifica.UserRef.UserId,
+                                                        pUserId = notifica.UserRef.UserId,
                                                         pIdCliente = notifica.IdCliente,
                                                         pTitolo = notifica.Titolo,
                                                         pTesto = notifica.Testo,
@@ -55,7 +53,7 @@ namespace PalestreGoGo.DataAccess
                                                         return notifica;
                                                     },
                                                     new { },
-                                                    splitOn: "IdUtente, IdTipo",
+                                                    splitOn: "UserId, IdTipo",
                                                     commandType: System.Data.CommandType.StoredProcedure
                                                     );
             }

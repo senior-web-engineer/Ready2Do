@@ -26,7 +26,7 @@ namespace Web.ViewComponents
         //    _clientiResolver = clientiResolver;
         //}
 
-        public async Task<IViewComponentResult> InvokeAsync(int? idCliente, List<NotificaViewModel> notifiche)
+        public IViewComponentResult Invoke(int? idCliente, List<NotificaViewModel> notifiche)
         {
             //var accessToken = await HttpContext.GetTokenAsync("access_token");
             //var vm = await _apiClient.GetNotificheForUserAsync(accessToken);

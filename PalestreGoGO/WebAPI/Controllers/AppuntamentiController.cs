@@ -62,7 +62,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             //Leggiamo i dati sull'evento
             var schedule = await _repositorySchedule.GetScheduleAsync(idCliente, idEvento);
             result.IdEvento = idEvento;
-            result.DataOra = string.Format("{0}T{1}Z", schedule.Data.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.OraInizio.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
+            result.DataOra = string.Format("{0}T{1}Z", schedule.DataOraInizio.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.DataOraInizio.TimeOfDay.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
             result.DurataMinuti = schedule.TipologiaLezione.Durata;
             result.Istruttore = schedule.Istruttore;
             result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.ToString("o", CultureInfo.InvariantCulture);

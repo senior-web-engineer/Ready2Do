@@ -16,15 +16,15 @@
         <h2>Nuovo abbonamento @ViewBag.TipologiaAbbonamento</h2>
         <form asp-action="AddAbbonamentoToUser" asp-route-cliente="@ViewBag.ClienteUrl" asp-route-userId="@ViewBag.IdUtente" method="post">
             <input asp-for="Id" type="hidden" />
-            <input asp-for="IdTipologiaAbbonamento" type="hidden" />
+            <input asp-for="IdTipoAbbonamento" type="hidden" />
             <input asp-for="IdCliente" type="hidden" />
             <input asp-for="IdUtente" type="hidden" />
 
             @*<div class="row">
             <div class="input-field col s10">
-                <select asp-for="IdTipologiaAbbonamento" asp-items="ViewBag.TipologieAbbonamenti" onchange='@if (!ViewBag.IsEditMode) { Html.Raw("applyTipoAbbonamento(event)"); } '></select>
-                <label asp-for="IdTipologiaAbbonamento"></label>
-                <span asp-validation-for="IdTipologiaAbbonamento" />
+                <select asp-for="IdTipoAbbonamento" asp-items="ViewBag.TipologieAbbonamenti" onchange='@if (!ViewBag.IsEditMode) { Html.Raw("applyTipoAbbonamento(event)"); } '></select>
+                <label asp-for="IdTipoAbbonamento"></label>
+                <span asp-validation-for="IdTipoAbbonamento" />
             </div>
         </div>*@
             <div class="row">
@@ -48,7 +48,7 @@
                     <span asp-validation-for="IngressiResidui" />
                 </div>
             </div>
-            <div class="row">
+            @*<div class="row">
                 <div class="input-field col s10">
                     <input id="inputScadenzaCertificato" type="text" asp-for="ScadenzaCertificato" />
                     <label asp-for="ScadenzaCertificato"></label>
@@ -63,7 +63,7 @@
                         <span asp-validation-for="Pagato" />
                     </label>
                 </div>
-            </div>
+            </div>*@
             <div class="row">
                 <div class="input-field col s10">
                     <button class="btn waves-effect waves-light" type="submit" name="action">
@@ -108,9 +108,9 @@ $(document).ready(function () {
     }
     var elemDataScadenzaCert = document.getElementById('inputScadenzaCertificato');
     var dataScadenzaCert = null;
-    @if (Model.ScadenzaCertificato.HasValue) {
+    @*@if (Model.ScadenzaCertificato.HasValue) {
         @: dataScadenzaCert= new Date(@Model.ScadenzaCertificato.Value.ToJSmsSinceEpoch());
-    }
+    }*@
 
     var datePickDataInizioVal = M.Datepicker.init(elemDataInizioVal, {
         format: "dd/mm/yyyy",

@@ -16,3 +16,4 @@ Post-Deployment Script Template
 :r .\Prepop\Prepop.Test.TipologieNotifiche.sql
 
 :r .\Prepop\Prepop.Security.Roles.sql
+:r .\Prepop\Prepop.StatiPagamenti.sql

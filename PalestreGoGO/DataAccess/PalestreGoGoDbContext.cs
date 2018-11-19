@@ -115,7 +115,7 @@ namespace PalestreGoGo.DataAccess
             {
                 entity.Property(e => e.DataCreazione).HasDefaultValueSql("(sysdatetime())");
 
-                entity.HasKey(e => new { e.IdCliente, e.IdUtente });
+                entity.HasKey(e => new { e.IdCliente, e.UserId });
 
                 entity.HasOne(d => d.Cliente)
                     .WithMany(p => p.ClientiUtenti)

@@ -5,5 +5,6 @@
 	[DataTransazione]	DATETIME2		NOT NULL CONSTRAINT DEF_AppuntamentiTransazioni_DtTrans DEFAULT(sysdatetime()),
 	[Testo]				VARCHAR(1000)	NOT NULL
 
-	CONSTRAINT PK_AppuntamentiTransazioni PRIMARY KEY (Id)
+	CONSTRAINT PK_AppuntamentiTransazioni PRIMARY KEY (Id),
+	CONSTRAINT FK_AbbonamentiTransazioni_AbbonamentiUtenti FOREIGN KEY (IdAbbonamento) REFERENCES AbbonamentiUtenti(Id)
 )

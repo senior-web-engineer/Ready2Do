@@ -24,7 +24,7 @@ BEGIN
 		UPDATE Appuntamenti
 			SET DataCancellazione = @dtOperazione
 			OUTPUT inserted.Id, inserted.ScheduleId, inserted.IdAbbonamento
-				INTO @tblUpdated(Id, CancellabileFinoAl, IdAbbonamento)
+				INTO @tblUpdated(Id, ScheduleId, IdAbbonamento)
 		WHERE Id = @pIdAppuntamento
 		AND IdCliente = @pIdCliente
 		AND DataCancellazione IS NULL
@@ -42,7 +42,7 @@ BEGIN
 		-- Riaggiungiamo un posto all'evento
 		UPDATE Schedules
 			SET PostiResidui = PostiResidui +1
-			OUTPUT inserted.CancellabileFinoAl INTO @tblScheduleUpdated(CancellabileFinoAl)
+			OUTPUT inserted.Id, inserted.CancellabileFinoAl INTO @tblScheduleUpdated(Id, CancellabileFinoAl)
 		WHERE Id = @idSchedule
 
 		SELECT @sogliaCancellazione = CancellabileFinoAl 

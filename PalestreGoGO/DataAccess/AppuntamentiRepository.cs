@@ -114,7 +114,7 @@ namespace PalestreGoGo.DataAccess
                     .Include(a => a.Cliente)
                     .Include(a => a.Schedule)
                         .ThenInclude(s => s.TipologiaLezione)
-                    .Where(a => a.UserId.Equals(userId) && (!includePast || a.Schedule.Data > DateTime.Now));
+                    .Where(a => a.UserId.Equals(userId) && (!includePast || a.Schedule.DataOraInizio > DateTime.Now));
         }
     }
 }

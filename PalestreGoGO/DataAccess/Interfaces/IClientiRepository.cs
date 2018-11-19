@@ -32,17 +32,6 @@ namespace PalestreGoGo.DataAccess
         IEnumerable<ClientiImmagini> GetImages(int idCliente, TipologieImmagini tipoImmagine);
         #endregion
 
-        #region Followers
-        Task AddUtenteFollowerAsync(int idCliente, string idUtente, string nominativoUtente, string displayName);
-        Task RemoveUtenteFollowerAsync(int idCliente, string idUtente);
-        IEnumerable<ClientiUtenti> GetAllFollowers(int idCliente);
-        Task<ClientiUtenti> GetFollowerAsync(int idCliente, string idUtente);
-        Task<IEnumerable<ClienteUtenteConAbbonamento>> GetAllFollowersWithAbbonamenti(int idCliente);
-
-        #endregion
-
-        #region Abbonamenti
-        #endregion
     }
 
 

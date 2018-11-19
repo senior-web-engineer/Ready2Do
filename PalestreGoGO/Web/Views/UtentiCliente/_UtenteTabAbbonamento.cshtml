@@ -1,0 +1,47 @@
+﻿@model AbbonamentoUtenteViewModel
+<div id="utenteTabAbbonamentoContainer">
+    @if (!Model.Id.HasValue)
+    {
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title center"><strong>Nessuna Abbonamento attivo per l'utente</strong></span>
+                <br />
+                <p>Al momento l'utente non ha un abbonamento valido.</p>
+
+                <a class='dropdown-trigger btn @Html.Raw(ViewBag.TipologieAbbonamenti == null ? "disabled" : "")' href='#' data-target='ddAddAbb'>Aggiungi Abbonamento</a>
+                <ul id='ddAddAbb' class='dropdown-content'>
+                    @foreach (var ta in (Model.TipologieAbbonamento as IEnumerable<KeyValuePair<int, string>>))
+                    {
+                        <li>
+                            <a href="#!" onclick="AddAbbonamento(@ta.Key)">@ta.Value</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $('#ddAddAbb li a').click()
+    //});
+    function AddAbbonamento(idTipoAbbonamento) {
+        $.ajax({
+            url: '@Url.Action("EditAbbonamento", "UtentiCliente")',
+            data: {
+                idTipo: idTipoAbbonamento
+            },
+            dataType: "html",
+            method: "GET",
+            cache: false,
+            success: function(data){
+                $('#utenteTabAbbonamentoContainer').html(data);
+            },
+            error: function (data) {
+                console.log("Errore durante l'aggiunta di un abbonamento." + data);
+            }
+        });
+        return false;
+    }
+</script>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
+    [Obsolete("Da eliminare")]
     public class ClienteUtenteWithAbbonamentoApiModel: ClienteUtenteApiModel
     {
         

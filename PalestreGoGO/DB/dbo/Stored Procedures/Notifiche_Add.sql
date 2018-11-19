@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Notifiche_Add]
 	@pIdTipo				INT,
-	@pIdUtente				VARCHAR(100),
+	@pUserId				VARCHAR(100),
 	@pIdCliente				INT = NULL,
 	@pTitolo				NVARCHAR(50),
 	@pTesto					NVARCHAR(250),
@@ -24,8 +24,8 @@ BEGIN
 	BEGIN
 		SET @dtEndVis = @pDataFineVisibilita;
 	END
-	INSERT INTO Notifiche(IdTipo, IdUtente, IdCliente, Titolo, Testo, DataInizioVisibilita, DataFineVisibilita)
-		VALUES (@pIdTipo, @pIdUtente, @pIdCliente, @pTitolo, @pTesto, @pDataInizioVisibilita, @dtEndVis);
+	INSERT INTO Notifiche(IdTipo, UserId, IdCliente, Titolo, Testo, DataInizioVisibilita, DataFineVisibilita)
+		VALUES (@pIdTipo, @pUserId, @pIdCliente, @pTitolo, @pTesto, @pDataInizioVisibilita, @dtEndVis);
 
 	SET @pIdNotitifica = SCOPE_IDENTITY();
 END

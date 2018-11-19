@@ -32,8 +32,8 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> AddAbbonamento([FromRoute]int idCliente, [FromBody] AbbonamentoUtenteApiModel abbonamento)
         {
 
-            var entity = Mapper.Map<AbbonamentoUtenteApiModel, AbbonamentiUtenti>(abbonamento);
-            int id = await _repository.AddAbbonamentoAsync(idCliente, entity);
+            var entity = Mapper.Map<AbbonamentoUtenteApiModel, UtenteClienteAbbonamentoDM>(abbonamento);
+            int id = await _repository.SaveAbbonamentoAsync(idCliente, entity);
             return Ok(id);
         }
 
@@ -41,15 +41,16 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetAbbonamento([FromRoute]int idCliente, [FromRoute] int id)
         {
             var entity = await _repository.GetAbbonamentoAsync(idCliente, id);
-            var result = Mapper.Map<AbbonamentiUtenti, AbbonamentoViewModel>(entity);
+            var result = Mapper.Map<UtenteClienteAbbonamentoDM, AbbonamentoViewModel>(entity);
             return Ok(result);
         }
 
         [HttpGet()]
-        public IActionResult GetAbbonamentiForUser([FromRoute]int idCliente, [FromQuery]string idUtente)
+        public async Task<IActionResult> GetAbbonamentiForUser([FromRoute]int idCliente, [FromQuery]string idUtente, 
+                                                                [FromQuery(Name ="incExp")]bool includeExpired = false, [FromQuery(Name = "incDel")]bool includeDeleted = false)
         {
-            var entity = _repository.GetAbbonamentiForUser(idCliente, idUtente);
-            var result = Mapper.Map<IEnumerable<AbbonamentiUtenti>, IEnumerable<AbbonamentoViewModel>>(entity);
+            IEnumerable<UtenteClienteAbbonamentoDM> entity = await _repository.GetAbbonamentiForUserAsync(idCliente, idUtente, includeExpired, includeDeleted);
+            var result = Mapper.Map<IEnumerable<UtenteClienteAbbonamentoDM>, IEnumerable<AbbonamentoViewModel>>(entity);
             return Ok(result);
         }
 
@@ -61,8 +62,20 @@ namespace WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var entity = Mapper.Map<AbbonamentoUtenteApiModel, AbbonamentiUtenti>(abbonamento);
-            await _repository.UpdateAbbonamentoAsync(idCliente, entity);
+            var entity = Mapper.Map<AbbonamentoUtenteApiModel, UtenteClienteAbbonamentoDM>(abbonamento);
+            await _repository.SaveAbbonamentoAsync(idCliente, entity);
+            return Ok();
+        }
+
+        [HttpDelete("{idAbbonamento}")]
+        public async Task<IActionResult> DeleteAbbonamento([FromRoute]int idCliente, [FromRoute] int idAbbonamento)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var entity = Mapper.Map<AbbonamentoUtenteApiModel, UtenteClienteAbbonamentoDM>(abbonamento);
+            await _repository.SaveAbbonamentoAsync(idCliente, entity);
             return Ok();
         }
     }

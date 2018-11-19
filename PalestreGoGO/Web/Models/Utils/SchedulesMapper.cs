@@ -13,8 +13,8 @@ namespace Web.Models.Utils
             return schedules.Select(s => new SchedulerEventViewModel()
             {
                 Id = s.Id,
-                Start = s.Data.Add(s.OraInizio).ToString("O"),
-                End = s.Data.Add(s.OraInizio).AddMinutes(s.TipologiaLezione.Durata).ToString("O"),
+                Start = s.DataOraInizio.ToString("O"),
+                End = s.DataOraInizio.AddMinutes(s.TipologiaLezione.Durata).ToString("O"),
                 Title = s.Title
             }).ToArray();
         }

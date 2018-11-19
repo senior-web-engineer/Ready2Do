@@ -72,10 +72,9 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
             //    .ForMember(d => d.Email, opt => opt.MapFrom(src => src.Email))
             //    .ForMember(d => d.IdUtente, opt => opt.MapFrom(src => src.Id));
 
-            CreateMap<AbbonamentiUtenti, AbbonamentoViewModel>()
-                .ReverseMap()
-                .ForPath(x => x.IdTipoAbbonamentoNavigation, x => x.Ignore())
-                .ForPath(x => x.IdClienteNavigation, x => x.Ignore());
+            CreateMap<UtenteClienteAbbonamentoDM, AbbonamentoViewModel>()
+                .ReverseMap();
+               
 
             CreateMap<AbbonamentiUtenti, AbbonamentoUtenteApiModel>()
                 .ReverseMap()
@@ -88,6 +87,13 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
             CreateMap<UserReferenceDM, UserReferenceApiModel>().ReverseMap();
             CreateMap<NotificaDM, NotificaApiModel>().ReverseMap();
             CreateMap<NotificaConTipoDM, NotificaConTipoApiModel>().ReverseMap();
+            CreateMap<UtenteClienteDM, ClienteUtenteApiModel>()
+                .ForMember(d=>d.IdUtente, opt => opt.MapFrom(src=>src.UserRef.UserId))
+                .ReverseMap()
+                .ForMember(d => d.Stato, opt => opt.MapFrom(src => src.Stato))
+                .ForMember(d => d.UserRef, opt => opt.MapFrom(src => new UserReferenceDM(src.IdUtente)));
+
+                
         }
 
     }

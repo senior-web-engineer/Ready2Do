@@ -6,7 +6,7 @@ Il parametro @pStatoNotifica indica quali notifiche si volgiono in output e può
 - 2 = SoloNonLette (DataDismissione NULL + DataPrimaVisualizzazione NULL)
 */
 CREATE PROCEDURE [dbo].[Notifiche_Lista]
-	@pIdUtente		VARCHAR(100) = NULL,
+	@pUserId		VARCHAR(100) = NULL,
 	@pIdCliente		INT = NULL,
 	@pStatoNotifica	TINYINT = 1
 AS
@@ -20,7 +20,7 @@ BEGIN
 			n.DataPrimaVisualizzazione,
 			n.DataInizioVisibilita,
 			n.DataFineVisibilita,
-			n.IdUtente,
+			n.UserId,
 			tn.Id AS IdTipo,
 			tn.Code	AS Code,
 			tn.UserDismissable,

@@ -92,7 +92,6 @@
     <Build Include="dbo\Tables\MailTemplates.sql" />
     <None Include="Scripts\Prepop\Prepop.Test.MailTemplates.sql" />
     <Build Include="dbo\Tables\ClientiUtentiAbbonamenti.sql" />
-    <Build Include="dbo\Stored Procedures\GetUtentiCliente.sql" />
     <Build Include="dbo\Stored Procedures\Utenti_ClientiFollowed.sql" />
     <Build Include="dbo\Views\vAbbonamentiValidi.sql" />
     <Build Include="dbo\Stored Procedures\Schedules_GetForCliente.sql" />
@@ -123,6 +122,16 @@
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_Lista.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_Associa.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_Disassocia.sql" />
+    <Build Include="dbo\Tables\ClientiUtentiCertificati.sql" />
+    <Build Include="dbo\Tables\StatiPagamenti.sql" />
+    <None Include="Scripts\Prepop\Prepop.StatiPagamenti.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_CertificatoSave.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_CertificatoDelete.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_Get.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoSave.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoDelete.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoList.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoGet.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

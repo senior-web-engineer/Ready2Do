@@ -20,6 +20,7 @@ using Xunit.Abstractions;
 
 namespace Tests.WebAPI
 {
+    /*
     public class AbbonamentiTests : BaseWebApiTests
     {
         private static AbbonamentoUtenteApiModel s_abbonamento;
@@ -138,4 +139,5 @@ namespace Tests.WebAPI
             abbonamenti[1].Should().BeEquivalentTo(s_abbonamento);
         }
     }
+    */
 }

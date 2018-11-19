@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PalestreGoGo.DataModel
 {
+    [Obsolete("Rimpiazzata dalla UtenteClienteAbbonamentoDM")]
     public partial class AbbonamentiUtenti //: BaseMultitenantEntity
     {
         public int? Id { get; set; }

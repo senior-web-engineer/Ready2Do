@@ -8,6 +8,7 @@ using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel;
+using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
@@ -24,14 +25,17 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly ILogger<ClientiUtentiController> _logger;
         private readonly IUsersManagementService _userManagementService;
         private readonly IClientiRepository _clientiRepo;
+        private readonly IClientiUtentiRepository _clientiUtentiRepo;
 
         public ClientiUtentiController( IUsersManagementService userManagementService,
                                         ILogger<ClientiUtentiController> logger,
-                                        IClientiRepository clientiRepo)
+                                        IClientiRepository clientiRepo,
+                                        IClientiUtentiRepository clientiUtentiRepo)
         {
             this._logger = logger;
             this._clientiRepo = clientiRepo;
             this._userManagementService = userManagementService;
+            _clientiUtentiRepo = clientiUtentiRepo;
         }
 
         #region Utenti Clienti
@@ -41,12 +45,22 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="idCliente"></param>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<IActionResult> GetClientiUtenti([FromRoute] int idCliente)
+        public async Task<IActionResult> GetClientiUtenti([FromRoute] int idCliente,
+                                                          [FromQuery(Name ="stato")]bool includeStato = false,
+                                                          [FromQuery(Name ="page")]int page = 1,
+                                                          [FromQuery(Name = "pageSize")]int pageSize = 25,
+                                                          [FromQuery(Name = "sortby")]string sortby = "Cognome",
+                                                          [FromQuery(Name = "asc")]bool asc = true)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-
-            var follower = await _clientiRepo.GetAllFollowersWithAbbonamenti(idCliente);
-            var result = Mapper.Map<IEnumerable<ClienteUtenteConAbbonamento>, IEnumerable<ClienteUtenteWithAbbonamentoApiModel>>(follower);
+            ClientiUtentiListaSortColumnDM sortCol;
+            if(!Enum.TryParse<ClientiUtentiListaSortColumnDM>(sortby, out sortCol))
+            {
+                sortCol = ClientiUtentiListaSortColumnDM.Cognome;
+            }
+            SortOrderDM sortOrder = asc ? SortOrderDM.Ascending : SortOrderDM.Descending;
+            IEnumerable<UtenteClienteDM> utenti = await _clientiUtentiRepo.GetUtentiCliente(idCliente,includeStato,page, pageSize, sortCol, sortOrder);
+            var result = Mapper.Map<IEnumerable<UtenteClienteDM>, IEnumerable<ClienteUtenteApiModel>>(utenti);
             return Ok(result);
         }
 
@@ -61,24 +75,28 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserDetails([FromRoute] int idCliente, [FromRoute]string id)
+        public async Task<IActionResult> GetUserDetails([FromRoute] int idCliente, [FromRoute(Name ="id")]string userId, [FromQuery(Name ="incStato")] bool includeStato = false)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            var follower = await _clientiRepo.GetFollowerAsync(idCliente, id);
-            if (follower == null) return BadRequest(); //Se non l'ho trovato i parametri non sono corretit
+            UtenteClienteDM utente = await _clientiUtentiRepo.GetUtenteCliente(idCliente, userId, includeStato);
+            if (utente == null) return BadRequest(); //Se non l'ho trovato i parametri non sono corretit
             //Se ho trovato l'associazione utente-cliente, recupero i dettagli dell'utente
-            var user = await _userManagementService.GetUserByIdAsync(id.ToString());
-            if(user == null)
+            AzureUser azUser = await _userManagementService.GetUserByIdAsync(userId);
+            if(azUser== null)
             {
-                _logger.LogError($"Impossibile trovare l'utente [{id}] associato al cliente [{idCliente}]");
+                _logger.LogError($"Impossibile trovare l'utente [{userId}] associato al cliente [{idCliente}]");
                 return this.NotFound(); //Forse sarebbe più corretto un 500 invece di un 404
             }
-            //var result = Mapper.Map<AppUser, ClienteUtenteApiModel>(user);
-            //result.IdCliente = idCliente;
-            //result.DataAssociazione = follower.DataCreazione;
-
-            //return Ok(result);
-            return Ok();
+            var result = Mapper.Map<UtenteClienteDM, ClienteUtenteApiModel>(utente);
+            result.TelephoneNumber = azUser.TelephoneNumber;
+            //Se è cambiato qualcosa nei dati dell'utente su B2C, aggiorniamo i dati locali
+            if(!result.Nome.Equals(azUser.Nome) ||
+                !result.Cognome.Equals(azUser.Cognome) ||
+                !result.DisplayName.Equals(azUser.DisplayName))
+            {
+                await _clientiUtentiRepo.AssociaUtenteAsync(idCliente, userId, azUser.Nome, azUser.Cognome, azUser.DisplayName);
+            }
+            return Ok(result);            
         }
         #endregion
 

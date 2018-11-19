@@ -2,7 +2,7 @@
 (
 	[Id]							BIGINT			NOT NULL IDENTITY (1,1),
 	[IdTipo]						INT				NOT NULL,
-	[IdUtente]						VARCHAR(100)	NOT NULL,
+	[UserId]						VARCHAR(100)	NOT NULL,
 	[IdCliente]						INT				NULL,	--Valorizzato SOLO se la notifica è relativa ad uno specifico Cliente
 	[Titolo]						NVARCHAR(50)	NOT NULL,
 	[Testo]							NVARCHAR(1000)	NOT NULL,

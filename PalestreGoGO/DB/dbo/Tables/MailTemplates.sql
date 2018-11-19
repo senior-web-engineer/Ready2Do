@@ -11,5 +11,3 @@
 	INDEX UQ_MailTemplates_Tipo UNIQUE (TipoMail) WHERE DataCancellazione IS NULL
 )
 GO
-
-CREATE UNIQUE INDEX UK_MailTemplates_Tipo ON [MailTemplates](TipoMail)

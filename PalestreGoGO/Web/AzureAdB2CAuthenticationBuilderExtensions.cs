@@ -136,7 +136,7 @@ namespace Web
 
                     context.HandleCodeRedemption(result.AccessToken, result.IdToken);
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
                     //TODO: Handle
                     throw;

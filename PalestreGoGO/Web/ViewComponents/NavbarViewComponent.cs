@@ -46,10 +46,10 @@ namespace Web.ViewComponents
                         case UserType.Owner:
                         case UserType.Admin:
                         case UserType.GlobalAdmin:
-                            vm.UserCanFollow = true;
+                            vm.UserCanFollow = false;
                             break;
                         default:
-                            vm.UserCanFollow = false;
+                            vm.UserCanFollow = true;
                             break;
                     }
                     vm.UserIsFollowingCliente = await _apiClient.ClienteIsFollowedByUserAsync(idClienteCorrente.Value, accessToken);

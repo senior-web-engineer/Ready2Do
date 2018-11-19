@@ -6,13 +6,13 @@ anche se l'utente non potrà più accedervi.
 */
 CREATE PROCEDURE [dbo].[Clienti_Utenti_Disassocia]
 	@pIdCliente			int,
-	@pIdUtente			varchar(50)
+	@pUserId			varchar(50)
 AS
 BEGIN
 	UPDATE ClientiUtenti
 		SET DataCancellazione = SYSDATETIME()
 	WHERE IdCliente = @pIdCliente
-	AND IdUtente = @pIdUtente
+	AND UserId = @pUserId
 	AND DataCancellazione IS NULL
 
 

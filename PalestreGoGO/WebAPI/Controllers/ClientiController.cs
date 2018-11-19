@@ -29,16 +29,19 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IClientiRepository _repository;
         private readonly IUsersManagementService _userManagementService;
         private readonly IConfiguration _config;
+        private readonly IClientiUtentiRepository _repoClientiUtenti;
 
         public ClientiController(IConfiguration config,
                                  ILogger<ClientiController> logger,
                                  IUsersManagementService userManagementService,
-                                 IClientiRepository repository)
+                                 IClientiRepository repository,
+                                 IClientiUtentiRepository repoClientiUtenti)
         {
             _config = config;
             _logger = logger;
             _repository = repository;
             _userManagementService = userManagementService;
+            _repoClientiUtenti = repoClientiUtenti;
         }
 
         [HttpGet("{id:int}")]
@@ -420,7 +423,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             var userId = this.GetCurrentUser().UserId();
             if (string.IsNullOrWhiteSpace(userId)) return Forbid();    //Se non ho trovato l'utente ritorniamo 403 - Forbidden
             var userInfo = await _userManagementService.GetUserByIdAsync(userId);
-            await _repository.AddUtenteFollowerAsync(idCliente, userId, $"{userInfo.Cognome} {userInfo.Nome}", userInfo.DisplayName);
+            await _repoClientiUtenti.AssociaUtenteAsync(idCliente, userId, userInfo.Nome, userInfo.Cognome, userInfo.DisplayName);
             return Ok();
         }
 
@@ -434,7 +437,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         {
             var userId = this.GetCurrentUser().UserId();
             if (!string.IsNullOrWhiteSpace(userId)) return Forbid();    //Se non ho trovato l'utente ritorniamo 403 - Forbidden
-            await _repository.RemoveUtenteFollowerAsync(idCliente, userId);
+            await _repoClientiUtenti.DisassociaUtenteFollowerAsync(idCliente, userId);
             return Ok();
         }
 

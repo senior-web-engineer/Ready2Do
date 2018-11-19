@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.ViewModel
 {
+    [Obsolete]
     public class AbbonamentoViewModel
     {
         public int? Id { get; set; }

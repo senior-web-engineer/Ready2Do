@@ -9,7 +9,7 @@ CREATE TABLE [dbo].[Appuntamenti]
 (
 	[Id]					INT					NOT NULL	IDENTITY(1,1),
 	[IdCliente]				INT					NOT NULL,
-	[UserId]				UNIQUEIDENTIFIER	NULL,		--Se NULL indica un appuntamento per un utente Guest
+	[UserId]				VARCHAR(100)		NULL,		--Se NULL indica un appuntamento per un utente Guest
 	[ScheduleId]			INT					NOT NULL,
 	[IdAbbonamento]			INT					NULL,		--Abbonamento da cui è stato scalato l'ingresso o cmq utilizzato per la prenotazione
 	[DataPrenotazione]		DATETIME2			NOT NULL,

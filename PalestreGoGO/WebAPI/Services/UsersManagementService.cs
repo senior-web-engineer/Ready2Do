@@ -23,6 +23,7 @@ namespace PalestreGoGo.WebAPI.Services
         private readonly ILogger<UsersManagementService> _logger;
         private readonly IClientiProvisioner _clientiProvisioner;
         private readonly IClientiRepository _repository;
+        private readonly IClientiUtentiRepository _repositoryClientiUtenti;
         private readonly IUtentiRepository _utentiRepository;
         private readonly B2CGraphClient _b2cClient;
 
@@ -34,7 +35,8 @@ namespace PalestreGoGo.WebAPI.Services
                                       ILogger<UsersManagementService> logger,
                                       IClientiProvisioner clientiProvisioner,
                                       IClientiRepository repository,
-                                      IUtentiRepository utentiRepository
+                                      IUtentiRepository utentiRepository,
+                                      IClientiUtentiRepository repositoryClientiUtenti
                                       )
         {
             this._logger = logger;
@@ -44,6 +46,7 @@ namespace PalestreGoGo.WebAPI.Services
             this._clientiProvisioner = clientiProvisioner;
             this._repository = repository;
             this._utentiRepository = utentiRepository;
+            this._repositoryClientiUtenti = repositoryClientiUtenti;
         }
 
         public async Task<UserConfirmationViewModel> ConfirmUserAsync(string username, string code)
@@ -78,7 +81,7 @@ namespace PalestreGoGo.WebAPI.Services
                 if (!string.IsNullOrWhiteSpace(user.Refereer))
                 {
                     int idStrutturaAffiliata = int.Parse(user.Refereer);
-                    await _repository.AddUtenteFollowerAsync(idStrutturaAffiliata, user.Id, string.Format("{0} {1}", user.Cognome, user.Nome), user.DisplayName);
+                    await _repositoryClientiUtenti.AssociaUtenteAsync(idStrutturaAffiliata, user.Id, user.Nome, user.Cognome, user.DisplayName);
                     result.IdStrutturaAffiliate = idStrutturaAffiliata;
                 }
 

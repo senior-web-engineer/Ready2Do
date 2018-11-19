@@ -11,8 +11,7 @@ BEGIN
 	DECLARE @sortDirection VARCHAR(10);
 	IF @pIdCliente IS NULL
 	BEGIN
-		RAISERROR('Invalid @pidCliente', 16
-		, 0);
+		RAISERROR('Invalid @pidCliente', 16, 0);
 		RETURN -2;		
 	END
 	-- Check colonna di ordinamento (avoid injection)

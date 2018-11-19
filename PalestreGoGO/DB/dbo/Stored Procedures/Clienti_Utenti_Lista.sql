@@ -1,28 +1,157 @@
 ﻿CREATE PROCEDURE [dbo].[Clienti_Utenti_Lista]
-	@pIdCliente INT 
+	@pIdCliente			INT,
+	@pIncludeStato		BIT = 0,
+	@pPageSize			INT = 25,
+	@pPageNumber		INT = 1,
+	@pSortColumn		VARCHAR(50) = NULL,
+	@pOrderAscending	BIT = 1
+
 AS
 BEGIN
-	SELECT  cu.DataCreazione AS DataAssociazione
-		   ,cu.IdUtente AS UserId
-		   ,cu.NominativoUser AS NominativoUser
-		   ,cu.UserDisplayName	AS UserDisplayName
-		   ,au.Id AS IdAbbonamentoUtente
-		   ,au.DataInizioValidita
-		   ,au.IngressiResidui
-		   ,au.Scadenza
-		   ,au.ScadenzaCertificato
-		   ,au.StatoPagamento
-		   ,au.IdTipoAbbonamento
-		   ,ta.Nome
-		   ,ta.Costo
-		   ,ta.DurataMesi
-		   ,ta.MaxLivCorsi
-		   ,ta.Nome
-		   ,ta.NumIngressi
-		   ,c.UrlRoute AS ClienteUrlRoute
-	FROM [ClientiUtenti] cu
-		INNER JOIN [Clienti] c ON c.Id = cu.IdCliente
-		LEFT JOIN [AbbonamentiUtenti] au ON au.IdCliente = cu.IdCliente AND au.UserId = cu.IdUtente
-		LEFT JOIN [TipologieAbbonamenti] ta ON ta.Id = au.IdTipoAbbonamento
-	WHERE cu.IdCliente = @pIdCliente
+	DECLARE @sql NVARCHAR(MAX);
+	DECLARE @sortDirection VARCHAR(10);
+
+	IF @pIdCliente IS NULL
+	BEGIN
+		RAISERROR('Invalid @pidCliente', 16, 0);
+		RETURN -2;		
+	END
+	SET @pSortColumn = COALESCE(@pSortColumn, 'Cognome');
+	-- Check colonna di ordinamento (avoid injection)
+	IF LOWER(@pSortColumn) NOT IN (N'cognome', N'nome', N'datacreazione')
+	BEGIN
+		RAISERROR('Invalid parameter for @pSortColumn: %s', 11, 1, @pSortColumn);
+		RETURN -1;
+	END 
+
+	SET @pSortColumn = QUOTENAME(@pSortColumn)
+	SET @sortDirection = CASE COALESCE(@pOrderAscending, 1) WHEN 1 THEN 'ASC' ELSE 'DESC' END
+	SET @pPageSize = COALESCE(@pPageSize, 25);
+	SET @pPageNumber = COALESCE(@pPageNumber, 1);
+
+	CREATE TABLE  #tblUsers(
+		[IdCliente]			INT					NOT NULL,
+		[UserId]			VARCHAR(50)			NOT NULL,
+		[Nome]				NVARCHAR(100)		NOT NULL,
+		[Cognome]			NVARCHAR(100)		NOT NULL,
+		[UserDisplayName]	NVARCHAR(100)		NOT NULL,
+		[DataAggiornamento] DATETIME2(2)		NOT NULL,
+		[DataCreazione]		DATETIME2(2)		NOT NULL,
+		[DataCancellazione] DATETIME2(2)		NULL);
+
+	SET @sql = N'	INSERT INTO #tblUsers (IdCliente, UserId, Nome, Cognome, UserDisplayName, DataAggiornamento, DataCreazione, DataCancellazione)
+						SELECT  cu.IdCliente 
+								,cu.UserId
+								,cu.Nome 
+								,cu.Cognome 
+								,cu.UserDisplayName
+								,cu.DataAggiornamento
+								,cu.DataCreazione 
+								,cu.DataCancellazione
+						FROM [ClientiUtenti] cu
+						WHERE cu.IdCliente = @pIdCliente
+						AND DataCancellazione IS NULL --Escludiamo i cancellati
+						ORDER BY ' + @pSortColumn  + ' ' + @sortDirection + '
+								OFFSET @pPageSize * (@pPageNumber - 1) ROWS
+								FETCH NEXT @pPageSize ROWS ONLY';
+
+	EXEC sp_executesql @sql, N'@pPageSize int, @pPageNumber int, @pIdCliente int', @pPageSize=@pPageSize, @pPageNumber=@pPageNumber, @pIdCliente=@pIdCliente
+
+	IF COALESCE(@pIncludeStato, 0) = 1
+	BEGIN
+		;WITH cte_abbonamenti_att AS(
+			SELECT u.IdCliente, 
+					u.UserId,
+					CASE
+						WHEN auAtt.Id IS NOT NULL THEN CAST(1 AS tinyint)
+						ELSE CAST (0 AS tinyint)
+					END AS HasAbbonamentoAttivo,
+					CASE 
+						WHEN auAtt.Id IS NOT NULL AND auAtt.ImportoPagato = auAtt.Importo THEN CAST(3 AS TINYINT) --Pagato
+						WHEN auAtt.Id IS NOT NULL AND auAtt.ImportoPagato = 0 AND auAtt.Importo > 0 THEN CAST(1 AS TINYINT) --Da Pagare
+						ELSE CAST(2 AS TINYINT) -- Parzialmente pagato
+					END As StatoPagamentoAbbonamentoAttivo
+			FROM #tblUsers u 
+				LEFT JOIN AbbonamentiUtenti auAtt ON auAtt.IdCliente = u.IdCliente AND auAtt.UserId = u.UserId 
+													AND auAtt.DataInizioValidita <= SYSDATETIME() AND  auAtt.DataCancellazione IS NULL 
+													AND auAtt.Scadenza > SYSDATETIME() -- consideriamo attivi solo i NON Cancellati e NON Scaduti e validi ad oggi
+		),
+		cte_abbonamenti_old AS(
+				SELECT u.IdCliente, 
+					   u.UserId,
+					   CASE
+							WHEN auOld.Id IS NOT NULL AND auOld.Scadenza < SYSDATETIME() THEN CAST(1 AS tinyint)
+							ELSE CAST (0 AS tinyint)
+					   END AS HasAbbonamentoScaduto,
+					   CASE
+							WHEN auOld.Id IS NOT NULL AND auOld.DataCancellazione IS NOT NULL THEN CAST(1 AS tinyint)
+							ELSE CAST (0 AS tinyint)
+					   END AS HasAbbonamentoCancellato
+				FROM #tblUsers u 
+					LEFT JOIN AbbonamentiUtenti auOld ON auOld.IdCliente = u.IdCliente AND auOld.UserId = u.UserId 
+														AND auOld.DataInizioValidita <= SYSDATETIME() AND 
+														((auOld.DataCancellazione IS NOT NULL) OR  (auOld.Scadenza < SYSDATETIME()))
+		),
+		cte_certificato as(
+			SELECT u.IdCliente,
+				   u.UserId,
+				   CASE 
+						WHEN c.Id IS NOT NULL AND c.DataScadenza > SYSDATETIME() AND c.DataCancellazione IS NULL THEN CAST(1 AS tinyint)
+						ELSE CAST(0 AS tinyint)
+				   END AS HasCertificatoValido,
+				   CASE 
+						WHEN c.Id IS NOT NULL AND c.DataScadenza < SYSDATETIME() AND c.DataCancellazione IS NULL THEN CAST(1 AS tinyint)
+						ELSE CAST(0 AS tinyint)
+				   END AS HasCertificatoScaduto
+			FROM #tblUsers u 
+				LEFT JOIN ClientiUtentiCertificati c ON u.IdCliente = c.IdCliente AND u.UserId = c.UserId
+		)
+		SELECT u.IdCliente,
+			   u.UserId,
+			   u.Cognome,
+			   u.Nome,
+			   u.UserDisplayName,
+			   u.DataCreazione,
+			   u.DataAggiornamento,
+			   u.DataCancellazione, -- sarà sempre NULL avendo escluso i cancellati nella query a monte
+
+			   abbAtt.HasAbbonamentoAttivo,
+			   abbAtt.StatoPagamentoAbbonamentoAttivo,
+			   abbOld.HasAbbonamentoCancellato,
+			   abbOld.HasAbbonamentoScaduto,
+			   cer.HasCertificatoScaduto,
+			   cer.HasCertificatoValido
+		FROM #tblUsers u
+			inner join (SELECT IdCliente, UserId, 
+							MAX(HasAbbonamentoAttivo) AS HasAbbonamentoAttivo, 
+							MIN(StatoPagamentoAbbonamentoAttivo) AS StatoPagamentoAbbonamentoAttivo
+						FROM cte_abbonamenti_att 
+						GROUP BY IdCliente, UserId
+						) abbAtt ON u.IdCliente = abbAtt.IdCliente AND u.UserId = abbAtt.UserId
+			inner join (SELECT IdCliente, UserId,
+								MAX(HasAbbonamentoScaduto) AS HasAbbonamentoScaduto,
+								MAX(HasAbbonamentoCancellato) AS HasAbbonamentoCancellato
+						FROM cte_abbonamenti_old
+						GROUP BY IdCliente, UserId
+						)abbOld ON u.IdCliente = abbOld.IdCliente AND u.UserId = abbOld.UserId
+			inner join (SELECT IdCliente, UserId,
+								MAX(HasCertificatoValido) AS HasCertificatoValido,
+								MAX(HasCertificatoScaduto) AS HasCertificatoScaduto
+						FROM cte_certificato
+						GROUP BY IdCliente, UserId
+						) cer ON u.IdCliente = cer.IdCliente AND u.UserId = cer.UserId
+	--Non riapplichiamo l'ordinamento perché la #tblUsers dovrebbe già essere ordinata con il criterio voluto
+	END
+	ELSE
+	BEGIN
+		SELECT u.IdCliente,
+				   u.UserId,
+				   u.Cognome,
+				   u.Nome,
+				   u.UserDisplayName,
+				   u.DataCreazione,
+				   u.DataAggiornamento,
+				   u.DataCancellazione -- sarà sempre NULL avendo escluso i cancellati nella query a monte
+			FROM #tblUsers u
+	END
 END
