@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Web.Models.Utils
+namespace Web.Models.Mappers
 {
     public static class UtentiMapper
     {
@@ -33,7 +33,10 @@ namespace Web.Models.Utils
                 DisplayName = utente.DisplayName,
                 IdCliente = utente.IdCliente,
                 IdUtente = utente.IdUtente,
-                DataAssociazione = utente.DataAssociazione
+                DataAssociazione = utente.DataAssociazione,
+                Abbonamenti = null,
+                Certificati = null,
+                Appuntamenti = null
             };
         }
 

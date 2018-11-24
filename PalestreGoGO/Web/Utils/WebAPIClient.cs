@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
+using Web.Models.Mappers;
 using Web.Models.Utils;
 
 namespace Web.Utils
@@ -431,6 +432,32 @@ namespace Web.Utils
             return result;
         }
 
+        public async Task<Models.AppuntamentoViewModel> GetAppuntamentiFoClienteUserAsync(int idCliente, string userId, string access_token, 
+                                                    DateTime? dtInizio=null, DateTime? dtFine = null, int pageNumber = 1, int pageSize = 25)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage();
+            var sb = new StringBuilder($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti?page={pageNumber}&pageSize={pageSize}");
+            if (dtInizio.HasValue)
+            {
+                sb.Append($"&dtInizio={dtInizio.Value.ToString("yyyyMMddHHmmss")}");
+            }
+            if (dtFine.HasValue)
+            {
+                sb.Append($"&dtFine={dtFine.Value.ToString("yyyyMMddHHmmss")}");
+            }
+            request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti?page={pageNumber}&pageSize={pageSize}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Method = HttpMethod.Get;
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            String responseString = await response.Content.ReadAsStringAsync();
+            //Sfruttiamo l'uguaglianza a livello di serializzazione tra i due modelli
+            //TODO: Verificare il tipo ritornato
+            var result = JsonConvert.DeserializeObject<Models.AppuntamentoViewModel>(responseString, _serializerSettings);
+            return result;
+        }
+
         public async Task SalvaAppuntamentoForCurrentUser(int idCliente, NuovoAppuntamentoApiModel appuntamento, string access_token)
         {
             HttpClient client = new HttpClient();
@@ -443,6 +470,12 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
         }
 
+        /// <summary>
+        /// Invocabile da un Utente per ottenere i propri appuntamenti
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="access_token"></param>
+        /// <returns></returns>
         public async Task<List<AppuntamentoUserApiModel>> GetAppuntamentiForCurrentUserAsync(string userId, string access_token)
         {
             HttpClient client = new HttpClient();
@@ -534,7 +567,7 @@ namespace Web.Utils
             return result.MapToClienteUtenteViewModel();
         }
 
-        public async Task<ClienteUtenteViewModel> GetUtenteCliente(int idCliente, string userId, string access_token)
+        public async Task<ClienteUtenteApiModel> GetUtenteCliente(int idCliente, string userId, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}");
             HttpClient client = new HttpClient();
@@ -544,7 +577,7 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
             string responseString = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ClienteUtenteApiModel>(responseString, _serializerSettings);
-            return result.MapToClienteUtenteViewModel();
+            return result;
         }
 
         public async Task DeleteAppuntamentoAsync(int idCliente, int idAppuntamento, string access_token)
@@ -621,6 +654,47 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
             string responseString = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<AbbonamentoUtenteApiModel>(responseString, _serializerSettings);
+            return result;
+        }
+
+        #endregion
+
+
+        #region CERTIFICATI UTENTI-CLIENTI
+
+        public async Task AddCertificatoUtenteClienteAsync(int idCliente, string userId, ClienteUtenteCertificatoApiModel certificato, string access_token)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati");
+            var content = new StringContent(JsonConvert.SerializeObject(certificato), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.RequestUri = uri;
+            request.Method = (!certificato.Id.HasValue) ? HttpMethod.Post : HttpMethod.Put;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Content = content;
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteCertificatoUtenteClienteAsync(int idCliente, string userId, int idCertificato, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/users/{userId}/certificati/{idCertificato}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<IEnumerable<ClienteUtenteCertificatoApiModel>> GetCertificatiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati?incExp={includeExpired}&incDel={includeDeleted}");
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<IEnumerable<ClienteUtenteCertificatoApiModel>>(responseString, _serializerSettings);
             return result;
         }
 

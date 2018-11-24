@@ -12,6 +12,7 @@ using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
@@ -26,16 +27,19 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IUsersManagementService _userManagementService;
         private readonly IClientiRepository _clientiRepo;
         private readonly IClientiUtentiRepository _clientiUtentiRepo;
+        private readonly IAppuntamentiRepository _appuntamentiRepo;
 
-        public ClientiUtentiController( IUsersManagementService userManagementService,
+        public ClientiUtentiController(IUsersManagementService userManagementService,
                                         ILogger<ClientiUtentiController> logger,
                                         IClientiRepository clientiRepo,
-                                        IClientiUtentiRepository clientiUtentiRepo)
+                                        IClientiUtentiRepository clientiUtentiRepo,
+                                        IAppuntamentiRepository appuntamentiRepo)
         {
-            this._logger = logger;
-            this._clientiRepo = clientiRepo;
-            this._userManagementService = userManagementService;
+            _logger = logger;
+            _clientiRepo = clientiRepo;
+            _userManagementService = userManagementService;
             _clientiUtentiRepo = clientiUtentiRepo;
+            _appuntamentiRepo = appuntamentiRepo;
         }
 
         #region Utenti Clienti
@@ -46,20 +50,20 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns></returns>
         [HttpGet()]
         public async Task<IActionResult> GetClientiUtenti([FromRoute] int idCliente,
-                                                          [FromQuery(Name ="stato")]bool includeStato = false,
-                                                          [FromQuery(Name ="page")]int page = 1,
+                                                          [FromQuery(Name = "stato")]bool includeStato = false,
+                                                          [FromQuery(Name = "page")]int page = 1,
                                                           [FromQuery(Name = "pageSize")]int pageSize = 25,
                                                           [FromQuery(Name = "sortby")]string sortby = "Cognome",
                                                           [FromQuery(Name = "asc")]bool asc = true)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             ClientiUtentiListaSortColumnDM sortCol;
-            if(!Enum.TryParse<ClientiUtentiListaSortColumnDM>(sortby, out sortCol))
+            if (!Enum.TryParse<ClientiUtentiListaSortColumnDM>(sortby, out sortCol))
             {
                 sortCol = ClientiUtentiListaSortColumnDM.Cognome;
             }
             SortOrderDM sortOrder = asc ? SortOrderDM.Ascending : SortOrderDM.Descending;
-            IEnumerable<UtenteClienteDM> utenti = await _clientiUtentiRepo.GetUtentiCliente(idCliente,includeStato,page, pageSize, sortCol, sortOrder);
+            IEnumerable<UtenteClienteDM> utenti = await _clientiUtentiRepo.GetUtentiCliente(idCliente, includeStato, page, pageSize, sortCol, sortOrder);
             var result = Mapper.Map<IEnumerable<UtenteClienteDM>, IEnumerable<ClienteUtenteApiModel>>(utenti);
             return Ok(result);
         }
@@ -74,32 +78,53 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="idCliente"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserDetails([FromRoute] int idCliente, [FromRoute(Name ="id")]string userId, [FromQuery(Name ="incStato")] bool includeStato = false)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserDetails([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId, [FromQuery(Name = "incStato")] bool includeStato = false)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             UtenteClienteDM utente = await _clientiUtentiRepo.GetUtenteCliente(idCliente, userId, includeStato);
             if (utente == null) return BadRequest(); //Se non l'ho trovato i parametri non sono corretit
             //Se ho trovato l'associazione utente-cliente, recupero i dettagli dell'utente
             AzureUser azUser = await _userManagementService.GetUserByIdAsync(userId);
-            if(azUser== null)
+            if (azUser == null)
             {
                 _logger.LogError($"Impossibile trovare l'utente [{userId}] associato al cliente [{idCliente}]");
-                return this.NotFound(); //Forse sarebbe più corretto un 500 invece di un 404
+                return NotFound(); //Forse sarebbe più corretto un 500 invece di un 404
             }
             var result = Mapper.Map<UtenteClienteDM, ClienteUtenteApiModel>(utente);
             result.TelephoneNumber = azUser.TelephoneNumber;
             //Se è cambiato qualcosa nei dati dell'utente su B2C, aggiorniamo i dati locali
-            if(!result.Nome.Equals(azUser.Nome) ||
+            if (!result.Nome.Equals(azUser.Nome) ||
                 !result.Cognome.Equals(azUser.Cognome) ||
                 !result.DisplayName.Equals(azUser.DisplayName))
             {
                 await _clientiUtentiRepo.AssociaUtenteAsync(idCliente, userId, azUser.Nome, azUser.Cognome, azUser.DisplayName);
             }
-            return Ok(result);            
+            return Ok(result);
         }
         #endregion
 
-
+        /// <summary>
+        /// Invocabile dall'owner di una struttura per ottenere tutti gli appuntamenti per un utente
+        /// </summary>
+        [HttpGet("{userId}/appuntamenti")]
+        public async Task<IActionResult> GetAppuntamentiForUser([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId,
+                                                            string dtInizio = null, string dtFine = null, int pageNumber = 1, int pageSize = 25)
+        {
+            if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
+            DateTime? dataInizio = null, dataFine = null;
+            DateTime appo;
+            if (string.IsNullOrWhiteSpace(dtInizio) && DateTime.TryParseExact(dtInizio, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out appo))
+            {
+                dataInizio = appo;
+            }
+            if (string.IsNullOrWhiteSpace(dtFine) && DateTime.TryParseExact(dtFine, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out appo))
+            {
+                dataFine = appo;
+            }
+            var dmData = await _appuntamentiRepo.GetAppuntamentiUtenteAsync(idCliente, userId, pageNumber, pageSize, dataInizio, dataFine);
+            //TODO: convertire in ApiModel e ritornare
+            return dmData
+        }
     }
 }

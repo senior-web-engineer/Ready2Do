@@ -132,6 +132,23 @@
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoDelete.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoList.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoGet.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Utenti_AppuntamentiList.sql" />
+    <Build Include="dbo\Views\vAppuntamenti.sql" />
+    <Build Include="dbo\Views\vAbbonamentiTransazioni.sql" />
+    <Build Include="dbo\Views\vAbbonamentiUtenti.sql" />
+    <Build Include="dbo\Views\vTipologieAbbonamenti.sql" />
+    <Build Include="dbo\Views\vTipologieClienti.sql" />
+    <Build Include="dbo\Views\vTipologieNotifiche.sql" />
+    <Build Include="dbo\Views\vTipologieLezioni.sql" />
+    <Build Include="dbo\Views\vTipologieImmagini.sql" />
+    <Build Include="dbo\Views\vSchedules.sql" />
+    <Build Include="dbo\Views\vRichiesteRegistrazione.sql" />
+    <Build Include="dbo\Views\vReservedRoutes.sql" />
+    <Build Include="dbo\Views\vNotifiche.sql" />
+    <Build Include="dbo\Views\vMailTemplates.sql" />
+    <Build Include="dbo\Views\vLocations.sql" />
+    <Build Include="dbo\Views\vClientiUtentiCertificati.sql" />
+    <Build Include="dbo\Views\vAppuntamentiFull.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

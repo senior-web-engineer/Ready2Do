@@ -92,8 +92,12 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                 .ReverseMap()
                 .ForMember(d => d.Stato, opt => opt.MapFrom(src => src.Stato))
                 .ForMember(d => d.UserRef, opt => opt.MapFrom(src => new UserReferenceDM(src.IdUtente)));
+            CreateMap<UtenteClienteCertificatoDM, ClienteUtenteCertificatoApiModel>()
+                .ForMember(d => d.UserId, opt => opt.MapFrom(src => src.User.UserId))
+                .ReverseMap()
+                .ForMember(d => d.User, opt => opt.MapFrom(src => new UserReferenceDM(src.UserId)));
 
-                
+
         }
 
     }

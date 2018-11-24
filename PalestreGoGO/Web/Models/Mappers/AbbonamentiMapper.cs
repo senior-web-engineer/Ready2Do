@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Web.Models.Utils
+namespace Web.Models.Mappers
 {
     public static class AbbonamentiMapper
     {
+        #region Tipologie Abbonamenti
         public static TipologiaAbbonamentoViewModel MapToWebViewModel(this TipologieAbbonamentiViewModel model)
         {
             if (model == null) return null;
@@ -59,7 +60,9 @@ namespace Web.Models.Utils
             }
             return result;
         }
+        #endregion
 
+        #region ABBONAMENTI UTENTI
         public static AbbonamentoUtenteApiModel MapToAPIModel(this AbbonamentoUtenteViewModel model)
         {
             if (model == null) return null;
@@ -78,7 +81,7 @@ namespace Web.Models.Utils
             return result;
         }
 
-        public static AbbonamentoUtenteApiModel MapToAPIModel(this EditAbbonamentoUtenteInputModel model)
+        public static AbbonamentoUtenteApiModel MapToAPIModel(this AbbonamentoUtenteEditViewModel model)
         {
             if (model == null) return null;
             var result = new AbbonamentoUtenteApiModel()
@@ -87,7 +90,7 @@ namespace Web.Models.Utils
                 Id = model.Id,
                 IdCliente = model.IdCliente,
                 IdTipoAbbonamento = model.IdTipoAbbonamento,
-                UserId = model.IdUtente,
+                UserId = model.UserId,
                 IngressiResidui = model.IngressiResidui,
                 Scadenza = model.Scadenza,
                 Importo = model.Importo,
@@ -98,7 +101,36 @@ namespace Web.Models.Utils
             return result;
         }
 
-        
+        public static AbbonamentoUtenteViewModel MapToViewModel(this AbbonamentoUtenteApiModel apiModel)
+        {
+            if (apiModel == null) return null;
+            var result = new AbbonamentoUtenteViewModel()
+            {
+                DataInizioValidita = apiModel.DataInizioValidita,
+                Id = apiModel.Id,
+                IdCliente = apiModel.IdCliente,
+                IdTipoAbbonamento = apiModel.IdTipoAbbonamento,
+                UserId = apiModel.UserId,
+                IngressiResidui = apiModel.IngressiResidui,
+                Scadenza = apiModel.Scadenza,
+                Importo = apiModel.Importo,
+                ImportoPagato  = apiModel.ImportoPagato,
+                IngressiIniziali = apiModel.IngressiIniziali,
+                DataCreazione = apiModel.DataCreazione,
+                NomeTipoAbbonamento = apiModel.TipoAbbonamento?.Nome                
+            };
+            return result;
+        }
+
+        public static IEnumerable<AbbonamentoUtenteViewModel> MapToViewModel(this IEnumerable<AbbonamentoUtenteApiModel> apiModels) {
+            if (apiModels == null) throw new ArgumentNullException(nameof(apiModels));                
+            foreach(var item in apiModels)
+            {
+                yield return item.MapToViewModel();
+            }
+        }
+        #endregion
+
     }
 
 }

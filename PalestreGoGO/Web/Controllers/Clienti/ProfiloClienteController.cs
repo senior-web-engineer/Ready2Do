@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Web.Services;
 using System.Net;
+using Web.Models.Mappers;
 
 namespace Web.Controllers
 {

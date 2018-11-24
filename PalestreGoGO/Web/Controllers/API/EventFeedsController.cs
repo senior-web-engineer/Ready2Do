@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
+using Web.Models.Mappers;
 using Web.Models.Utils;
 using Web.Utils;
 

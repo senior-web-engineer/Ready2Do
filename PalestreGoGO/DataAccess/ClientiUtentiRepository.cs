@@ -267,7 +267,6 @@ namespace PalestreGoGo.DataAccess
                 return await cn.QueryAsync<UtenteClienteCertificatoDM>(sql, new { idCliente, userId });
             }
         }
-
         #endregion
 
     }

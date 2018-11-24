@@ -9,7 +9,7 @@
         <div class="card-panel">
             <div class="row valign-wrapper">
                 <div class="col s2">
-                    <i class="large material-icons">person</i>
+                    <i class="m,edium material-icons">person</i>
                 </div>
                 <div class="col s10">
                     <div class="row">
@@ -52,9 +52,8 @@
                 <div class="col s10 offset-s1">
                     <ul id="tabDetCliente" class="tabs">
                         <li class="tab"><a href="#tabAbbonamento">Abbonamento</a></li>
-                        <li class="tab"><a href="">Certificati</a></li>
-                        <li class="tab"><a href="">Prenotazione</a></li>
-                        <li class="tab"><a href="">Storico</a></li>
+                        <li class="tab"><a href="#tabCertificati">Certificati</a></li>
+                        <li class="tab"><a href="#tabPrenotazioni">Prenotazione</a></li>
                     </ul>
                 </div>
             </div>
@@ -62,20 +61,31 @@
     </div>
 
 </div>
-@if (ViewBag.TabId == 0)
+@switch (ViewBag.TabId)
 {
-    <div id="tabAbbonamento">
-        <partial name="_UtenteViewAbbonamento" />
-    </div>
+    case 0:
+        <div id="tabAbbonamento">
+    
+            <partial name="_UtenteViewAbbonamento" model="null" /></div>
+        break;
+    case 1:
+        <div id="tabCertificati"><partial name="_UtenteCertificati" /></div>
+        break;
+    case 2:
+        <div id="tabPrenotazioni"><partial name="_UtentePrenotazioni" /></div>
+        break;
 }
 
-</div>
 
 @section Scripts{
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var elems = document.getElementById('tabDetCliente');
-            var instance = M.Tabs.init(elems, {});
+            var instance = M.Tabs.init(elems, { onShow = OnTabShow });
         });
+
+        function OnTabShow(self, content) {
+            alert('OnTabShow - SELF: ' + self + ' | content: ' + content);
+        }
     </script>
 }

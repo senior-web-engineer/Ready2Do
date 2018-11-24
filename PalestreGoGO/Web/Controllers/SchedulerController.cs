@@ -15,6 +15,7 @@ using Web.Configuration;
 using Newtonsoft.Json;
 using System.Text;
 using Web.Models.Utils;
+using Web.Models.Mappers;
 
 namespace Web.Controllers
 {

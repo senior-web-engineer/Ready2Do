@@ -1,0 +1,64 @@
+﻿@model AbbonamentoUtenteViewModel
+
+<div id="viewAbbonamentoContainer">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="IdTipoAbbonamento" />
+
+    <div class="row">
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Tipo Abbonamento:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.NomeTipoAbbonamento</span>
+        </div>
+        <div class="col s1 offset-s1">
+            <span class="r2d-value">Data inserimento:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.DataCreazione</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Valido dal:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.DataInizioValidita</span>
+        </div>
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Al:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.Scadenza</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Ingressi iniziali:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.IngressiIniziali</span>
+        </div>
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Ingressi Residui:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.IngressiResidui</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Importo dovuto:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.Importo</span>
+        </div>
+        <div class="col s1 offset-s1">
+            <span class="r2d-label">Ingressi Pagato:</span>
+        </div>
+        <div class="col s2">
+            <span class="r2d-value">@Model.ImportoPagato</span>
+        </div>
+    </div>
+</div>

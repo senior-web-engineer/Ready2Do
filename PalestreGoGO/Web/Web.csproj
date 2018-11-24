@@ -155,6 +155,9 @@
     <Content Update="Views\TipologieLezioni\_NoLezioni.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\UtentiCliente\Components\UtenteViewAbbonamenti.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\UtentiCliente\DettaglioUtenteCliente.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

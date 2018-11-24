@@ -39,5 +39,11 @@ namespace Web.Models
         //}
 
         //public AbbonamentoUtenteViewModel Abbonamento {get;set;}
+
+        public IList<AbbonamentoUtenteViewModel> Abbonamenti { get; set; }
+
+        public IList<CertificatUtenteViewModel> Certificati { get; set; }
+
+        public IList<AppuntamentoUtenteViewModel> Appuntamenti { get; set; }
     }
 }

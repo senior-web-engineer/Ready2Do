@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FuncSendUserMailConfirmation", "FuncSendUserMailConfirmation\FuncSendUserMailConfirmation.csproj", "{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModel", "DataModel\DataModel.csproj", "{3C53DD5C-71BA-4E36-A65A-F5FE9AD16A21}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{39A5DC7E-A1AF-4753-886E-3B3AE7380D22}"
@@ -28,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notifications", "{ACDF3030-0899-497A-8480-68F63A40E1AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuncNotificationHandler", "FuncNotificationHandler\FuncNotificationHandler.csproj", "{6AB54057-004B-45B8-9199-CAD46B1F7440}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FuncNotificationHandler", "FuncNotificationHandler\FuncNotificationHandler.csproj", "{6AB54057-004B-45B8-9199-CAD46B1F7440}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +34,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{566C4AB4-DEB5-4893-9603-BFD21E90B8FF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C53DD5C-71BA-4E36-A65A-F5FE9AD16A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3C53DD5C-71BA-4E36-A65A-F5FE9AD16A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C53DD5C-71BA-4E36-A65A-F5FE9AD16A21}.Release|Any CPU.ActiveCfg = Release|Any CPU

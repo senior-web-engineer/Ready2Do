@@ -133,5 +133,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntmento);
             return Ok();
         }
+
     }
 }

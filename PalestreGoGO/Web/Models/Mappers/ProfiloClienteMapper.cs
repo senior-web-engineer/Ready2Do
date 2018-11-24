@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Web.Models.Utils
+namespace Web.Models.Mappers
 {
     public static class ProfiloClienteMapper
     {

@@ -38,9 +38,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAbbonamento([FromRoute]int idCliente, [FromRoute] int id)
+        public async Task<IActionResult> GetAbbonamento([FromRoute]int idCliente, [FromRoute(Name ="id")] int idAbbonamento)
         {
-            var entity = await _repository.GetAbbonamentoAsync(idCliente, id);
+            var entity = await _repository.GetAbbonamentoAsync(idCliente, idAbbonamento);
             var result = Mapper.Map<UtenteClienteAbbonamentoDM, AbbonamentoViewModel>(entity);
             return Ok(result);
         }
@@ -67,15 +67,14 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("{idAbbonamento}")]
-        public async Task<IActionResult> DeleteAbbonamento([FromRoute]int idCliente, [FromRoute] int idAbbonamento)
+        [HttpDelete("{userId}/{idAbbonamento}")]
+        public async Task<IActionResult> DeleteAbbonamento([FromRoute]int idCliente, [FromRoute]string userId, [FromRoute] int idAbbonamento)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var entity = Mapper.Map<AbbonamentoUtenteApiModel, UtenteClienteAbbonamentoDM>(abbonamento);
-            await _repository.SaveAbbonamentoAsync(idCliente, entity);
+            await _repository.DeleteAbbonamentoAsync(idCliente, userId, idAbbonamento);
             return Ok();
         }
     }
