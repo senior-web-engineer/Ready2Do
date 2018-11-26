@@ -3,49 +3,17 @@
 @{
     Layout = "_LayoutClienti";
 }
-
 <div class="row">
     <div class="col s10 offset-s1">
         <div class="card-panel">
-            <div class="row valign-wrapper">
-                <div class="col s2">
-                    <i class="m,edium material-icons">person</i>
-                </div>
-                <div class="col s10">
-                    <div class="row">
-                        <div class="col s4">
-                            <span class="r2d-label">Nominativo: </span>
-                        </div>
-                        <div class="col s8">
-                            <span class="r2d-value">@Model.Cognome @Model.Nome</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s4">
-                            <span class="r2d-label">Nick: </span>
-                        </div>
-                        <div class="col s8">
-                            <span class="r2d-value">@Model.DisplayName</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s4">
-                            <span class="r2d-label">Email: </span>
-                        </div>
-                        <div class="col s8">
-                            <span class="r2d-value">@Model.Email</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s4">
-                            <span class="r2d-label">Telefono: </span>
-                        </div>
-                        <div class="col s8">
-                            <span class="r2d-value">@Model.NumTelefono</span>
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col s1 offset-s11 right-align">
+                    <a class="btn-floating waves-effect waves-light light-gray" asp-action="GetListaUtenti" asp-controller="UtentiCliente">
+                        <i class="material-icons">close</i>
+                    </a>
                 </div>
             </div>
+          
 
             <!-- TABS -->
             <div class="row">
@@ -55,37 +23,33 @@
                         <li class="tab"><a href="#tabCertificati">Certificati</a></li>
                         <li class="tab"><a href="#tabPrenotazioni">Prenotazione</a></li>
                     </ul>
+                    <div id="tabAbbonamento" class="col s12 @(ViewBag.TabId == 0 ? "active" : "")">
+                        <vc:utente-view-abbonamenti abbonamenti="@Model.Abbonamenti" id-cliente="@Model.UserInfo.IdCliente" user-id="@Model.UserInfo.IdUtente"></vc:utente-view-abbonamenti>
+                    </div>
+                    <div id="tabCertificati" class="col s12 @(ViewBag.TabId == 0 ? "active" : "")">
+                        <vc:utente-view-certificati certificati="@Model.Certificati" id-cliente="@Model.UserInfo.IdCliente" user-id="@Model.UserInfo.IdUtente"></vc:utente-view-certificati>
+                    </div>
+                    <div id="tabPrenotazioni" class="col s12 @(ViewBag.TabId == 0 ? "active" : "")">
+                        <vc:utente-view-appuntamenti appuntamenti="@Model.Appuntamenti" id-cliente="@Model.UserInfo.IdCliente" user-id="@Model.UserInfo.IdUtente"></vc:utente-view-appuntamenti>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
 </div>
-@switch (ViewBag.TabId)
-{
-    case 0:
-        <div id="tabAbbonamento">
-    
-            <partial name="_UtenteViewAbbonamento" model="null" /></div>
-        break;
-    case 1:
-        <div id="tabCertificati"><partial name="_UtenteCertificati" /></div>
-        break;
-    case 2:
-        <div id="tabPrenotazioni"><partial name="_UtentePrenotazioni" /></div>
-        break;
-}
+
 
 
 @section Scripts{
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var elems = document.getElementById('tabDetCliente');
-            var instance = M.Tabs.init(elems, { onShow = OnTabShow });
+            var instance = M.Tabs.init(elems, { onShow : OnTabShow });
         });
 
         function OnTabShow(self, content) {
-            alert('OnTabShow - SELF: ' + self + ' | content: ' + content);
+            //alert('OnTabShow - SELF: ' + self + ' | content: ' + content);
         }
     </script>
 }

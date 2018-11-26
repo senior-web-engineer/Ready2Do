@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Web.Configuration;
 using Web.Models;
+using Web.Models.Mappers;
 using Web.Services;
 using Web.Utils;
 
@@ -51,18 +52,8 @@ namespace Web.Controllers
             AppuntamentoUtenteViewModel appuntamento;
             foreach (var i in items)
             {
-                appuntamento = new AppuntamentoUtenteViewModel()
-                {
-                    Id = i.IdAppuntamento,
-                    DataCancellazione = i.DataOraCancellazione,
-                    ClienteUrlRoute = await _clientiResolver.GetRouteClienteFromIdAsync(i.IdCliente),
-                    DataOra = i.DataOra,
-                    DataOraIscrizione = i.DataOraIscrizione,
-                    Nome = i.Nome,
-                    NomeCliente = i.NomeCliente,
-                    Cancellabile = i.DataOra > DateTime.Now.AddMinutes(30),
-                    IdEvento = i.IdEvento
-                };
+               
+                appuntamento = i.MapToViewModel();
                 appuntamenti.Add(appuntamento);
             }
             return View(vm);

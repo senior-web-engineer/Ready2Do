@@ -129,6 +129,7 @@ namespace PalestreGoGo.DataAccess
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Clienti_Utenti_AppuntamentiList]";
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 100).Value = userId;
                 cmd.Parameters.Add("@pScheduleStartDate", SqlDbType.DateTime2).Value = dtInizioSchedule;

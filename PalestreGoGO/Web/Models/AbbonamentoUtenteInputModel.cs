@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
-    public class AbbonamentoUtenteEditViewModel
+    public class AbbonamentoUtenteInputModel
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
@@ -17,5 +17,6 @@ namespace Web.Models
         public short? IngressiResidui { get; set; }
         public decimal Importo { get; set; }
         public decimal ImportoPagato { get; set; }
+
     }
 }

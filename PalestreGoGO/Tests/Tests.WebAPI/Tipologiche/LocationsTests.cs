@@ -18,7 +18,7 @@ namespace Tests.WebAPI.Tipologiche
 {
     public class LocationsTestsFixture
     {
-        public LocationViewModel Location;
+        public LocationApiModel Location;
     }
 
     public class LocationsTests : BaseTipologicheTests, IClassFixture<LocationsTestsFixture>
@@ -50,7 +50,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Crea_location ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            _locationFixture.Location = new LocationViewModel()
+            _locationFixture.Location = new LocationApiModel()
             {
                 Nome = "Sala Rossa",
                 Descrizione = "Sala rossa per yoga",
@@ -72,7 +72,7 @@ namespace Tests.WebAPI.Tipologiche
             var controller = SetupController(user);
             var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var location = okResult.Value.Should().BeAssignableTo<LocationViewModel>().Subject;
+            var location = okResult.Value.Should().BeAssignableTo<LocationApiModel>().Subject;
             location.Id.Should().Be(_locationFixture.Location.Id);
             location.Nome.Should().Be(_locationFixture.Location.Nome);
             location.Descrizione.Should().Be(_locationFixture.Location.Descrizione);
@@ -110,7 +110,7 @@ namespace Tests.WebAPI.Tipologiche
             var controller = SetupController(user);
             var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _locationFixture.Location.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var tipoLezione = okResult.Value.Should().BeAssignableTo<LocationViewModel>().Subject;
+            var tipoLezione = okResult.Value.Should().BeAssignableTo<LocationApiModel>().Subject;
             tipoLezione.Id.Should().Be(_locationFixture.Location.Id);
             tipoLezione.Nome.Should().Be(_locationFixture.Location.Nome);
             tipoLezione.Descrizione.Should().Be(_locationFixture.Location.Descrizione);
@@ -136,7 +136,7 @@ namespace Tests.WebAPI.Tipologiche
             var controller = SetupController(user);
             var result = controller.Object.GetAll(Utils.ID_CLIENTE_TEST_1);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var locations = okResult.Value.Should().BeAssignableTo<IEnumerable<LocationViewModel>>().Subject;
+            var locations = okResult.Value.Should().BeAssignableTo<IEnumerable<LocationApiModel>>().Subject;
             locations.Count().Should().BeGreaterThan(0);
             var location = locations.Should().ContainSingle(tl => tl.Id == _locationFixture.Location.Id).Subject;
             location.Id.Should().Be(_locationFixture.Location.Id);

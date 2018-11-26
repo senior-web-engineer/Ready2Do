@@ -1,6 +1,7 @@
 ﻿CREATE VIEW [dbo].[vAppuntamentiFull]
 	AS 
  SELECT		   ap.Id,
+			   ap.UserId,
 			   ap.IdCliente,
 			   ap.DataPrenotazione,
 			   ap.DataCancellazione,

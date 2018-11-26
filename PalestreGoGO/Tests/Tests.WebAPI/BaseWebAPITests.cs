@@ -22,6 +22,7 @@ namespace Tests.WebAPI
                 Mapper.Initialize(x =>
                 {
                     x.AddProfile<DomainToViewModelMappingProfile>();
+                    x.AddProfile<DMToApiModelProfile>();
                 });
             }
         }

@@ -103,7 +103,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
     <PackageReference Include="Microsoft.Identity.Client" Version="2.2.0-preview" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.1.0-preview" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
   </ItemGroup>
 
@@ -143,6 +143,9 @@
     <Content Update="Views\Shared\Components\SideNav\Default.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Shared\Components\UserHeader\Default.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Shared\_Banner_MezzaPagina.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -155,19 +158,22 @@
     <Content Update="Views\TipologieLezioni\_NoLezioni.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\UtentiCliente\Components\UtenteViewAbbonamenti.cshtml">
+    <Content Update="Views\UtentiCliente\Components\UtenteViewAbbonamenti\UtenteViewAbbonamenti.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\UtentiCliente\Components\UtenteViewAppuntamenti\UtenteViewAppuntamenti.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\UtentiCliente\Components\UtenteViewCertificati\UtenteViewCertificati.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\UtentiCliente\DettaglioUtenteCliente.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\UtentiCliente\_UtenteTabAbbonamento.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Views\UtentiCliente\_UtenteViewAbbonamento.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\UtentiCliente\Components\UtenteEditAbbonamento.cshtml">
+    <Content Update="Views\UtentiCliente\Components\UtenteEditAbbonamento\UtenteEditAbbonamento.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\UtentiCliente\_NoUtenti.cshtml">

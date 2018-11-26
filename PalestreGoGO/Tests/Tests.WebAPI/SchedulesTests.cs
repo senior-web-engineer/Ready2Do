@@ -21,7 +21,7 @@ namespace Tests.WebAPI
 {
     public class SchedulesFixture
     {
-        public ScheduleViewModel Entity;
+        public ScheduleApiModel Entity;
         public PalestreGoGoDbContext DbContext;
     }
 
@@ -52,7 +52,7 @@ namespace Tests.WebAPI
         {
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            var schedule = new ScheduleViewModel()
+            var schedule = new ScheduleApiModel()
             {
                 IdCliente = Utils.ID_CLIENTE_TEST_1,
                 CancellabileFinoAl = DateTime.Now.AddDays(3),

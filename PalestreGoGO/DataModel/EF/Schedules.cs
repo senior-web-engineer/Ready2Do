@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PalestreGoGo.DataModel
 {
+    [Obsolete("Utilizzare ScheduleDM")]
     public partial class Schedules : BaseMultitenantEntity
     {
         public Schedules()

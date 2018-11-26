@@ -19,7 +19,7 @@ namespace Tests.WebAPI.Tipologiche
 {
     public class TipoLezioniTestsFixture
     {
-        public TipologieLezioniViewModel TipoLezione;
+        public TipologieLezioniApiModel TipoLezione;
     }
 
     public class TipoLezioniTests : BaseTipologicheTests, IClassFixture<TipoLezioniTestsFixture>
@@ -55,7 +55,7 @@ namespace Tests.WebAPI.Tipologiche
             output.WriteLine("Executing Crea_tipo_lezione ...");
             var user = Utils.GetGlobalAdminUser();
             var controller = SetupController(user);
-            _tipoLezioneFixture.TipoLezione = new TipologieLezioniViewModel()
+            _tipoLezioneFixture.TipoLezione = new TipologieLezioniApiModel()
             {
                 Nome = "Samba a gogo!",
                 Descrizione = "Lezioni di samba per tutti",
@@ -80,7 +80,7 @@ namespace Tests.WebAPI.Tipologiche
             var controller = SetupController(user);
             var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var tipoLezione = okResult.Value.Should().BeAssignableTo<TipologieLezioniViewModel>().Subject;
+            var tipoLezione = okResult.Value.Should().BeAssignableTo<TipologieLezioniApiModel>().Subject;
             tipoLezione.Id.Should().Be(_tipoLezioneFixture.TipoLezione.Id);
             tipoLezione.Nome.Should().Be(_tipoLezioneFixture.TipoLezione.Nome);
             tipoLezione.Descrizione.Should().Be(_tipoLezioneFixture.TipoLezione.Descrizione);
@@ -123,7 +123,7 @@ namespace Tests.WebAPI.Tipologiche
             var controller = SetupController(user);
             var result = controller.Object.GetOne(Utils.ID_CLIENTE_TEST_1, _tipoLezioneFixture.TipoLezione.Id.Value);
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var tipoLezione = okResult.Value.Should().BeAssignableTo<TipologieLezioniViewModel>().Subject;
+            var tipoLezione = okResult.Value.Should().BeAssignableTo<TipologieLezioniApiModel>().Subject;
             tipoLezione.Id.Should().Be(_tipoLezioneFixture.TipoLezione.Id);
             tipoLezione.Nome.Should().Be(_tipoLezioneFixture.TipoLezione.Nome);
             tipoLezione.Descrizione.Should().Be(_tipoLezioneFixture.TipoLezione.Descrizione);
@@ -152,7 +152,7 @@ namespace Tests.WebAPI.Tipologiche
             var controller = SetupController(user);
             var result = controller.Object.GetList(Utils.ID_CLIENTE_TEST_1).Result;
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var tipiLezioni = okResult.Value.Should().BeAssignableTo<IEnumerable<TipologieLezioniViewModel>>().Subject;
+            var tipiLezioni = okResult.Value.Should().BeAssignableTo<IEnumerable<TipologieLezioniApiModel>>().Subject;
             tipiLezioni.Count().Should().BeGreaterThan(1);
             var tipoLezione = tipiLezioni.Should().ContainSingle(tl => tl.Id == _tipoLezioneFixture.TipoLezione.Id).Subject;
             tipoLezione.Id.Should().Be(_tipoLezioneFixture.TipoLezione.Id);

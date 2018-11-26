@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PalestreGoGo.WebAPIModel;
@@ -69,12 +70,12 @@ namespace Web.Controllers.Clienti
             var vm = utente.MapToClienteUtenteViewModel();
             var tAbb = _apiClient.GetAbbonamentiForUserAsync(idCliente, userId, accessToken, true);
             var tCert = _apiClient.GetCertificatiForUserAsync(idCliente, userId, accessToken, true, false);
-            var tApp = _apiClient.GetAppuntamentiForCurrentUserAsync()
-            Task.WaitAll(new Task[] { tAbb, tCert });
+            var tApp = _apiClient.GetAppuntamentiForUserAsync(idCliente, userId, accessToken);
+            Task.WaitAll(new Task[] { tAbb, tCert, tApp });
             vm.Abbonamenti = tAbb.Result?.MapToViewModel()?.ToList() ?? new List<AbbonamentoUtenteViewModel>();
             vm.Certificati = tCert.Result?.MapToViewModel()?.ToList() ?? new List<CertificatUtenteViewModel>();
-            vm.Appuntamenti 
-            return View("DettaglioUtenteCliente", utente);
+            vm.Appuntamenti = tApp.Result?.MapToViewModel()?.ToList() ?? new List<AppuntamentoUtenteViewModel>();
+            return View("DettaglioUtenteCliente", vm);
         }
 
         #region Gestione Abbonamenti Utenti
@@ -136,10 +137,48 @@ namespace Web.Controllers.Clienti
             }
         }
 
-        [HttpPost("{userId}/abbonamenti/add")]
-        public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
+
+        
+        [HttpGet("{userId}/abbonamenti/{id}")]
+        public async Task<IActionResult> EditAbbonamentoUtente([FromRoute(Name = "cliente")]string urlRoute,
                                                               [FromRoute(Name = "userId")]string userId,
-                                                              [FromForm]AbbonamentoUtenteEditViewModel model)
+                                                              [FromRoute(Name ="id")]int id)
+        {
+            //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
+            //      oppure se la scelta del tipo avviene nella view
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ViewData["Utente"] = utente.MapToUserHeaderViewModel();
+            ViewData["IdCliente"] = idCliente;
+            var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+            List<SelectListItem> items = new List<SelectListItem>();
+            foreach(var t in tipologie)
+            {
+                items.Add(new SelectListItem(t.Nome, t.Id.ToString()));
+            }
+            ViewData["TipologieAbbonamenti"] = items;
+            AbbonamentoUtenteViewModel vm = null;
+            if (id > 0)
+            {
+                vm = (await _apiClient.GetAbbonamentoAsync(idCliente, id, accessToken)).MapToViewModel();
+            }
+            else
+            {
+                vm = new AbbonamentoUtenteViewModel
+                {
+                    IdCliente = idCliente,
+                    UserId = userId,
+                };
+            }
+            return View("EditAbbonamento", vm);
+        }
+
+
+        [HttpPost("{userId}/abbonamenti")]
+        public async Task<IActionResult> SaveAbbonamentoUtente([FromRoute(Name = "cliente")]string urlRoute,
+                                                              [FromRoute(Name = "userId")]string userId,
+                                                              [FromForm]AbbonamentoUtenteInputModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -149,10 +188,41 @@ namespace Web.Controllers.Clienti
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
             await _apiClient.EditAbbonamentoClienteAsync(idCliente, model.MapToAPIModel(), accessToken);
-            return RedirectToAction("GetUtentiCliente", "Clienti", new { cliente = urlRoute });
+            return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 0 });
         }
-
         #endregion
 
+        #region CERTIFICATI
+        [HttpGet("{userId}/certificati/add")]
+        public async Task<IActionResult> AddCertificatoToUser([FromRoute(Name = "cliente")]string urlRoute,
+                                                              [FromRoute(Name = "userId")]string userId)
+        {
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var vm = new CertificatUtenteViewModel
+            {
+                IdCliente = idCliente,
+                UserId = userId,
+            };
+            return View("NuovoCertificato");
+        }
+
+        [HttpPost("{userId}/certificati/add")]
+        public async Task<IActionResult> PostAddCertificatoToUser([FromRoute(Name = "cliente")]string urlRoute,
+                                                              [FromRoute(Name = "userId")]string userId,
+                                                              [FromForm] CertificatUtenteViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ViewComponent(typeof(UtenteAddAbbonamentoViewComponent), model);
+            }
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
+            await _apiClient.AddCertificatoUtenteClienteAsync(idCliente, userId, model.MapToApiModel(), accessToken);
+            return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 1 });
+        }
+
+
+        #endregion
     }
 }

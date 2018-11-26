@@ -81,7 +81,7 @@ namespace Web.Models.Mappers
             return result;
         }
 
-        public static AbbonamentoUtenteApiModel MapToAPIModel(this AbbonamentoUtenteEditViewModel model)
+        public static AbbonamentoUtenteApiModel MapToAPIModel(this AbbonamentoUtenteInputModel model)
         {
             if (model == null) return null;
             var result = new AbbonamentoUtenteApiModel()

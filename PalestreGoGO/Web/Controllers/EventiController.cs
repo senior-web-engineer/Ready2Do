@@ -107,7 +107,7 @@ namespace Web.Controllers
             }
 
                 //TODO: Verificare che la data cancellazione sia antecedente la data evento e le eventuali
-                ScheduleViewModel apiVM = new ScheduleViewModel()
+                ScheduleApiModel apiVM = new ScheduleApiModel()
             {
                 CancellabileFinoAl = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value),
                 DataOraInizio = (evento.Data.Value).Add(evento.OraInizio.Value),
@@ -204,7 +204,7 @@ namespace Web.Controllers
         }
 
 
-        private EventoViewModel internalBuildViewModel(ScheduleDetailsViewModel apiModel)
+        private EventoViewModel internalBuildViewModel(ScheduleDetailedApiModel apiModel)
         {
             EventoViewModel vm = new EventoViewModel()
             {

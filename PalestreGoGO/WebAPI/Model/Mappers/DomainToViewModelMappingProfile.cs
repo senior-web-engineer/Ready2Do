@@ -14,14 +14,14 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
         {
             CreateMap<TipologiaCliente, TipologiaClienteViewModel>();
             CreateMap<TipologieImmagini, TipologieImmaginiViewModel>();
-            CreateMap<TipologieLezioni, TipologieLezioniViewModel>()
+            CreateMap<TipologieLezioni, TipologieLezioniApiModel>()
                 .ReverseMap()
                 .ForPath(x => x.IdClienteNavigation, x => x.Ignore());
             CreateMap<TipologieAbbonamenti, TipologieAbbonamentiViewModel>()
                 .ReverseMap()
                 .ForPath(x => x.IdClienteNavigation, x => x.Ignore())
                 .ForPath(x => x.AbbonamentiUtenti, x => x.Ignore());
-            CreateMap<Locations, LocationViewModel>()
+            CreateMap<Locations, LocationApiModel>()
                 .ReverseMap()
                 .ForPath(x => x.IdClienteNavigation, x => x.Ignore())
                 .ForPath(x => x.Schedules, x => x.Ignore());
@@ -57,11 +57,11 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                                             src.ClientiImmagini.Where(i => !i.IdTipoImmagine.Equals(Constants.TIPOIMMAGINE_SFONDO)).ToList())))
                 .ForMember(d => d.OrarioApertura, opt => opt.Ignore()); //Skip mapping orario apertura, la facciamo a mano
 
-            CreateMap<Schedules, ScheduleViewModel>()
+            CreateMap<Schedules, ScheduleApiModel>()
                 .ReverseMap()
                 .ForPath(x => x.Cliente, x => x.Ignore());
 
-            CreateMap<Schedules, ScheduleDetailsViewModel>()
+            CreateMap<Schedules, ScheduleDetailedApiModel>()
                 .ReverseMap()
                 .ForPath(x => x.PostiResidui, opt => opt.MapFrom(src => src.PostiDisponibili)); // PostiResidui == PostiDisponibili
                                                                                                 //                .ForPath(x => x.TipologiaLezione, opt => opt.MapFrom(src => src.TipologiaLezione));

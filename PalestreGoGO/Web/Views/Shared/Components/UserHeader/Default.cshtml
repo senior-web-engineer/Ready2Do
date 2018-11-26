@@ -1,0 +1,43 @@
+﻿@model UserHeaderViewModel
+
+<div class="row">
+    <div class="col s2">
+        <i class="medium material-icons">person</i>
+    </div>
+    <div class="col s10">
+        <div class="row">
+            <div class="col s5">
+                <span class="r2d-label">Nominativo: &nbsp;&nbsp;&nbsp;</span>
+                <span class="r2d-value">@Model.Cognome @Model.Nome</span>
+            </div>
+            @*<div class="col s8">
+                    <span class="r2d-value">@Model.Cognome @Model.Nome</span>
+                </div>*@
+            @*</div>
+                <div class="row">*@
+            <div class="col s5">
+                <span class="r2d-label">Nick: &nbsp;&nbsp;&nbsp;</span>
+                <span class="r2d-value">@Model.DisplayName</span>
+            </div>
+            @*<div class="col s8">
+                    <span class="r2d-value">@Model.DisplayName</span>
+                </div>*@
+        </div>
+        <div class="row">
+            <div class="col s4">
+                <span class="r2d-label">Email: </span>
+            </div>
+            <div class="col s8">
+                <span class="r2d-value">@Model.Email</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s4">
+                <span class="r2d-label">Telefono: </span>
+            </div>
+            <div class="col s8">
+                <span class="r2d-value">@Model.NumTelefono</span>
+            </div>
+        </div>
+    </div>
+</div>

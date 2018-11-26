@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -120,30 +121,15 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet("{userId}/appuntamenti")]
-        public IActionResult GetAppuntamentiForUser([FromRoute] string userId, [FromQuery] bool includePast = false)
+        public async Task<IActionResult> GetAppuntamentiForUser([FromRoute] string userId, [FromQuery] bool includePast = false)
         {
             //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
             if (string.IsNullOrWhiteSpace(User.UserId()) || !User.UserId().Equals(userId))
             {
                 return Forbid();
             }
-
-            var result = new List<AppuntamentoUserApiModel>();
-            var appuntamenti = _repositoryAppuntamenti.GetAppuntamentiForUser(userId, includePast = false);
-            foreach (var a in appuntamenti)
-            {
-                result.Add(new AppuntamentoUserApiModel()
-                {
-                    DataOra = a.Schedule.DataOraInizio,
-                    DataOraCancellazione = a.DataCancellazione,
-                    DataOraIscrizione = a.DataPrenotazione,
-                    IdAppuntamento = a.Id,
-                    IdCliente = a.IdCliente,
-                    IdEvento = a.ScheduleId,
-                    Nome = a.Schedule.TipologiaLezione.Nome,
-                    NomeCliente = a.Cliente.Nome
-                });
-            }
+            var appuntamenti = await _repositoryAppuntamenti.GetAppuntamentiUtenteAsync(User.UserId(), dtInizioSchedule: DateTime.Now);
+            var result = Mapper.Map<IEnumerable<AppuntamentoUserApiModel>>(appuntamenti);
             return Ok(result);
         }
 

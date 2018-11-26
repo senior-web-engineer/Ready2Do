@@ -91,7 +91,7 @@ BEGIN
 					OFFSET @pPageSize * (@pPageNumber - 1) ROWS
 					FETCH NEXT @pPageSize ROWS ONLY';
 
-	EXEC sp_executesql @sql, N'@pPageSize int, @pPageNumber int, @pIdCliente int, @pUserId VARCHAR(100), @pScheduleStartDate DATETIME(2), @pScheduleEndDate DATETIME(2)', 
+	EXEC sp_executesql @sql, N'@pPageSize int, @pPageNumber int, @pIdCliente int, @pUserId VARCHAR(100), @pScheduleStartDate DATETIME2(2), @pScheduleEndDate DATETIME2(2)', 
 						@pPageSize=@pPageSize, @pPageNumber=@pPageNumber, @pIdCliente=@pIdCliente, @pUserId=@pUserId, @pScheduleStartDate=@pScheduleStartDate, @pScheduleEndDate=@pScheduleEndDate
 	
 END

@@ -1,0 +1,101 @@
+﻿@model UtenteViewAbbonamentiViewModel
+
+<div id="viewAbbonamentiContainer" class="row">
+    @if (Model != null && Model.Abbonamenti != null && Model.Abbonamenti.Count > 0)
+    {
+        <ul class="collapsible">
+            @foreach (var a in Model.Abbonamenti)
+            {
+                <li>
+                    <div class="collapsible-header">
+                        <span class="r2d-value">@a.NomeTipoAbbonamento</span>
+                        <span class="r2d-value">@a.Scadenza</span>
+                    </div>
+                    <div class="collapsible-body">
+                        <div class="row">
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Tipo Abbonamento:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.NomeTipoAbbonamento</span>
+                            </div>
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-value">Data inserimento:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.DataCreazione</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Valido dal:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.DataInizioValidita</span>
+                            </div>
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Al:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.Scadenza</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Ingressi iniziali:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.IngressiIniziali</span>
+                            </div>
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Ingressi Residui:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.IngressiResidui</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Importo dovuto:</span>
+                            </div>
+                            <div class="col s2">EditAbbonamentoUtente
+                                <span class="r2d-value">@a.Importo</span>
+                            </div>
+                            <div class="col s1 offset-s1">
+                                <span class="r2d-label">Ingressi Pagato:</span>
+                            </div>
+                            <div class="col s2">
+                                <span class="r2d-value">@a.ImportoPagato</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    @*<input type="hidden" asp-for="a.Id" />
+                        <input type="hidden" asp-for="a.UserId" />
+                        <input type="hidden" asp-for="a.IdTipoAbbonamento" />*@
+
+
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title center"><strong>Nessun abbonamento per l'utente</strong></span>
+                <br />
+                <p>Sembrerebbe che al momento l'utente non abbia nessun abbonamento associato.</p>
+                <br />
+                <p>Aggiungerne uno per abilitare l'utente ad iscriversi ai propri corsi.</p>
+                <br />
+                <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@Model.UserId"  asp-route-id="-1" class="btn-floating halfway-fab waves-effect waves-light red">
+                    <i class="material-icons">add</i>
+                </a>
+            </div>
+            @*<div class="card-action">
+                    <a href="#">This is a link</a>
+                </div>*@
+        </div>
+    }
+</div>

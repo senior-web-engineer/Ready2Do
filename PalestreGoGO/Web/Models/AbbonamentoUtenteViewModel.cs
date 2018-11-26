@@ -21,6 +21,6 @@ namespace Web.Models
         public DateTime? DataCancellazione { get; set; }
         public DateTime? DataCreazione { get; set; }
 
-        public IEnumerable<KeyValuePair<int, string>> TipologieAbbonamento { get; set; }
+        //public IEnumerable<KeyValuePair<int, string>> TipologieAbbonamento { get; set; }
     }
 }

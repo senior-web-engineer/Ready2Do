@@ -41,20 +41,20 @@ else
     @foreach (var s in Model)
     {
         <div class="row">
-            <div class="col s4 offset-s1 l2 offset-l1" data-id-item="@s.IdUtente">@s.Cognome @s.Nome  </div>
-            <div class="col s2 l2 ">@s.DataAssociazione</div>
+            <div class="col s4 offset-s1 l2 offset-l1" data-id-item="@s.UserInfo.IdUtente">@s.UserInfo.Cognome @s.UserInfo.Nome  </div>
+            <div class="col s2 l2 ">@s.UserInfo.DataAssociazione</div>
             <div class="col s3 l2">
-                @if (s.Stato != ClienteUtenteStatoViewModel.Unknown)
+                @if (s.UserInfo.Stato != ClienteUtenteStatoViewModel.Unknown)
                 {
-                    @if (!s.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
+                    @if (!s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
                     {
                         <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente non ha nessun Abbonamento Attivo">do_not_disturb_alt</i>
                     }
-                    else if (s.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
+                    else if (s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
                     {
                         <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente ha un abbonamento Attivo">done</i>
                     }
-                    @if (s.Stato.HasFlag(ClienteUtenteStatoViewModel.PagamentoDovuto))
+                    @if (s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.PagamentoDovuto))
                     {
                         <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente ha dei pagamenti in sospeso">euro_symbol</i>
                     }
@@ -62,7 +62,7 @@ else
                     {
                         <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente è in regola con i pagamenti">euro_symbol</i>
                     }
-                    @if (!s.Stato.HasFlag(ClienteUtenteStatoViewModel.CertificatoValido))
+                    @if (!s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.CertificatoValido))
                     {
                         <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente non ha un certificato valido">local_hospital</i>
                     }
@@ -92,7 +92,7 @@ else
                     }*@
             </div>
             <div class="col s2 l1">
-                <a asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.IdUtente">
+                <a asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.UserInfo.IdUtente">
                     <i class="material-icons blue-text">account_circle</i>
                 </a>
             </div>

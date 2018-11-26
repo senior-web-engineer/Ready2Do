@@ -320,29 +320,29 @@ namespace Web.Utils
 
         #endregion
 
-        public async Task<IEnumerable<ScheduleDetailsViewModel>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
+        public async Task<IEnumerable<ScheduleDetailedApiModel>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToString("yyyyMMddTHHmmss")}&ed={end.ToString("yyyyMMddTHHmmss")}&lid={idLocation}");
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(uri); ;
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<ScheduleDetailsViewModel>>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<IEnumerable<ScheduleDetailedApiModel>>(responseString, _serializerSettings);
             return result;
         }
 
-        public async Task<ScheduleDetailsViewModel> GetScheduleAsync(int idCliente, int idEvento)
+        public async Task<ScheduleDetailedApiModel> GetScheduleAsync(int idCliente, int idEvento)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}");
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(uri); ;
             response.EnsureSuccessStatusCode();
             String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ScheduleDetailsViewModel>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<ScheduleDetailedApiModel>(responseString, _serializerSettings);
             return result;
         }
 
-        public async Task SaveSchedule(int idCliente, ScheduleViewModel schedule, string access_token)
+        public async Task SaveSchedule(int idCliente, ScheduleApiModel schedule, string access_token)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage();
@@ -432,7 +432,7 @@ namespace Web.Utils
             return result;
         }
 
-        public async Task<Models.AppuntamentoViewModel> GetAppuntamentiFoClienteUserAsync(int idCliente, string userId, string access_token, 
+        public async Task<Models.AppuntamentoViewModel> GetAppuntamentiForClienteUserAsync(int idCliente, string userId, string access_token, 
                                                     DateTime? dtInizio=null, DateTime? dtFine = null, int pageNumber = 1, int pageSize = 25)
         {
             HttpClient client = new HttpClient();
@@ -481,6 +481,29 @@ namespace Web.Utils
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage();
             request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/{userId}/appuntamenti");
+            request.Method = HttpMethod.Get;
+            if (access_token != null)
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            }
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<AppuntamentoUserApiModel>>(responseString, _serializerSettings);
+            return result;
+        }
+
+        /// <summary>
+        /// Invocabile da un Utente per ottenere i propri appuntamenti
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="access_token"></param>
+        /// <returns></returns>
+        public async Task<List<AppuntamentoUserApiModel>> GetAppuntamentiForUserAsync(int idCliente, string userId, string access_token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti");
             request.Method = HttpMethod.Get;
             if (access_token != null)
             {

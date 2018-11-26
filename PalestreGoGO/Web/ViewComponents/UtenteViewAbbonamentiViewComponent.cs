@@ -21,9 +21,15 @@ namespace Web.ViewComponents
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(IList<AbbonamentoUtenteViewModel> abbonamenti)
+        public async Task<IViewComponentResult> InvokeAsync(IList<AbbonamentoUtenteViewModel> abbonamenti, string userId, int idCliente)
         {
-            return View("UtenteViewAbbonamenti", abbonamenti);
+            UtenteViewAbbonamentiViewModel vm = new UtenteViewAbbonamentiViewModel()
+            {
+                Abbonamenti = abbonamenti,
+                IdCliente = idCliente,
+                UserId = userId
+            };
+            return View("UtenteViewAbbonamenti", vm);
         }
     }
 }

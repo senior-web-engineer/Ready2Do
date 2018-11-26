@@ -41,7 +41,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             //}
             var tipoLezioni = await _repository.GetListAsync(idCliente, sortColumn, (sortType ?? "asc").ToLowerInvariant() == "asc", pageNumber, pageSize);
-            var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniViewModel>>(tipoLezioni);
+            var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniApiModel>>(tipoLezioni);
             return new OkObjectResult(result);
         }
 
@@ -59,13 +59,13 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var result = Mapper.Map<TipologieLezioni, TipologieLezioniViewModel>(tipoLezione);
+            var result = Mapper.Map<TipologieLezioni, TipologieLezioniApiModel>(tipoLezione);
             return new OkObjectResult(result);
         }
 
 
         [HttpPost()]
-        public async Task<IActionResult> CreateAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public async Task<IActionResult> CreateAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniApiModel model)
         {
 
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
@@ -77,7 +77,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
+            var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
             m.IdCliente = idCliente;
             await _repository.AddAsync(idCliente, m);
             //return CreatedAtAction("GetTipoLezione", new { idCliente, id = m.Id });
@@ -85,7 +85,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPut()]
-        public async Task<IActionResult> ModifyAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniViewModel model)
+        public async Task<IActionResult> ModifyAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniApiModel model)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -96,7 +96,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniViewModel, TipologieLezioni>(model);
+            var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
             //var oldEntity = _repository.GetSingle(idCliente, m.Id);
             //if (oldEntity == null)
             //{

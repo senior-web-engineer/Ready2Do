@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
@@ -111,6 +112,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetAppuntamentiForUser([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId,
                                                             string dtInizio = null, string dtFine = null, int pageNumber = 1, int pageSize = 25)
         {
+            IEnumerable<AppuntamentoUserApiModel> result;
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             DateTime? dataInizio = null, dataFine = null;
             DateTime appo;
@@ -123,8 +125,8 @@ namespace PalestreGoGo.WebAPI.Controllers
                 dataFine = appo;
             }
             var dmData = await _appuntamentiRepo.GetAppuntamentiUtenteAsync(idCliente, userId, pageNumber, pageSize, dataInizio, dataFine);
-            //TODO: convertire in ApiModel e ritornare
-            return dmData
+            result = Mapper.Map<IEnumerable<AppuntamentoUserApiModel>>(dmData);
+            return Ok(result);
         }
     }
 }

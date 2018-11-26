@@ -29,11 +29,11 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddSchedule([FromRoute]int idCliente, [FromBody] ScheduleViewModel model)
+        public async Task<IActionResult> AddSchedule([FromRoute]int idCliente, [FromBody] ScheduleApiModel model)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             if (!ModelState.IsValid) return BadRequest();
-            var entity = Mapper.Map<ScheduleViewModel, Schedules>(model);
+            var entity = Mapper.Map<ScheduleApiModel, Schedules>(model);
             entity.PostiResidui = entity.PostiDisponibili;
             await _repository.AddScheduleAsync(idCliente, entity);
             return Ok(entity.Id);
@@ -55,7 +55,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetSchedule([FromRoute]int idCliente, [FromRoute] int id)
         {
             var schedule = await _repository.GetScheduleAsync(idCliente, id);
-            var result = Mapper.Map<Schedules, ScheduleViewModel>(schedule);
+            var result = Mapper.Map<Schedules, ScheduleApiModel>(schedule);
             return Ok(result);
         }
 
@@ -98,7 +98,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate);
             }
-            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailsViewModel>>(schedule);
+            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailedApiModel>>(schedule);
             return Ok(result);
         }
 
@@ -111,10 +111,10 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPut()]
-        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleViewModel schedule)
+        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleApiModel schedule)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            var entity = Mapper.Map<ScheduleViewModel, Schedules>(schedule);
+            var entity = Mapper.Map<ScheduleApiModel, Schedules>(schedule);
             await _repository.UpdateSchedule(idCliente, entity);
             return Ok();
         }

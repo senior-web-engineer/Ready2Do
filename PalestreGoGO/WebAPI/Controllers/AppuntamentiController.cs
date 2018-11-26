@@ -88,6 +88,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
         }
 
+
         [HttpPost()]
         public async Task<IActionResult> AddAppuntamento([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoApiModel model)
         {

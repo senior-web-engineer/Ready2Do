@@ -9,7 +9,7 @@ namespace Web.Models.Mappers
     public static class SchedulesMapper
     {
 
-        public static SchedulerEventViewModel[] MapToSchedulerEventViewModel(this IEnumerable<ScheduleDetailsViewModel> schedules) {
+        public static SchedulerEventViewModel[] MapToSchedulerEventViewModel(this IEnumerable<ScheduleDetailedApiModel> schedules) {
             return schedules.Select(s => new SchedulerEventViewModel()
             {
                 Id = s.Id,

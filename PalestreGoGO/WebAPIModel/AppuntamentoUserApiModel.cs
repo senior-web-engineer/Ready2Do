@@ -8,18 +8,13 @@ namespace PalestreGoGo.WebAPIModel
     {
         public int IdAppuntamento { get; set; }
 
-        public int IdEvento { get; set; }
-
-        public string Nome { get; set; }
-
         public int IdCliente { get; set; }
+        public DateTime DataPrenotazione { get; set; }
+        public DateTime? DataCancellazione { get; set; }
+        public int IdAbbonamento { get; set; }
+        public string Nominativo { get; set; }
+        public string Note { get; set; }
 
-        public string NomeCliente { get; set; }
-
-        public DateTime DataOra { get; set; }
-
-        public DateTime DataOraIscrizione { get; set; }
-
-        public DateTime? DataOraCancellazione { get; set; }
+        public ScheduleDetailedApiModel Schedule { get; set; }
     }
 }

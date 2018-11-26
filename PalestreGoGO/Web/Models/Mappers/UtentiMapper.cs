@@ -25,6 +25,29 @@ namespace Web.Models.Mappers
             if (utente == null) return null;
             return new ClienteUtenteViewModel()
             {
+                UserInfo = new UserHeaderViewModel()
+                {
+                    Nome = utente.Nome,
+                    Cognome = utente.Cognome,
+                    Email = utente.Email,
+                    NumTelefono = utente.TelephoneNumber,
+                    Stato = (ClienteUtenteStatoViewModel)((int)utente.Stato),
+                    DisplayName = utente.DisplayName,
+                    IdCliente = utente.IdCliente,
+                    IdUtente = utente.IdUtente,
+                    DataAssociazione = utente.DataAssociazione,
+                },
+                Abbonamenti = null,
+                Certificati = null,
+                Appuntamenti = null
+            };
+        }
+
+        public static UserHeaderViewModel MapToUserHeaderViewModel(this ClienteUtenteApiModel utente)
+        {
+            if (utente == null) return null;
+            return new UserHeaderViewModel()
+            {
                 Nome = utente.Nome,
                 Cognome = utente.Cognome,
                 Email = utente.Email,
@@ -34,11 +57,9 @@ namespace Web.Models.Mappers
                 IdCliente = utente.IdCliente,
                 IdUtente = utente.IdUtente,
                 DataAssociazione = utente.DataAssociazione,
-                Abbonamenti = null,
-                Certificati = null,
-                Appuntamenti = null
             };
         }
+
 
         public static ClienteFollowed MapToClienteFollowed(this ClienteFollowedApiModel cf)
         {

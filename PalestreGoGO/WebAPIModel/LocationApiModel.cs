@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
-    public class LocationViewModel
+    public class LocationApiModel
     {
         //[JsonProperty("id")]
         //[JsonRequired]

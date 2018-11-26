@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
-    public class ScheduleViewModel
+    public class ScheduleApiModel
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
@@ -15,6 +15,7 @@ namespace PalestreGoGo.WebAPIModel
         public DateTime DataOraInizio { get; set; }
         public string Istruttore { get; set; }
         public int PostiDisponibili { get; set; }
+        public int? PostiResidui { get; set; }
         public DateTime CancellabileFinoAl { get; set; }
         public string Note { get; set; }
     }

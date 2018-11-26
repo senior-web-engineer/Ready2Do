@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
-    public class TipologieLezioniViewModel
+    public class TipologieLezioniApiModel
     {
         public int? Id { get; set; }
 

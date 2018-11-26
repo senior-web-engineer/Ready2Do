@@ -32,6 +32,19 @@ namespace Web.Models.Mappers
             }
         }
 
+        public static ClienteUtenteCertificatoApiModel MapToApiModel (this CertificatUtenteViewModel viewModel)
+        {
+            if (viewModel == null) return null;
+            return new ClienteUtenteCertificatoApiModel()
+            {
+                DataPresentazione = viewModel.DataPresentazione,
+                DataScadenza = viewModel.DataScadenza,
+                Id = viewModel.Id,
+                UserId = viewModel.UserId,
+                IdCliente = viewModel.IdCliente,
+                Note = viewModel.Note,
+            };
+        }
 
     }
 }

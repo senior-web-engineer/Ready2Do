@@ -14,7 +14,7 @@
     <div class="row">
         @*AGGIUNGERE ANAGRAFICA UTENTE*@
         <h2>Nuovo abbonamento @ViewBag.TipologiaAbbonamento</h2>
-        <form asp-action="AddAbbonamentoToUser" asp-route-cliente="@ViewBag.ClienteUrl" asp-route-userId="@ViewBag.IdUtente" method="post">
+        <form asp-action="SaveAbbonamentoToUser" asp-route-cliente="@ViewBag.ClienteUrl" asp-route-userId="@ViewBag.IdUtente" method="post">
             <input asp-for="Id" type="hidden" />
             <input asp-for="IdTipoAbbonamento" type="hidden" />
             <input asp-for="IdCliente" type="hidden" />

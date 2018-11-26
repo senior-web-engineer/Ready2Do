@@ -38,7 +38,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             //    return Forbid();
             //}
             var locations = _repository.GetAll(idCliente);
-            var result = Mapper.Map<IEnumerable<Locations>, IEnumerable<LocationViewModel>>(locations);
+            var result = Mapper.Map<IEnumerable<Locations>, IEnumerable<LocationApiModel>>(locations);
             return new OkObjectResult(result);
         }
 
@@ -56,13 +56,13 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var result = Mapper.Map<Locations, LocationViewModel>(location);
+            var result = Mapper.Map<Locations, LocationApiModel>(location);
             return new OkObjectResult(result);
         }
 
 
         [HttpPost()]
-        public IActionResult Create([FromRoute]int idCliente, [FromBody] LocationViewModel model)
+        public IActionResult Create([FromRoute]int idCliente, [FromBody] LocationApiModel model)
         {
 
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
@@ -74,7 +74,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<LocationViewModel, Locations>(model);
+            var m = Mapper.Map<LocationApiModel, Locations>(model);
             m.IdCliente = idCliente;
             _repository.Add(idCliente, m);
             //return CreatedAtAction("GetOne", m.Id);
@@ -82,7 +82,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPut()]
-        public IActionResult Modify([FromRoute]int idCliente, [FromBody] LocationViewModel model)
+        public IActionResult Modify([FromRoute]int idCliente, [FromBody] LocationApiModel model)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -93,7 +93,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<LocationViewModel, Locations>(model);
+            var m = Mapper.Map<LocationApiModel, Locations>(model);
             var oldEntity = _repository.GetSingle(idCliente, m.Id);
             if (oldEntity == null)
             {
