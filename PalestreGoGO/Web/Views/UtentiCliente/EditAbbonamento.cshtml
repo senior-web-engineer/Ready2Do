@@ -2,16 +2,18 @@
 @{
     Layout = "_LayoutClienti";
 }
-
-<vc:user-header model="@(ViewData["Utente"] as UserHeaderViewModel)"></vc:user-header>
-
+<div class="row">
+    <div class="col s8 offset-s2 l7 offset-l2 center-align">
+        <h6>Abbonamento Utente</h6>
+    </div>
+</div>
+<div class="row">
+    <div class="col s10 offset-s2 center-align">
+        <vc:user-header model="@(ViewData["Utente"] as UserHeaderViewModel)"></vc:user-header>
+    </div>
+</div>
 <form asp-action="SaveAbbonamentoUtente" asp-controller="UtentiClienteController" method="post" id="formEditAbbonamento">
     <input type="hidden" asp-for="Id" />
-    <div class="row">
-        <div class="col s10 offset-s1 center-align">
-            <h6>Abbonamento Utente</h6>
-        </div>
-    </div>
     <div class="row">
         <div class="input-field col s7 offset-s2">
             <select asp-for="IdTipoAbbonamento" asp-items="@ViewBag.TipologieAbbonamenti">
@@ -22,7 +24,7 @@
     <div class="row">
         <div class="input-field col s8 offset-s2 l3 offset-l2">
             <input id="inputDataInizioValidita" class="datepicker" type="text" asp-for="DataInizioValidita" />
-            <label>Inizio Validità:></label>
+            <label>Inizio Validità:</label>
             <span asp-validation-for="DataInizioValidita" />
         </div>
         <div class="input-field col s8 offset-s2 l3 offset-l1">
@@ -55,16 +57,16 @@
             <span asp-validation-for="ImportoPagato" />
         </div>
     </div>
-  
 
-        <div class="row">
-            <div class="input-field col s10 offset-s1 center">
-                <button class="btn waves-effect waves-light" type="submit" name="action">
-                    Salva Modifiche
-                    <i class="material-icons left">save</i>
-                </button>
-            </div>
+
+    <div class="row">
+        <div class="input-field col s10 offset-s1 center">
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+                Salva Modifiche
+                <i class="material-icons left">save</i>
+            </button>
         </div>
+    </div>
 </form>
 
 
@@ -72,6 +74,7 @@
     {
     <script>
         $(document).ready(function () {
+            $('select').formSelect();
             $('.datepicker').datepicker();
         });
     </script>

@@ -71,7 +71,7 @@ namespace Web.Models.Mappers
                 DataInizioValidita = model.DataInizioValidita.Value,
                 Id = model.Id,
                 IdCliente = model.IdCliente,
-                IdTipoAbbonamento = model.IdTipoAbbonamento.Value,
+                IdTipoAbbonamento = model.IdTipoAbbonamento,
                 UserId = model.UserId,
                 IngressiIniziali = model.IngressiIniziali,
                 IngressiResidui = model.IngressiResidui,

@@ -11,8 +11,7 @@ namespace Web.Models
         public int? Id { get; set; }
         public int IdCliente { get; set; }
         public string UserId { get; set; }
-        [Required]
-        public int? IdTipoAbbonamento { get; set; }
+       public int IdTipoAbbonamento { get; set; }
         public string NomeTipoAbbonamento { get; set; }
         [Required]
         public DateTime? DataInizioValidita { get; set; }
