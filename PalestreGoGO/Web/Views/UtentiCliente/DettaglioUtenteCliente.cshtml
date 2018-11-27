@@ -13,13 +13,14 @@
                     </a>
                 </div>
             </div>
-          
+
+            <vc:user-header model="@(ViewData["Utente"] as UserHeaderViewModel)"></vc:user-header>
 
             <!-- TABS -->
             <div class="row">
                 <div class="col s10 offset-s1">
                     <ul id="tabDetCliente" class="tabs">
-                        <li class="tab"><a href="#tabAbbonamento">Abbonamento</a></li>
+                        <li class="tab"><a href="#tabAbbonamento">Abbonamenti</a></li>
                         <li class="tab"><a href="#tabCertificati">Certificati</a></li>
                         <li class="tab"><a href="#tabPrenotazioni">Prenotazione</a></li>
                     </ul>

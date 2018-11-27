@@ -68,10 +68,10 @@ namespace Web.Models.Mappers
             if (model == null) return null;
             var result = new AbbonamentoUtenteApiModel()
             {
-                DataInizioValidita = model.DataInizioValidita,
+                DataInizioValidita = model.DataInizioValidita.Value,
                 Id = model.Id,
                 IdCliente = model.IdCliente,
-                IdTipoAbbonamento = model.IdTipoAbbonamento,
+                IdTipoAbbonamento = model.IdTipoAbbonamento.Value,
                 UserId = model.UserId,
                 IngressiIniziali = model.IngressiIniziali,
                 IngressiResidui = model.IngressiResidui,

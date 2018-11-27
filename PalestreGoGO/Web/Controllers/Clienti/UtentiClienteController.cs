@@ -67,6 +67,7 @@ namespace Web.Controllers.Clienti
             ViewData["IdCliente"] = idCliente;
             ViewData["TabId"] = tabId;
             ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             var vm = utente.MapToClienteUtenteViewModel();
             var tAbb = _apiClient.GetAbbonamentiForUserAsync(idCliente, userId, accessToken, true);
             var tCert = _apiClient.GetCertificatiForUserAsync(idCliente, userId, accessToken, true, false);
