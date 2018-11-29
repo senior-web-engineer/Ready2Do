@@ -16,3 +16,21 @@ myFirstPromise.then((successMessage) => {
     // Non deve essere necessariamente una stringa, ma nel caso sia solo un messaggio probabilmemte lo sarà.
     console.log("Yay! " + successMessage);
 });
+
+
+let datetPickerI18n = {
+    months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+    monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+    weekdays: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+    weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+    weekdaysAbbrev: ['D', 'L', 'M', 'M', 'G', 'V', 'S'],
+    clear: 'Cancella',
+    cancel: 'Annulla',
+    today: 'Oggi'
+};
+
+let timePickeri18n = {
+    cancel: 'Annulla',
+    clear: 'Cancella',
+    done: 'Ok'
+};

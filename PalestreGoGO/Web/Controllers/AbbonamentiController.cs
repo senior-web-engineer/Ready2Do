@@ -95,6 +95,23 @@ namespace Web.Controllers
             return View("TipologiaAbbonamentoEdit", tipoAbbonamento);
         }
 
+        [Produces("application/json")]
+        [HttpGet("api/{idCliente:int}/abbonamenti/tipologie/{id:int}")]
+        public async Task<IActionResult> GetTipologiaAbbonamentoJson([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "id")]int idTipoAbbonamento)
+        {
+            TipologiaAbbonamentoViewModel tipologiaAbbonamento = null;
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if (idTipoAbbonamento > 0)
+            {
+                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken))
+                                        .MapToWebViewModel();
+            }
+            if (tipologiaAbbonamento == null)
+            {
+                return NotFound();
+            }
+            return Json(tipologiaAbbonamento);
+        }
 
 
         [HttpGet("{cliente}/abbonamenti/tipologie/{id:int}")]

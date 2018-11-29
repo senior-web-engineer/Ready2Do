@@ -16,7 +16,7 @@
     <input type="hidden" asp-for="Id" />
     <div class="row">
         <div class="input-field col s7 offset-s2">
-            <select asp-for="IdTipoAbbonamento" asp-items="@ViewBag.TipologieAbbonamenti">
+            <select asp-for="IdTipoAbbonamento" asp-items="@ViewBag.TipologieAbbonamenti" id="selTipoAbbonamento">
                 <option disabled selected>Selezionare una tipologia di Abbonamento</option>
             </select>
         </div>
@@ -73,9 +73,53 @@
 @section Scripts
     {
     <script>
+        let urlTipoAbb = "/api/@Model.IdCliente/abbonamenti/tipologie/";
         $(document).ready(function () {
-            $('select').formSelect();
-            $('.datepicker').datepicker();
+            let datetPickerI18n = {
+                months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+                weekdays: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+                weekdaysAbbrev: ['D', 'L', 'M', 'M', 'G', 'V', 'S'],
+                clear: 'Cancella',
+                cancel: 'Annulla',
+                today: 'Oggi'
+            };
+
+            let timePickeri18n = {
+                cancel: 'Annulla',
+                clear: 'Cancella',
+                done: 'Ok'
+            };
+            $('.datepicker').datepicker({
+                format: "dd mmm yyyy",
+                defaultDate: new Date(),
+                setDefaultDate: true,
+                firstDay: 1,
+                minDate: new Date(),
+                i18n: datetPickerI18n,
+                showMonthAfterYear: true
+            });
+
+            let selTipoAbb = $('#selTipoAbbonamento');
+            selTipoAbb.formSelect();
+            selTipoAbb.change(function (event) {
+                $.ajax({
+                    method: "GET",
+                    url: urlTipoAbb + event.target.value
+                })
+                    .done(function (data, textStatus, jqXHR) {
+
+                        alert(data);
+                        alert(textStatus);
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        alert(textStatus);
+                        alert(errorThrown);
+                    });
+            });
+
+            
         });
     </script>
 }
