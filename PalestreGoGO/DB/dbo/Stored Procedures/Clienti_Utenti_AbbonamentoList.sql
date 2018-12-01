@@ -5,21 +5,23 @@
 	@pIncludeExpired	bit = 0
 AS
 BEGIN
-	SELECT 	[Id]				
-			,[IdCliente]			
-			,[UserId]			
-			,[IdTipoAbbonamento]	
-			,[DataInizioValidita]
-			,[Scadenza]			
-			,[IngressiIniziali]	
-			,[IngressiResidui]	
-			,[Importo]			
-			,[ImportoPagato]		
-			,[DataCreazione]		
-			,[DataCancellazione]	
-	FROM [AbbonamentiUtenti]
-	WHERE IdCliente = @pIdCliente
-	AND UserId = @pUserId
-	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (DataCancellazione IS NULL))
-	AND ((COALESCE(@pIncludeExpired, 0) = 1) OR (Scadenza < SYSDATETIME()))
+	SELECT 	 au.[Id]				
+			,au.[IdCliente]			
+			,au.[UserId]			
+			,au.[IdTipoAbbonamento]	
+			,au.[DataInizioValidita]
+			,au.[Scadenza]			
+			,au.[IngressiIniziali]	
+			,au.[IngressiResidui]	
+			,au.[Importo]			
+			,au.[ImportoPagato]		
+			,au.[DataCreazione]		
+			,au.[DataCancellazione]	
+			,ta.Nome AS NomeTipoAbbonamento
+	FROM [AbbonamentiUtenti] au
+		INNER JOIN  [TipologieAbbonamenti] ta ON au.IdTipoAbbonamento = ta.Id
+	WHERE au.IdCliente = @pIdCliente
+	AND au.UserId = @pUserId
+	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (au.DataCancellazione IS NULL))
+	AND ((COALESCE(@pIncludeExpired, 0) = 1) OR (au.Scadenza < SYSDATETIME()))
 END

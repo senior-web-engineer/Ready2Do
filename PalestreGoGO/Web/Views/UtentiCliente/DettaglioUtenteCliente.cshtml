@@ -4,10 +4,13 @@
     Layout = "_LayoutClienti";
 }
 <div class="row">
-    <div class="col s10 offset-s1">
+    <div class="col s12 m10 offset-m1">
         <div class="card-panel">
-            <div class="row">
-                <div class="col s1 offset-s11 right-align">
+            <div class="row valign-wrapper">
+                <div class="col s3 m1">
+                    <i class=" circle medium material-icons">person</i>
+                </div>
+                <div class="col s1 offset-s8 offset-m10">
                     <a class="btn-floating waves-effect waves-light light-gray" asp-action="GetListaUtenti" asp-controller="UtentiCliente">
                         <i class="material-icons">close</i>
                     </a>
@@ -18,16 +21,16 @@
 
             <!-- TABS -->
             <div class="row">
-                <div class="col s10 offset-s1">
+                <div class="col s12 m10 offset-m1">
                     <ul id="tabDetCliente" class="tabs">
                         <li class="tab"><a href="#tabAbbonamento">Abbonamenti</a></li>
                         <li class="tab"><a href="#tabCertificati">Certificati</a></li>
-                        <li class="tab"><a href="#tabPrenotazioni">Prenotazione</a></li>
+                        <li class="tab"><a href="#tabPrenotazioni">Prenotazioni</a></li>
                     </ul>
-                    <div id="tabAbbonamento" class="col s12 @(ViewBag.TabId == 0 ? "active" : "")">
+                    <div id="tabAbbonamento" class="@(ViewBag.TabId == 0 ? "active" : "")">
                         <vc:utente-view-abbonamenti abbonamenti="@Model.Abbonamenti" id-cliente="@Model.UserInfo.IdCliente" user-id="@Model.UserInfo.IdUtente"></vc:utente-view-abbonamenti>
                     </div>
-                    <div id="tabCertificati" class="col s12 @(ViewBag.TabId == 0 ? "active" : "")">
+                    <div id="tabCertificati" class="@(ViewBag.TabId == 0 ? "active" : "")">
                         <vc:utente-view-certificati certificati="@Model.Certificati" id-cliente="@Model.UserInfo.IdCliente" user-id="@Model.UserInfo.IdUtente"></vc:utente-view-certificati>
                     </div>
                     <div id="tabPrenotazioni" class="col s12 @(ViewBag.TabId == 0 ? "active" : "")">

@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Web.Models.Utils;
 using Web.Models.Mappers;
+using System.Threading;
 
 namespace Web.Controllers
 {
@@ -45,7 +46,7 @@ namespace Web.Controllers
 
         [HttpGet("{cliente}/abbonamenti/tipologie/checkname")]
         [Produces("application/json")]
-        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nomeAbbonamento)
+        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nomeAbbonamento, int? id)
         {
             //ViewData["ReturnUrl"] = returnUrl;
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
@@ -53,7 +54,7 @@ namespace Web.Controllers
             //TODO:Modificare implementazione aggiungendo una API apposita invece di farsi ritornare tutti gli abbonamenti per il Cliente
             var abbonamenti = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
 
-            bool nomeIsValid = !abbonamenti.Any(a => a.Nome.Equals(nomeAbbonamento, StringComparison.InvariantCultureIgnoreCase));
+            bool nomeIsValid = !abbonamenti.Any(a => a.Nome.Equals(nomeAbbonamento, StringComparison.InvariantCultureIgnoreCase) && (!id.HasValue || a.Id != id.Value));
             if (!nomeIsValid)
             {
                 return Json(data: $"Esiste già una tipologia di abbonamento con lo stesso nome.");
@@ -136,6 +137,7 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
+            Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
             return View("TipologiaAbbonamentoEdit", tipologiaAbbonamento);
         }
 

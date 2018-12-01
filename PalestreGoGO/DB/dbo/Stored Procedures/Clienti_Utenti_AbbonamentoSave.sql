@@ -11,7 +11,7 @@
 	@pIdAbbonamento		int output --Se valorizzato in INPUT verrà fatto un update
 AS
 BEGIN
-	IF @pIdAbbonamento IS NULL
+	IF @pIdAbbonamento IS NULL OR @pIdAbbonamento <= 0
 	BEGIN
 		INSERT INTO AbbonamentiUtenti(IdCliente, UserId, IdTipoAbbonamento, DataInizioValidita, Scadenza, IngressiIniziali, IngressiResidui, Importo, ImportoPagato)
 			VALUES(@pIdCliente, @pUserId, @pIdTipoAbbonamento, @pDataInizioValidita, @pScadenza, @pIngressiIniziali, @pIngressiResidui, @pImporto, @pImportoPagato)

@@ -139,11 +139,11 @@ namespace Web.Controllers.Clienti
         }
 
 
-        
+
         [HttpGet("{userId}/abbonamenti/{id}")]
         public async Task<IActionResult> EditAbbonamentoUtente([FromRoute(Name = "cliente")]string urlRoute,
                                                               [FromRoute(Name = "userId")]string userId,
-                                                              [FromRoute(Name ="id")]int id)
+                                                              [FromRoute(Name = "id")]int id)
         {
             //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
             //      oppure se la scelta del tipo avviene nella view
@@ -152,9 +152,10 @@ namespace Web.Controllers.Clienti
             ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
+            ViewData["UrlRoute"] = urlRoute;
             var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
             List<SelectListItem> items = new List<SelectListItem>();
-            foreach(var t in tipologie)
+            foreach (var t in tipologie)
             {
                 items.Add(new SelectListItem(t.Nome, t.Id.ToString()));
             }
@@ -170,23 +171,42 @@ namespace Web.Controllers.Clienti
                 {
                     IdCliente = idCliente,
                     UserId = userId,
+                    Id = -1
                 };
             }
             return View("EditAbbonamento", vm);
         }
 
 
-        [HttpPost("{userId}/abbonamenti")]
+        [HttpPost("{userId}/abbonamenti/{id}")]
         public async Task<IActionResult> SaveAbbonamentoUtente([FromRoute(Name = "cliente")]string urlRoute,
                                                               [FromRoute(Name = "userId")]string userId,
+                                                               [FromRoute(Name = "id")]int id,
                                                               [FromForm]AbbonamentoUtenteInputModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return ViewComponent(typeof(UtenteAddAbbonamentoViewComponent), model);
-            }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ViewData["Utente"] = utente.MapToUserHeaderViewModel();
+            ViewData["IdCliente"] = idCliente;
+            ViewData["UrlRoute"] = urlRoute;
+            bool modelValid = ModelState.IsValid;
+            if (model.IngressiIniziali.HasValue && model.IngressiResidui.HasValue && model.IngressiResidui.Value > model.IngressiIniziali.Value)
+            {
+                ModelState.AddModelError("IngressiResidui", "Gli ingressi residui non possono essere maggiori degli ingressi iniziali");
+                modelValid = false;
+            }
+            if (!modelValid)
+            {
+                var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+                List<SelectListItem> items = new List<SelectListItem>();
+                foreach (var t in tipologie)
+                {
+                    items.Add(new SelectListItem(t.Nome, t.Id.ToString()));
+                }
+                ViewData["TipologieAbbonamenti"] = items;
+                return View("EditAbbonamento", new AbbonamentoUtenteViewModel(model));
+            }
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
             await _apiClient.EditAbbonamentoClienteAsync(idCliente, model.MapToAPIModel(), accessToken);
             return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 0 });

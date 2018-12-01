@@ -15,6 +15,8 @@ using Web.Configuration;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Web.Utils;
 using Microsoft.AspNetCore.Authentication;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 
 //using 
@@ -76,6 +78,20 @@ namespace Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //Usiamo la cultura Americana per gestire il parsing dei decimali
+            var cultureInfo = new CultureInfo("en-US");
+            cultureInfo.NumberFormat.CurrencySymbol = "€";
+
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("it-IT"),
+                SupportedCultures = new List<CultureInfo> { new CultureInfo("en-US") },
+                SupportedUICultures = new List<CultureInfo> { new CultureInfo("en-US") }
+            });
+
             //Necessario per usare Nginx come reverse proxy (altrimenti non funziona l'authentication)
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

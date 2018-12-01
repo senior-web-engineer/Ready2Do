@@ -656,7 +656,7 @@ namespace Web.Utils
 
         public async Task<IEnumerable<AbbonamentoUtenteApiModel>> GetAbbonamentiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti?incExp={includeExpired}&incDel={includeDeleted}");
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti?idUtente={userId}&incExp={includeExpired}&incDel={includeDeleted}");
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);

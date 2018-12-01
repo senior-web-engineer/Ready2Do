@@ -42,33 +42,39 @@ else
     {
         <div class="row">
             <div class="col s4 offset-s1 l2 offset-l1" data-id-item="@s.UserInfo.IdUtente">@s.UserInfo.Cognome @s.UserInfo.Nome  </div>
-            <div class="col s2 l2 ">@s.UserInfo.DataAssociazione</div>
+            <div class="col s2 l2 ">@s.UserInfo.DataAssociazione.Date.ToString("dd MMM yyyy")</div>
             <div class="col s3 l2">
                 @if (s.UserInfo.Stato != ClienteUtenteStatoViewModel.Unknown)
                 {
                     @if (!s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
                     {
-                        <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente non ha nessun Abbonamento Attivo">do_not_disturb_alt</i>
+                        <i class="material-icons red-text tooltipped hide-on-small-only" data-position="top" data-tooltip="L'utente non ha nessun Abbonamento Attivo">do_not_disturb_alt</i>
+                        <i class="material-icons tiny red-text tooltipped hide-on-med-and-up" data-position="top" data-tooltip="L'utente non ha nessun Abbonamento Attivo">do_not_disturb_alt</i>
                     }
                     else if (s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.AbbonamentoValido))
                     {
-                        <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente ha un abbonamento Attivo">done</i>
+                        <i class="material-icons green-text tooltipped hide-on-small-only" data-position="top" data-tooltip="L'utente ha un abbonamento Attivo">done</i>
+                        <i class="material-icons tiny green-text tooltipped hide-on-med-and-up" data-position="top" data-tooltip="L'utente ha un abbonamento Attivo">done</i>
                     }
                     @if (s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.PagamentoDovuto))
                     {
-                        <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente ha dei pagamenti in sospeso">euro_symbol</i>
+                        <i class="material-icons red-text tooltipped hide-on-small-only" data-position="top" data-tooltip="L'utente ha dei pagamenti in sospeso">euro_symbol</i>
+                        <i class="material-icons tiny red-text tooltipped hide-on-med-and-up" data-position="top" data-tooltip="L'utente ha dei pagamenti in sospeso">euro_symbol</i>
                     }
                     else
                     {
-                        <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente è in regola con i pagamenti">euro_symbol</i>
+                        <i class="material-icons green-text tooltipped hide-on-small-only" data-position="top" data-tooltip="L'utente è in regola con i pagamenti">euro_symbol</i>
+                        <i class="material-icons tiny green-text tooltipped hide-on-med-and-up" data-position="top" data-tooltip="L'utente è in regola con i pagamenti">euro_symbol</i>
                     }
                     @if (!s.UserInfo.Stato.HasFlag(ClienteUtenteStatoViewModel.CertificatoValido))
                     {
-                        <i class="material-icons red-text tooltipped" data-position="top" data-tooltip="L'utente non ha un certificato valido">local_hospital</i>
+                        <i class="material-icons red-text tooltipped hide-on-small-only" data-position="top" data-tooltip="L'utente non ha un certificato valido">local_hospital</i>
+                        <i class="material-icons tiny red-text tooltipped hide-on-med-and-up" data-position="top" data-tooltip="L'utente non ha un certificato valido">local_hospital</i>
                     }
                     else
                     {
-                        <i class="material-icons green-text tooltipped" data-position="top" data-tooltip="L'utente ha un certificato valido">local_hospital</i>
+                        <i class="material-icons green-text tooltipped hide-on-small-only" data-position="top" data-tooltip="L'utente ha un certificato valido">local_hospital</i>
+                        <i class="material-icons tiny green-text tooltipped hide-on-med-and-up" data-position="top" data-tooltip="L'utente ha un certificato valido">local_hospital</i>
                     }
                 }
                 @*@switch (s.StatoAbbonamento)
@@ -92,9 +98,28 @@ else
                     }*@
             </div>
             <div class="col s2 l1">
-                <a asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.UserInfo.IdUtente">
-                    <i class="material-icons blue-text">account_circle</i>
-                </a>
+                <div class="position:relative">
+                    <div class="fixed-action-btn" style="position:relative;display: inline-block; bottom: 0;">
+                        <a class="btn-floating btn-small blue">
+                            <i class="large material-icons">menu</i>
+                        </a>
+                        <ul style="right:38px">
+                            <li style="margin-top: 0; margin-right: 2px;">
+                                <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@s.UserInfo.IdUtente" asp-route-id="-1" class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
+
+                                    <i class="material-icons">add</i>
+                                </a>
+                            </li>
+                            <li style="margin-top: 0; margin-right: 2px;"><a class="btn-floating btn-small yellow darken-1 tooltipped" data-position="top" data-tooltip="Inserisci certificato"><i class="material-icons">local_hospital</i></a></li>
+                            <li style="margin-top: 0; margin-right: 2px;">
+                                <a class="btn-floating btn-small yellow darken-1 tooltipped" data-position="top" data-tooltip="Visualizza dettagli Utente"
+                                   asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.UserInfo.IdUtente">
+                                    <i class="material-icons blue-text">face</i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -111,6 +136,11 @@ else
         document.addEventListener('DOMContentLoaded', function () {
             var elems = document.querySelectorAll('.dropdown-trigger');
             var instances = M.Dropdown.init(elems, {});
+
+            var floatActBtns = document.querySelectorAll('.fixed-action-btn');
+            var instances = M.FloatingActionButton.init(floatActBtns, {
+                direction: 'left'
+            });
         });
     </script>
 }
