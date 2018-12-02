@@ -62,16 +62,50 @@ namespace PalestreGoGo.DataAccess
         }
         public async Task<IEnumerable<UtenteClienteAbbonamentoDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted)
         {
+            List<UtenteClienteAbbonamentoDM> result = new List<UtenteClienteAbbonamentoDM>();
             using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                return await cn.QueryAsync<UtenteClienteAbbonamentoDM>("[Clienti_Utenti_AbbonamentoList]", new
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[Clienti_Utenti_AbbonamentoList]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 100).Value = userId;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                cmd.Parameters.Add("@pIncludeExpired", SqlDbType.Bit).Value = includeExpired;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
                 {
-                    pIdCliente = idCliente,
-                    pUserId = userId,
-                    pIncludeDeleted = includeDeleted,
-                    pIncludeExpired = includeExpired
-                }, commandType: CommandType.StoredProcedure);
+                    while(await dr.ReadAsync())
+                    {
+                        result.Add(new UtenteClienteAbbonamentoDM()
+                        {
+                            DataCancellazione = dr.IsDBNull(dr.GetOrdinal("DataCancellazione")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("DataCancellazione")),
+                            DataCreazione = dr.GetDateTime(dr.GetOrdinal("DataCreazione")),
+                            DataInizioValidita = dr.GetDateTime(dr.GetOrdinal("DataCreazione")),
+                            Id = dr.GetInt32(dr.GetOrdinal("Id")),
+                            IdCliente = dr.GetInt32(dr.GetOrdinal("IdCliente")),
+                            IdTipoAbbonamento = dr.GetInt32(dr.GetOrdinal("IdTipoAbbonamento")),
+                            Importo = dr.IsDBNull(dr.GetOrdinal("Importo")) ? (decimal?)null : dr.GetDecimal(dr.GetOrdinal("Importo")),
+                            ImportoPagato = dr.IsDBNull(dr.GetOrdinal("ImportoPagato")) ? (decimal?)null : dr.GetDecimal(dr.GetOrdinal("ImportoPagato")),
+                            IngressiIniziali = dr.IsDBNull(dr.GetOrdinal("IngressiIniziali")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("IngressiIniziali")),
+                            IngressiResidui = dr.IsDBNull(dr.GetOrdinal("IngressiResidui")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("IngressiResidui")),
+                            Scadenza = dr.GetDateTime(dr.GetOrdinal("Scadenza")),
+                            UserId = dr.GetString(dr.GetOrdinal("UserId")),
+                            TipoAbbonamento = new TipoAbbonamentoDM()
+                            {
+                                Costo = dr.IsDBNull(dr.GetOrdinal("Importo")) ? (decimal?)null : dr.GetDecimal(dr.GetOrdinal("Importo")),
+                                Id = dr.GetInt32(dr.GetOrdinal("IdTipoAbbonamento")),
+                                DurataMesi = dr.IsDBNull(dr.GetOrdinal("DurataMesi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("DurataMesi")),
+                                NumIngressi = dr.IsDBNull(dr.GetOrdinal("NumIngressi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("NumIngressi")),
+                                IdCliente = dr.GetInt32(dr.GetOrdinal("IdCliente")),
+                                MaxLivCorsi = dr.IsDBNull(dr.GetOrdinal("MaxLivCorsi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("MaxLivCorsi")),
+                                Nome = dr.GetString(dr.GetOrdinal("Nome"))
+                            }
+                        });
+                    }
+                }              
             }
+            return result;
         }
 
         public async Task<UtenteClienteAbbonamentoDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento)

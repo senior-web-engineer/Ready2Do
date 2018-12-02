@@ -10,23 +10,32 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Dapper;
 using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace PalestreGoGo.DataAccess
 {
     public class SchedulesRepository : ISchedulesRepository
     {
-        private readonly PalestreGoGoDbContext _context;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<SchedulesRepository> _logger;
 
-        public SchedulesRepository(PalestreGoGoDbContext context, ILogger<SchedulesRepository> logger)
+        public SchedulesRepository(IConfiguration configuration, ILogger<SchedulesRepository> logger)
         {
-            _context = context;
+            _configuration = configuration;
             _logger = logger;
         }
 
-        public async Task<int> AddScheduleAsync(int idCliente, Schedules schedule)
+        public async Task<int> SaveScheduleAsync(int idCliente, ScheduleDM schedule)
         {
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
+            using(var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.Add
+            }
+
             _context.Schedules.Add(schedule);
             await _context.SaveChangesAsync();
             return schedule.Id;

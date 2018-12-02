@@ -8,7 +8,7 @@ namespace PalestreGoGo.DataAccess
 {
     public interface ISchedulesRepository
     {
-        Task<int> AddScheduleAsync(int idCliente, Schedules schedule);
+        Task<int> SaveScheduleAsync(int idCliente, ScheduleDM schedule);
 
         Task RemoveScheduleAsync(int idCliente, int idSchedule);
 
@@ -16,7 +16,5 @@ namespace PalestreGoGo.DataAccess
 
         //IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate);
         Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null);
-        Task UpdateSchedule(int idCliente, Schedules entity);
-
     }
 }

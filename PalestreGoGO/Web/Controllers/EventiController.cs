@@ -218,7 +218,9 @@ namespace Web.Controllers
                 Note = apiModel.Note,
                 OraInizio = apiModel.DataOraInizio.TimeOfDay,
                 PostiDisponibili = apiModel.PostiDisponibili,
-                Id = apiModel.Id
+                Id = apiModel.Id,
+                DataChiusuraIscrizioni = apiModel.DataOraChiusuraIscrizioni.Date,
+                OraChiusuraIscrizioni = apiModel.DataOraChiusuraIscrizioni.TimeOfDay
             };
             return vm;
         }

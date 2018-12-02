@@ -17,3 +17,5 @@ Post-Deployment Script Template
 
 :r .\Prepop\Prepop.Security.Roles.sql
 :r .\Prepop\Prepop.StatiPagamenti.sql
+
+:r .\Prepop\Prepop.Utils.Date.sql

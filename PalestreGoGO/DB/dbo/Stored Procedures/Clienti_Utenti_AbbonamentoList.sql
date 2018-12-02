@@ -8,7 +8,6 @@ BEGIN
 	SELECT 	 au.[Id]				
 			,au.[IdCliente]			
 			,au.[UserId]			
-			,au.[IdTipoAbbonamento]	
 			,au.[DataInizioValidita]
 			,au.[Scadenza]			
 			,au.[IngressiIniziali]	
@@ -17,7 +16,12 @@ BEGIN
 			,au.[ImportoPagato]		
 			,au.[DataCreazione]		
 			,au.[DataCancellazione]	
-			,ta.Nome AS NomeTipoAbbonamento
+			,au.[IdTipoAbbonamento]	
+			,ta.[Nome] AS NomeTipoAbobonamento		
+			,ta.[DurataMesi]
+			,ta.[NumIngressi]
+			,ta.[Costo]		
+			,ta.[MaxLivCorsi]
 	FROM [AbbonamentiUtenti] au
 		INNER JOIN  [TipologieAbbonamenti] ta ON au.IdTipoAbbonamento = ta.Id
 	WHERE au.IdCliente = @pIdCliente

@@ -65,6 +65,9 @@
     <Folder Include="Scripts" />
     <Folder Include="Scripts\Prepop" />
     <Folder Include="dbo\Views" />
+    <Folder Include="utils" />
+    <Folder Include="utils\Tables" />
+    <Folder Include="dbo\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Clienti.sql" />
@@ -149,6 +152,14 @@
     <Build Include="dbo\Views\vLocations.sql" />
     <Build Include="dbo\Views\vClientiUtentiCertificati.sql" />
     <Build Include="dbo\Views\vAppuntamentiFull.sql" />
+    <Build Include="dbo\Stored Procedures\Schedule_Add.sql" />
+    <Build Include="dbo\Stored Procedures\Schedule_Delete.sql" />
+    <Build Include="utils\utils.sql" />
+    <Build Include="utils\Tables\Giorni.sql" />
+    <Build Include="utils\Tables\Numbers.sql" />
+    <Build Include="dbo\Stored Procedures\Schedule_Update.sql" />
+    <Build Include="dbo\Stored Procedures\internal_Schedules_CompareRecurrency.sql" />
+    <Build Include="dbo\Stored Procedures\internal_Schedules_AddRicorrenti.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
@@ -156,6 +167,8 @@
     <None Include="DB.AZURE.publish.xml" />
     <None Include="Scripts\Prepop\Prepop.Test.Clienti.sql" />
     <None Include="Scripts\Prepop\Prepop.Security.Roles.sql" />
+    <None Include="Scripts\Prepop\Prepop.Utils.Date.sql" />
+    <None Include="Scripts\Prepop\Prepop.Utils.Numbers.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

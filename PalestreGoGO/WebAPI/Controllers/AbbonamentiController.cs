@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
                                                                 [FromQuery(Name ="incExp")]bool includeExpired = false, [FromQuery(Name = "incDel")]bool includeDeleted = false)
         {
             IEnumerable<UtenteClienteAbbonamentoDM> entity = await _repository.GetAbbonamentiForUserAsync(idCliente, idUtente, includeExpired, includeDeleted);
-            var result = Mapper.Map<IEnumerable<UtenteClienteAbbonamentoDM>, IEnumerable<AbbonamentoViewModel>>(entity);
+            var result = Mapper.Map<IEnumerable<UtenteClienteAbbonamentoDM>, IEnumerable<AbbonamentoUtenteApiModel>>(entity);
             return Ok(result);
         }
 

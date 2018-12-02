@@ -32,18 +32,6 @@
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s2 offset-s2">
-                <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
-                <label asp-for="Data"></label>
-                <span asp-validation-for="Data" />
-            </div>
-            <div class="input-field col s2 ">
-                <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
-                <label asp-for="OraInizio"></label>
-                <span asp-validation-for="OraInizio" />
-            </div>
-        </div>
-        <div class="row">
             <div class="input-field col s8 offset-s2">
                 <select asp-for="IdLocation" asp-items="ViewBag.Locations" class=""></select>
                 <label asp-for="IdLocation"></label>
@@ -58,22 +46,46 @@
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s3 offset-s2">
-                <input type="text" asp-for="PostiDisponibili" />
-                <label asp-for="PostiDisponibili"></label>
-                <span asp-validation-for="PostiDisponibili" />
+            <div class="input-field col s4 m3 offset-s2 offset-m2">
+                <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
+                <label asp-for="Data"></label>
+                <span asp-validation-for="Data" />
+            </div>
+            <div class="input-field col s3 m2 offset-s1 ">
+                <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
+                <label asp-for="OraInizio"></label>
+                <span asp-validation-for="OraInizio" />
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s3 offset-s2">
+            <div class="input-field col s4 m3 offset-s2 offset-m2">
+                <input id="dataEvento" type="text" asp-for="PostiDisponibili" class="datepicker" />
+                <label asp-for="Data"></label>
+                <span asp-validation-for="Data" />
+            </div>
+            <div class="input-field col s3 m2 offset-s1 ">
+                <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
+                <label asp-for="OraInizio"></label>
+                <span asp-validation-for="OraInizio" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s4 m3 offset-s2 offset-m2">
                 <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
                 <label asp-for="DataCancellazioneMax"></label>
                 <span asp-validation-for="DataCancellazioneMax" />
             </div>
-            <div class="input-field col s3">
+            <div class="input-field col s3 m2 offset-s1">
                 <input id="oraCancellazione" type="time" asp-for='OraCancellazioneMax' class="timepicker" />
                 <label asp-for="OraCancellazioneMax"></label>
                 <span asp-validation-for="OraCancellazioneMax" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s3 offset-s2">
+                <input type="text" asp-for="PostiDisponibili" />
+                <label asp-for="PostiDisponibili"></label>
+                <span asp-validation-for="PostiDisponibili" />
             </div>
         </div>
         <div class="row">
@@ -98,7 +110,7 @@
                 </button>
             </div>
         </div>
-</form>
+    </form>
 </div>
 
 @section Scripts{

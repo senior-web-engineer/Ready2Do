@@ -36,6 +36,17 @@ namespace Web.Models
         [Display(Name = "Ora Evento")]
         public TimeSpan? OraInizio { get; set; }
 
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Data Chiusura Iscrizioni")]
+        public DateTime? DataChiusuraIscrizioni { get; set; }
+
+        [Required]
+        [DataType(DataType.Time)]
+        [Display(Name = "Ora Chiusura Iscrizioni")]
+        public TimeSpan? OraChiusuraIscrizioni { get; set; }
+
         [Display(Name = "Istruttore")]
         [MaxLength(150)]
         public string Istruttore { get; set; }
