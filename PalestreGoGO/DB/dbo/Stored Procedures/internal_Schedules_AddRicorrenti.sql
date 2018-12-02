@@ -1,5 +1,5 @@
 ﻿/*
-Procedura intarna 
+Procedura interna per generare gli eventi ricorrenti
 */
 CREATE PROCEDURE [dbo].[internal_Schedules_AddRicorrenti]
 	@pIdParent				INT,
@@ -18,13 +18,18 @@ CREATE PROCEDURE [dbo].[internal_Schedules_AddRicorrenti]
 	@pRecurrency			NVARCHAR(MAX) = NULL
 AS
 BEGIN
+	DECLARE @CONST_MAX_YEARS			INT = 2,
+			@CONST_MAX_RIPETIZ		INT = 500;
+
 	DECLARE @recurrency VARCHAR(100),
 			@endData DATE,
+			@numRipetizioni INT,
 			@firstDay VARCHAR(100)
 	DECLARE @tblWeekDays TABLE (WeekDayNum INT);
 
 	SELECT  @recurrency = LOWER(JSON_VALUE(@pRecurrency, '$.Recurrency')),
 				@endData = CAST(JSON_VALUE(@pRecurrency, '$.RepeatUntil') AS DATE),
+				@numRipetizioni = CAST(JSON_VALUE(@pRecurrency, '$.RepeatFor') AS INT),
 				@firstDay = JSON_VALUE(@pRecurrency, '$.DaysOfWeek[0]')
 		-- Verifica parametri
 		IF @recurrency NOT IN ('daily','weekly', 'monthly')
@@ -32,12 +37,24 @@ BEGIN
 			RAISERROR(N'Il paramentro @pRecurrency contiene una frequenza non supportata', 16, 1);
 			RETURN -6;
 		END
-		IF @endData IS NULL OR @endData > DATEADD(year, 2, GETDATE()) OR @endData < @pDataOraInizio
+		IF @endData IS NULL AND @numRipetizioni IS NULL
 		BEGIN
-			RAISERROR(N'Il paramentro @pRecurrency contiene una data fine non valida', 16, 1);
+			RAISERROR(N'E'' necessario specificare uno tra RepeatUntil e RepeatFor in @pRecurrency', 16, 1);
 			RETURN -7;
 		END
-
+		-- Se specificata la data fine non deve essere superiore a 2 anno ed antecedente la data inizio del primo evento
+		IF @endData IS NOT NULL AND (@endData > DATEADD(year, @CONST_MAX_YEARS, GETDATE()) OR @endData < @pDataOraInizio)
+		BEGIN
+			RAISERROR(N'Il paramentro @pRecurrency contiene una data fine non valida', 16, 1);
+			RETURN -8;
+		END
+		-- Se specificati il numero di ripetizioni, non possono 
+		IF @numRipetizioni IS NOT NULL AND @numRipetizioni > @CONST_MAX_RIPETIZ
+		BEGIN
+			RAISERROR(N'Il paramentro @pRecurrency contiene un numero di ripetizioni troppo alto. (Max: 500)', 16, 1);
+			RETURN -8;		
+		END
+		--TODO: GESTIRE IL NUMERO DI RIPETIZIONI OLTRE CHE LA ENDDATE
 		-- Generazioni eventi figli
 		IF @recurrency = 'daily'
 		BEGIN
