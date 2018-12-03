@@ -160,6 +160,8 @@
     <Build Include="dbo\Stored Procedures\Schedule_Update.sql" />
     <Build Include="dbo\Stored Procedures\internal_Schedules_CompareRecurrency.sql" />
     <Build Include="dbo\Stored Procedures\internal_Schedules_AddRicorrenti.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_Get.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_Lista.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

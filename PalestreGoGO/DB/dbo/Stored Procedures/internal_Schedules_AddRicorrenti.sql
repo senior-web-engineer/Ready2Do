@@ -60,26 +60,27 @@ BEGIN
 		BEGIN
 			INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent)
 				SELECT @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, 							
-						DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)),
+						DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), g.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)),
 						@pIstruttore, @pPosti, @pPosti,
 						-- Usiamo la stessa differenza in secondi tra CancellabileFinoAl e DataOraInizio per le date successive
 						DATEADD(SECOND, 
 									DATEDIFF(SECOND, @pCancellabileFinoAl, @pDataOraInizio),
-									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
+									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), g.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
 						-- Stessa cosa per DataAperturaIscrizioni
 						DATEADD(second, 
 									DATEDIFF(SECOND, @pDataAperturaIscriz, @pDataOraInizio),
-									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
+									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), g.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
 						-- Stessa cosa per DataChiusuraIscrizioni
 						DATEADD(second, 
 									DATEDIFF(SECOND, @pDataChiusuraIscriz, @pDataOraInizio),
-									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
+									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), g.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
 						@pNote, 
 						@pUserIdOwner, 
 						@pIdParent
-				FROM [utils].[Giorni] AS gi
-				WHERE gi.Data > @pDataOraInizio
-				AND gi.Data <= @endData
+				FROM [utils].[Numbers] n
+					INNER JOIN [utils].[Giorni] g ON g.[Data] = DATEADD(DAY, n.Number, @pDataOraInizio)
+				WHERE ((@endData IS NULL) OR (g.Data <= @endData))
+				AND ((@numRipetizioni IS NULL) OR (@numRipetizioni < n.Number))
 		END
 		ELSE IF @recurrency = 'monthly'
 		BEGIN
@@ -105,7 +106,8 @@ BEGIN
 						@pIdParent
 			FROM [utils].[Numbers] AS n
 			WHERE n.Number > 0
-			AND n.Number < DATEDIFF(MONTH, @pDataOraInizio, @endData)				
+			AND ((@endData IS NULL) OR (n.Number < DATEDIFF(MONTH, @pDataOraInizio, @endData)))
+			AND ((@numRipetizioni IS NULL) OR (n.Number <@numRipetizioni))
 		END
 		ELSE IF @recurrency = 'weekly'
 		BEGIN				
@@ -127,28 +129,62 @@ BEGIN
 					-- Prendiamo arbitrariamente la seconda settimana del 2018 per recuperare il DayOfWeekNum
 					INNER JOIN [utils].[Giorni] gi ON gi.WeekNum = 2 AND lower(gi.DayOfWeekItaShort) = rg.[DayOfWeek] AND gi.Year = 2018
 			END
-			INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent)
-				SELECT @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, 							
-						DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)),
-						@pIstruttore, @pPosti, @pPosti,
-						-- Usiamo la stessa differenza in secondi tra CancellabileFinoAl e DataOraInizio per le date successive
-						DATEADD(SECOND, 
-									DATEDIFF(SECOND, @pCancellabileFinoAl, @pDataOraInizio),
-									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
-						-- Stessa cosa per DataAperturaIscrizioni
-						DATEADD(SECOND, 
-									DATEDIFF(SECOND, @pDataAperturaIscriz, @pDataOraInizio),
-									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
-						-- Stessa cosa per DataChiusuraIscrizioni
-						DATEADD(SECOND, 
-									DATEDIFF(SECOND, @pDataChiusuraIscriz, @pDataOraInizio),
-									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
-						@pNote, 
-						@pUserIdOwner, 
-						@pIdParent
-				FROM [utils].[Giorni] AS gi
-					INNER JOIN @tblWeekDays tdw ON tdw.WeekDayNum = gi.DayOfWeekNum
-				WHERE gi.Data > @pDataOraInizio
-				AND gi.Data <= @endData
+			IF @endData IS NOT NULL
+			BEGIN
+				INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent)
+					SELECT @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, 							
+							DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)),
+							@pIstruttore, @pPosti, @pPosti,
+							-- Usiamo la stessa differenza in secondi tra CancellabileFinoAl e DataOraInizio per le date successive
+							DATEADD(SECOND, 
+										DATEDIFF(SECOND, @pCancellabileFinoAl, @pDataOraInizio),
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
+							-- Stessa cosa per DataAperturaIscrizioni
+							DATEADD(SECOND, 
+										DATEDIFF(SECOND, @pDataAperturaIscriz, @pDataOraInizio),
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
+							-- Stessa cosa per DataChiusuraIscrizioni
+							DATEADD(SECOND, 
+										DATEDIFF(SECOND, @pDataChiusuraIscriz, @pDataOraInizio),
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
+							@pNote, 
+							@pUserIdOwner, 
+							@pIdParent
+					FROM [utils].[Giorni] AS gi
+						INNER JOIN @tblWeekDays tdw ON tdw.WeekDayNum = gi.DayOfWeekNum
+					WHERE gi.Data > @pDataOraInizio
+					AND gi.Data <= @endData
+			END
+			ELSE IF @numRipetizioni IS NOT NULL
+			BEGIN
+				INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent)
+				SELECT T.IdCliente, T.Title, T.IdTipoLezione, T.IdLocation, T.DataOraInizio, T.Istruttore, T.PostiIniziali, T.PostiResidui, T.CancellabileFinoAl, T.DataAperturaIscrizioni, T.DataChiusuraIscrizioni, T.Note, T.UserIdOwner, T.IdParent
+				FROM (
+					SELECT @pIdCliente AS IdCliente, @pTitle AS Title, @pIdTipoLezione AS IdTipoLezione, @pIdLocation AS IdLocation,
+							DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)) AS DataOraInizio,
+							@pIstruttore AS Istruttore, @pPosti AS PostiIniziali, @pPosti AS PostiResidui,
+							-- Usiamo la stessa differenza in secondi tra CancellabileFinoAl e DataOraInizio per le date successive
+							DATEADD(SECOND, 
+										DATEDIFF(SECOND, @pCancellabileFinoAl, @pDataOraInizio),
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))) AS CancellabileFinoAl,
+							-- Stessa cosa per DataAperturaIscrizioni
+							DATEADD(SECOND, 
+										DATEDIFF(SECOND, @pDataAperturaIscriz, @pDataOraInizio),
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))) AS DataAperturaIscrizioni,
+							-- Stessa cosa per DataChiusuraIscrizioni
+							DATEADD(SECOND, 
+										DATEDIFF(SECOND, @pDataChiusuraIscriz, @pDataOraInizio),
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))) AS DataChiusuraIscrizioni,
+							@pNote AS Note, 
+							@pUserIdOwner AS UserIdOwner, 
+							@pIdParent AS IdParent,
+							ROW_NUMBER() OVER (ORDER BY DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))) AS RowNumeber
+					FROM [utils].[Giorni] AS gi
+						INNER JOIN @tblWeekDays tdw ON tdw.WeekDayNum = gi.DayOfWeekNum
+					WHERE gi.Data > @pDataOraInizio
+					AND gi.Data <= @endData
+					) T
+					WHERE T.RowNumeber <= @numRipetizioni
+			END
 		END
 END

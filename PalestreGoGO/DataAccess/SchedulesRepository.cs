@@ -11,6 +11,8 @@ using System.Diagnostics;
 using Dapper;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
+using Newtonsoft.Json;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -28,7 +30,7 @@ namespace PalestreGoGo.DataAccess
         public async Task<int> SaveScheduleAsync(int idCliente, ScheduleDM schedule)
         {
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
-            using(var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "";
@@ -41,12 +43,99 @@ namespace PalestreGoGo.DataAccess
             return schedule.Id;
         }
 
-        public async Task<Schedules> GetScheduleAsync(int idCliente, int idSchedule)
+        public async Task<ScheduleDM> GetScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false)
         {
-            var result = await _context.Schedules
-                                .Include(s=>s.TipologiaLezione)
-                                .Include(s=>s.Location)
-                                .SingleOrDefaultAsync(s => s.Id.Equals(idSchedule) && s.IdCliente.Equals(idCliente));
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Schedules_Get]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = idSchedule;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    if (await dr.ReadAsync())
+                    {
+                        return await internalReadSchedule(dr, GetScheduleColumns(dr));
+                    }
+                }
+            }
+            return null;
+        }
+
+        private Dictionary<string, int> GetScheduleColumns(SqlDataReader reader)
+        {
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            result.Add("Id", reader.GetOrdinal("Id"));
+            result.Add("IdCliente", reader.GetOrdinal("IdCliente"));
+            result.Add("Title", reader.GetOrdinal("Title"));
+            result.Add("IdTipoLezione", reader.GetOrdinal("IdTipoLezione"));
+            result.Add("IdLocation", reader.GetOrdinal("IdLocation"));
+            result.Add("DataOraInizio", reader.GetOrdinal("DataOraInizio"));
+            result.Add("Istruttore", reader.GetOrdinal("Istruttore"));
+            result.Add("PostiDisponibili", reader.GetOrdinal("PostiDisponibili"));
+            result.Add("PostiResidui", reader.GetOrdinal("PostiResidui"));
+            result.Add("CancellabileFinoAl", reader.GetOrdinal("CancellabileFinoAl"));
+            result.Add("DataAperturaIscrizioni", reader.GetOrdinal("DataAperturaIscrizioni"));
+            result.Add("DataChiusuraIscrizioni", reader.GetOrdinal("DataChiusuraIscrizioni"));
+            result.Add("DataCancellazione", reader.GetOrdinal("DataCancellazione"));
+            result.Add("UserIdOwner", reader.GetOrdinal("UserIdOwner"));
+            result.Add("Note", reader.GetOrdinal("Note"));
+            result.Add("Recurrency", reader.GetOrdinal("Recurrency"));
+            result.Add("IdParent", reader.GetOrdinal("IdParent"));
+            result.Add("NomeLocation", reader.GetOrdinal("NomeLocation"));
+            result.Add("CapienzaMaxLocation", reader.GetOrdinal("CapienzaMaxLocation"));
+            result.Add("DescrizioneLocation", reader.GetOrdinal("DescrizioneLocation"));
+            result.Add("NomeTipoLezione", reader.GetOrdinal("NomeTipoLezione"));
+            result.Add("DescrizioneTipoLezione", reader.GetOrdinal("DescrizioneTipoLezione"));
+            result.Add("DurataTipoLezione", reader.GetOrdinal("DurataTipoLezione"));
+            result.Add("LimiteCancellazioneMinutiTipoLezione", reader.GetOrdinal("LimiteCancellazioneMinutiTipoLezione"));
+            result.Add("LivelloTipoLezione", reader.GetOrdinal("LivelloTipoLezione"));
+            result.Add("MaxPartecipantiTipoLezione", reader.GetOrdinal("MaxPartecipantiTipoLezione"));
+            result.Add("TipoLezioneDataCreazione", reader.GetOrdinal("TipoLezioneDataCreazione"));
+            result.Add("TipoLezioneDataCancellazione", reader.GetOrdinal("TipoLezioneDataCancellazione"));
+            return result;
+        }
+
+        private async Task<ScheduleDM> internalReadSchedule(SqlDataReader reader, Dictionary<string, int> columns)
+        {
+            ScheduleDM result = new ScheduleDM();
+            result.Id = reader.GetInt32(columns["Id"]);
+            result.IdCliente = reader.GetInt32(columns["IdCliente"]);
+            result.Title = reader.GetString(columns["Title"]);
+            result.IdTipoLezione = reader.GetInt32(columns["IdTipoLezione"]);
+            result.IdLocation = reader.GetInt32(columns["IdLocation"]);
+            result.DataOraInizio = reader.GetDateTime(columns["DataOraInizio"]);
+            result.Istruttore = await reader.IsDBNullAsync(columns["Istruttore"]) ? null : reader.GetString(columns["Istruttore"]);
+            result.PostiDisponibili = reader.GetInt32(columns["PostiDisponibili"]);
+            result.PostiResidui = reader.GetInt32(columns["PostiResidui"]);
+            result.CancellabileFinoAl = reader.GetDateTime(columns["CancellabileFinoAl"]);
+            result.DataAperturaIscrizione = reader.GetDateTime(columns["DataAperturaIscrizioni"]);
+            result.DataChiusuraIscrizione = reader.GetDateTime(columns["DataChiusuraIscrizioni"]);
+            result.DataCancellazione = await reader.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : reader.GetDateTime(columns["DataCancellazione"]);
+            result.UserIdOwner = await reader.IsDBNullAsync(columns["UserIdOwner"]) ? null : reader.GetString(columns["UserIdOwner"]);
+            result.Note = await reader.IsDBNullAsync(columns["Note"]) ? null : reader.GetString(columns["Note"]);
+            result.Recurrency = await reader.IsDBNullAsync(columns["Recurrency"]) ? null : JsonConvert.DeserializeObject<ScheduleRecurrencyDM>(reader.GetString(columns["Recurrency"]));
+            result.IdParent = await reader.IsDBNullAsync(columns["IdParent"]) ? default(int?) : reader.GetInt32(columns["IdParent"]);
+            result.TipologiaLezione = new TipologiaLezioneDM();
+            result.TipologiaLezione.Id = result.IdTipoLezione;
+            result.TipologiaLezione.IdCliente = result.IdCliente;
+            result.TipologiaLezione.DataCancellazione = await reader.IsDBNullAsync(columns["TipoLezioneDataCancellazione"]) ? default(DateTime?) : reader.GetDateTime(columns["TipoLezioneDataCancellazione"]);
+            result.TipologiaLezione.DataCreazione = reader.GetDateTime(columns["TipoLezioneDataCreazione"]);
+            result.TipologiaLezione.Descrizione = reader.GetString(columns["DescrizioneTipoLezione"]);
+            result.TipologiaLezione.Durata = reader.GetInt32(columns["DurataTipoLezione"]);
+            result.TipologiaLezione.LimiteCancellazioneMinuti = await reader.IsDBNullAsync(columns["LimiteCancellazioneMinutiTipoLezione"]) ? default(short?) : reader.GetInt16(columns["LimiteCancellazioneMinutiTipoLezione"]);
+            result.TipologiaLezione.Livello = reader.GetInt16(columns["LivelloTipoLezione"]);
+            result.TipologiaLezione.MaxPartecipanti = await reader.IsDBNullAsync(columns["MaxPartecipantiTipoLezione"]) ? default(int?) : reader.GetInt32(columns["MaxPartecipantiTipoLezione"]);
+            result.TipologiaLezione.Nome = reader.GetString(columns["NomeTipoLezione"]);
+            result.Location = new LocationDM();
+            result.Location.CapienzaMax = await reader.IsDBNullAsync(columns["CapienzaMaxLocation"]) ? default(short?) : reader.GetInt16(columns["CapienzaMaxLocation"]);
+            result.Location.Descrizione = await reader.IsDBNullAsync(columns["DescrizioneLocation"]) ? null : reader.GetString(columns["DescrizioneLocation"]);
+            result.Location.Id = result.IdLocation;
+            result.Location.IdCliente = result.IdCliente;
+            result.Location.Nome = reader.GetString(columns["NomeLocation"]);
             return result;
         }
 
@@ -128,7 +217,8 @@ namespace PalestreGoGo.DataAccess
             //TODO: Implementare le logiche di verifica di fattibilità
 
             if (entity.IdCliente != idCliente) throw new ArgumentException("idTenant not valid");
-            using (var trans = await _context.Database.BeginTransactionAsync()) {
+            using (var trans = await _context.Database.BeginTransactionAsync())
+            {
                 var oldItem = await _context.Schedules.AsNoTracking().SingleAsync(s => s.Id.Equals(entity.Id));
                 var numPrenotazioni = oldItem.PostiDisponibili - oldItem.PostiResidui;
                 if (entity.PostiDisponibili < numPrenotazioni)
@@ -137,7 +227,7 @@ namespace PalestreGoGo.DataAccess
                     throw new ApplicationException("Numero di Posti Disponibili inferiore al numero di prenotazioni già presenti");
                 }
                 //Calcoliamo i nuovi posti residui 
-                entity.PostiResidui = entity.PostiDisponibili - numPrenotazioni; 
+                entity.PostiResidui = entity.PostiDisponibili - numPrenotazioni;
                 EntityEntry dbEntityEntry = _context.Entry<Schedules>(entity);
                 dbEntityEntry.State = EntityState.Modified;
                 await _context.SaveChangesAsync();

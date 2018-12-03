@@ -26,6 +26,7 @@ AS
 BEGIN
 	DECLARE @recurrency VARCHAR(100),
 			@endData DATE,
+			@repeatFor INT,
 			@firstDay VARCHAR(100)
 	DECLARE @tblDayR1 TABLE([DayOfWeek] VARCHAR(100))
 	DECLARE @tblDayR2 TABLE([DayOfWeek] VARCHAR(100))
@@ -58,7 +59,12 @@ BEGIN
 		SET @pDifferences |= @CONST_RECURRENCY_CHANGED
 	END
 	
-	IF LOWER(JSON_VALUE(@pRecurrency1, '$.RepeatUntil')) <> LOWER(JSON_VALUE(@pRecurrency2, '$.RepeatUntil')) 
+	IF COALESCE(LOWER(JSON_VALUE(@pRecurrency1, '$.RepeatUntil')), '') <> COALESCE(LOWER(JSON_VALUE(@pRecurrency2, '$.RepeatUntil')), '')
+	BEGIN
+		SET @pResult = 0
+		SET @pDifferences |= @CONST_REPEATUNTIL_CHANGED
+	END
+	IF COALESCE(LOWER(JSON_VALUE(@pRecurrency1, '$.RepeatFor')), '') <> COALESCE(LOWER(JSON_VALUE(@pRecurrency2, '$.RepeatFor')), '')
 	BEGIN
 		SET @pResult = 0
 		SET @pDifferences |= @CONST_REPEATUNTIL_CHANGED
