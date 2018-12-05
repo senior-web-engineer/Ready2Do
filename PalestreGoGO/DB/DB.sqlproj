@@ -152,12 +152,12 @@
     <Build Include="dbo\Views\vLocations.sql" />
     <Build Include="dbo\Views\vClientiUtentiCertificati.sql" />
     <Build Include="dbo\Views\vAppuntamentiFull.sql" />
-    <Build Include="dbo\Stored Procedures\Schedule_Add.sql" />
-    <Build Include="dbo\Stored Procedures\Schedule_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_Add.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_Delete.sql" />
     <Build Include="utils\utils.sql" />
     <Build Include="utils\Tables\Giorni.sql" />
     <Build Include="utils\Tables\Numbers.sql" />
-    <Build Include="dbo\Stored Procedures\Schedule_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_Update.sql" />
     <Build Include="dbo\Stored Procedures\internal_Schedules_CompareRecurrency.sql" />
     <Build Include="dbo\Stored Procedures\internal_Schedules_AddRicorrenti.sql" />
     <Build Include="dbo\Stored Procedures\Schedules_Get.sql" />

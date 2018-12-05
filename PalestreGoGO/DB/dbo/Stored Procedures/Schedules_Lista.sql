@@ -94,6 +94,10 @@ BEGIN
 	BEGIN
 		SET @sql = @sql + @newLine + 'AND GETDATE() BETWEEN s.DataAperturaIscrizioni AND s.DataChiusuraIscrizioni  '		
 	END
+	IF COALESCE(@pIncludeDeleted, 0) <> 1
+	BEGIN
+		SET @sql = @sql + @newLine + 'AND s.DataCancellazione IS NULL '		
+	END
 
 	SET @sql = @sql + '		ORDER BY ' + @pSortColumn  + ' ' + @sortDirection + '
 							OFFSET @pPageSize * (@pPageNumber - 1) ROWS

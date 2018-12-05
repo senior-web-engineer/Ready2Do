@@ -18,7 +18,7 @@ Gestione modifica RICORRENZA:
 - Se si, solo sul primo evento e su uno qualsiasi?
 - Che succede se esistono delle prenotazioni e la modifica cambia i "giorni" la prenotazione
 */
-CREATE PROCEDURE [dbo].[Schedule_Update]
+CREATE PROCEDURE [dbo].[Schedules_Update]
 	@pId					INT,
 	@pIdCliente				INT = 0,
 	@pTitle					NVARCHAR(100),
@@ -27,12 +27,14 @@ CREATE PROCEDURE [dbo].[Schedule_Update]
 	@pDataOraInizio			DATETIME2(2),
 	@pIstruttore			NVARCHAR(150) = NULL,
 	@pPosti					INT,
-	@pCancellabileFinoAl	DATETIME2(2),
-	@pDataAperturaIscriz	DATETIME2(2),
-	@pDataChiusuraIscriz	DATETIME2(2),
+	@pCancellazionePossib	BIT,	
+	@pCancellabileFinoAl	DATETIME2(2) = NULL,
+	@pDataAperturaIscriz	DATETIME2(2) = NULL,
+	@pDataChiusuraIscriz	DATETIME2(2) = NULL,
 	@pNote					NVARCHAR(1000) = NULL,
 	@pUserIdOwner			NVARCHAR(450) = NULL,
 	@pRecurrency			NVARCHAR(MAX) = NULL,
+	@pWaitListDisponibile	BIT,
 	@pTipoModifica			CHAR(1) = 'S' -- S = Singolo Schedule, N = Corrente + Successivi
 AS
 BEGIN
@@ -89,15 +91,17 @@ SET XACT_ABORT ON;
 				DataChiusuraIscrizioni = @pDataChiusuraIscriz, 
 				DataAperturaIscrizioni = @pDataAperturaIscriz,
 				Note = @pNote, 
-				UserIdOwner = @pUserIdOwner
+				UserIdOwner = @pUserIdOwner,
+				CancellazioneConsentita = @pCancellazionePossib, 
+				WaitListDisponibile = @pWaitListDisponibile
 		WHERE Id = @pId
 		AND IdCliente = @pIdCliente
 
 		IF @pRecurrency IS NOT NULL
 		BEGIN
 			-- Se è stata specificata una ricorrenza, inseriamo gli eventi figli		
-			EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, 
-											@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency
+			EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pCancellazionePossib,
+											 @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile
 		END
 	END
 	ELSE
@@ -119,6 +123,8 @@ SET XACT_ABORT ON;
 				Recurrency = CASE WHEN @pTipoModifica = 'S' THEN NULL -- Se è una modifica ad un sinogolo evento non può avere una ricorrenza
 								 WHEN @pTipoModifica = 'N' THEN @pRecurrency
 							 END,
+				CancellazioneConsentita = @pCancellazionePossib, 
+				WaitListDisponibile = @pWaitListDisponibile,
 				IdParent = NULL -- Diventa un evento autonomo a prescindere dal tipo di modifica
 		WHERE Id = @pId
 		AND IdCliente = @pIdCliente
@@ -142,8 +148,8 @@ SET XACT_ABORT ON;
 			AND DataOraInizio > @oldDataOraInizio
 			AND (IdParent = @pId)
 			-- e li reinseriamo con il corrente che diventa il padre
-			EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, 
-															@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency		
+			EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pCancellazionePossib,
+															@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile
 		END
 	END
 COMMIT

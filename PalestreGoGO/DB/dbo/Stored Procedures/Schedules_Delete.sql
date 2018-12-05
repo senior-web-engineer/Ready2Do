@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Schedule_Delete]
+﻿CREATE PROCEDURE [dbo].[Schedules_Delete]
 	@pId					INT,
 	@pIdCliente				INT = 0
 AS

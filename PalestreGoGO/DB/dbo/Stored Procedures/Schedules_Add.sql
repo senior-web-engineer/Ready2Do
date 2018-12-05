@@ -17,7 +17,7 @@ DOVE:
 "RepeatUntil" | "RepeatFor": SOLO uno dei deve essere necessariamente presente ed indica fino a quando si ripetono gli eventi e si intende INCLUSIVA (MAX + 2ANNI) nel caso di RepeatUntil
 							 nel caso di RepeatFor il Max e 500 ed il primo evento si conta come 1 per cui RepatFor=2 genera l'evento principale ed un evento figlio
 */
-CREATE PROCEDURE [dbo].[Schedule_Add]
+CREATE PROCEDURE [dbo].[Schedules_Add]
 	@pIdCliente				INT = 0,
 	@pTitle					NVARCHAR(100),
 	@pIdTipoLezione			INT,
@@ -25,12 +25,14 @@ CREATE PROCEDURE [dbo].[Schedule_Add]
 	@pDataOraInizio			DATETIME2(2),
 	@pIstruttore			NVARCHAR(150) = NULL,
 	@pPosti					INT,
-	@pCancellabileFinoAl	DATETIME2(2),
-	@pDataAperturaIscriz	DATETIME2(2),
-	@pDataChiusuraIscriz	DATETIME2(2),
+	@pCancellazionePossib	BIT,
+	@pCancellabileFinoAl	DATETIME2(2) = NULL,
+	@pDataAperturaIscriz	DATETIME2(2) = NULL,
+	@pDataChiusuraIscriz	DATETIME2(2) = NULL,
 	@pNote					NVARCHAR(1000) = NULL,
 	@pUserIdOwner			NVARCHAR(450) = NULL,
 	@pRecurrency			NVARCHAR(MAX) = NULL,
+	@pWaitListDisponibile	BIT,
 	@pId					INT OUTPUT
 AS
 BEGIN

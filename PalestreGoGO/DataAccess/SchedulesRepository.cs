@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using Newtonsoft.Json;
+using ModelCommon;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -27,20 +28,101 @@ namespace PalestreGoGo.DataAccess
             _logger = logger;
         }
 
-        public async Task<int> SaveScheduleAsync(int idCliente, ScheduleDM schedule)
+        public async Task<int> AddScheduleAsync(int idCliente, ScheduleDM schedule)
+        {
+            if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
+            SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
+            parId.Direction = ParameterDirection.Output;
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[Schedules_Add]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pTitle", SqlDbType.NVarChar, 100).Value = schedule.Title;
+                cmd.Parameters.Add("@pIdTipoLezione", SqlDbType.Int).Value = schedule.IdTipoLezione;
+                cmd.Parameters.Add("@pIdLocation", SqlDbType.Int).Value = schedule.IdLocation;
+                cmd.Parameters.Add("@pDataOraInizio", SqlDbType.DateTime2).Value = schedule.DataOraInizio;
+                cmd.Parameters.Add("@pIstruttore", SqlDbType.NVarChar, 150).Value = schedule.Istruttore;
+                cmd.Parameters.Add("@pPosti", SqlDbType.Int).Value = schedule.PostiDisponibili;
+                cmd.Parameters.Add("@pCancellazionePossib", SqlDbType.Bit).Value = schedule.CancellazionePossibile;
+                cmd.Parameters.Add("@pCancellabileFinoAl", SqlDbType.DateTime2).Value = schedule.CancellabileFinoAl;
+                cmd.Parameters.Add("@pDataAperturaIscriz", SqlDbType.DateTime2).Value = schedule.DataAperturaIscrizione;
+                cmd.Parameters.Add("@pDataChiusuraIscriz", SqlDbType.DateTime2).Value = schedule.DataChiusuraIscrizione;
+                cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
+                cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
+                cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
+                cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListAvailable;
+                cmd.Parameters.Add(parId);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                schedule.Id = (int)parId.Value;
+            }
+            return schedule.Id.Value;
+        }
+
+        public async Task UpdateScheduleAsync(int idCliente, ScheduleDM schedule, TipoModificaScheduleDM tipoModifica)
         {
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
             using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 var cmd = cn.CreateCommand();
-                cmd.CommandText = "";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.Add
+                cmd.CommandText = "[Schedules_Update]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = schedule.Id;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pTitle", SqlDbType.NVarChar, 100).Value = schedule.Title;
+                cmd.Parameters.Add("@pIdTipoLezione", SqlDbType.Int).Value = schedule.IdTipoLezione;
+                cmd.Parameters.Add("@pIdLocation", SqlDbType.Int).Value = schedule.IdLocation;
+                cmd.Parameters.Add("@pDataOraInizio", SqlDbType.DateTime2).Value = schedule.DataOraInizio;
+                cmd.Parameters.Add("@pIstruttore", SqlDbType.NVarChar, 150).Value = schedule.Istruttore;
+                cmd.Parameters.Add("@pPosti", SqlDbType.Int).Value = schedule.PostiDisponibili;
+                cmd.Parameters.Add("@pCancellazionePossib", SqlDbType.Bit).Value = schedule.CancellazionePossibile;
+                cmd.Parameters.Add("@pCancellabileFinoAl", SqlDbType.DateTime2).Value = schedule.CancellabileFinoAl;
+                cmd.Parameters.Add("@pDataAperturaIscriz", SqlDbType.DateTime2).Value = schedule.DataAperturaIscrizione;
+                cmd.Parameters.Add("@pDataChiusuraIscriz", SqlDbType.DateTime2).Value = schedule.DataChiusuraIscrizione;
+                cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
+                cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
+                cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
+                cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListAvailable;
+                cmd.Parameters.Add("@pTipoModifica", SqlDbType.Bit).Value = tipoModifica == TipoModificaScheduleDM.SingoloSchedule ? "S" : "N";
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
             }
+        }
 
-            _context.Schedules.Add(schedule);
-            await _context.SaveChangesAsync();
-            return schedule.Id;
+        public async Task<IEnumerable<ScheduleDM>> GetScheduleListAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null,
+                                                                        int? idTipoLezione = null, bool soloPostiDisp = false, bool soloIscrizAperte = false,
+                                                                        int pageSize = 25, int pageNumber = 1, string sortColumn = "dataorainizio",
+                                                                        bool ascending = true, bool includeDeleted = false)
+        {
+            List<ScheduleDM> result = new List<ScheduleDM>();
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[Schedules_Lista]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pStartDate", SqlDbType.DateTime2).Value = startDate;
+                cmd.Parameters.Add("@pEndDate", SqlDbType.DateTime2).Value = endDate;
+                cmd.Parameters.Add("@pIdLocation", SqlDbType.Int).Value = idLocation;
+                cmd.Parameters.Add("@pTipoLezione", SqlDbType.Int).Value = idTipoLezione;
+                cmd.Parameters.Add("@pSoloPostiDispon", SqlDbType.Bit).Value = soloPostiDisp;
+                cmd.Parameters.Add("@pSoloIscrizAperte", SqlDbType.Bit).Value = soloIscrizAperte;
+                cmd.Parameters.Add("@pPageSize", SqlDbType.Int).Value = pageSize;
+                cmd.Parameters.Add("@pPageNumber", SqlDbType.Int).Value = pageNumber;
+                cmd.Parameters.Add("@pSortColumn", SqlDbType.VarChar, 50).Value = sortColumn;
+                cmd.Parameters.Add("@pOrderAscending", SqlDbType.Bit).Value = ascending;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                await cn.OpenAsync();
+                using(var dr = await cmd.ExecuteReaderAsync()){
+                    while(await dr.ReadAsync())
+                    {
+                        result.Add(await internalReadSchedule(dr, GetScheduleColumns(dr)));   
+                    }
+                }
+            }
+            return result;
         }
 
         public async Task<ScheduleDM> GetScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false)
@@ -111,9 +193,9 @@ namespace PalestreGoGo.DataAccess
             result.Istruttore = await reader.IsDBNullAsync(columns["Istruttore"]) ? null : reader.GetString(columns["Istruttore"]);
             result.PostiDisponibili = reader.GetInt32(columns["PostiDisponibili"]);
             result.PostiResidui = reader.GetInt32(columns["PostiResidui"]);
-            result.CancellabileFinoAl = reader.GetDateTime(columns["CancellabileFinoAl"]);
-            result.DataAperturaIscrizione = reader.GetDateTime(columns["DataAperturaIscrizioni"]);
-            result.DataChiusuraIscrizione = reader.GetDateTime(columns["DataChiusuraIscrizioni"]);
+            result.CancellabileFinoAl = await reader.IsDBNullAsync(columns["CancellabileFinoAl"]) ? default(DateTime?) : reader.GetDateTime(columns["CancellabileFinoAl"]);
+            result.DataAperturaIscrizione = await reader.IsDBNullAsync(columns["DataAperturaIscrizioni"]) ? default(DateTime?) : reader.GetDateTime(columns["DataAperturaIscrizioni"]);
+            result.DataChiusuraIscrizione = await reader.IsDBNullAsync(columns["DataChiusuraIscrizioni"]) ? default(DateTime?) : reader.GetDateTime(columns["DataChiusuraIscrizioni"]);
             result.DataCancellazione = await reader.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : reader.GetDateTime(columns["DataCancellazione"]);
             result.UserIdOwner = await reader.IsDBNullAsync(columns["UserIdOwner"]) ? null : reader.GetString(columns["UserIdOwner"]);
             result.Note = await reader.IsDBNullAsync(columns["Note"]) ? null : reader.GetString(columns["Note"]);
@@ -139,17 +221,7 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public IEnumerable<Schedules> GetSchedules(int idCliente, DateTime startDate, DateTime endDate)
-        {
-            var result = _context.Schedules
-                                    .Include(s => s.TipologiaLezione)
-                                    .Include(s => s.Location)
-                                    .Where(s => (s.IdCliente.Equals(idCliente) &&
-                                           (s.DataOraInizio >= startDate) &&
-                                           (s.DataOraInizio <= endDate)));
-            return result;
-        }
-
+       
         public async Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null)
         {
             IEnumerable<Schedules> result = null;
