@@ -1,19 +1,19 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PalestreGoGo.DataModel;
+using ready2do.model.common;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PalestreGoGo.DataModel;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using Dapper;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Data;
-using Newtonsoft.Json;
-using ModelCommon;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -45,14 +45,15 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pDataOraInizio", SqlDbType.DateTime2).Value = schedule.DataOraInizio;
                 cmd.Parameters.Add("@pIstruttore", SqlDbType.NVarChar, 150).Value = schedule.Istruttore;
                 cmd.Parameters.Add("@pPosti", SqlDbType.Int).Value = schedule.PostiDisponibili;
-                cmd.Parameters.Add("@pCancellazionePossib", SqlDbType.Bit).Value = schedule.CancellazionePossibile;
+                cmd.Parameters.Add("@pCancellazionePossib", SqlDbType.Bit).Value = schedule.CancellazioneConsentita;
                 cmd.Parameters.Add("@pCancellabileFinoAl", SqlDbType.DateTime2).Value = schedule.CancellabileFinoAl;
                 cmd.Parameters.Add("@pDataAperturaIscriz", SqlDbType.DateTime2).Value = schedule.DataAperturaIscrizione;
                 cmd.Parameters.Add("@pDataChiusuraIscriz", SqlDbType.DateTime2).Value = schedule.DataChiusuraIscrizione;
+                cmd.Parameters.Add("@pVisibileDal", SqlDbType.DateTime2).Value = schedule.VisibileDal;
                 cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
                 cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
                 cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
-                cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListAvailable;
+                cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListDisponibile;
                 cmd.Parameters.Add(parId);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -77,15 +78,16 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pDataOraInizio", SqlDbType.DateTime2).Value = schedule.DataOraInizio;
                 cmd.Parameters.Add("@pIstruttore", SqlDbType.NVarChar, 150).Value = schedule.Istruttore;
                 cmd.Parameters.Add("@pPosti", SqlDbType.Int).Value = schedule.PostiDisponibili;
-                cmd.Parameters.Add("@pCancellazionePossib", SqlDbType.Bit).Value = schedule.CancellazionePossibile;
+                cmd.Parameters.Add("@pCancellazionePossib", SqlDbType.Bit).Value = schedule.CancellazioneConsentita;
                 cmd.Parameters.Add("@pCancellabileFinoAl", SqlDbType.DateTime2).Value = schedule.CancellabileFinoAl;
                 cmd.Parameters.Add("@pDataAperturaIscriz", SqlDbType.DateTime2).Value = schedule.DataAperturaIscrizione;
                 cmd.Parameters.Add("@pDataChiusuraIscriz", SqlDbType.DateTime2).Value = schedule.DataChiusuraIscrizione;
+                cmd.Parameters.Add("@pVisibileDal", SqlDbType.DateTime2).Value = schedule.VisibileDal;
                 cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
                 cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
                 cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
-                cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListAvailable;
-                cmd.Parameters.Add("@pTipoModifica", SqlDbType.Bit).Value = tipoModifica == TipoModificaScheduleDM.SingoloSchedule ? "S" : "N";
+                cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListDisponibile;
+                cmd.Parameters.Add("@pTipoModifica", SqlDbType.Bit).Value = (tipoModifica == TipoModificaScheduleDM.SingoloSchedule ? "S" : "N");
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -115,10 +117,11 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pOrderAscending", SqlDbType.Bit).Value = ascending;
                 cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
                 await cn.OpenAsync();
-                using(var dr = await cmd.ExecuteReaderAsync()){
-                    while(await dr.ReadAsync())
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    while (await dr.ReadAsync())
                     {
-                        result.Add(await internalReadSchedule(dr, GetScheduleColumns(dr)));   
+                        result.Add(await internalReadSchedule(dr, GetScheduleColumns(dr)));
                     }
                 }
             }
@@ -147,6 +150,43 @@ namespace PalestreGoGo.DataAccess
             return null;
         }
 
+
+        //public async Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null)
+        //{
+        //    IEnumerable<Schedules> result = null;
+        //    using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
+        //    {
+        //        result = await cn.QueryAsync<Schedules, Locations, TipologieLezioni, Schedules>("Schedules_GetForCliente",
+        //                            (s, l, tl) =>
+        //                            {
+        //                                s.Location = l;
+        //                                s.TipologiaLezione = tl;
+        //                                return s;
+        //                            },
+        //                            splitOn: "IdLocation,IdTipoLezione",
+        //                            commandType: System.Data.CommandType.StoredProcedure,
+        //                            param: new { pIdCliente = idCliente, pStartDate = startDate, pEndDate = endDate, pIdLocation = idLocation }
+        //                    );
+        //    }
+        //    return result;
+        //}
+
+        public async Task DeleteScheduleAsync(int idCliente, int idSchedule)
+        {
+            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Schedules_Delete]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = idSchedule;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+
+        #region Private Stuff
         private Dictionary<string, int> GetScheduleColumns(SqlDataReader reader)
         {
             Dictionary<string, int> result = new Dictionary<string, int>();
@@ -159,12 +199,15 @@ namespace PalestreGoGo.DataAccess
             result.Add("Istruttore", reader.GetOrdinal("Istruttore"));
             result.Add("PostiDisponibili", reader.GetOrdinal("PostiDisponibili"));
             result.Add("PostiResidui", reader.GetOrdinal("PostiResidui"));
+            result.Add("CancellazioneConsentita", reader.GetOrdinal("CancellazioneConsentita"));
             result.Add("CancellabileFinoAl", reader.GetOrdinal("CancellabileFinoAl"));
             result.Add("DataAperturaIscrizioni", reader.GetOrdinal("DataAperturaIscrizioni"));
             result.Add("DataChiusuraIscrizioni", reader.GetOrdinal("DataChiusuraIscrizioni"));
             result.Add("DataCancellazione", reader.GetOrdinal("DataCancellazione"));
             result.Add("UserIdOwner", reader.GetOrdinal("UserIdOwner"));
             result.Add("Note", reader.GetOrdinal("Note"));
+            result.Add("VisibileDal", reader.GetOrdinal("VisibileDal"));
+            result.Add("WaitListDisponibile", reader.GetOrdinal("WaitListDisponibile"));
             result.Add("Recurrency", reader.GetOrdinal("Recurrency"));
             result.Add("IdParent", reader.GetOrdinal("IdParent"));
             result.Add("NomeLocation", reader.GetOrdinal("NomeLocation"));
@@ -193,14 +236,17 @@ namespace PalestreGoGo.DataAccess
             result.Istruttore = await reader.IsDBNullAsync(columns["Istruttore"]) ? null : reader.GetString(columns["Istruttore"]);
             result.PostiDisponibili = reader.GetInt32(columns["PostiDisponibili"]);
             result.PostiResidui = reader.GetInt32(columns["PostiResidui"]);
+            result.CancellazioneConsentita = reader.GetBoolean(columns["CancellazioneConsentita"]);
             result.CancellabileFinoAl = await reader.IsDBNullAsync(columns["CancellabileFinoAl"]) ? default(DateTime?) : reader.GetDateTime(columns["CancellabileFinoAl"]);
             result.DataAperturaIscrizione = await reader.IsDBNullAsync(columns["DataAperturaIscrizioni"]) ? default(DateTime?) : reader.GetDateTime(columns["DataAperturaIscrizioni"]);
             result.DataChiusuraIscrizione = await reader.IsDBNullAsync(columns["DataChiusuraIscrizioni"]) ? default(DateTime?) : reader.GetDateTime(columns["DataChiusuraIscrizioni"]);
             result.DataCancellazione = await reader.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : reader.GetDateTime(columns["DataCancellazione"]);
             result.UserIdOwner = await reader.IsDBNullAsync(columns["UserIdOwner"]) ? null : reader.GetString(columns["UserIdOwner"]);
             result.Note = await reader.IsDBNullAsync(columns["Note"]) ? null : reader.GetString(columns["Note"]);
+            result.VisibileDal = await reader.IsDBNullAsync(columns["VisibileDal"]) ? default(DateTime?) : reader.GetDateTime(columns["VisibileDal"]);
             result.Recurrency = await reader.IsDBNullAsync(columns["Recurrency"]) ? null : JsonConvert.DeserializeObject<ScheduleRecurrencyDM>(reader.GetString(columns["Recurrency"]));
             result.IdParent = await reader.IsDBNullAsync(columns["IdParent"]) ? default(int?) : reader.GetInt32(columns["IdParent"]);
+            result.WaitListDisponibile = reader.GetBoolean(columns["WaitListDisponibile"]);
             result.TipologiaLezione = new TipologiaLezioneDM();
             result.TipologiaLezione.Id = result.IdTipoLezione;
             result.TipologiaLezione.IdCliente = result.IdCliente;
@@ -220,91 +266,7 @@ namespace PalestreGoGo.DataAccess
             result.Location.Nome = reader.GetString(columns["NomeLocation"]);
             return result;
         }
+        #endregion
 
-       
-        public async Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null)
-        {
-            IEnumerable<Schedules> result = null;
-            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
-            {
-                result = await cn.QueryAsync<Schedules, Locations, TipologieLezioni, Schedules>("Schedules_GetForCliente",
-                                    (s, l, tl) =>
-                                    {
-                                        s.Location = l;
-                                        s.TipologiaLezione = tl;
-                                        return s;
-                                    },
-                                    splitOn: "IdLocation,IdTipoLezione",
-                                    commandType: System.Data.CommandType.StoredProcedure,
-                                    param: new { pIdCliente = idCliente, pStartDate = startDate, pEndDate = endDate, pIdLocation = idLocation }
-                            );
-            }
-            return result;
-        }
-        public async Task RemoveScheduleAsync(int idCliente, int idSchedule)
-        {
-            var entity = _context.Schedules
-                                .Include(s => s.Appuntamenti)
-                                .Single(tl => tl.IdCliente.Equals(idCliente) && tl.Id.Equals(idSchedule));
-            if (entity == null) throw new ArgumentException("Invalid Tenant");
-            if (entity.DataOraInizio <= DateTime.Now)
-            {
-                throw new InvalidOperationException("Impossibile cancellare uno schedule passato.");
-            }
-
-            using (var trans = await _context.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    entity.DataCancellazione = DateTime.Now;
-                    foreach (var app in entity.Appuntamenti)
-                    {
-                        app.DataCancellazione = DateTime.Now;
-                        //Rimborisamo gli appuntamenti (solo i NON GUEST)
-                        if (app.UserId != null)
-                        {
-                            var abbonamento = await _context.AbbonamentiUtenti.FirstOrDefaultAsync(au => au.IdCliente.Equals(idCliente) && au.UserId.Equals(app.UserId));
-                            // Avoid overflow
-                            if ((abbonamento != null) && (abbonamento.IngressiResidui < Int16.MaxValue))
-                            {
-                                abbonamento.IngressiResidui++;
-                            }
-                        }
-                    }
-                    await _context.SaveChangesAsync();
-                    trans.Commit();
-                }
-                catch (Exception exc)
-                {
-                    _logger.LogError(exc, $"Errore durante la cancellazione dello Schedule. IdCliente: {idCliente}, IdSchedule:{idSchedule}");
-                    trans.Rollback();
-                    throw;
-                }
-            }
-        }
-
-        public async Task UpdateSchedule(int idCliente, Schedules entity)
-        {
-            //Attenzione! Non verifichiamo il tenant
-            //TODO: Implementare le logiche di verifica di fattibilità
-
-            if (entity.IdCliente != idCliente) throw new ArgumentException("idTenant not valid");
-            using (var trans = await _context.Database.BeginTransactionAsync())
-            {
-                var oldItem = await _context.Schedules.AsNoTracking().SingleAsync(s => s.Id.Equals(entity.Id));
-                var numPrenotazioni = oldItem.PostiDisponibili - oldItem.PostiResidui;
-                if (entity.PostiDisponibili < numPrenotazioni)
-                {
-                    //Impossibile impostare un numero di posti disponibile inferiore a quelli già riservati (ma funziona questo controllo?)
-                    throw new ApplicationException("Numero di Posti Disponibili inferiore al numero di prenotazioni già presenti");
-                }
-                //Calcoliamo i nuovi posti residui 
-                entity.PostiResidui = entity.PostiDisponibili - numPrenotazioni;
-                EntityEntry dbEntityEntry = _context.Entry<Schedules>(entity);
-                dbEntityEntry.State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                trans.Commit();
-            }
-        }
     }
 }

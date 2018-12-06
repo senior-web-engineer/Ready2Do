@@ -1,4 +1,4 @@
-﻿namespace ModelCommon
+﻿namespace ready2do.model.common
 {
     public enum RepeatScheduleEveryDM
     {

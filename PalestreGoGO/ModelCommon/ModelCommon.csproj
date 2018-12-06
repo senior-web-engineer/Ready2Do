@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ready2do.model.common</RootNamespace>
+    <AssemblyName>ready2do.model.common</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

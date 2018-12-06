@@ -31,6 +31,7 @@ CREATE PROCEDURE [dbo].[Schedules_Update]
 	@pCancellabileFinoAl	DATETIME2(2) = NULL,
 	@pDataAperturaIscriz	DATETIME2(2) = NULL,
 	@pDataChiusuraIscriz	DATETIME2(2) = NULL,
+	@pVisibileDal			DATETIME2(2) = NULL,
 	@pNote					NVARCHAR(1000) = NULL,
 	@pUserIdOwner			NVARCHAR(450) = NULL,
 	@pRecurrency			NVARCHAR(MAX) = NULL,
@@ -93,7 +94,8 @@ SET XACT_ABORT ON;
 				Note = @pNote, 
 				UserIdOwner = @pUserIdOwner,
 				CancellazioneConsentita = @pCancellazionePossib, 
-				WaitListDisponibile = @pWaitListDisponibile
+				WaitListDisponibile = @pWaitListDisponibile,
+				VisibileDal = @pVisibileDal
 		WHERE Id = @pId
 		AND IdCliente = @pIdCliente
 
@@ -101,7 +103,8 @@ SET XACT_ABORT ON;
 		BEGIN
 			-- Se è stata specificata una ricorrenza, inseriamo gli eventi figli		
 			EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pCancellazionePossib,
-											 @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile
+											 @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile,
+											 @pVisibileDal
 		END
 	END
 	ELSE
@@ -125,6 +128,7 @@ SET XACT_ABORT ON;
 							 END,
 				CancellazioneConsentita = @pCancellazionePossib, 
 				WaitListDisponibile = @pWaitListDisponibile,
+				VisibileDal = @pVisibileDal,
 				IdParent = NULL -- Diventa un evento autonomo a prescindere dal tipo di modifica
 		WHERE Id = @pId
 		AND IdCliente = @pIdCliente
@@ -149,7 +153,8 @@ SET XACT_ABORT ON;
 			AND (IdParent = @pId)
 			-- e li reinseriamo con il corrente che diventa il padre
 			EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pCancellazionePossib,
-															@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile
+															@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile,
+															@pVisibileDal
 		END
 	END
 COMMIT

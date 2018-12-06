@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.DataModel.Exceptions;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Data;

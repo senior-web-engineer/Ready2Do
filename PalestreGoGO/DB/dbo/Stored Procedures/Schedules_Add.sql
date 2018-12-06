@@ -29,6 +29,7 @@ CREATE PROCEDURE [dbo].[Schedules_Add]
 	@pCancellabileFinoAl	DATETIME2(2) = NULL,
 	@pDataAperturaIscriz	DATETIME2(2) = NULL,
 	@pDataChiusuraIscriz	DATETIME2(2) = NULL,
+	@pVisibileDal			DATETIME2(2) = NULL,
 	@pNote					NVARCHAR(1000) = NULL,
 	@pUserIdOwner			NVARCHAR(450) = NULL,
 	@pRecurrency			NVARCHAR(MAX) = NULL,
@@ -55,8 +56,8 @@ SET XACT_ABORT ON;
  	
 		BEGIN TRANSACTION
 		-- Inseriamo l'evento padre
-		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, [Recurrency])
-			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz,@pNote, @pUserIdOwner, @pRecurrency)
+		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, Note, UserIdOwner, [Recurrency])
+			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pNote, @pUserIdOwner, @pRecurrency)
 		SET @pId = SCOPE_IDENTITY();
 
 		EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, 
@@ -67,8 +68,8 @@ SET XACT_ABORT ON;
 	ELSE
 	-- EVENTO SINGOLO (NON RICORRENTE)
 	BEGIN
-		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner)
-			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz,@pNote, @pUserIdOwner)
+		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, Note, UserIdOwner)
+			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pNote, @pUserIdOwner)
 
 		SET @pId = SCOPE_IDENTITY();
 	END

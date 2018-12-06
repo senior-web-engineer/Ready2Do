@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ModelCommon
+namespace ready2do.model.common
 {
     public class ScheduleRecurrencyDM
     {

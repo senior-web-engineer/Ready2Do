@@ -102,6 +102,48 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
         }
 
+
+        /// <summary>
+        /// Ritorna SOLO gli schedule "pubblicati" ossia visibili pubblicamente ovvero quelli per cui sono aperte le iscrizioni
+        /// o per cui risulta VisibileDal < NOW
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="idLocation"></param>
+        /// <returns></returns>
+        [HttpGet("published")]
+        public async Task<IActionResult> GetPublicSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start, [FromQuery(Name = "ed")]string end, [FromQuery(Name = "lid")]int? idLocation)
+        {
+            DateTime startDate, endDate;
+            IEnumerable<Schedules> schedule;
+            if (!DateTime.TryParseExact(start, Constants.DATETIME_QUERYSTRING_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate))
+            {
+                return BadRequest();
+            }
+            if (!DateTime.TryParseExact(end, Constants.DATETIME_QUERYSTRING_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
+            {
+                return BadRequest();
+            }
+            /*Limitiamo il range temporale per cui ritornare gli schedules a 60 giorni*/
+            if (endDate.Subtract(startDate).TotalDays > 60)
+            {
+                return BadRequest();
+            }
+
+            if (idLocation.HasValue)
+            {
+                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate, idLocation.Value);
+            }
+            else
+            {
+                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate);
+            }
+            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailedApiModel>>(schedule);
+            return Ok(result);
+        }
+
+
         [HttpDelete()]
         public async Task<IActionResult> DeleteSchedule([FromRoute] int idCliente, [FromQuery] int idSchedule)
         {

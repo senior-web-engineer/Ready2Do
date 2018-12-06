@@ -1,0 +1,36 @@
+For a startup website that handle online booking of sport activities we need 
+a serious professional hable to handle the following tasks:
+- design the logo of web site with possibly 1/2 variations both in color and in b&w
+- design a color palette compatible with logo
+- design the layout of general site and of about 10 page types (see below)
+- provide optionally UI/UX suggestions
+- provide optionally SEO suggestions
+
+The site is composed of different sections and one or more page types per section:
+1. Landing Page
+2. Client Public Page: is the main page of site with different sections 
+   one below the other and some banner ads. 
+   This area include also a "Book for an event" page/popup
+3. Client Administration Area which include the following page types:
+  - List of Items
+  - Item detail edit /view
+  - Calendar
+4. User personal area which includes the following page types:
+  - personal profile edit
+  - booking history
+  - single booking detail
+  - undo booking page
+5. Signin/Signup pages  
+
+
+The minimal deliverables expected are:
+- logo in different formats (vetorial, raster) and resolutions both for web and print
+- the color palette
+- web design (see note) as HTML/CSS and optionally as PSD
+- wireframes for UX
+
+Note: 
+1. The development of web site is almost completed, what we need is to improve and level out
+the design and graphic part with particular attention to accessibility from mobile (responsive design).
+2. We already adopted materializeCSS as CSS framework and we don't want change it.
+

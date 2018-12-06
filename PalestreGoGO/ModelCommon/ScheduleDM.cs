@@ -1,4 +1,4 @@
-﻿namespace PalestreGoGo.DataModel
+﻿namespace ready2do.model.common
 {
     public class ScheduleDM: ScheduleBaseDM
     {

@@ -10,13 +10,14 @@
 	[PostiDisponibili]			INT				NOT NULL,	-- Posti inizilamente disponibili
 	[PostiResidui]				INT				NOT NULL,	-- Contatore dei posti ancora disponibili
 	[CancellazioneConsentita]	BIT				NOT NULL,
-	[CancellabileFinoAl]		DATETIME2(2)	NOT NULL,
-	[DataAperturaIscrizioni]	DATETIME2(2)	NOT NULL,	-- Momento da cui è possibile iniziare ad iscriversi
-	[DataChiusuraIscrizioni]	DATETIME2(2)	NOT NULL,
+	[CancellabileFinoAl]		DATETIME2(2)	NULL,
+	[DataAperturaIscrizioni]	DATETIME2(2)	NULL,	-- Momento da cui è possibile iniziare ad iscriversi
+	[DataChiusuraIscrizioni]	DATETIME2(2)	NULL,
 	[DataCancellazione]			DATETIME2(2)	NULL,		-- Valorizzata se la classe è stata cancellata dalla palestra
 	[UserIdOwner]				NVARCHAR(450)	NULL,	-- Utente titolare della classe (se valorizzato è l'unico che può editare la classe)
 	[Note]						NVARCHAR(1000)	NULL,
 	[WaitListDisponibile]		BIT				NOT NULL,
+	[VisibileDal]				DATETIME2(2)	NULL,
 	--20181201-Recurrent Events
 	[Recurrency]				NVARCHAR(MAX)	NULL,
 	[IdParent]					INT				NULL,

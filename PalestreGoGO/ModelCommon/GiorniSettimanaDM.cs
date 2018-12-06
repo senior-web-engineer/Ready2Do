@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelCommon
+namespace ready2do.model.common
 {
     [Flags]
     public enum GiorniSettimanaDM

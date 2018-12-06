@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Schedules_GetForCliente]
+﻿CREATE PROCEDURE [dbo].[OBSOLETE_Schedules_GetForCliente]
 	@pIdCliente		INT,
 	@pStartDate		DATETIME2(2) = NULL,
 	@pEndDate		DATETIME2(2) = NULL,

@@ -17,7 +17,8 @@ CREATE PROCEDURE [dbo].[internal_Schedules_AddRicorrenti]
 	@pNote					NVARCHAR(1000) = NULL,
 	@pUserIdOwner			NVARCHAR(450) = NULL,
 	@pRecurrency			NVARCHAR(MAX) = NULL,
-	@pWaitListDisponibile	BIT
+	@pWaitListDisponibile	BIT,
+	@pVisibileDal			DATETIME2(2) = NULL
 AS
 BEGIN
 	DECLARE @CONST_MAX_YEARS			INT = 2,
@@ -30,11 +31,13 @@ BEGIN
 	DECLARE @tblWeekDays TABLE (WeekDayNum INT);
 	DECLARE @diffCancellabile	BIGINT,
 			@diffAperturaIscr	BIGINT,
-			@diffChiusuraIscr	BIGINT
+			@diffChiusuraIscr	BIGINT,
+			@diffVisibileDal	BIGINT
 
 	SELECT @diffCancellabile = DATEDIFF(second,@pDataOraInizio, @pCancellabileFinoAl);
 	SELECT @diffAperturaIscr = DATEDIFF(second,@pDataOraInizio, @pDataAperturaIscriz);
 	SELECT @diffChiusuraIscr = DATEDIFF(second,@pDataOraInizio, @pDataChiusuraIscriz);
+	SELECT @diffVisibileDal =  DATEDIFF(second,@pDataOraInizio, @diffVisibileDal);
 
 	SELECT  @recurrency = LOWER(JSON_VALUE(@pRecurrency, '$.Recurrency')),
 				@endData = CAST(JSON_VALUE(@pRecurrency, '$.RepeatUntil') AS DATE),
@@ -68,7 +71,8 @@ BEGIN
 		IF @recurrency = 'daily'
 		BEGIN
 			INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, 
-									DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent, CancellazioneConsentita, WaitListDisponibile)
+									DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent, CancellazioneConsentita, WaitListDisponibile, 
+									VisibileDal)
 				SELECT @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, 							
 						DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), g.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)),
 						@pIstruttore, @pPosti, @pPosti,
@@ -88,7 +92,12 @@ BEGIN
 						@pUserIdOwner, 
 						@pIdParent,
 						@pCancellazionePossib,
-						@pWaitListDisponibile
+						@pWaitListDisponibile,
+						-- Stessa cosa per VisibileDal
+						DATEADD(SECOND, 
+									@diffVisibileDal,
+									DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), g.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)))
+
 				FROM [utils].[Numbers] n
 					INNER JOIN [utils].[Giorni] g ON g.[Data] = DATEADD(DAY, n.Number, @pDataOraInizio)
 				WHERE ((@endData IS NULL) OR (g.Data <= @endData))
@@ -97,7 +106,8 @@ BEGIN
 		ELSE IF @recurrency = 'monthly'
 		BEGIN
 			INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, 
-								   DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent, CancellazioneConsentita, WaitListDisponibile)
+								   DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent, CancellazioneConsentita, WaitListDisponibile,
+								   VisibileDal)
 				SELECT @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation,
 						-- DataInizio = DataInizioOriginale + i-esimo mese
 						DATEADD(MONTH, n.Number, @pDataOraInizio),
@@ -118,7 +128,11 @@ BEGIN
 						@pUserIdOwner, 
 						@pIdParent,
 						@pCancellazionePossib,
-						@pWaitListDisponibile
+						@pWaitListDisponibile,
+						-- Stessa cosa per VisibileDal
+						DATEADD(SECOND, 
+									@diffVisibileDal,
+									DATEADD(MONTH, n.Number, @pDataOraInizio))
 			FROM [utils].[Numbers] AS n
 			WHERE n.Number > 0
 			AND ((@endData IS NULL) OR (n.Number < DATEDIFF(MONTH, @pDataOraInizio, @endData)))
@@ -147,7 +161,8 @@ BEGIN
 			IF @endData IS NOT NULL
 			BEGIN
 				INSERT INTO Schedules (IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, 
-										DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent, CancellazioneConsentita, WaitListDisponibile)
+										DataAperturaIscrizioni, DataChiusuraIscrizioni, Note, UserIdOwner, IdParent, CancellazioneConsentita, WaitListDisponibile,
+										VisibileDal)
 					SELECT @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, 							
 							DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)),
 							@pIstruttore, @pPosti, @pPosti,
@@ -161,13 +176,17 @@ BEGIN
 										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
 							-- Stessa cosa per DataChiusuraIscrizioni
 							DATEADD(SECOND, 
-										@diffChiusuraIscr,
+										@diffVisibileDal,
 										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME))),
 							@pNote, 
 							@pUserIdOwner, 
 							@pIdParent,
 							@pCancellazionePossib,
-							@pWaitListDisponibile
+							@pWaitListDisponibile,
+							-- Stessa cosa per VisibileDal
+							DATEADD(SECOND, 
+										@diffChiusuraIscr,
+										DATEADD(DAY, DATEDIFF(DAY, CONVERT(DATE, '19000101', 112), gi.[Data]), CAST(CAST(@pDataOraInizio AS TIME) AS DATETIME)))
 					FROM [utils].[Giorni] AS gi
 						INNER JOIN @tblWeekDays tdw ON tdw.WeekDayNum = gi.DayOfWeekNum
 					WHERE gi.Data > @pDataOraInizio

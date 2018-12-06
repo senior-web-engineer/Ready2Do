@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelCommon
+namespace ready2do.model.common
 {
     public enum TipoModificaScheduleDM
     {

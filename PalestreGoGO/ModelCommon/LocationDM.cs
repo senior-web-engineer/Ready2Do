@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PalestreGoGo.DataModel
+namespace ready2do.model.common
 {
     public partial class LocationDM
     {
