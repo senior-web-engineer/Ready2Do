@@ -50,6 +50,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pDataAperturaIscriz", SqlDbType.DateTime2).Value = schedule.DataAperturaIscrizione;
                 cmd.Parameters.Add("@pDataChiusuraIscriz", SqlDbType.DateTime2).Value = schedule.DataChiusuraIscrizione;
                 cmd.Parameters.Add("@pVisibileDal", SqlDbType.DateTime2).Value = schedule.VisibileDal;
+                cmd.Parameters.Add("@pVisibileFinoAl", SqlDbType.DateTime2).Value = schedule.VisibileFinoAl;
                 cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
                 cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
                 cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
@@ -83,6 +84,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pDataAperturaIscriz", SqlDbType.DateTime2).Value = schedule.DataAperturaIscrizione;
                 cmd.Parameters.Add("@pDataChiusuraIscriz", SqlDbType.DateTime2).Value = schedule.DataChiusuraIscrizione;
                 cmd.Parameters.Add("@pVisibileDal", SqlDbType.DateTime2).Value = schedule.VisibileDal;
+                cmd.Parameters.Add("@pVisibileFinoAl", SqlDbType.DateTime2).Value = schedule.VisibileFinoAl;
                 cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
                 cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
                 cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
@@ -207,6 +209,7 @@ namespace PalestreGoGo.DataAccess
             result.Add("UserIdOwner", reader.GetOrdinal("UserIdOwner"));
             result.Add("Note", reader.GetOrdinal("Note"));
             result.Add("VisibileDal", reader.GetOrdinal("VisibileDal"));
+            result.Add("VisibileFinoAl", reader.GetOrdinal("VisibileFinoAl"));
             result.Add("WaitListDisponibile", reader.GetOrdinal("WaitListDisponibile"));
             result.Add("Recurrency", reader.GetOrdinal("Recurrency"));
             result.Add("IdParent", reader.GetOrdinal("IdParent"));
@@ -244,6 +247,7 @@ namespace PalestreGoGo.DataAccess
             result.UserIdOwner = await reader.IsDBNullAsync(columns["UserIdOwner"]) ? null : reader.GetString(columns["UserIdOwner"]);
             result.Note = await reader.IsDBNullAsync(columns["Note"]) ? null : reader.GetString(columns["Note"]);
             result.VisibileDal = await reader.IsDBNullAsync(columns["VisibileDal"]) ? default(DateTime?) : reader.GetDateTime(columns["VisibileDal"]);
+            result.VisibileFinoAl = await reader.IsDBNullAsync(columns["VisibileFinoAl"]) ? default(DateTime?) : reader.GetDateTime(columns["VisibileFinoAl"]);
             result.Recurrency = await reader.IsDBNullAsync(columns["Recurrency"]) ? null : JsonConvert.DeserializeObject<ScheduleRecurrencyDM>(reader.GetString(columns["Recurrency"]));
             result.IdParent = await reader.IsDBNullAsync(columns["IdParent"]) ? default(int?) : reader.GetInt32(columns["IdParent"]);
             result.WaitListDisponibile = reader.GetBoolean(columns["WaitListDisponibile"]);

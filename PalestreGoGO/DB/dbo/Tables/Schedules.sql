@@ -17,7 +17,8 @@
 	[UserIdOwner]				NVARCHAR(450)	NULL,	-- Utente titolare della classe (se valorizzato è l'unico che può editare la classe)
 	[Note]						NVARCHAR(1000)	NULL,
 	[WaitListDisponibile]		BIT				NOT NULL,
-	[VisibileDal]				DATETIME2(2)	NULL,
+	[VisibileDal]				DATETIME2(2)	NULL,   -- indica da quando lo schedule e pubblicamente visibile
+	[VisibileFinoAl]			DATETIME2(2)	NULL,	-- Indica fino a quando lo schedule è visibile pubblicamente
 	--20181201-Recurrent Events
 	[Recurrency]				NVARCHAR(MAX)	NULL,
 	[IdParent]					INT				NULL,

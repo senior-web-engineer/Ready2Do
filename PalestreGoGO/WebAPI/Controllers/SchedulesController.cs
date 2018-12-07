@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
+using PalestreGoGo.WebAPI.Model.Extensions;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
@@ -18,12 +19,12 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente:int}/schedules")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class SchedulesController : PalestreControllerBase
+    public class SchedulesAPIController : PalestreControllerBase
     {
-        private readonly ILogger<SchedulesController> _logger;
+        private readonly ILogger<SchedulesAPIController> _logger;
         private readonly ISchedulesRepository _repository;
 
-        public SchedulesController(ILogger<SchedulesController> logger, ISchedulesRepository repository)
+        public SchedulesAPIController(ILogger<SchedulesAPIController> logger, ISchedulesRepository repository)
         {
             _logger = logger;
             _repository = repository;
@@ -39,13 +40,10 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [HttpPut("{id}/subsequent")]
-        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleDM schedule)
+        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleChangeApiModel scheduleChange)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            if(ControllerContext.RouteData
-            var entity = Mapper.Map<ScheduleApiModel, Schedules>(schedule);
-            await _repository.UpdateSchedule(idCliente, entity);
+            await _repository.UpdateScheduleAsync(idCliente, scheduleChange.Schedule, scheduleChange.TipoModifica);
             return Ok();
         }
 
@@ -65,8 +63,11 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetSchedule([FromRoute]int idCliente, [FromRoute] int id)
         {
             var schedule = await _repository.GetScheduleAsync(idCliente, id);
-            var result = Mapper.Map<Schedules, ScheduleApiModel>(schedule);
-            return Ok(result);
+            if (!GetCurrentUser().CanManageStructure(idCliente) && !schedule.IsPublicVisible())
+            {
+                return NotFound();
+            }
+            return Ok(schedule);
         }
 
         /// <summary>

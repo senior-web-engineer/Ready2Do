@@ -55,6 +55,7 @@ BEGIN
 							s.Note,
 							s.WaitListDisponibile,
 							s.VisibileDal,
+							s.VisibileFinoAl,
 							COALESCE(s.Recurrency, sp.Recurrency) AS Recurrency,
 							s.IdParent,
 							l.Nome AS NomeLocation,

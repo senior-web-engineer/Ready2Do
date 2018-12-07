@@ -20,10 +20,12 @@ namespace ready2do.model.common
         public DateTime? DataChiusuraIscrizione { get; set; }
         public DateTime? DataCancellazione { get; set; }
         public DateTime? VisibileDal { get; set; }
+        public DateTime? VisibileFinoAl { get; set; }
         public bool WaitListDisponibile { get; set; }
         public string UserIdOwner { get; set; }
         public string Note { get; set; }
         public ScheduleRecurrencyDM Recurrency { get; set; }
         public int? IdParent { get; set; }
+
     }
 }
