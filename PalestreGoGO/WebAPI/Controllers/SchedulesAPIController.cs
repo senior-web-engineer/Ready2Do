@@ -78,91 +78,60 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// </remarks>
         /// <param name="idCliente"></param>
         /// <param name="id"></param>
-        /// <param name="startDate">stringa in formto "yyyyMMddTHHmmss"</param>
-        /// <param name="endDate">stringa in formto "yyyyMMddTHHmmss"</param>
+        /// <param name="startDate">stringa in formato ISO8601 (preferibilmente UTC) "yyyyMMddTHHmmssZ"</param>
+        /// <param name="endDate">stringa in formato ISO8601 (preferibilmente UTC) "yyyyMMddTHHmmssZ"</param>
         /// <returns></returns>
         [HttpGet()]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start, [FromQuery(Name ="ed")]string end, [FromQuery(Name ="lid")]int? idLocation)
+        public async Task<IActionResult> GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start = null, [FromQuery(Name = "ed")]string end = null,
+                                                        [FromQuery(Name = "lid")]int? idLocation = null, [FromQuery(Name = "tlid")]int? idTipoLezione = null,
+                                                        [FromQuery(Name = "onlyavailable")]bool soloPostiDisp = false, [FromQuery(Name = "onlyopen")]bool soloIscrizAperte = true,
+                                                        [FromQuery(Name = "psize")]int pageSize = 25, [FromQuery(Name = "pnum")]int pageNumber = 1,
+                                                        [FromQuery(Name = "sortcol")]string sortColumn = "dataorainizio", [FromQuery(Name = "asc")]bool ascending = true,
+                                                        [FromQuery(Name = "deleted")]bool includeDeleted = false)
         {
+            //Gli item cancellati sono visibili solo dal gestore della struttura
+            if (!User.CanManageStructure(idCliente) && includeDeleted) return BadRequest();
+            //Gli utenti NON amministratori possono vedere solo gli schedule per cui sono aperte le iscrizioni
+            if (!User.CanManageStructure(idCliente) && !soloIscrizAperte) return BadRequest();
+
             DateTime startDate, endDate;
-            IEnumerable<Schedules> schedule;
-            if (!DateTime.TryParseExact(start,Constants.DATETIME_QUERYSTRING_FORMAT,CultureInfo.InvariantCulture, DateTimeStyles.None,out startDate))
+            IEnumerable<ScheduleDM> schedules;
+            if (string.IsNullOrEmpty(end))
+            {
+                startDate = DateTime.Now.AddDays(-10); // Default: Oggi -10 gg
+            }
+            else if (!DateTime.TryParseExact(start.Replace("T", " "), "u", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out startDate))
             {
                 return BadRequest();
             }
-            if (!DateTime.TryParseExact(end, Constants.DATETIME_QUERYSTRING_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
+            if (string.IsNullOrEmpty(end))
             {
-                return BadRequest();
+                endDate = DateTime.Now.AddDays(10); // Default: Oggi +10 gg
             }
-            /*Limitiamo il range temporale per cui ritornare gli schedules a 60 giorni*/
-            if(endDate.Subtract(startDate).TotalDays > 60)
+            else if (!DateTime.TryParseExact(end.Replace("T", " "), "u", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out endDate))
             {
                 return BadRequest();
             }
 
-            if (idLocation.HasValue)
-            {
-                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate,idLocation.Value);
-            }
-            else
-            {
-                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate);
-            }
-            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailedApiModel>>(schedule);
-            return Ok(result);
-        }
-
-
-        /// <summary>
-        /// Ritorna SOLO gli schedule "pubblicati" ossia visibili pubblicamente ovvero quelli per cui sono aperte le iscrizioni
-        /// o per cui risulta VisibileDal < NOW
-        /// </summary>
-        /// <param name="idCliente"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="idLocation"></param>
-        /// <returns></returns>
-        [HttpGet("published")]
-        public async Task<IActionResult> GetPublicSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start, [FromQuery(Name = "ed")]string end, [FromQuery(Name = "lid")]int? idLocation)
-        {
-            DateTime startDate, endDate;
-            IEnumerable<Schedules> schedule;
-            if (!DateTime.TryParseExact(start, Constants.DATETIME_QUERYSTRING_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate))
-            {
-                return BadRequest();
-            }
-            if (!DateTime.TryParseExact(end, Constants.DATETIME_QUERYSTRING_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
-            {
-                return BadRequest();
-            }
             /*Limitiamo il range temporale per cui ritornare gli schedules a 60 giorni*/
             if (endDate.Subtract(startDate).TotalDays > 60)
             {
                 return BadRequest();
             }
 
-            if (idLocation.HasValue)
-            {
-                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate, idLocation.Value);
-            }
-            else
-            {
-                schedule = await _repository.GetSchedulesAsync(idCliente, startDate, endDate);
-            }
-            var result = Mapper.Map<IEnumerable<Schedules>, IEnumerable<ScheduleDetailedApiModel>>(schedule);
-            return Ok(result);
+            schedules = await _repository.GetScheduleListAsync(idCliente, startDate, endDate, idLocation, idTipoLezione, soloPostiDisp, soloIscrizAperte, pageSize, pageNumber, sortColumn, ascending, includeDeleted);
+            return Ok(schedules);
         }
-
 
         [HttpDelete()]
         public async Task<IActionResult> DeleteSchedule([FromRoute] int idCliente, [FromQuery] int idSchedule)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            await _repository.RemoveScheduleAsync(idCliente, idSchedule);
+            await _repository.DeleteScheduleAsync(idCliente, idSchedule);
             return Ok();
         }
 
-        
+
     }
 }

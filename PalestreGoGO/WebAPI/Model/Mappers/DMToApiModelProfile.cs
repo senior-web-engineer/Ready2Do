@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

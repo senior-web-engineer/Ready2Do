@@ -65,7 +65,9 @@ namespace PalestreGoGo.WebAPI.Controllers
             result.DataOra = string.Format("{0}T{1}Z", schedule.DataOraInizio.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.DataOraInizio.TimeOfDay.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
             result.DurataMinuti = schedule.TipologiaLezione.Durata;
             result.Istruttore = schedule.Istruttore;
-            result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.ToString("o", CultureInfo.InvariantCulture);
+            result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.HasValue 
+                                                    ? schedule.CancellabileFinoAl.Value.ToString("o", CultureInfo.InvariantCulture)
+                                                    : schedule.DataOraInizio.ToString("0", CultureInfo.InvariantCulture);
             result.Nome = schedule.Title;
             result.NomeSala = schedule?.Location?.Nome;
             result.PostiDisponibili = schedule.PostiDisponibili;

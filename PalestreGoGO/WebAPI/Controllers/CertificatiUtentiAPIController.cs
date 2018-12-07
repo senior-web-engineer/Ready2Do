@@ -17,18 +17,18 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/users/{userId}/certificati")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class CertificatiUtentiController : PalestreControllerBase
+    public class CertificatiUtentiAPIController : PalestreControllerBase
     {        
         private readonly IClientiUtentiRepository _repository;
-        private readonly ILogger<CertificatiUtentiController> _logger;
+        private readonly ILogger<CertificatiUtentiAPIController> _logger;
 
-        public CertificatiUtentiController(IClientiUtentiRepository repository, ILogger<CertificatiUtentiController> logger)
+        public CertificatiUtentiAPIController(IClientiUtentiRepository repository, ILogger<CertificatiUtentiAPIController> logger)
         {
             _logger = logger;
             _repository = repository;
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> GetCertificati([FromRoute]int idCliente, [FromRoute]string userId,
                                                         [FromQuery(Name ="expired")]bool includeExpired = true, 
                                                         [FromQuery(Name="deleted")]bool includeDeleted = false)

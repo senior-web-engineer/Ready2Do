@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,8 +105,15 @@ namespace PalestreGoGo.WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseAuthentication();
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
 
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
             //app.SetupUsersAndRoles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
