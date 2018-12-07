@@ -7,6 +7,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,7 +22,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     {
         private readonly ILogger<SchedulesController> _logger;
         private readonly ISchedulesRepository _repository;
-        
+
         public SchedulesController(ILogger<SchedulesController> logger, ISchedulesRepository repository)
         {
             _logger = logger;
@@ -29,14 +30,23 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddSchedule([FromRoute]int idCliente, [FromBody] ScheduleApiModel model)
+        public async Task<IActionResult> AddSchedule([FromRoute]int idCliente, [FromBody] ScheduleDM schedule)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
             if (!ModelState.IsValid) return BadRequest();
-            var entity = Mapper.Map<ScheduleApiModel, Schedules>(model);
-            entity.PostiResidui = entity.PostiDisponibili;
-            await _repository.AddScheduleAsync(idCliente, entity);
-            return Ok(entity.Id);
+            await _repository.AddScheduleAsync(idCliente, schedule);
+            return Ok(schedule.Id);
+        }
+
+        [HttpPut("{id}")]
+        [HttpPut("{id}/subsequent")]
+        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleDM schedule)
+        {
+            if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
+            if(ControllerContext.RouteData
+            var entity = Mapper.Map<ScheduleApiModel, Schedules>(schedule);
+            await _repository.UpdateSchedule(idCliente, entity);
+            return Ok();
         }
 
         /// <summary>
@@ -152,13 +162,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPut()]
-        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleApiModel schedule)
-        {
-            if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            var entity = Mapper.Map<ScheduleApiModel, Schedules>(schedule);
-            await _repository.UpdateSchedule(idCliente, entity);
-            return Ok();
-        }
+        
     }
 }

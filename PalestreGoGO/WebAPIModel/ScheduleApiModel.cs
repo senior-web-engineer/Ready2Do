@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
+    [Obsolete("Utilizzare ready2do.model.common.ScheduleDM")]
     public class ScheduleApiModel
     {
         public int? Id { get; set; }
