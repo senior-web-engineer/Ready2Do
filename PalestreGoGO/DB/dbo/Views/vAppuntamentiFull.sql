@@ -29,6 +29,7 @@
 			   tl.Livello,
 			   tl.DataCancellazione AS DataCancellazioneTipologiaLezione,
 			   tl.DataCreazione AS DataCreazioneTipologiaLezione,
+			   tl.Prezzo AS PrezzoTipologiaLezione,
 			   lo.Id AS IdLocation,
 			   lo.Nome AS NomeLocation,
 			   lo.Descrizione AS DescrizioneLocation,

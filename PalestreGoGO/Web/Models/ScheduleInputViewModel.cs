@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ready2do.model.common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Web.Models
 {
-    
-    public class EventoInputViewModel
+    public class ScheduleInputViewModel
     {
         public int? Id { get; set; }
 
@@ -36,13 +32,18 @@ namespace Web.Models
         [Display(Name = "Ora Evento")]
         public TimeSpan? OraInizio { get; set; }
 
+        [DataType(DataType.Date)]
+        [Display(Name = "Data Apertura Iscrizioni")]
+        public DateTime? DataAperturaIscrizioni { get; set; }
 
-        [Required]
+        [DataType(DataType.Time)]
+        [Display(Name = "Ora Apertura Iscrizioni")]
+        public TimeSpan? OraAperturaIscrizioni { get; set; }
+
         [DataType(DataType.Date)]
         [Display(Name = "Data Chiusura Iscrizioni")]
         public DateTime? DataChiusuraIscrizioni { get; set; }
 
-        [Required]
         [DataType(DataType.Time)]
         [Display(Name = "Ora Chiusura Iscrizioni")]
         public TimeSpan? OraChiusuraIscrizioni { get; set; }
@@ -55,13 +56,11 @@ namespace Web.Models
         [Display(Name = "Posti Disponibili")]
         public int PostiDisponibili { get; set; }
 
-        [Required]
         [Display(Name = "Cancellabile fino al giorno")]
         [DataType(DataType.Date)]
-        //[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
         public DateTime? DataCancellazioneMax { get; set; }
 
-        [Required]
         [Display(Name = "Cancellabile fino all'ora")]
         [DataType(DataType.Time)]
         public TimeSpan? OraCancellazioneMax { get; set; }
@@ -69,27 +68,31 @@ namespace Web.Models
         [MaxLength(100)]
         public string Note { get; set; }
 
-    }
+        [Required]
+        public bool CancellazioneConsentita { get; set; }
 
-    public class EventoViewModel : EventoInputViewModel
-    {
-        public EventoViewModel()
-        {
-            DataEventoOptions = new DatePickerOptionJSModel()
-            {
-                DefaultDate = DateTime.Now,
-                MinDate = DateTime.Now,
-                SetDefaultDate = true
-            };
-            DataCancellazioneOptions = new DatePickerOptionJSModel()
-            {
-                DefaultDate = DateTime.Now,
-                MinDate = DateTime.Now,
-                SetDefaultDate = true
-            };
-        }
+        [DataType(DataType.Date)]
+        [Display(Name = "Visibile dal giorno")]
+        public DateTime? VisibileDalDate { get; set; }
 
-        public DatePickerOptionJSModel DataEventoOptions { get; set; }
-        public DatePickerOptionJSModel DataCancellazioneOptions { get; set; }
+        [DataType(DataType.Time)]
+        [Display(Name = "Visibile dalle ore")]
+        public TimeSpan? VisibileDalTime { get; set; }
+
+        [DataType(DataType.Date)]
+        [Display(Name = "Visibile fino al giorno")]
+        public DateTime? VisibileFinoAlDate { get; set; }
+
+        [DataType(DataType.Time)]
+        [Display(Name = "Visibile fino alle ore")]
+        public TimeSpan? VisibileFinoAlTime { get; set; }
+
+        [Required]
+        public bool WaitListDisponibile { get; set; }
+
+        public ScheduleRecurrencyDM Recurrency { get; set; }
+
+        [Required]
+        public ScheduleTypeDM TipoSchedule { get; set; }
     }
 }

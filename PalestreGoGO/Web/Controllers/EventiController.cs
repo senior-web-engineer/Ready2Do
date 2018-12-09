@@ -46,7 +46,7 @@ namespace Web.Controllers
                                                     [FromQuery(Name = "date")] string dataEvento,
                                                     [FromQuery(Name = "time")] string oraEvento)
         {
-            var vm = new EventoViewModel();
+            var vm = new ScheduleViewModel();
             DateTime dataParsed;
             TimeSpan timeParsed;
             int idLocation;
@@ -75,7 +75,7 @@ namespace Web.Controllers
 
         [HttpPost("{cliente}/eventi/new")]
         [HttpPost("{cliente}/eventi/edit/{id}")]
-        public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] EventoViewModel evento, [FromRoute(Name = "id")] int? idEvento)
+        public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] ScheduleViewModel evento, [FromRoute(Name = "id")] int? idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
@@ -204,9 +204,9 @@ namespace Web.Controllers
         }
 
 
-        private EventoViewModel internalBuildViewModel(ScheduleDetailedApiModel apiModel)
+        private ScheduleViewModel internalBuildViewModel(ScheduleDetailedApiModel apiModel)
         {
-            EventoViewModel vm = new EventoViewModel()
+            ScheduleViewModel vm = new ScheduleViewModel()
             {
                 DataCancellazioneMax = apiModel.CancellabileFinoAl.Date,
                 OraCancellazioneMax = apiModel.CancellabileFinoAl.TimeOfDay,

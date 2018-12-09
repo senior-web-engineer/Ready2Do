@@ -271,7 +271,8 @@ namespace PalestreGoGo.DataAccess
                 Livello = reader.GetInt16(cols["Livello"]),
                 MaxPartecipanti = reader.IsDBNull(cols["MaxPartecipanti"]) ? (int?)null : reader.GetInt32(cols["MaxPartecipanti"]),
                 DataCreazione = reader.GetDateTime(cols["DataCreazioneTipologiaLezione"]),
-                DataCancellazione = reader.IsDBNull(cols["DataCancellazioneTipologiaLezione"]) ? (DateTime?)null : reader.GetDateTime(cols["DataCancellazioneTipologiaLezione"])
+                DataCancellazione = reader.IsDBNull(cols["DataCancellazioneTipologiaLezione"]) ? (DateTime?)null : reader.GetDateTime(cols["DataCancellazioneTipologiaLezione"]),
+                Prezzo = reader.IsDBNull(cols["PrezzoTipologiaLezione"]) ? (decimal?)null : reader.GetDecimal(cols["PrezzoTipologiaLezione"]),
             };
         }
 

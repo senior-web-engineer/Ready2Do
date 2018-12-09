@@ -7,6 +7,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,14 +17,12 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/{idCliente:int}/tipologiche/tipolezioni")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TipoLezioniController : PalestreControllerBase
+    public class TipoLezioniAPIController : PalestreControllerBase
     {
-        private readonly ILogger<TipoLezioniController> _logger;
         private readonly ITipologieLezioniRepository _repository;
 
-        public TipoLezioniController(ITipologieLezioniRepository repository, ILogger<TipoLezioniController> logger)
+        public TipoLezioniAPIController(ITipologieLezioniRepository repository)
         {
-            _logger = logger;
             _repository = repository;
         }
 
@@ -41,8 +40,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             //}
             var tipoLezioni = await _repository.GetListAsync(idCliente, sortColumn, (sortType ?? "asc").ToLowerInvariant() == "asc", pageNumber, pageSize);
-            var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniApiModel>>(tipoLezioni);
-            return new OkObjectResult(result);
+           // var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniApiModel>>(tipoLezioni);
+            return new OkObjectResult(tipoLezioni);
         }
 
         [AllowAnonymous]
@@ -59,33 +58,26 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var result = Mapper.Map<TipologieLezioni, TipologieLezioniApiModel>(tipoLezione);
-            return new OkObjectResult(result);
+           // var result = Mapper.Map<TipologieLezioni, TipologieLezioniApiModel>(tipoLezione);
+            return new OkObjectResult(tipoLezione);
         }
 
 
         [HttpPost()]
-        public async Task<IActionResult> CreateAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniApiModel model)
+        public async Task<IActionResult> CreateAsync([FromRoute]int idCliente, [FromBody] TipologiaLezioneDM model)
         {
-
-            bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return Forbid();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
-            m.IdCliente = idCliente;
-            await _repository.AddAsync(idCliente, m);
+            if (!GetCurrentUser().CanEditTipologiche(idCliente)) return Forbid();
+            if (!ModelState.IsValid) return BadRequest();
+            if (!model.Id.HasValue || model.Id.Value!= idCliente) return BadRequest();
+            //var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
+            //m.IdCliente = idCliente;
+            await _repository.AddAsync(idCliente, model);
             //return CreatedAtAction("GetTipoLezione", new { idCliente, id = m.Id });
             return Ok();
         }
 
         [HttpPut()]
-        public async Task<IActionResult> ModifyAsync([FromRoute]int idCliente, [FromBody] TipologieLezioniApiModel model)
+        public async Task<IActionResult> ModifyAsync([FromRoute]int idCliente, [FromBody] TipologiaLezioneDM model)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
@@ -96,19 +88,11 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
-            //var oldEntity = _repository.GetSingle(idCliente, m.Id);
-            //if (oldEntity == null)
-            //{
-            //    return BadRequest();
-            //}
-            //oldEntity.Descrizione = model.Descrizione;
-            //oldEntity.Durata = model.Durata;
-            //oldEntity.Livello = model.Livello;
-            //oldEntity.MaxPartecipanti = model.MaxPartecipanti;
-            //oldEntity.Nome = model.Nome;
-            //oldEntity.LimiteCancellazioneMinuti = model.LimiteCancellazioneMinuti;
-            await _repository.UpdateAsync(idCliente, m);
+            if (!model.Id.HasValue || model.Id.Value != idCliente) return BadRequest();
+
+            //  var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
+
+            await _repository.UpdateAsync(idCliente, model);
             return Ok();
         }
 

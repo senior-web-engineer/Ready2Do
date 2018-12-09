@@ -69,6 +69,7 @@ BEGIN
 			   Livello,
 			   DataCancellazioneTipologiaLezione,
 			   DataCreazioneTipologiaLezione,
+			   PrezzoTipologiaLezione,
 			   IdLocation,
 			   NomeLocation,
 			   DescrizioneLocation,

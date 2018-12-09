@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PalestreGoGo.DataModel
 {
+    [Obsolete]
     public partial class TipologieLezioni: BaseMultitenantEntity
     {
         [Required]

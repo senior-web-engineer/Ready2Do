@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,24 +16,18 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class TipologieLezioniRepository : ITipologieLezioniRepository
+    public class TipologieLezioniRepository : BaseRepository, ITipologieLezioniRepository
     {
-        //private readonly PalestreGoGoDbContext _context;
-
-        private IConfiguration _configuration;
-        private readonly ILogger<TipologieLezioniRepository> _logger;
-
-        public TipologieLezioniRepository(IConfiguration configuration, ILogger<TipologieLezioniRepository> logger)
+        public TipologieLezioniRepository(IConfiguration configuration):base(configuration)
         {
-            _configuration = configuration;
-            _logger = logger;
+
         }
 
-        public async Task<IEnumerable<TipologieLezioni>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000)
+        public async Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
-                return await cn.QueryAsync<TipologieLezioni>("[dbo].[TipologieLezioni_Lista]",
+                return await cn.QueryAsync<TipologiaLezioneDM>("[dbo].[TipologieLezioni_Lista]",
                                                                 new
                                                                 {
                                                                     pIdCliente = idTenant,
@@ -47,18 +42,18 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<int> CountAsync(int idTenant)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 return await cn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM [dbo].[TipologieLezioni] WHERE DataCancellazione IS NULL");
             }
         }
 
-        public async Task<TipologieLezioni> GetAsync(int idTenant, int itemKey)
+        public async Task<TipologiaLezioneDM> GetAsync(int idTenant, int itemKey)
         {
-            TipologieLezioni result = null;
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            TipologiaLezioneDM result = null;
+            using (var cn = GetConnection())
             {
-                var list = await cn.QueryAsync<TipologieLezioni>("[dbo].[TipologieLezioni_Lista]",
+                var list = await cn.QueryAsync<TipologiaLezioneDM>("[dbo].[TipologieLezioni_Lista]",
                                                             new
                                                             {
                                                                 pIdCliente = idTenant,
@@ -75,11 +70,11 @@ namespace PalestreGoGo.DataAccess
         }
 
 
-        public async Task<int> AddAsync(int idTenant, TipologieLezioni entity)
+        public async Task<int> AddAsync(int idTenant, TipologiaLezioneDM entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
                 parId.Direction = ParameterDirection.Output;
@@ -93,19 +88,20 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pMaxPartecipanti", SqlDbType.Int).Value = entity.MaxPartecipanti;
                 cmd.Parameters.Add("@pLimiteCancellazioneMinuti", SqlDbType.SmallInt).Value = entity.LimiteCancellazioneMinuti;
                 cmd.Parameters.Add("@pLivello", SqlDbType.Int).Value = entity.Livello;
+                cmd.Parameters.Add("@pPrezzo", SqlDbType.Decimal).Value = entity.Prezzo;
                 cmd.Parameters.Add(parId);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
                 entity.Id = (int)parId.Value;
             }
-            return entity.Id;
+            return entity.Id.Value;
         }
 
-        public async Task UpdateAsync(int idTenant, TipologieLezioni entity)
+        public async Task UpdateAsync(int idTenant, TipologiaLezioneDM entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[TipologieLezioni_Modifica]";
@@ -118,6 +114,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pMaxPartecipanti", SqlDbType.Int).Value = entity.MaxPartecipanti;
                 cmd.Parameters.Add("@pLimiteCancellazioneMinuti", SqlDbType.SmallInt).Value = entity.LimiteCancellazioneMinuti;
                 cmd.Parameters.Add("@pLivello", SqlDbType.Int).Value = entity.Livello;
+                cmd.Parameters.Add("@pPrezzo", SqlDbType.Decimal).Value = entity.Prezzo;
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -125,7 +122,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task DeleteAsync(int idTenant, int entityKey)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[TipologieLezioni_Modifica]";
@@ -151,7 +148,7 @@ namespace PalestreGoGo.DataAccess
                 pNomeTipoLezione = nome
             });
             parameters.Add("pResult", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[dbo].[TipologieLezioni_CheckNome]", parameters, commandType: CommandType.StoredProcedure);
                 return parameters.Get<bool>("pResult");

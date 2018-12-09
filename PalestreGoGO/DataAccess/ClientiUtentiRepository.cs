@@ -10,12 +10,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class ClientiUtentiRepository : IClientiUtentiRepository
+    public class ClientiUtentiRepository : BaseRepository, IClientiUtentiRepository
     {
-        private readonly IConfiguration _configuration;
-        public ClientiUtentiRepository(IConfiguration configuration)
+        public ClientiUtentiRepository(IConfiguration configuration): base(configuration)
         {
-            _configuration = configuration;
+
         }
 
         public async Task<IEnumerable<UtenteClienteDM>> GetUtentiCliente(int idCliente, bool includeStato,
@@ -25,7 +24,7 @@ namespace PalestreGoGo.DataAccess
         {
             List<UtenteClienteDM> result = new List<UtenteClienteDM>();
             UtenteClienteDM item;
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Clienti_Utenti_Lista]";
@@ -86,7 +85,7 @@ namespace PalestreGoGo.DataAccess
         {
             UtenteClienteDM result = null;
             int idColIdUser, idColNome, idColCognome, idColDisplpayName, idColDataCreaz, idColDataMod, idColDataDel;
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[Clienti_Utenti_Get]";
@@ -193,7 +192,7 @@ namespace PalestreGoGo.DataAccess
                 pCognome = cognome,
                 pDisplayName = displayName
             });
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[dbo].[Clienti_Utenti_Associa]", parameters, commandType: CommandType.StoredProcedure);
             }
@@ -206,7 +205,7 @@ namespace PalestreGoGo.DataAccess
                 pUserId = userId,
                 pIdCliente = idCliente,
             });
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[dbo].[Clienti_Utenti_Disassocia]", parameters, commandType: CommandType.StoredProcedure);
             }
@@ -226,7 +225,7 @@ namespace PalestreGoGo.DataAccess
                 pDataScadenza = certificato.DataScadenza,
             });
             parametri.Add("pIdCertificato", certificato.Id, DbType.Int32, ParameterDirection.InputOutput);
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[Clienti_Utenti_CertificatoSave]", parametri, commandType: CommandType.StoredProcedure);
                 certificato.Id = parametri.Get<int>("pIdCertificato");
@@ -236,7 +235,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task DeleteCertificatoUtente(int idCliente, string userId, int idCertificato)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[Clienti_Utenti_CertificatoDelete]",
                         new
@@ -262,7 +261,7 @@ namespace PalestreGoGo.DataAccess
             {
                 sql = $"{sql} AND DataCancellazione IS NULL";
             }
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 return await cn.QueryAsync<UtenteClienteCertificatoDM>(sql, new { idCliente, userId });
             }

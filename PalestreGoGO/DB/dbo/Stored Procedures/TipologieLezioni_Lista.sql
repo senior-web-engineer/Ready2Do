@@ -34,7 +34,8 @@ BEGIN
 					   t.LimiteCancellazioneMinuti,
 					   t.Livello,
 					   t.MaxPartecipanti,
-					   t.Nome
+					   t.Nome,
+					   t.Prezzo
 				FROM TipologieLezioni t
 				WHERE t.IdCliente = @pIdCliente
 				' + CASE WHEN @pId IS NULL THEN ' ' ELSE ' AND t.Id = ' + CAST(@pId AS VARCHAR(50)) END  +'

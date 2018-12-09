@@ -12,23 +12,18 @@ using System.Data;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class UtentiRepository : IUtentiRepository
+    public class UtentiRepository : BaseRepository, IUtentiRepository
     {
 
-        //private readonly PalestreGoGoDbContext _context;
-        private IConfiguration _configuration;
-        private readonly ILogger<UtentiRepository> _logger;
-
-        public UtentiRepository(IConfiguration configuration, ILogger<UtentiRepository> logger)
+        public UtentiRepository(IConfiguration configuration): base(configuration)
         {
-            _configuration = configuration;
-            _logger = logger;
+
         }
 
         public async Task<List<ClienteFollowed>> GetGlientiFollowedAsync(Guid userId)
         {
             IEnumerable<ClienteFollowed> result = null;
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 result = await cn.QueryAsync<ClienteFollowed>(StoredProcedure.SP_USER_CLIENTI_FOLLOWED,
                                                             new { pUserId = userId },
@@ -39,7 +34,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<RichiestaRegistrazione> RichiestaRegistrazioneSalvaAsync(string username, string code, Guid? correlationId)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 return await cn.QuerySingleAsync<RichiestaRegistrazione>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_INSERT,
                     new { pUserCode = code, pUsername = username, pCorrelationId = correlationId },
@@ -51,7 +46,7 @@ namespace PalestreGoGo.DataAccess
         {
             try
             {
-                using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                using (var cn = GetConnection())
                 {
                     return await cn.QuerySingleAsync<RichiestaRegistrazione>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_COMPLETA,
                         new { pUserCode = code, pUsername = username },
@@ -72,7 +67,7 @@ namespace PalestreGoGo.DataAccess
                 pIdCliente = idCliente
             });
             parameters.Add("pResult", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync(StoredProcedure.SP_USER_FOLLOW_CLIENTE, parameters, commandType: CommandType.StoredProcedure);
                 return parameters.Get<bool>("pResult");

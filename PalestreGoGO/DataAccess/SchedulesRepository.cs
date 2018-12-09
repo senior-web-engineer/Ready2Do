@@ -17,15 +17,12 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class SchedulesRepository : ISchedulesRepository
+    public class SchedulesRepository : BaseRepository, ISchedulesRepository
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<SchedulesRepository> _logger;
 
-        public SchedulesRepository(IConfiguration configuration, ILogger<SchedulesRepository> logger)
+        public SchedulesRepository(IConfiguration configuration): base(configuration)
         {
-            _configuration = configuration;
-            _logger = logger;
+
         }
 
         public async Task<int> AddScheduleAsync(int idCliente, ScheduleBaseDM schedule)
@@ -33,7 +30,7 @@ namespace PalestreGoGo.DataAccess
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
             SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
             parId.Direction = ParameterDirection.Output;
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[Schedules_Add]";
@@ -66,7 +63,7 @@ namespace PalestreGoGo.DataAccess
         public async Task UpdateScheduleAsync(int idCliente, ScheduleBaseDM schedule, TipoModificaScheduleDM tipoModifica)
         {
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[Schedules_Update]";
@@ -101,7 +98,7 @@ namespace PalestreGoGo.DataAccess
                                                                         bool ascending = true, bool includeDeleted = false)
         {
             List<ScheduleDM> result = new List<ScheduleDM>();
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[Schedules_Lista]";
@@ -132,7 +129,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<ScheduleDM> GetScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Schedules_Get]";
@@ -153,29 +150,9 @@ namespace PalestreGoGo.DataAccess
         }
 
 
-        //public async Task<IEnumerable<Schedules>> GetSchedulesAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null)
-        //{
-        //    IEnumerable<Schedules> result = null;
-        //    using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
-        //    {
-        //        result = await cn.QueryAsync<Schedules, Locations, TipologieLezioni, Schedules>("Schedules_GetForCliente",
-        //                            (s, l, tl) =>
-        //                            {
-        //                                s.Location = l;
-        //                                s.TipologiaLezione = tl;
-        //                                return s;
-        //                            },
-        //                            splitOn: "IdLocation,IdTipoLezione",
-        //                            commandType: System.Data.CommandType.StoredProcedure,
-        //                            param: new { pIdCliente = idCliente, pStartDate = startDate, pEndDate = endDate, pIdLocation = idLocation }
-        //                    );
-        //    }
-        //    return result;
-        //}
-
         public async Task DeleteScheduleAsync(int idCliente, int idSchedule)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Schedules_Delete]";
@@ -224,6 +201,7 @@ namespace PalestreGoGo.DataAccess
             result.Add("MaxPartecipantiTipoLezione", reader.GetOrdinal("MaxPartecipantiTipoLezione"));
             result.Add("TipoLezioneDataCreazione", reader.GetOrdinal("TipoLezioneDataCreazione"));
             result.Add("TipoLezioneDataCancellazione", reader.GetOrdinal("TipoLezioneDataCancellazione"));
+            result.Add("PrezzoTipologiaLezione", reader.GetOrdinal("PrezzoTipologiaLezione"));
             return result;
         }
 
@@ -262,6 +240,7 @@ namespace PalestreGoGo.DataAccess
             result.TipologiaLezione.Livello = reader.GetInt16(columns["LivelloTipoLezione"]);
             result.TipologiaLezione.MaxPartecipanti = await reader.IsDBNullAsync(columns["MaxPartecipantiTipoLezione"]) ? default(int?) : reader.GetInt32(columns["MaxPartecipantiTipoLezione"]);
             result.TipologiaLezione.Nome = reader.GetString(columns["NomeTipoLezione"]);
+            result.TipologiaLezione.Prezzo = await reader.IsDBNullAsync(columns["PrezzoTipologiaLezione"]) ? default(decimal?) : reader.GetDecimal(columns["PrezzoTipologiaLezione"]); 
             result.Location = new LocationDM();
             result.Location.CapienzaMax = await reader.IsDBNullAsync(columns["CapienzaMaxLocation"]) ? default(short?) : reader.GetInt16(columns["CapienzaMaxLocation"]);
             result.Location.Descrizione = await reader.IsDBNullAsync(columns["DescrizioneLocation"]) ? null : reader.GetString(columns["DescrizioneLocation"]);

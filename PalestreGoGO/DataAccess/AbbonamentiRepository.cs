@@ -13,15 +13,11 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class AbbonamentiRepository : IAbbonamentiRepository
+    public class AbbonamentiRepository : BaseRepository, IAbbonamentiRepository
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<AbbonamentiRepository> _logger;
 
-        public AbbonamentiRepository(IConfiguration configuration, ILogger<AbbonamentiRepository> logger)
+        public AbbonamentiRepository(IConfiguration configuration) : base(configuration)
         {
-            this._logger = logger;
-            this._configuration = configuration;
         }
 
         public async Task<int> SaveAbbonamentoAsync(int idCliente, UtenteClienteAbbonamentoDM abbonamento)
@@ -40,7 +36,7 @@ namespace PalestreGoGo.DataAccess
                         pImportoPagato = abbonamento.ImportoPagato
                     });
             parametri.Add("pIdAbbonamento", abbonamento.Id, DbType.Int32, ParameterDirection.InputOutput);
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[Clienti_Utenti_AbbonamentoSave]", parametri, commandType: CommandType.StoredProcedure);
                 abbonamento.Id = parametri.Get<int>("pIdAbbonamento");
@@ -50,7 +46,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task DeleteAbbonamentoAsync(int idCliente, string userId, int idAbbonamento)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[Clienti_Utenti_AbbonamentoDelete", new
                 {
@@ -63,7 +59,7 @@ namespace PalestreGoGo.DataAccess
         public async Task<IEnumerable<UtenteClienteAbbonamentoDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted)
         {
             List<UtenteClienteAbbonamentoDM> result = new List<UtenteClienteAbbonamentoDM>();
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[Clienti_Utenti_AbbonamentoList]";
@@ -75,7 +71,7 @@ namespace PalestreGoGo.DataAccess
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
-                    while(await dr.ReadAsync())
+                    while (await dr.ReadAsync())
                     {
                         result.Add(new UtenteClienteAbbonamentoDM()
                         {
@@ -103,14 +99,14 @@ namespace PalestreGoGo.DataAccess
                             }
                         });
                     }
-                }              
+                }
             }
             return result;
         }
 
         public async Task<UtenteClienteAbbonamentoDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 return await cn.QuerySingleAsync<UtenteClienteAbbonamentoDM>("[Clienti_Utenti_AbbonamentoGet]", new
                 {

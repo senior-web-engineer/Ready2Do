@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
-    public class TipologieLezioniViewModel
+    public class TipologieLezioniViewModel 
     {
         public List<SelectListItem> IntervalliTempo { get; } = new List<SelectListItem>()
         {
@@ -29,17 +30,24 @@ namespace Web.Models
         };
 
         public int? Id { get; set; }
+        public int IdCliente { get; set; }
+
         [Required]
         [StringLength(100)]
-        [Remote("CheckNome", "TipologieLezioni")]
+        [Remote("CheckNome", "TipologieLezioni",AdditionalFields ="IdCliente, Id")]
         public string Nome { get; set; }
 
         [StringLength(500)]
         public string Descrizione { get; set; }
 
+        [Required]
         public int Durata { get; set; }
         public int? MaxPartecipanti { get; set; }
         public short? LimiteCancellazioneMinuti { get; set; }
         public short Livello { get; set; }
+        public DateTime DataCreazione { get; set; }
+        public DateTime? DataCancellazione { get; set; }
+        public decimal? Prezzo { get; set; }
+
     }
 }

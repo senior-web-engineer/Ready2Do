@@ -162,6 +162,7 @@
     <Build Include="dbo\Stored Procedures\internal_Schedules_AddRicorrenti.sql" />
     <Build Include="dbo\Stored Procedures\Schedules_Get.sql" />
     <Build Include="dbo\Stored Procedures\Schedules_Lista.sql" />
+    <Build Include="dbo\Stored Procedures\internal_LogMessage.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

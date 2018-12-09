@@ -6,12 +6,13 @@
 	@pMaxPartecipanti				INT = NULL,
 	@pLimiteCancellazioneMinuti		SMALLINT = NULL,
 	@pLivello						SMALLINT = 0,
+	@pPrezzo						DECIMAL(10,2) = NULL,
 	@pId							INT OUTPUT
 AS
 BEGIN
 
-	INSERT INTO TipologieLezioni(IdCliente, Nome, Descrizione, Durata, MaxPartecipanti, LimiteCancellazioneMinuti, Livello)
-		VALUES (@pIdCliente, @pNome, @pDescrizione, @pDurata, @pMaxPartecipanti, @pLimiteCancellazioneMinuti, @pLivello);
+	INSERT INTO TipologieLezioni(IdCliente, Nome, Descrizione, Durata, MaxPartecipanti, LimiteCancellazioneMinuti, Livello, Prezzo)
+		VALUES (@pIdCliente, @pNome, @pDescrizione, @pDurata, @pMaxPartecipanti, @pLimiteCancellazioneMinuti, @pLivello, @pPrezzo);
 
 	SET @pId = SCOPE_IDENTITY()
 	

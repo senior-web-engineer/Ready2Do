@@ -10,22 +10,17 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class NotificheRepository : INotificheRepository
+    public class NotificheRepository : BaseRepository, INotificheRepository
     {
 
-        //private readonly PalestreGoGoDbContext _context;
-        private IConfiguration _configuration;
-        private readonly ILogger<UtentiRepository> _logger;
 
-        public NotificheRepository(IConfiguration configuration, ILogger<UtentiRepository> logger)
+        public NotificheRepository(IConfiguration configuration): base(configuration)
         {
-            _configuration = configuration;
-            _logger = logger;
         }
 
         public async Task<long> AddNotificaAsync(NotificaDM notifica)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 return await cn.ExecuteScalarAsync<long>("[dbo].[Notifiche_Add]",
                                                     new
@@ -43,7 +38,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<NotificaConTipoDM>> GetNotificheAsync(UserReferenceDM userRef, int? idCliente = null, FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 return await cn.QueryAsync<NotificaConTipoDM, TipologiaNotifica, UserReferenceDM, NotificaConTipoDM>("[dbo].[Notifiche_Lista]",
                                                     (notifica, tipoNotifica, user) =>
@@ -61,7 +56,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task UpdateNotifica(long idNotifica, DateTime? dataView, DateTime? dataDismiss)
         {
-            using (var cn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var cn = GetConnection())
             {
                 await cn.ExecuteAsync("[dbo].[Notifiche_Aggiorna]", 
                                         new { pIdNotifica = idNotifica, pDataVisualizzazione = dataView, pDataDismiss = dataDismiss }, 

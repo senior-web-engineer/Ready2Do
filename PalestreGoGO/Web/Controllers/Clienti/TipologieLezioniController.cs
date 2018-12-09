@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Configuration;
+using Web.Models.Mappers;
 using Web.Services;
 using Web.Utils;
 
@@ -65,7 +66,7 @@ namespace Web.Controllers.Clienti
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idLezione > 0)
             {
-                tipoLezione = await _apiClient.GetOneTipologiaLezione(idCliente, idLezione, accessToken);
+                tipoLezione = (await _apiClient.GetOneTipologiaLezione(idCliente, idLezione, accessToken)).ToVM();
             }
             if (tipoLezione == null)
             {

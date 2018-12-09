@@ -26,6 +26,8 @@ namespace ready2do.model.common
         public string Note { get; set; }
         public ScheduleRecurrencyDM Recurrency { get; set; }
         public int? IdParent { get; set; }
+        public ScheduleTypeDM TipoSchedule { get; set; }
 
     }
+
 }
