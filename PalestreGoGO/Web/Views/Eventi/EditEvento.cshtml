@@ -1,6 +1,4 @@
-﻿@using Web.Utils;
-
-@model ScheduleViewModel;
+﻿@model ScheduleViewModel;
 @{
     Layout = "_LayoutClienti";
 }
@@ -34,83 +32,86 @@
                     </div>
                     <div class="collapsible-body">
                         <div class="row">
-                            <div class="col s8 offset-s2">
+                            <div class="col s12 m8 offset-m1">
                                 <div class="input-field">
                                     <input type="text" asp-for="@Model.Title" />
                                     <label asp-for="Title"></label>
-                                    <span asp-validation-for="Title" />
+                                    <span asp-validation-for="Title"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s8 offset-s2">
+                            <div class="input-field col s12 m8 offset-m1 ">
                                 <select asp-for="IdLocation" asp-items="ViewBag.Locations" class=""></select>
                                 <label asp-for="IdLocation"></label>
-                                <span asp-validation-for="IdLocation" />
+                                <span asp-validation-for="IdLocation"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s8 offset-s2">
+                            <div class="input-field col s12 m8 offset-m1 ">
                                 <select asp-for="IdTipoLezione" asp-items="ViewBag.TipologieLezioni" class=""></select>
                                 <label asp-for="IdTipoLezione"></label>
-                                <span asp-validation-for="IdTipoLezione" />
+                                <span asp-validation-for="IdTipoLezione"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s4 m3 offset-s2 offset-m2">
+                            <div class="input-field col s12 m5 offset-m1 l4 offset-l1">
+                                <i class="prefix material-icons tooltipped" data-position="top" data-tooltip="Data in cui avrà luogo l'evento">help</i>
                                 <input id="dataEvento" type="text" asp-for="Data" class="datepicker" />
                                 <label asp-for="Data"></label>
-                                <span asp-validation-for="Data" />
+                                <span asp-validation-for="Data"></span>
                             </div>
-                            <div class="input-field col s3 m2 offset-s1 ">
+                            <div class="input-field col s12 m3 l3 offset-l1">
+                                <i class="prefix material-icons tooltipped" data-position="top" data-tooltip="Ora in cui avrà luogo l'evento">help</i>
                                 <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
-                                <label asp-for="OraInizio"></label>
-                                <span asp-validation-for="OraInizio" />
+                                <label>Ora</label>
+                                <span asp-validation-for="OraInizio"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s4 m3 offset-s2 offset-m2">
-                                <input id="dataEvento" type="text" asp-for="PostiDisponibili" class="datepicker" />
-                                <label asp-for="Data"></label>
-                                <span asp-validation-for="Data" />
-                            </div>
-                            <div class="input-field col s3 m2 offset-s1 ">
-                                <input id="oraEvento" type="time" asp-for="OraInizio" class="timepicker" />
-                                <label asp-for="OraInizio"></label>
-                                <span asp-validation-for="OraInizio" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s4 m3 offset-s2 offset-m2">
-                                <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
-                                <label asp-for="DataCancellazioneMax"></label>
-                                <span asp-validation-for="DataCancellazioneMax" />
-                            </div>
-                            <div class="input-field col s3 m2 offset-s1">
-                                <input id="oraCancellazione" type="time" asp-for='OraCancellazioneMax' class="timepicker" />
-                                <label asp-for="OraCancellazioneMax"></label>
-                                <span asp-validation-for="OraCancellazioneMax" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s3 offset-s2">
+                            <div class="input-field col s5 m4 offset-m1 l3 offset-l1">
+                                <i class="small prefix material-icons tooltipped" data-position="top" data-tooltip="Posti totali disponibili per l'evento">help</i>
                                 <input type="text" asp-for="PostiDisponibili" />
-                                <label asp-for="PostiDisponibili"></label>
-                                <span asp-validation-for="PostiDisponibili" />
+                                <label>Posti</label>
+                                <span asp-validation-for="PostiDisponibili"></span>
+                            </div>
+                        </div>
+                        <div class="row" style="min-height:40px">
+                            <div class="input-field col s12 offset-m1 offset-l1">
+                                <i class="tiny material-icons prefix tooltipped" data-position="top" data-tooltip="Se abilitata la Cancellazione della Prenotazione, l'utente potrà annullare la prenotazione. Sa la cencellazione avviene prima della Data ed Ora cancellazione impostata sotto, all'utente saranno rimborsati gli eventuali crediti scalati alla registrazione.">help</i>
+                                <label>
+                                    <input type="checkbox" class="filled-in" asp-for="CancellazioneConsentita" />
+                                    <span>Cancellazione Prenotazione Consentita</span>
+                                </label>
+                                <span asp-validation-for="CancellazioneConsentita" />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s8 offset-s2">
+                            <div class="input-field col s12 m5 offset-m1 l4 offset-l1">
+                                <i class="prefix material-icons tooltipped" data-position="top" data-tooltip="Data entro cui l'utene può anullare l'iscrizione all'evento senza subire addebiti">help</i>
+                                <input id="dataCancellazione" type="text" asp-for="DataCancellazioneMax" class="datepicker" />
+                                <label>Cancellabile fino al</label>
+                                <span asp-validation-for="DataCancellazioneMax"></span>
+                            </div>
+                            <div class="input-field col s12 m3 l3 offset-l1">
+                                <i class="prefix material-icons tooltipped" data-position="top" data-tooltip="Ora entro cui l'utene può anullare l'iscrizione all'evento senza subire addebiti">help</i>
+                                <input id="oraCancellazione" type="time" asp-for='OraCancellazioneMax' class="timepicker" />
+                                <label></label>
+                                <span asp-validation-for="OraCancellazioneMax"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m8 offset-m1">
                                 <input type="text" asp-for="Istruttore" />
                                 <label asp-for="Istruttore"></label>
-                                <span asp-validation-for="Istruttore" />
+                                <span asp-validation-for="Istruttore"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s8 offset-s2">
+                            <div class="input-field col s12 m8 offset-m1">
                                 <textarea asp-for="Note" class="materialize-textarea"></textarea>
                                 <label asp-for="Note"></label>
-                                <span asp-validation-for="Note" />
+                                <span asp-validation-for="Note"></span>
                             </div>
                         </div>
                     </div>
@@ -121,16 +122,115 @@
                         Impostazioni Avanzate
                     </div>
                     <div class="collapsible-body">
+                        <div class="row" style="min-height:32px">
+                            <div class="input-field col s12">
+                                <label>
+                                    <input type="checkbox" class="filled-in" checked="checked" asp-for="WaitListDisponibile" />
+                                    <span>Abilita lista d'attesa</span>
+                                </label>
+                                <span asp-validation-for="WaitListDisponibile"></span>
+                            </div>
+                        </div>
                         <div class="row">
-                            <div class="col6">
+                            <div class="input-field col s12 m4 offset-m1 l3 offset-l1">
+                                <i class="tiny material-icons prefix tooltipped" data-position="top" data-tooltip="Se valorizzata indica la data a partire dalla quale gli utenti possono iniziare a registrarsi">help</i>
                                 <input type="text" asp-for="DataAperturaIscrizioni" class="datepicker" />
-                                <label asp-for="DataAperturaIscrizioni"></label>
+                                <label>Data Inizio iscrizione</label>
                                 <span asp-validation-for="DataAperturaIscrizioni"></span>
                             </div>
-                            <div class="col6">
+                            <div class="input-field col s12 m3 offset-m1 l2 offset-l1">
                                 <input type="text" asp-for="OraAperturaIscrizioni" class="timepicker" />
-                                <label asp-for="OraAperturaIscrizioni"></label>
+                                <label>Ora inizio iscrizione</label>
                                 <span asp-validation-for="OraAperturaIscrizioni"></span>
+                            </div>
+                            <div class="input-field col s12 m4 offset-m1 l3 offset-l1 ">
+                                <input type="text" asp-for="DataChiusuraIscrizioni" class="datepicker" />
+                                <label asp-for="DataChiusuraIscrizioni"></label>
+                                <span asp-validation-for="DataChiusuraIscrizioni"></span>
+                            </div>
+                            <div class="input-field col s12 m3 offset-m1 l2 offset-l1">
+                                <input type="text" asp-for="OraChiusuraIscrizioni" class="timepicker" />
+                                <label asp-for="OraChiusuraIscrizioni"></label>
+                                <span asp-validation-for="OraChiusuraIscrizioni"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m4 offset-m1 l3 offset-l1">
+                                <input type="text" asp-for="VisibileDalDate" class="datepicker" />
+                                <label>Data inizio visibilità </label>
+                                <span asp-validation-for="VisibileDalDate"></span>
+                            </div>
+                            <div class="input-field col s12 m3 offset-m1 l2 offset-l1">
+                                <input type="text" asp-for="VisibileDalTime" class="timepicker" />
+                                <label>Ora inizio visibilità</label>
+                                <span asp-validation-for="VisibileDalTime"></span>
+                            </div>
+                            <div class="input-field col s12 m4 offset-m1 l3 offset-l1 ">
+                                <input type="text" asp-for="VisibileFinoAlDate" class="datepicker" />
+                                <label>Data fine visibilità</label>
+                                <span asp-validation-for="VisibileFinoAlDate"></span>
+                            </div>
+                            <div class="input-field col s12 m3 offset-m1 l2 offset-l1">
+                                <input type="text" asp-for="VisibileFinoAlTime" class="timepicker" />
+                                <label>Ora fine visibilità</label>
+                                <span asp-validation-for="VisibileFinoAlTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header" style="background-color:lightgray">
+                        <i class="material-icons">repeat</i>Ricorrenza evento
+                    </div>
+
+                    <div class="collapsible-body">
+                        <div class="row">
+                            <div class=" input-field col s12">
+                                <select asp-for="Recurrency.Recurrency">
+                                    <option value="none">Non si ripete</option>
+                                    <option value="daily">Si ripete tutti i giorni alla stessa ora</option>
+                                    <option value="weekly">Si ripete tutte le settimane alla stessa ora </option>
+                                    <option value="montly">Si ripete tutti i mesi alla stessa ora </option>
+                                </select>
+                                <label>Ricorrenza evento</label>
+                                <span asp-validation-for="Recurrency.Recurrency"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <select asp-for="Recurrency.Recurrency" multiple>
+                                    <option value="Lun">Lunedì</option>
+                                    <option value="Mar">Martedì</option>
+                                    <option value="Mer">Mercoledì</option>
+                                    <option value="Gio">Giovedì</option>
+                                    <option value="Ven">Venerdì</option>
+                                    <option value="Sab">Sabato</option>
+                                    <option value="Dom">Domenica</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s1">
+                                <label>
+                                    <input name="grpFineRicorrenza" type="radio" />
+                                    <span>&nbsp;</span>
+                                </label>
+                            </div>
+                            <div class="input-field col s11 m4 offset-m1 l3 offset-l1">
+                                <input type="text" asp-for="VisibileDalDate" class="datepicker" />
+                                <label>Si ripete fino al</label>
+                                <span asp-validation-for="VisibileDalDate"></span>
+                            </div>
+                            <div class="input-field col s1">
+                                <label>
+                                    <input name="grpFineRicorrenza" type="radio" />
+                                    <span>&nbsp;</span>
+                                </label>
+                            </div>
+                            <div class="input-field col s11 m4 offset-m1 l3 offset-l1">
+                                <input type="number" />
+                                <label>Numero ripetizioni</label>
                             </div>
                         </div>
                     </div>
@@ -175,7 +275,7 @@
         $(document).ready(function () {
             $('select').formSelect();
 
-            var elem = document.querySelector('.collapsible.expandable');
+            var elem = document.querySelectorAll('.collapsible.expandable');
             var instance = M.Collapsible.init(elem, {
                 accordion: false
             });
@@ -229,6 +329,12 @@
             {
                 @: timePickOraCanc.time = '@Model.OraCancellazioneMax.Value.ToString(@"hh\:mm")';
             }
+            var datepickerElems = document.querySelectorAll('.datepicker');
+            M.Datepicker.init(datepickerElems, { i18n: i18nDate });
+            var timepickerElems = document.querySelectorAll('.timepicker')
+            M.Timepicker.init(timepickerElems, {
+                twelveHour: false,
+                i18n: i18nTime});
         });
         ///*Logica per la validazione custom MVC - Da capire se applicabile*/
         //(function ($) {
