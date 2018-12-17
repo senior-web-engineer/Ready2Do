@@ -56,7 +56,16 @@ namespace PalestreGoGo.DataAccess
                 }, commandType: CommandType.StoredProcedure);
             }
         }
-        public async Task<IEnumerable<UtenteClienteAbbonamentoDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="userId"></param>
+        /// <param name="includeExpired"></param>
+        /// <param name="includeDeleted"></param>
+        /// <param name="idEvento">se specificato limita i risultati ai soli abbonamenti compatibili con l'evento</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UtenteClienteAbbonamentoDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null)
         {
             List<UtenteClienteAbbonamentoDM> result = new List<UtenteClienteAbbonamentoDM>();
             using (var cn = GetConnection())
@@ -66,6 +75,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 100).Value = userId;
+                cmd.Parameters.Add("@pIdEvento", SqlDbType.Int).Value = idEvento;
                 cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
                 cmd.Parameters.Add("@pIncludeExpired", SqlDbType.Bit).Value = includeExpired;
                 await cn.OpenAsync();

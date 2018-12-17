@@ -17,12 +17,12 @@ namespace WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/abbonamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AbbonamentiController : PalestreControllerBase
+    public class AbbonamentiAPIController : PalestreControllerBase
     {
         private readonly IAbbonamentiRepository _repository;
-        private readonly ILogger<AbbonamentiController> _logger;
+        private readonly ILogger<AbbonamentiAPIController> _logger;
 
-        public AbbonamentiController(IAbbonamentiRepository repository, ILogger<AbbonamentiController> logger)
+        public AbbonamentiAPIController(IAbbonamentiRepository repository, ILogger<AbbonamentiAPIController> logger)
         {
             _logger = logger;
             _repository = repository;

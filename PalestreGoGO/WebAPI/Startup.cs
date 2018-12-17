@@ -12,6 +12,9 @@ using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -94,6 +97,9 @@ namespace PalestreGoGo.WebAPI
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
 

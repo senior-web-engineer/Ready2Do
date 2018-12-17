@@ -164,6 +164,7 @@
     <Build Include="dbo\Stored Procedures\Schedules_Lista.sql" />
     <Build Include="dbo\Stored Procedures\internal_LogMessage.sql" />
     <Build Include="dbo\Tables\AppuntamentiDaConfermare.sql" />
+    <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

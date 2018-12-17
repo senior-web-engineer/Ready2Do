@@ -20,6 +20,13 @@ namespace PalestreGoGo.WebAPIModel
         [JsonProperty("user", Required = Required.Always)]
         public string IdUtente { get; set; }
 
+        /// <summary>
+        /// Id dell'abbonamento da utilizzare per prenotare l'appuntamento.
+        /// Utile sopratutto nel caso in cui l'utente disponga di più abbonamenti
+        /// </summary>
+        [JsonProperty("idAbbonamento", Required =Required.AllowNull)]
+        public int? IdAbbonamento { get; set; }
+
     }
 
     public class NuovoAppuntamentoGuestApiModel: NuovoAppuntamentoBaseApiModel

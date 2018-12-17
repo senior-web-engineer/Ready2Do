@@ -14,6 +14,7 @@ using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
@@ -22,7 +23,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     /// </summary>
     /// <seealso cref="https://palestregogo.visualstudio.com/MyFirstProject/_wiki?pagePath=%2FAppuntamenti"/>
     [Produces("application/json")]
-    [Route("api/clienti/{idCliente:int}/schedules/{idSchedule}/appuntamenti")]
+    [Route("api/clienti/{idCliente:int}/schedules/{idSchedule:int}/appuntamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AppuntamentiAPIController : PalestreControllerBase
     {
@@ -90,9 +91,20 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
         }
 
-
+        /// <summary>
+        /// Crea un nuovo appuntamento per l'utente corrente rappresentato dal Token di autorizzazione utilizzato.
+        /// Se l'utente ha più di un abbonamento valido e compatibile con l'evento, deve indicare quale utilizzare
+        /// valorizzando la proprietà IdAbbonamento.
+        /// Se l'utente ha un solo abbonamento valido e compatibile con l'evento, l'IdAbbonamento è opzionale.
+        /// Se invece l'utente NON ha un abbonamento valido, l'appuntamento viene preso come da Confermare
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost()]
-        public async Task<IActionResult> AddAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromBody] NuovoAppuntamentoApiModel model)
+        public async Task<IActionResult> TakeAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, 
+                                                                            [FromBody] NuovoAppuntamentoApiModel model)
         {
             if (model == null) return BadRequest();
             if (model.IdEvento != idSchedule) return BadRequest();
@@ -106,9 +118,35 @@ namespace PalestreGoGo.WebAPI.Controllers
             appuntamento.UserId = model.IdUtente;
             appuntamento.Note = model.Note;
             appuntamento.ScheduleId = model.IdEvento; //Siamo sicuri che questo sia per il cliente corrente??
-            appuntamento.Id = await _repositoryAppuntamenti.AddAppuntamentoAsync(idCliente, appuntamento);
+            appuntamento.Id = await _repositoryAppuntamenti.TakeAppuntamentoAsync(idCliente, appuntamento);
             return Ok(appuntamento.Id);
         }
+
+        [HttpPut("expiration/{userId}")]
+        public async Task<IActionResult> HandleExpirationAppuntamentoDaConfermare([FromRoute(Name="idCliente")]int idCliente, [FromRoute(Name ="idSchedule")] int idSchedule,
+                                        [FromRoute(Name ="userId")string userId)
+        {
+            //Aggiornare lo stato sul DB
+            //Notificare all'utente ed al gestore la scadenza
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Trasforma un AppuntamentoDaConfermare in un Appuntamento a tutti gli effetti (sempre che l'utente soddisfi i requisiti al momento dell'invocazione)
+        /// Termina la LogicApp avviata in fase di creazione dell'AppuntamentoDaConfermare per gestire il timeout della conferma.
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <param name="idAppuntamentoDaConfermare"></param>
+        /// <returns></returns>
+        [HttpPost("conferma/{id:int}")]
+        public async Task<IActionResult> ConfermaAppuntamento([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idSchedule")] int idSchedule,
+                                                              [FromRoute(Name = "idSchedule")] int idAppuntamentoDaConfermare)
+        {
+            //Recuperare l'id del Workflow Run per invocare la terminazione (come avviene l'autorizzazione?)
+            throw new NotImplementedException();
+        }
+            
 
         [HttpPost("guest")]
         public async Task<IActionResult> AddAppuntamentoForGuest([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoGuestApiModel model)

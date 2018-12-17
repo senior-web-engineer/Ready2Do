@@ -27,10 +27,8 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
-    <Content Include="LogicAppConfermaAppuntamento.parameters.json" />
-    <Content Include="LogicApp.json" />
-    <Content Include="LogicApp.parameters.json" />
-    <Content Include="LogicAppConfermaAppuntamento.json" />
+    <Content Include="LogicAppAppuntamentoDaConfermareExpirationHandler.json" />
+    <Content Include="LogicAppAppuntamentoDaConfermareExpirationHandler.parameters.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>

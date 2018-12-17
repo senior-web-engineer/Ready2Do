@@ -7,7 +7,7 @@
       "minLength": 1,
       "maxLength": 80,
       "metadata": {
-        "description": "Logic App Conferma Appuntamento"
+        "description": "LogicApp per la gestione del timeout di un appuntamento da confermare"
       }
     },
     "logicAppLocation": {
@@ -93,6 +93,20 @@
         "definition": {
           "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
           "actions": {
+            "Delay": {
+              "type": "Wait",
+              "inputs": {
+                "interval": {
+                  "count": "@triggerBody()?['expirationMinutes']",
+                  "unit": "Minute"
+                }
+              },
+              "runAfter": {
+                "Response": [
+                  "Succeeded"
+                ]
+              }
+            },
             "Response": {
               "type": "Response",
               "kind": "http",
@@ -103,36 +117,44 @@
                 },
                 "body": "@workflow()"
               },
+              "runAfter": {}
+            },
+            "Terminate": {
+              "type": "Terminate",
+              "inputs": {
+                "runStatus": "Failed",
+                "runError": {
+                  "code": "100",
+                  "message": "timeout"
+                }
+              },
               "runAfter": {
-                "Execute_stored_procedure": [
+                "HTTP": [
                   "Succeeded"
                 ]
               }
             },
-            "Execute_stored_procedure": {
-              "type": "ApiConnection",
+            "HTTP": {
+              "type": "Http",
               "inputs": {
-                "host": {
-                  "connection": {
-                    "name": "@parameters('$connections')['sql']['connectionId']"
-                  }
-                },
-                "method": "post",
-                "body": {
-                  "Confermato": "@triggerBody()?['confermato']",
-                  "IdAppuntamento": "@triggerBody()?['idAppuntamento']"
-                },
-                "path": "/datasets/default/procedures/@{encodeURIComponent(encodeURIComponent('[dbo].[DELME_ConfermaAppuntamento]'))}"
+                "method": "",
+                "uri": "",
+                "authentication": {
+                  "type": "ActiveDirectoryOAuth",
+                  "tenant": "",
+                  "audience": "",
+                  "clientId": "",
+                  "secret": ""
+                }
               },
-              "runAfter": {}
+              "runAfter": {
+                "Delay": [
+                  "Succeeded"
+                ]
+              }
             }
           },
-          "parameters": {
-            "$connections": {
-              "defaultValue": {},
-              "type": "Object"
-            }
-          },
+          "parameters": {},
           "triggers": {
             "manual": {
               "type": "Request",
@@ -141,11 +163,14 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "idAppuntamento": {
+                    "idSchedule": {
                       "type": "integer"
                     },
-                    "confermato": {
-                      "type": "boolean"
+                    "userId": {
+                      "type": "string"
+                    },
+                    "expirationMinutes": {
+                      "type": "integer"
                     }
                   }
                 },
@@ -156,21 +181,9 @@
           "contentVersion": "1.0.0.0",
           "outputs": {}
         },
-        "parameters": {
-          "$connections": {
-            "value": {
-              "sql": {
-                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'sql')]",
-                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('sql_1_Connection_Name'))]",
-                "connectionName": "[parameters('sql_1_Connection_Name')]"
-              }
-            }
-          }
-        }
+        "parameters": {}
       },
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/connections', parameters('sql_1_Connection_Name'))]"
-      ]
+      "dependsOn": []
     },
     {
       "type": "MICROSOFT.WEB/CONNECTIONS",
