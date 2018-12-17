@@ -82,6 +82,8 @@ namespace PalestreGoGo.WebAPI
                 });
            
             services.AddMvc()
+                // Abilitiamo i comportamenti introdotti con ASP.NET Core 2.2 (più recenti)
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
                 .AddFluentValidation();
 
             Mapper.Initialize(x =>

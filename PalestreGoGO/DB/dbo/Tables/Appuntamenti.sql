@@ -16,11 +16,12 @@ CREATE TABLE [dbo].[Appuntamenti]
 	[DataCancellazione]		DATETIME2			NULL,
 	[Note]					NVARCHAR(1000)		NULL,
 	[Nominativo]			NVARCHAR(200)		NULL,	/* ??? */
+
 	CONSTRAINT PK_Appuntamenti PRIMARY KEY (Id),
 	CONSTRAINT FK_Appuntamenti_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),
 	CONSTRAINT FK_Appuntamenti_Schedules FOREIGN KEY (ScheduleId) REFERENCES [Schedules](Id),
 	CONSTRAINT FK_Appuntamenti_Abbonamenti FOREIGN KEY (IdAbbonamento) REFERENCES [AbbonamentiUtenti](Id),
-	-- Per un utente può esserci solo un appuntamento NON CANCELLATO (ATTIVO)
+	-- Per un utente può esserci solo un appuntamento NON CANCELLATO (ATTIVO) per lo stesso evento
 	INDEX IDX_Appuntamenti_UserSched UNIQUE (UserId, ScheduleId) WHERE [DataCancellazione] IS NULL,
 
 	INDEX IDX_AppuntamentiSchedules NONCLUSTERED (ScheduleId)

@@ -22,9 +22,9 @@ namespace PalestreGoGo.WebAPI.Controllers
     /// </summary>
     /// <seealso cref="https://palestregogo.visualstudio.com/MyFirstProject/_wiki?pagePath=%2FAppuntamenti"/>
     [Produces("application/json")]
-    [Route("api/clienti/{idCliente:int}/appuntamenti/")]
+    [Route("api/clienti/{idCliente:int}/schedules/{idSchedule}/appuntamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AppuntamentiController : PalestreControllerBase
+    public class AppuntamentiAPIController : PalestreControllerBase
     {
 
         /* 
@@ -42,7 +42,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly ISchedulesRepository _repositorySchedule;
         private readonly IConfiguration _config;
 
-        public AppuntamentiController(IConfiguration config,
+        public AppuntamentiAPIController(IConfiguration config,
                                  ILogger<ClientiController> logger,
                                  IAppuntamentiRepository repositoryAppuntamenti,
                                  ISchedulesRepository repositorySchedule)
@@ -56,16 +56,16 @@ namespace PalestreGoGo.WebAPI.Controllers
 
         [HttpGet()]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAppuntamento([FromRoute]int idCliente, [FromQuery]int idEvento)
+        public async Task<IActionResult> GetAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
             AppuntamentoViewModel result = new AppuntamentoViewModel();
             //Leggiamo i dati sull'evento
-            var schedule = await _repositorySchedule.GetScheduleAsync(idCliente, idEvento);
-            result.IdEvento = idEvento;
+            var schedule = await _repositorySchedule.GetScheduleAsync(idCliente, idSchedule);
+            result.IdEvento = idSchedule;
             result.DataOra = string.Format("{0}T{1}Z", schedule.DataOraInizio.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.DataOraInizio.TimeOfDay.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
             result.DurataMinuti = schedule.TipologiaLezione.Durata;
             result.Istruttore = schedule.Istruttore;
-            result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.HasValue 
+            result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.HasValue
                                                     ? schedule.CancellabileFinoAl.Value.ToString("o", CultureInfo.InvariantCulture)
                                                     : schedule.DataOraInizio.ToString("0", CultureInfo.InvariantCulture);
             result.Nome = schedule.Title;
@@ -79,7 +79,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 var idUser = User.UserId();
                 if (!string.IsNullOrWhiteSpace(idUser))
                 {
-                    var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idEvento, idUser);
+                    var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idSchedule, idUser);
                     if (appuntuamento != null)
                     {
                         result.IdAppuntamento = appuntuamento.Id;
@@ -92,12 +92,14 @@ namespace PalestreGoGo.WebAPI.Controllers
 
 
         [HttpPost()]
-        public async Task<IActionResult> AddAppuntamento([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoApiModel model)
+        public async Task<IActionResult> AddAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromBody] NuovoAppuntamentoApiModel model)
         {
             if (model == null) return BadRequest();
+            if (model.IdEvento != idSchedule) return BadRequest();
             //Se è un amministratore può inserire appuntamenti anche per conto di altri utenti, altrimenti può inserire appuntamenti solo per se stesso
             if (!User.CanManageStructure(idCliente) && (!User.UserId().Equals(model.IdUtente))) { return BadRequest(); }
-            //Per creare un appuntamento l'utente deve avere una bbonamento al cliente            
+
+            //Per creare un appuntamento l'utente deve avere un abbonamento al cliente            
             var appuntamento = new Appuntamenti();
             appuntamento.DataPrenotazione = DateTime.Now;
             appuntamento.IdCliente = idCliente;
@@ -124,8 +126,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(appuntamento.Id);
         }
 
-       [HttpDelete("{id}")]
-       public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute] int idAppuntmento)
+        [HttpDelete("{idAppuntamento}")]
+        public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromRoute(Name = "idAppuntamento")] int idAppuntmento)
         {
             var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoAsync(idCliente, idAppuntmento);
             if (appuntamento == null) return NotFound();
