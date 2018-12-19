@@ -1,0 +1,41 @@
+﻿CREATE VIEW [dbo].[vAppuntamentiDaConfermareFull]
+	AS 
+ SELECT		   ap.Id,
+			   ap.UserId,
+			   ap.IdCliente,
+			   ap.DataCreazione,
+			   ap.DataCancellazione,
+			   ap.DataEsito,
+			   ap.DataExpiration,
+			   ap.IdAppuntamento,
+			   ap.ScheduleId,
+			   ap.MotivoRifiuto,
+			   sc.CancellabileFinoAl,
+			   sc.DataCancellazione as DataCancellazioneSchedule,
+			   sc.DataChiusuraIscrizioni,
+			   sc.DataOraInizio,
+			   sc.IdTipoLezione,
+			   sc.Istruttore,
+			   sc.Note AS NoteSchedule,
+			   sc.PostiDisponibili,
+			   sc.PostiResidui,
+			   sc.Title,
+			   sc.UserIdOwner,
+			   tl.Id AS IdTipologiaLezione,
+			   tl.Nome as NomeTipologiaLezione,
+			   tl.Descrizione AS DescrizioneTipologiaLezione,
+			   tl.Durata AS Durata,
+			   tl.MaxPartecipanti,
+			   tl.LimiteCancellazioneMinuti,
+			   tl.Livello,
+			   tl.DataCancellazione AS DataCancellazioneTipologiaLezione,
+			   tl.DataCreazione AS DataCreazioneTipologiaLezione,
+			   tl.Prezzo AS PrezzoTipologiaLezione,
+			   lo.Id AS IdLocation,
+			   lo.Nome AS NomeLocation,
+			   lo.Descrizione AS DescrizioneLocation,
+			   lo.CapienzaMax
+		FROM AppuntamentiDaConfermare ap
+			INNER JOIN Schedules sc ON AP.ScheduleId = sc.Id
+			INNER JOIN TipologieLezioni tl ON sc.IdTipoLezione = tl.Id
+			INNER JOIN Locations lo ON sc.IdLocation = lo.Id

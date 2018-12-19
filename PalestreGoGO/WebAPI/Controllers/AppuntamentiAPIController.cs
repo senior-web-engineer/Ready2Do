@@ -40,18 +40,24 @@ namespace PalestreGoGo.WebAPI.Controllers
          */
         private readonly ILogger<ClientiController> _logger;
         private readonly IAppuntamentiRepository _repositoryAppuntamenti;
+        private readonly IClientiRepository _clientiRepository;
         private readonly ISchedulesRepository _repositorySchedule;
         private readonly IConfiguration _config;
+        private readonly LogicAppsClient _clientLogicApp;
 
         public AppuntamentiAPIController(IConfiguration config,
                                  ILogger<ClientiController> logger,
                                  IAppuntamentiRepository repositoryAppuntamenti,
-                                 ISchedulesRepository repositorySchedule)
+                                 IClientiRepository clientiRepository,
+                                 ISchedulesRepository repositorySchedule,
+                                 LogicAppsClient clientLogicApp)
         {
             this._config = config;
             this._logger = logger;
             this._repositoryAppuntamenti = repositoryAppuntamenti;
             this._repositorySchedule = repositorySchedule;
+            this._clientiRepository = clientiRepository;
+            this._clientLogicApp = clientLogicApp;
         }
 
 
@@ -80,11 +86,11 @@ namespace PalestreGoGo.WebAPI.Controllers
                 var idUser = User.UserId();
                 if (!string.IsNullOrWhiteSpace(idUser))
                 {
-                    var appuntuamento = await _repositoryAppuntamenti.GetAppuntamentoForScheduleAsync(idCliente, idSchedule, idUser);
+                    var appuntuamento = (await _repositoryAppuntamenti.GetAppuntamentoForUserAsync(idCliente, idSchedule, idUser,false)).SingleOrDefault();
                     if (appuntuamento != null)
                     {
                         result.IdAppuntamento = appuntuamento.Id;
-                        result.DataOraIscrizione = appuntuamento.DataPrenotazione.ToString("o", CultureInfo.InvariantCulture);
+                        result.DataOraIscrizione = appuntuamento.DataCreazione.ToString("o", CultureInfo.InvariantCulture);
                     }
                 }
             }
@@ -103,28 +109,33 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost()]
-        public async Task<IActionResult> TakeAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, 
+        public async Task<IActionResult> TakeAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule,
                                                                             [FromBody] NuovoAppuntamentoApiModel model)
         {
             if (model == null) return BadRequest();
             if (model.IdEvento != idSchedule) return BadRequest();
             //Se è un amministratore può inserire appuntamenti anche per conto di altri utenti, altrimenti può inserire appuntamenti solo per se stesso
             if (!User.CanManageStructure(idCliente) && (!User.UserId().Equals(model.IdUtente))) { return BadRequest(); }
-
-            //Per creare un appuntamento l'utente deve avere un abbonamento al cliente            
-            var appuntamento = new Appuntamenti();
-            appuntamento.DataPrenotazione = DateTime.Now;
-            appuntamento.IdCliente = idCliente;
-            appuntamento.UserId = model.IdUtente;
-            appuntamento.Note = model.Note;
-            appuntamento.ScheduleId = model.IdEvento; //Siamo sicuri che questo sia per il cliente corrente??
-            appuntamento.Id = await _repositoryAppuntamenti.TakeAppuntamentoAsync(idCliente, appuntamento);
+            //Startiamo la Logic App che gestisce il Timeout se non è stato specificato un IdAbbonamento
+            string logiAccInfos = null;
+            if (!model.IdAbbonamento.HasValue)
+            {
+                int timeoutMinutes = 0;
+                string minutes = await _clientiRepository.GetPreferenzaCliente(idCliente, "APPUNTAMENTIDACONFERMARE.EXPIRATION.WINDOW.MINUTES");
+                if (!string.IsNullOrWhiteSpace(minutes) && !int.TryParse(minutes, out timeoutMinutes))
+                {
+                    //Se non è configurata una preferenza sul DB, usiamo il default del file di configurazione
+                    timeoutMinutes = _config.GetValue<int>("Azure__LogicApps__AppuntamentiDaConfermareHandler__DefaultTimeoutMinutes");
+                }
+                logiAccInfos = await _clientLogicApp.StartAppForAppuntamentoDaConfermare(idCliente, idSchedule, model.IdUtente, timeoutMinutes);
+            }
+            var appuntamento = await _repositoryAppuntamenti.TakeAppuntamentoAsync(idCliente, model.IdUtente, idSchedule, model.IdAbbonamento, model.Note, null, logiAccInfos);
             return Ok(appuntamento.Id);
         }
 
         [HttpPut("expiration/{userId}")]
-        public async Task<IActionResult> HandleExpirationAppuntamentoDaConfermare([FromRoute(Name="idCliente")]int idCliente, [FromRoute(Name ="idSchedule")] int idSchedule,
-                                        [FromRoute(Name ="userId")string userId)
+        public async Task<IActionResult> HandleExpirationAppuntamentoDaConfermare([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idSchedule")] int idSchedule,
+                                        [FromRoute(Name = "userId")]string userId)
         {
             //Aggiornare lo stato sul DB
             //Notificare all'utente ed al gestore la scadenza
@@ -146,34 +157,28 @@ namespace PalestreGoGo.WebAPI.Controllers
             //Recuperare l'id del Workflow Run per invocare la terminazione (come avviene l'autorizzazione?)
             throw new NotImplementedException();
         }
-            
+
 
         [HttpPost("guest")]
-        public async Task<IActionResult> AddAppuntamentoForGuest([FromRoute]int idCliente, [FromBody] NuovoAppuntamentoGuestApiModel model)
+        public async Task<IActionResult> AddAppuntamentoForGuest([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")] int idSchedule, [FromBody] NuovoAppuntamentoGuestApiModel model)
         {
             if (model == null) return BadRequest();
             //Solo un amministratore può inserire appuntamenti per un utente GUEST
             if (!User.CanManageStructure(idCliente)) { return Forbid(); }
-            var appuntamento = new Appuntamenti();
-            appuntamento.DataPrenotazione = DateTime.Now;
-            appuntamento.IdCliente = idCliente;
-            appuntamento.Note = model.Note;
-            appuntamento.ScheduleId = model.IdEvento; //Siamo sicuri che questo sia per il cliente corrente??
-            appuntamento.Nominativo = model.Nominativo; //Se abbiamo comunque l'utente, ci serve il nominativo?
-            appuntamento.Id = await _repositoryAppuntamenti.AddAppuntamentoAsync(idCliente, appuntamento);
-            return Ok(appuntamento.Id);
+            var appuntamento = await _repositoryAppuntamenti.TakeAppuntamentoAsync(idCliente, null, idSchedule, null, model.Note, model.Nominativo, null);
+            return Ok(appuntamento);
         }
 
         [HttpDelete("{idAppuntamento}")]
-        public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromRoute(Name = "idAppuntamento")] int idAppuntmento)
+        public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromRoute(Name = "idAppuntamento")] int idAppuntamento)
         {
-            var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoAsync(idCliente, idAppuntmento);
+            var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoAsync(idCliente, idSchedule, idAppuntamento);
             if (appuntamento == null) return NotFound();
             bool authorized = false;
             if (User.CanManageStructure(idCliente)) { authorized = true; }
             if (!authorized && (!string.IsNullOrWhiteSpace(appuntamento.UserId)) && (appuntamento.UserId.Equals(User.UserId()))) { authorized = true; }
             if (!authorized) { return Forbid(); }
-            await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntmento);
+            await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntamento);
             return Ok();
         }
 

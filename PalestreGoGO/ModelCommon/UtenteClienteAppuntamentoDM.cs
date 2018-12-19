@@ -4,16 +4,12 @@ using System.Text;
 
 namespace ready2do.model.common
 {
-    public class UtenteClienteAppuntamentoDM
+    [Obsolete("Utilizzare AppuntamentoDM oppure AppuntamentoDaConfermareDM")]
+    public class UtenteClienteAppuntamentoDM: AppuntamentoBaseDM
     {
-        public int IdAppuntamento { get; set; }
-        public int IdCliente { get; set; }
-        public DateTime DataPrenotazione { get; set; }
-        public DateTime? DataCancellazione { get; set; }
         public int IdAbbonamento { get; set; }
         public string Nominativo { get; set; }
         public string Note { get; set; }
-        public int IdSchedule { get; set; }
 
         public ScheduleDM Schedule { get; set; }
     }

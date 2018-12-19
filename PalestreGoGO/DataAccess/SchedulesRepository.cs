@@ -127,6 +127,38 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
+        public async Task<IEnumerable<ScheduleDM>> SchedulesLookupAsync(List<int> idSchedules, bool includeDeleted = false)
+        {
+            List<ScheduleDM> result = new List<ScheduleDM>();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Id", typeof(int));
+            foreach (var i in idSchedules)
+            {
+                var row = dt.NewRow();
+                row["Id"] = i;
+                dt.Rows.Add(row);
+            }
+            using(var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Schedules_Lookup]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                var parTable = cmd.Parameters.AddWithValue("@pIdSchedules", dt);
+                parTable.SqlDbType = SqlDbType.Structured;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    while (await dr.ReadAsync())
+                    {
+                        result.Add(await internalReadSchedule(dr, GetScheduleColumns(dr)));
+                    }
+                }
+            }
+            return result;
+        }
+
+
         public async Task<ScheduleDM> GetScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false)
         {
             using (var cn = GetConnection())

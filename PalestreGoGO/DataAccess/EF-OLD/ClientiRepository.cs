@@ -263,6 +263,20 @@ namespace PalestreGoGo.DataAccess
         }
         #endregion
 
-  
+        #region PREFERENZE
+        public async Task<string> GetPreferenzaCliente(int idCliente, string key)
+        {
+            using (var cn = new SqlConnection(_context.Database.GetDbConnection().ConnectionString))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Clienti_Preferenze_Get]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pKey", SqlDbType.VarChar, 100).Value = key;
+                await cn.OpenAsync();
+                return (string)await cmd.ExecuteScalarAsync();
+            }
+        }
+        #endregion
     }
 }

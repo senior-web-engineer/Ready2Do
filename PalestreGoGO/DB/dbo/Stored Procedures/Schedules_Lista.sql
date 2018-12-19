@@ -45,7 +45,7 @@ BEGIN
 							s.Istruttore,
 							s.PostiDisponibili,
 							s.PostiResidui,
-							(s.PostiDisponibili - PostiResidui) AS NumPrenotazioni,
+							(s.PostiDisponibili - s.PostiResidui) AS NumPrenotazioni,
 							s.CancellazioneConsentita,
 							s.CancellabileFinoAl,
 							s.DataAperturaIscrizioni,

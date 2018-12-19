@@ -23,10 +23,12 @@ namespace PalestreGoGo.DataAccess
         /// <param name="includiNonConfermati"></param>
         /// <param name="includeDeleted"></param>
         /// <returns></returns>
-        Task<IEnumerable<AppuntamentoBaseDM>> GetAllAppuntamenti(int idCliente, int idSchedule, bool includiConfermati, bool includiNonConfermati, bool includeDeleted);
-        Task<AppuntamentoBaseDM> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId, bool includeNonConfermati, bool includeDeleted);
-        Task<Appuntamenti> GetAppuntamentoAsync(int idCliente, int idAppuntamento);
-        Task<Appuntamenti> GetAppuntamentoDaConfermareAsync(int idCliente, int idAppuntamentoDaConfermare);
+        Task<IEnumerable<AppuntamentoBaseDM>> GetAllAppuntamenti(int idCliente, int idSchedule, bool includiConfermati, bool includiNonConfermati, bool includeDeleted = false);
+        Task<IEnumerable<AppuntamentoDM>> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
+        Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
+
+        Task<AppuntamentoDM> GetAppuntamentoAsync(int idCliente, int idSchedule, int idAppuntamento);
+        Task<AppuntamentoDaConfermareDM> GetAppuntamentoDaConfermareAsync(int idCliente, int idSchedule, int idAppuntamentoDaConfermare);
 
         /// <summary>
         /// Ritorna tutti gli appuntamenti di un Utente a prescindere dal Cliente presso cui sono presi.
@@ -40,9 +42,10 @@ namespace PalestreGoGo.DataAccess
         /// <param name="sortBy"></param>
         /// <param name="sortAscending"></param>
         /// <returns></returns>
-        Task<IEnumerable<UtenteClienteAppuntamentoDM>> GetAppuntamentiUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
-                                                                                        DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                        string sortBy = "DataOraInizio", bool sortAscending = true);
+        Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
+                                                                     DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
+                                                                     string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                     bool includiCancellati = false);
 
         /// <summary>
         /// Ritorna tutti gli appuntamenti di un Utente presso uno specifico Cliente, invocabile dal gestore per vedere gli appuntamenti di utente presso la propria struttura.
@@ -57,8 +60,44 @@ namespace PalestreGoGo.DataAccess
         /// <param name="sortBy"></param>
         /// <param name="sortAscending"></param>
         /// <returns></returns>
-        Task<IEnumerable<UtenteClienteAppuntamentoDM>> GetAppuntamentiUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
-                                                                                        DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                        string sortBy = "DataOraInizio", bool sortAscending = true);
+        Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
+                                                                     DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
+                                                                     string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                     bool includiCancellati = false);
+
+        /// <summary>
+        /// Ritorna tutti gli appuntamenti di un Utente a prescindere dal Cliente presso cui sono presi.
+        /// Invocabile solo dall'utente stesso per vedere i propri appuntamenti
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="dtInizioSchedule"></param>
+        /// <param name="dtFineSchedule"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortAscending"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
+                                                                                 DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
+                                                                                 string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                                 bool includiCancellati = false);
+
+        /// <summary>
+        /// Ritorna tutti gli appuntamenti di un Utente presso uno specifico Cliente, invocabile dal gestore per vedere gli appuntamenti di utente presso la propria struttura.
+        /// Tecnicamente invocabile anche dall'utente ma al momento non usata in questo scenario
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="userId"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="dtInizioSchedule"></param>
+        /// <param name="dtFineSchedule"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortAscending"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
+                                                                                 DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
+                                                                                 string sortBy = "DataOraInizio", bool sortAscending = true, 
+                                                                                 bool includiCancellati = false);
     }
 }

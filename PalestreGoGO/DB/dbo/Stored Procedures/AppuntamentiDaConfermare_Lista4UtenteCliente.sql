@@ -1,26 +1,19 @@
-﻿/*
-
-*/
-CREATE PROCEDURE [dbo].[Clienti_Utenti_AppuntamentiList]
-	@pIdCliente			INT,
-	@pUserId			VARCHAR(100),
-	@pScheduleStartDate	DATETIME2(2) = NULL,
-	@pScheduleEndDate	DATETIME2(2) = NULL,
-	@pPageSize			INT = 25,
-	@pPageNumber		INT = 1,
-	@pSortColumn		VARCHAR(50) = NULL,
-	@pOrderAscending	BIT = 1
+﻿CREATE PROCEDURE [dbo].[AppuntamentiDaConfermare_Lista4UtenteCliente]
+	@pIdCliente				INT, --Opzionale, se non passato ritorna tutti gli appuntamenti dell'uitente a prescindere dal Cliente
+	@pUserId				VARCHAR(100),	
+	@pScheduleStartDate		DATETIME2(2) = NULL,
+	@pScheduleEndDate		DATETIME2(2) = NULL,
+	@pIncludeDeleted		bit = 0,
+	@pPageSize				INT = 25,
+	@pPageNumber			INT = 1,
+	@pSortColumn			VARCHAR(50) = NULL,
+	@pOrderAscending		BIT = 1
 AS
 BEGIN
 	DECLARE @sql NVARCHAR(MAX);
 	DECLARE @sortDirection VARCHAR(10);
 	DECLARE @newLine CHAR(2) = CHAR(13)+ CHAR(10)
 
-	IF @pIdCliente IS NULL
-	BEGIN
-		RAISERROR('Invalid @pidCliente', 16, 0);
-		RETURN -2;		
-	END
 	IF @pUserId IS NULL
 	BEGIN
 		RAISERROR('Invalid @pUserId', 16, 0);
@@ -74,11 +67,13 @@ BEGIN
 			   NomeLocation,
 			   DescrizioneLocation,
 			   CapienzaMax
-		FROM [dbo].[vAppuntamentiFull] ap
-		WHERE ap.IdCliente = @pIdCliente
-		AND ap.UserId = @pUserId
+		FROM [dbo].[vAppuntamentiDaConfermareFull] ap
+		WHERE ap.UserId = @pUserId
 	'
-
+	IF @pIdCliente IS NOT NULL
+	BEGIN
+		SET @sql = @sql + ' AND ap.IdCliente = @pIdCliente ' + @newLine
+	END
 	IF @pScheduleStartDate IS NOT NULL
 	BEGIN
 		SET @sql = @sql + ' AND ap.DataOraInizio >= @pScheduleStartDate ' + @newLine
@@ -86,6 +81,10 @@ BEGIN
 	IF @pScheduleEndDate IS NOT NULL
 	BEGIN
 		SET @sql = @sql + ' AND ap.DataOraInizio <= @pScheduleEndDate ' + @newLine
+	END
+	IF COALESCE(@pIncludeDeleted, 0) <> 1
+	BEGIN
+		SET @sql = @sql + ' AND ap.DataCancellazione IS NULL ' + @newLine
 	END
 	
 	SET @sql = @sql + 'ORDER BY ' + @pSortColumn  + ' ' + @sortDirection + '

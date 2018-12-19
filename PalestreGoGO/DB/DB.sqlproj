@@ -68,6 +68,7 @@
     <Folder Include="utils" />
     <Folder Include="utils\Tables" />
     <Folder Include="dbo\Functions" />
+    <Folder Include="dbo\Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Clienti.sql" />
@@ -135,7 +136,6 @@
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoDelete.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoList.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoGet.sql" />
-    <Build Include="dbo\Stored Procedures\Clienti_Utenti_AppuntamentiList.sql" />
     <Build Include="dbo\Views\vAppuntamenti.sql" />
     <Build Include="dbo\Views\vAbbonamentiTransazioni.sql" />
     <Build Include="dbo\Views\vAbbonamentiUtenti.sql" />
@@ -165,6 +165,21 @@
     <Build Include="dbo\Stored Procedures\internal_LogMessage.sql" />
     <Build Include="dbo\Tables\AppuntamentiDaConfermare.sql" />
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Lista4Schedule.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Get4User.sql" />
+    <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Get4User.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Lista4Utente.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Lista4UtenteCliente.sql" />
+    <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Lista4UtenteCliente.sql" />
+    <Build Include="dbo\Views\vAppuntamentiDaConfermareFull.sql" />
+    <Build Include="dbo\Stored Procedures\Appuntamenti_Get.sql" />
+    <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Get.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Preferenze_Set.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Preferenze_Get.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Preferenze_List.sql" />
+    <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_SetExpiration.sql" />
+    <Build Include="dbo\Types\udtListOfInt.sql" />
+    <Build Include="dbo\Stored Procedures\Schedules_Lookup.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

@@ -32,6 +32,10 @@ namespace PalestreGoGo.DataAccess
         IEnumerable<ClientiImmagini> GetImages(int idCliente, TipologieImmagini tipoImmagine);
         #endregion
 
+        #region Preferenze
+        Task<string> GetPreferenzaCliente(int idCliente, string key);
+        #endregion
+
     }
 
 
