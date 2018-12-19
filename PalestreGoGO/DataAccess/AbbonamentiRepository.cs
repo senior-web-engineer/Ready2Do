@@ -87,7 +87,7 @@ namespace PalestreGoGo.DataAccess
                         {
                             DataCancellazione = dr.IsDBNull(dr.GetOrdinal("DataCancellazione")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("DataCancellazione")),
                             DataCreazione = dr.GetDateTime(dr.GetOrdinal("DataCreazione")),
-                            DataInizioValidita = dr.GetDateTime(dr.GetOrdinal("DataCreazione")),
+                            DataInizioValidita = dr.GetDateTime(dr.GetOrdinal("DataInizioValidita")),
                             Id = dr.GetInt32(dr.GetOrdinal("Id")),
                             IdCliente = dr.GetInt32(dr.GetOrdinal("IdCliente")),
                             IdTipoAbbonamento = dr.GetInt32(dr.GetOrdinal("IdTipoAbbonamento")),
@@ -105,7 +105,7 @@ namespace PalestreGoGo.DataAccess
                                 NumIngressi = dr.IsDBNull(dr.GetOrdinal("NumIngressi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("NumIngressi")),
                                 IdCliente = dr.GetInt32(dr.GetOrdinal("IdCliente")),
                                 MaxLivCorsi = dr.IsDBNull(dr.GetOrdinal("MaxLivCorsi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("MaxLivCorsi")),
-                                Nome = dr.GetString(dr.GetOrdinal("Nome"))
+                                Nome = dr.GetString(dr.GetOrdinal("NomeTipoAbobonamento"))
                             }
                         });
                     }
