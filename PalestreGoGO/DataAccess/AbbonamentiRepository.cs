@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -97,7 +98,7 @@ namespace PalestreGoGo.DataAccess
                             IngressiResidui = dr.IsDBNull(dr.GetOrdinal("IngressiResidui")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("IngressiResidui")),
                             Scadenza = dr.GetDateTime(dr.GetOrdinal("Scadenza")),
                             UserId = dr.GetString(dr.GetOrdinal("UserId")),
-                            TipoAbbonamento = new TipoAbbonamentoDM()
+                            TipoAbbonamento = new TipologiaAbbonamentoDM()
                             {
                                 Costo = dr.IsDBNull(dr.GetOrdinal("Importo")) ? (decimal?)null : dr.GetDecimal(dr.GetOrdinal("Importo")),
                                 Id = dr.GetInt32(dr.GetOrdinal("IdTipoAbbonamento")),
@@ -105,9 +106,13 @@ namespace PalestreGoGo.DataAccess
                                 NumIngressi = dr.IsDBNull(dr.GetOrdinal("NumIngressi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("NumIngressi")),
                                 IdCliente = dr.GetInt32(dr.GetOrdinal("IdCliente")),
                                 MaxLivCorsi = dr.IsDBNull(dr.GetOrdinal("MaxLivCorsi")) ? (short?)null : dr.GetInt16(dr.GetOrdinal("MaxLivCorsi")),
-                                Nome = dr.GetString(dr.GetOrdinal("NomeTipoAbobonamento"))
-                            }
-                        });
+                                Nome = dr.GetString(dr.GetOrdinal("NomeTipoAbobonamento")),
+                                ValidoDal = dr.GetDateTime(dr.GetOrdinal("ValidoDal")),
+                                ValidoFinoAl = await dr.IsDBNullAsync(dr.GetOrdinal("ValidoFinoAl")) ? default(DateTime?) : dr.GetDateTime(dr.GetOrdinal("ValidoFinoAl")),
+                                DataCreazione = dr.GetDateTime(dr.GetOrdinal("DataCreazioneTipologiaAbbonamento")),
+                                DataCancellazione = await dr.IsDBNullAsync(dr.GetOrdinal("DataCancellazioneTipologiaAbbonamento")) ? default(DateTime?) : dr.GetDateTime(dr.GetOrdinal("DataCancellazioneTipologiaAbbonamento"))
+                    }
+                });
                     }
                 }
             }

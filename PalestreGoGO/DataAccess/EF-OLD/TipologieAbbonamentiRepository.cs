@@ -1,60 +1,176 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Configuration;
 using PalestreGoGo.DataModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class TipologieAbbonamentiRepository : ITipologieAbbonamentiRepository
+    public class TipologieAbbonamentiRepository : BaseRepository, ITipologieAbbonamentiRepository
     {
-        private readonly PalestreGoGoDbContext _context;
-
-        public TipologieAbbonamentiRepository(PalestreGoGoDbContext context)
+        public TipologieAbbonamentiRepository(IConfiguration configuration) : base(configuration)
         {
-            this._context = context;
         }
 
-        public virtual IEnumerable<TipologieAbbonamenti> GetAll(int idTenant)
+        private Dictionary<string, int> InternalGetColumnsOrdinal(SqlDataReader dr)
         {
-            return _context.Set<TipologieAbbonamenti>().Where(e => e.IdCliente.Equals(idTenant));
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            result.Add("Id", dr.GetOrdinal("Id"));
+            result.Add("IdCliente", dr.GetOrdinal("IdCliente"));
+            result.Add("Nome", dr.GetOrdinal("Nome"));
+            result.Add("DurataMesi", dr.GetOrdinal("DurataMesi"));
+            result.Add("NumIngressi", dr.GetOrdinal("NumIngressi"));
+            result.Add("Costo", dr.GetOrdinal("Costo"));
+            result.Add("MaxLivCorsi", dr.GetOrdinal("MaxLivCorsi"));
+            result.Add("ValidoDal", dr.GetOrdinal("ValidoDal"));
+            result.Add("ValidoFinoAl", dr.GetOrdinal("ValidoFinoAl"));
+            result.Add("DataCreazione", dr.GetOrdinal("DataCreazione"));
+            result.Add("DataCancellazione", dr.GetOrdinal("DataCancellazione"));
+            return result;
         }
 
-        public virtual int Count(int idTenant)
+        private async Task<TipologiaAbbonamentoDM> InternalReadTipologiaAbbonamento(SqlDataReader dr, Dictionary<string, int> columns)
         {
-            return _context.Set<TipologieAbbonamenti>().Count(e => e.IdCliente == idTenant);
+            var result = new TipologiaAbbonamentoDM();
+            result.Id = dr.GetInt32(columns["Id"]);
+            result.IdCliente = dr.GetInt32(columns["IdCliente"]);
+            result.Nome = dr.GetString(columns["Nome"]);
+            result.DurataMesi = await dr.IsDBNullAsync(columns["DurataMesi"]) ? default(short?) : dr.GetInt16(columns["DurataMesi"]);
+            result.NumIngressi = await dr.IsDBNullAsync(columns["NumIngressi"]) ? default(short?) : dr.GetInt16(columns["NumIngressi"]);
+            result.Costo = await dr.IsDBNullAsync(columns["Costo"]) ? default(decimal?) : dr.GetDecimal(columns["Costo"]);
+            result.MaxLivCorsi = await dr.IsDBNullAsync(columns["MaxLivCorsi"]) ? default(short?) : dr.GetInt16(columns["MaxLivCorsi"]);
+            result.ValidoDal = dr.GetDateTime(columns["ValidoDal"]);
+            result.ValidoFinoAl = await dr.IsDBNullAsync(columns["ValidoFinoAl"]) ? default(DateTime?) : dr.GetDateTime(columns["ValidoFinoAl"]);
+            result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
+            result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
+            return result;
         }
 
-        public TipologieAbbonamenti GetSingle(int idTenant, int itemKey)
+        public async Task<Tuple<IEnumerable<TipologiaAbbonamentoDM>, int>> GetListAsync(int idCliente, int pageSize = 25, int pageNumber = 1, int? id = null,
+                                                                                         string sortColumn = "DataCreazione", bool sortAscending = false,
+                                                                                         bool includiCancellati = false, bool includiNonAttivi = false,
+                                                                                         DateTime? dataValutazione = null)
         {
-            return _context.Set<TipologieAbbonamenti>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant));
+            SqlParameter paramNumRecords = new SqlParameter("@pTotalNumRecords", SqlDbType.Int);
+            paramNumRecords.Direction = ParameterDirection.Output;
+            Dictionary<string, int> columns = null;
+            List<TipologiaAbbonamentoDM> result = new List<TipologiaAbbonamentoDM>();
+            int numRecords = -1;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieAbbonamenti_Lista]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = id;
+                cmd.Parameters.Add("@pPageSize", SqlDbType.Int).Value = pageSize;
+                cmd.Parameters.Add("@pPageNumber", SqlDbType.Int).Value = pageNumber;
+                cmd.Parameters.Add("@pSortColumn", SqlDbType.VarChar, 50).Value = sortColumn;
+                cmd.Parameters.Add("@pOrderAscending", SqlDbType.Bit).Value = sortAscending;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = sortAscending;
+                cmd.Parameters.Add("@pIncludeNotActive", SqlDbType.Bit).Value = sortAscending;
+                cmd.Parameters.Add(paramNumRecords);
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    columns = InternalGetColumnsOrdinal(dr);
+                    while (await dr.ReadAsync())
+                    {
+                        result.Add(await InternalReadTipologiaAbbonamento(dr, columns));
+                    }
+                    numRecords = (int)paramNumRecords.Value;
+                }
+            }
+            return new Tuple<IEnumerable<TipologiaAbbonamentoDM>, int>(result, numRecords);
         }
 
-        public void Add(int idTenant, TipologieAbbonamenti entity)
+        public async Task<TipologiaAbbonamentoDM> GetOneAsync(int idCliente, int id)
         {
-            if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
-            EntityEntry dbEntityEntry = _context.Entry<TipologieAbbonamenti>(entity);
-            _context.Set<TipologieAbbonamenti>().Add(entity);
-            _context.SaveChanges();
+            return (await GetListAsync(idCliente, 25, 1, id)).Item1.SingleOrDefault();
         }
 
-        public void Update(int idTenant, TipologieAbbonamenti entity)
+        public async Task<int> AddAsync(int idCliente, TipologiaAbbonamentoDM entity)
         {
-            //Attenzione! Non verifichiamo il tenant
-            if (entity.IdCliente != idTenant) throw new ArgumentException("idTenant not valid");
-            EntityEntry dbEntityEntry = _context.Entry<TipologieAbbonamenti>(entity);
-            dbEntityEntry.State = EntityState.Modified;
-            _context.SaveChanges();
+            SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
+            parId.Direction = ParameterDirection.Output;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieAbbonamenti_Add]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = entity.Nome;
+                cmd.Parameters.Add("@pDurataMesi", SqlDbType.SmallInt).Value = entity.DurataMesi;
+                cmd.Parameters.Add("@pNumIngressi", SqlDbType.SmallInt).Value = entity.NumIngressi;
+                cmd.Parameters.Add("@pMaxLivCorsi", SqlDbType.SmallInt).Value = entity.MaxLivCorsi;
+                cmd.Parameters.Add("@pCosto", SqlDbType.Decimal).Value = entity.Costo;
+                cmd.Parameters.Add("@pValidoDal", SqlDbType.DateTime2).Value = entity.ValidoDal;
+                cmd.Parameters.Add("@ValidoFinoAl", SqlDbType.DateTime2).Value = entity.ValidoFinoAl;
+                cmd.Parameters.Add(parId);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+            return (int)parId.Value;
         }
 
-        public virtual void Delete(int idTenant, int entityKey)
+        public async Task UpdateAsync(int idCliente, TipologiaAbbonamentoDM entity)
         {
-            var entity = _context.TipologieAbbonamenti.Where(tl => tl.IdCliente.Equals(idTenant) && tl.Id.Equals(entityKey)).Single();
-            var entry = _context.Entry(entity);
-            entry.State = EntityState.Deleted;
-            _context.SaveChanges();
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieAbbonamenti_Modifica]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = entity.Id;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = entity.Nome;
+                cmd.Parameters.Add("@pDurataMesi", SqlDbType.SmallInt).Value = entity.DurataMesi;
+                cmd.Parameters.Add("@pNumIngressi", SqlDbType.SmallInt).Value = entity.NumIngressi;
+                cmd.Parameters.Add("@pMaxLivCorsi", SqlDbType.SmallInt).Value = entity.MaxLivCorsi;
+                cmd.Parameters.Add("@pCosto", SqlDbType.Decimal).Value = entity.Costo;
+                cmd.Parameters.Add("@pValidoDal", SqlDbType.DateTime2).Value = entity.ValidoDal;
+                cmd.Parameters.Add("@ValidoFinoAl", SqlDbType.DateTime2).Value = entity.ValidoFinoAl;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteAsync(int idCliente, int id)
+        {
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieAbbonamenti_Delete]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = id;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<bool> CheckNomeAsync(int idCliente, string nome)
+        {
+            SqlParameter parResult = new SqlParameter("@pResult", SqlDbType.Bit);
+            parResult.Direction = ParameterDirection.Output;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieAbbonamenti_CheckNome]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pNomeTipoAbbonamento", SqlDbType.NVarChar, 100).Value = nome;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add(parResult);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                return (bool)parResult.Value;
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PalestreGoGo.DataModel
+namespace ready2do.model.common
 {
     public partial class UtenteClienteAbbonamentoDM
     {
@@ -22,7 +22,7 @@ namespace PalestreGoGo.DataModel
         public DateTime? DataCreazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
 
-        public TipoAbbonamentoDM TipoAbbonamento { get; set; }
+        public TipologiaAbbonamentoDM TipoAbbonamento { get; set; }
 
     }
 }

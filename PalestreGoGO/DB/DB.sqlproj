@@ -180,6 +180,11 @@
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_SetExpiration.sql" />
     <Build Include="dbo\Types\udtListOfInt.sql" />
     <Build Include="dbo\Stored Procedures\Schedules_Lookup.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Lista.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Add.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Modifica.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_CheckNome.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

@@ -23,6 +23,10 @@ BEGIN
 			,ta.[NumIngressi]
 			,ta.[Costo]		
 			,ta.[MaxLivCorsi]
+			,ta.ValidoDal
+			,ta.ValidoFinoAl
+			,ta.DataCreazione AS DataCreazioneTipologiaAbbonamento
+			,ta.DataCancellazione AS DataCancellazioneTipologiaAbbonamento
 	FROM [AbbonamentiUtenti] au
 		INNER JOIN  [TipologieAbbonamenti] ta ON au.IdTipoAbbonamento = ta.Id
 	WHERE au.IdCliente = @pIdCliente

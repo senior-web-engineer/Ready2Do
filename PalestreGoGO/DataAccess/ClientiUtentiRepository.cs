@@ -7,6 +7,7 @@ using System.Data;
 using Dapper;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using ready2do.model.common;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -220,7 +221,7 @@ namespace PalestreGoGo.DataAccess
             var parametri = new DynamicParameters(new
             {
                 pIdCliente = certificato.IdCliente,
-                pUserId = certificato.User.UserId,
+                pUserId = certificato.UserId,
                 pDataPresentazione = certificato.DataPresentazione,
                 pDataScadenza = certificato.DataScadenza,
             });
