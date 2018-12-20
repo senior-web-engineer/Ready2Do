@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PalestreGoGo.DataModel;
+using ready2do.model.common;
 
 namespace PalestreGoGo.DataAccess
 {

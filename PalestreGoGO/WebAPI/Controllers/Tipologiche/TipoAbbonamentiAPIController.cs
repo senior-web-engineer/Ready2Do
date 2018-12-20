@@ -14,56 +14,61 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ready2do.model.common;
+using System;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/{idCliente}/tipologiche/tipoabbonamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TipoAbbonamentiController : PalestreControllerBase
+    public class TipoAbbonamentiAPIController : PalestreControllerBase
     {
-        private readonly ILogger<TipoAbbonamentiController> _logger;
+        private readonly ILogger<TipoAbbonamentiAPIController> _logger;
         private readonly ITipologieAbbonamentiRepository _repository;
 
-        public TipoAbbonamentiController(ITipologieAbbonamentiRepository repository, ILogger<TipoAbbonamentiController> logger)
+        public TipoAbbonamentiAPIController(ITipologieAbbonamentiRepository repository, ILogger<TipoAbbonamentiAPIController> logger)
         {
             this._logger = logger;
             this._repository = repository;
         }
 
         [HttpGet()]
-        public IActionResult GetAll([FromRoute]int idCliente)
+        public async Task<IActionResult> GetList([FromRoute]int idCliente, int pageSize = 25, int pageNumber = 1,  string sortColumn = "DataCreazione", 
+                                                  bool sortAscending = false, bool includiCancellati = false, bool includiNonAttivi = false)
         {
+            
+
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
-                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
+                return Forbid();
             }
-            var tipoAbbonamenti = _repository.GetAll(idCliente);
-            var result = Mapper.Map<IEnumerable<TipologieAbbonamenti>,IEnumerable<TipologieAbbonamentiViewModel>>(tipoAbbonamenti);
-            return new OkObjectResult(result);
+            var tipoAbbonamenti = await _repository.GetListAsync(idCliente, pageNumber: pageNumber, pageSize: pageSize, includiCancellati: includiCancellati,
+                                                                 includiNonAttivi: includiNonAttivi, sortColumn: sortColumn, sortAscending: sortAscending);
+            return new OkObjectResult(tipoAbbonamenti);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetOne([FromRoute]int idCliente, [FromRoute]int id)
+        public async Task<IActionResult> GetOne([FromRoute]int idCliente, [FromRoute]int id)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
-            var tipoAbbonamento = _repository.GetSingle(idCliente, id);
+            var tipoAbbonamento = await _repository.GetOneAsync(idCliente, id);
             if((tipoAbbonamento == null) || (tipoAbbonamento.IdCliente != idCliente))
             {
                 return BadRequest();
             }
-            var result = Mapper.Map<TipologieAbbonamenti, TipologieAbbonamentiViewModel>(tipoAbbonamento);
-            return new OkObjectResult(result);
+            //var result = Mapper.Map<TipologieAbbonamenti, TipologieAbbonamentiViewModel>(tipoAbbonamento);
+            return new OkObjectResult(tipoAbbonamento);
         }
 
 
         [HttpPost()]
-        public IActionResult Create([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
+        public async Task<IActionResult> Create([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
         {
             
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
@@ -77,7 +82,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
             var m = Mapper.Map<TipologieAbbonamentiViewModel, TipologieAbbonamenti>(model);
             m.IdCliente = idCliente;
-            _repository.Add(idCliente, m);
+            await _repository.AddAsync(idCliente, m);
             return Ok(m.Id);
         }
 

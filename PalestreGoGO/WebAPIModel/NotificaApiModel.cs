@@ -7,7 +7,7 @@ namespace PalestreGoGo.WebAPIModel
     public class NotificaApiModel
     {
         public long? Id { get; set; }
-        public UserReferenceApiModel UserRef { get; set; }
+        public string UserId { get; set; }
         public int IdTipo { get; set; }
         public int? IdCliente { get; set; }
         public string Titolo { get; set; }

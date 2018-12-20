@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +77,7 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
                 .ReverseMap();
                
 
-            CreateMap<AbbonamentiUtenti, AbbonamentoUtenteApiModel>()
+            CreateMap<DELME_AbbonamentiUtenti, AbbonamentoUtenteApiModel>()
                 .ReverseMap()
                 .ForMember(d => d.IdTipoAbbonamento, opt => opt.MapFrom(src => src.IdTipoAbbonamento));
                 //.ForMember(d=>d.UserId, opt=>opt.MapFrom(src=>src.UserId));
@@ -84,18 +85,18 @@ namespace PalestreGoGo.WebAPI.ViewModel.Mappers
 
             CreateMap<ClienteUtenteConAbbonamento, ClienteUtenteWithAbbonamentoApiModel>();
 
-            CreateMap<UserReferenceDM, UserReferenceApiModel>().ReverseMap();
+            //CreateMap<UserReferenceDM, UserReferenceApiModel>().ReverseMap();
             CreateMap<NotificaDM, NotificaApiModel>().ReverseMap();
             CreateMap<NotificaConTipoDM, NotificaConTipoApiModel>().ReverseMap();
             CreateMap<UtenteClienteDM, ClienteUtenteApiModel>()
-                .ForMember(d=>d.IdUtente, opt => opt.MapFrom(src=>src.UserRef.UserId))
+                .ForMember(d=>d.IdUtente, opt => opt.MapFrom(src=>src.UserId))
                 .ReverseMap()
                 .ForMember(d => d.Stato, opt => opt.MapFrom(src => src.Stato))
-                .ForMember(d => d.UserRef, opt => opt.MapFrom(src => new UserReferenceDM(src.IdUtente)));
+                .ForMember(d => d.UserId, opt => opt.MapFrom(src => src.IdUtente));
             CreateMap<UtenteClienteCertificatoDM, ClienteUtenteCertificatoApiModel>()
-                .ForMember(d => d.UserId, opt => opt.MapFrom(src => src.User.UserId))
+                .ForMember(d => d.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ReverseMap()
-                .ForMember(d => d.User, opt => opt.MapFrom(src => new UserReferenceDM(src.UserId)));
+                .ForMember(d => d.UserId, opt => opt.MapFrom(src => src.UserId));
 
 
         }

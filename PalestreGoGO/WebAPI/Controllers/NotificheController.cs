@@ -32,7 +32,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetNotificheAsync([FromRoute(Name = "filtro")] FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive, [FromQuery]int? idCliente = null)
         {
             string userId = User.UserId()?.ToString();
-            var notifiche = await _notificheRepo.GetNotificheAsync(new UserReferenceDM(userId), idCliente, filtro);
+            var notifiche = await _notificheRepo.GetNotificheAsync(userId, idCliente, filtro);
             var result = Mapper.Map<IEnumerable<NotificaConTipoDM>, IEnumerable<NotificaConTipoApiModel>>(notifiche);
             return Ok(result);
         }
@@ -50,11 +50,11 @@ namespace PalestreGoGo.WebAPI.Controllers
             throw new NotImplementedException("Verificare la gestione della secuirty!");
             if (notifica == null) { return BadRequest(); }
             if (string.IsNullOrEmpty(userId)) { return BadRequest(); }
-            if (notifica.UserRef == null)
+            if (string.IsNullOrWhiteSpace(notifica.UserId))
             {
-                notifica.UserRef = new UserReferenceApiModel(userId);
+                notifica.UserId = userId;
             }
-            if (!userId.Equals(notifica.UserRef)) { return BadRequest(); }
+            if (!userId.Equals(notifica.UserId)) { return BadRequest(); }
             var dm = Mapper.Map<NotificaDM>(notifica);
             long idNotifica = await _notificheRepo.AddNotificaAsync(dm);
             return Ok(idNotifica);
@@ -66,7 +66,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             string userId = User.UserId()?.ToString();
             if (string.IsNullOrWhiteSpace(userId)) { return Unauthorized(); }
             if (notifica == null) { return BadRequest(); }
-            if(!userId.Equals(notifica.UserRef?.UserId)) { return BadRequest(); }
+            if(!userId.Equals(notifica.UserId)) { return BadRequest(); }
             await _notificheRepo.UpdateNotifica(idNotifica, notifica.DataPrimaVisualizzazione, notifica.DataDismissione);
             return Ok();
         }

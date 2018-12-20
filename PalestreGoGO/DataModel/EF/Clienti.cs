@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataModel
     {
         public Clienti()
         {
-            AbbonamentiUtenti = new HashSet<AbbonamentiUtenti>();
+            AbbonamentiUtenti = new HashSet<DELME_AbbonamentiUtenti>();
             ClientiImmagini = new HashSet<ClientiImmagini>();
             ClientiMetadati = new HashSet<ClientiMetadati>();
             Locations = new HashSet<Locations>();
@@ -66,7 +66,7 @@ namespace PalestreGoGo.DataModel
         [InverseProperty("Clienti")]
         public TipologiaCliente IdTipologiaNavigation { get; set; }
         [InverseProperty("IdClienteNavigation")]
-        public ICollection<AbbonamentiUtenti> AbbonamentiUtenti { get; set; }
+        public ICollection<DELME_AbbonamentiUtenti> AbbonamentiUtenti { get; set; }
         [InverseProperty("IdClienteNavigation")]
         public ICollection<ClientiImmagini> ClientiImmagini { get; set; }
         [InverseProperty("IdClienteNavigation")]

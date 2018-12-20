@@ -12,6 +12,6 @@ namespace PalestreGoGo.DataModel
         public string Nominativo { get; set; }
         public string DisplayName { get; set; }
         public DateTime DataAssociazione { get; set; }
-        public AbbonamentiUtenti Abbonamento { get; set; }
+        public DELME_AbbonamentiUtenti Abbonamento { get; set; }
     }
 }

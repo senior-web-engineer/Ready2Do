@@ -33,12 +33,12 @@ namespace Tests.WebAPI.Tipologiche
             _fixture = fixture;
         }
 
-        private Mock<TipoAbbonamentiController> SetupController(ClaimsPrincipal principal)
+        private Mock<TipoAbbonamentiAPIController> SetupController(ClaimsPrincipal principal)
         {
-            var loggerMock = new Mock<ILogger<TipoAbbonamentiController>>();
+            var loggerMock = new Mock<ILogger<TipoAbbonamentiAPIController>>();
             var dbCtx = Utils.BuildDbContext();
             var repo = new TipologieAbbonamentiRepository(dbCtx);
-            var controllerMocked = new Mock<TipoAbbonamentiController>(repo, loggerMock.Object);
+            var controllerMocked = new Mock<TipoAbbonamentiAPIController>(repo, loggerMock.Object);
             controllerMocked.CallBase = true;
             controllerMocked.Setup(x => x.GetCurrentUser()).Returns(principal);
             return controllerMocked;

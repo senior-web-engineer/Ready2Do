@@ -17,7 +17,7 @@ namespace PalestreGoGo.DataAccess
 
         }
         
-        public virtual DbSet<AbbonamentiUtenti> AbbonamentiUtenti { get; set; }
+        public virtual DbSet<DELME_AbbonamentiUtenti> AbbonamentiUtenti { get; set; }
         public virtual DbSet<Appuntamenti> Appuntamenti { get; set; }
         public virtual DbSet<Clienti> Clienti { get; set; }
         public virtual DbSet<ClientiImmagini> ClientiImmagini { get; set; }
@@ -33,7 +33,7 @@ namespace PalestreGoGo.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AbbonamentiUtenti>(entity =>
+            modelBuilder.Entity<DELME_AbbonamentiUtenti>(entity =>
             {
                 entity.HasOne(d => d.IdClienteNavigation)
                     .WithMany(p => p.AbbonamentiUtenti)

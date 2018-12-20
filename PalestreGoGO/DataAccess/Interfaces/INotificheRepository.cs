@@ -10,7 +10,7 @@ namespace PalestreGoGo.DataAccess
     {
         Task<long> AddNotificaAsync(NotificaDM notifica);
 
-        Task<IEnumerable<NotificaConTipoDM>> GetNotificheAsync(UserReferenceDM userRef, int? idCliente = null, FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive);
+        Task<IEnumerable<NotificaConTipoDM>> GetNotificheAsync(string userId, int? idCliente = null, FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive);
 
         Task UpdateNotifica(long idNotifica, DateTime? dataView, DateTime? dataDismiss);
     }

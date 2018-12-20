@@ -26,7 +26,7 @@ namespace PalestreGoGo.DataAccess
                                                     new
                                                     {
                                                         pIdTipo = notifica.IdTipo,
-                                                        pUserId = notifica.UserRef.UserId,
+                                                        pUserId = notifica.UserId,
                                                         pIdCliente = notifica.IdCliente,
                                                         pTitolo = notifica.Titolo,
                                                         pTesto = notifica.Testo,
@@ -36,19 +36,18 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        public async Task<IEnumerable<NotificaConTipoDM>> GetNotificheAsync(UserReferenceDM userRef, int? idCliente = null, FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive)
+        public async Task<IEnumerable<NotificaConTipoDM>> GetNotificheAsync(string userId, int? idCliente = null, FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive)
         {
             using (var cn = GetConnection())
             {
-                return await cn.QueryAsync<NotificaConTipoDM, TipologiaNotifica, UserReferenceDM, NotificaConTipoDM>("[dbo].[Notifiche_Lista]",
-                                                    (notifica, tipoNotifica, user) =>
+                return await cn.QueryAsync<NotificaConTipoDM, TipologiaNotifica, NotificaConTipoDM>("[dbo].[Notifiche_Lista]",
+                                                    (notifica, tipoNotifica) =>
                                                     {
-                                                        notifica.UserRef = user;
                                                         notifica.Tipo = tipoNotifica;
                                                         return notifica;
                                                     },
                                                     new { },
-                                                    splitOn: "UserId, IdTipo",
+                                                    splitOn: "IdTipo",
                                                     commandType: System.Data.CommandType.StoredProcedure
                                                     );
             }
