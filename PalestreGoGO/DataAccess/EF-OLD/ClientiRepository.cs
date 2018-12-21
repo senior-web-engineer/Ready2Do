@@ -9,26 +9,56 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using System.Data;
+using Microsoft.Extensions.Configuration;
+using ready2do.model.common;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class ClientiRepository : IClientiRepository
+    public class ClientiRepository : BaseRepository, IClientiRepository
     {
-        private readonly PalestreGoGoDbContext _context;
-        private readonly ILogger<ClientiRepository> _logger;
-
-        public ClientiRepository(PalestreGoGoDbContext context, ILogger<ClientiRepository> logger)
+        public ClientiRepository(IConfiguration configuration): base(configuration)
         {
-            this._context = context;
-            this._logger = logger;
         }
 
-        public async Task<int> AddAsync(Clienti cliente)
+        /// <summary>
+        /// Aggiunge un nuovo cliente
+        /// </summary>
+        /// <param name="cliente"></param>
+        /// <returns></returns>
+        public async Task<int> CreateClienteAsync(ClienteDM cliente)
         {
-            /*20180519#La route URL la facciamo inserire direttamente senza andarcela a generare */
-            //cliente.UrlRoute = await this.internalCreateUrlRoute(cliente.Nome);
-            await _context.Clienti.AddAsync(cliente);
-            await _context.SaveChangesAsync();
+            SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
+            parId.Direction = ParameterDirection.Output;
+            SqlParameter parToken = new SqlParameter("@pId", SqlDbType.UniqueIdentifier);
+            parToken.Direction = ParameterDirection.Output;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Clienti_Add]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = cliente.Nome;
+                cmd.Parameters.Add("@pRagioneSociale", SqlDbType.NVarChar, 100).Value = cliente.RagioneSociale;
+                cmd.Parameters.Add("@pEmail", SqlDbType.NVarChar, 100).Value = cliente.Email;
+                cmd.Parameters.Add("@pNumTelefono", SqlDbType.VarChar, 50).Value = cliente.NumTelefono;
+                cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, 1000).Value = cliente.Descrizione;
+                cmd.Parameters.Add("@pIdTipologia", SqlDbType.Int).Value = cliente.IdTipologia;
+                cmd.Parameters.Add("@pIndirizzo", SqlDbType.NVarChar, 250).Value = cliente.Indirizzo;
+                cmd.Parameters.Add("@pCitta", SqlDbType.NVarChar, 100).Value = cliente.Citta;
+                cmd.Parameters.Add("@pZipCode", SqlDbType.NVarChar, 10).Value = cliente.ZipOrPostalCode;
+                cmd.Parameters.Add("@pCountry", SqlDbType.NVarChar, 100).Value = cliente.Country;
+                cmd.Parameters.Add("@pLatitudine", SqlDbType.Float).Value = cliente.Latitudine;
+                cmd.Parameters.Add("@pLongitudione", SqlDbType.Float).Value = cliente.Longitudine;
+                cmd.Parameters.Add("@pUrlRoute", SqlDbType.VarChar, 200).Value = cliente.UrlRoute;
+                cmd.Parameters.Add("@pOrarioApertura", SqlDbType.VarChar, -1).Value = cliente.OrarioApertura;
+                cmd.Parameters.Add("@pStorageContainer", SqlDbType.NVarChar, 500).Value = cliente.StorageContainer;
+                cmd.Parameters.Add("@pIdUserOwner", SqlDbType.VarChar, 100).Value = cliente.IdUserOwner;
+                cmd.Parameters.Add(parId);
+                cmd.Parameters.Add(parToken);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                cliente.Id = (int)parId.Value;
+                cliente.SecurityToken = (string)parToken.Value;
+            }
             return cliente.Id;
         }
 

@@ -1,4 +1,5 @@
 ﻿using PalestreGoGo.DataModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,9 @@ namespace PalestreGoGo.DataAccess
 {
     public interface IClientiRepository
     {
-        Task<int> AddAsync(Clienti cliente);
+        Task<int> AddClienteAsync(ClienteDM cliente);
+
+
 
         Task ConfermaProvisioningAsync(string provisioningToken, string userId);
 

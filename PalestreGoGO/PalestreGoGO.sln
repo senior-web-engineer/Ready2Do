@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notificati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FuncNotificationHandler", "FuncNotificationHandler\FuncNotificationHandler.csproj", "{6AB54057-004B-45B8-9199-CAD46B1F7440}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelCommon", "ModelCommon\ModelCommon.csproj", "{2F0DCB20-1EAD-4959-9881-E9AD26FE1E1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model.Common", "Model.Common\Model.Common.csproj", "{2F0DCB20-1EAD-4959-9881-E9AD26FE1E1F}"
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.LogicApp.AppuntamentiDaConfermare", "Azure.LogicApp.AppuntamentiDaConfermare\Azure.LogicApp.AppuntamentiDaConfermare.deployproj", "{F079EEB7-AD73-4C74-B4E8-990146DE2525}"
 EndProject

@@ -7,5 +7,6 @@ namespace PalestreGoGo.DataModel
     public abstract class BaseMultitenantEntity: BaseEntity
     {
         public int IdCliente { get; set; }
+
     }
 }

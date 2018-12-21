@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataModel\DataModel.csproj" />
-    <ProjectReference Include="..\ModelCommon\ModelCommon.csproj" />
+    <ProjectReference Include="..\Model.Common\Model.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

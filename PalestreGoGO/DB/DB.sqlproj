@@ -185,6 +185,7 @@
     <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Modifica.sql" />
     <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Delete.sql" />
     <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_CheckNome.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Add.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
