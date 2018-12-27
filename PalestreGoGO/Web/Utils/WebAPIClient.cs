@@ -94,7 +94,7 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<bool> NuovoClienteAsync(NuovoClienteViewModel cliente)
+        public async Task<bool> NuovoClienteAsync(NuovoClienteAPIModel cliente)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti");
             var content = new StringContent(JsonConvert.SerializeObject(cliente), Encoding.UTF8, "application/json");

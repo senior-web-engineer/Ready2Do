@@ -3,7 +3,7 @@ using PalestreGoGo.WebAPIModel;
 
 namespace PalestreGoGo.WebAPI.ViewModel.Validators
 {
-    public class NuovoClienteValidator : AbstractValidator<NuovoClienteViewModel>
+    public class NuovoClienteValidator : AbstractValidator<NuovoClienteAPIModel>
     {
         public NuovoClienteValidator()
         {

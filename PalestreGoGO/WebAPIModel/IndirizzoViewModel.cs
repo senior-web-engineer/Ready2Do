@@ -21,6 +21,6 @@ namespace PalestreGoGo.WebAPIModel
         public string Country { get; set; }
 
         [JsonProperty("coordinate")]
-        public CoordinateViewModel Coordinate { get; set; }
+        public CoordinateAPIModel Coordinate { get; set; }
     }
 }

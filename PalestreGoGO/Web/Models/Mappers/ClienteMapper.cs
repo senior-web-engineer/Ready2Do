@@ -80,7 +80,7 @@ namespace Web.Models.Mappers
                 {
                     Citta = model.Citta,
                     Indirizzo = model.Indirizzo,
-                    Coordinate = new CoordinateViewModel()
+                    Coordinate = new CoordinateAPIModel()
                     {
                         Latitudine = float.Parse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture),
                         Longitudine = float.Parse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture)

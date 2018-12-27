@@ -1,60 +1,147 @@
-﻿using PalestreGoGo.DataModel;
+﻿using Microsoft.Extensions.Configuration;
+using PalestreGoGo.DataModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq.Expressions;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public class LocationsRepository : ILocationsRepository
+    public class LocationsRepository : BaseRepository, ILocationsRepository
     {
-        private readonly PalestreGoGoDbContext _context;
-
-        public LocationsRepository(PalestreGoGoDbContext context)
+        public LocationsRepository(IConfiguration config) : base(config)
         {
-            this._context = context;
         }
 
-        public virtual IEnumerable<Locations> GetAll(int idTenant)
+        #region PRIVATE STUFF
+        private Dictionary<string, int> ResolveColumns(SqlDataReader dr)
         {
-            return _context.Set<Locations>().Where(e => e.IdCliente.Equals(idTenant));
+            var result = new Dictionary<string, int>();
+            result.Add("Id", dr.GetOrdinal("Id"));
+            result.Add("IdCliente", dr.GetOrdinal("IdCliente"));
+            result.Add("Nome", dr.GetOrdinal("Nome"));
+            result.Add("Descrizione", dr.GetOrdinal("Descrizione"));
+            result.Add("CapienzaMax", dr.GetOrdinal("CapienzaMax"));
+            result.Add("DataCreazione", dr.GetOrdinal("DataCreazione"));
+            result.Add("DataCancellazione", dr.GetOrdinal("DataCancellazione"));
+            return result;
         }
 
-        public virtual int Count(int idTenant)
+        private async Task<LocationDM> InternalReadLocationAsync(SqlDataReader dr, Dictionary<string, int> columns)
         {
-            return _context.Set<Locations>().Count(e => e.IdCliente == idTenant);
+            LocationDM result = new LocationDM();
+            result.Id = dr.GetInt32(columns["Id"]);
+            result.IdCliente = dr.GetInt32(columns["IdCliente"]);
+            result.Nome = dr.GetString(columns["Nome"]);
+            result.Descrizione = await dr.IsDBNullAsync(columns["Descrizione"]) ? null : dr.GetString(columns["Descrizione"]);
+            result.CapienzaMax = await dr.IsDBNullAsync(columns["CapienzaMax"]) ? default(short?) : dr.GetInt16(columns["CapienzaMax"]);
+            result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
+            result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
+            return result;
+        }
+        #endregion
+
+        public async Task<IEnumerable<LocationDM>> GetAllAsync(int idCliente, bool includeDeleted = false)
+        {
+            List<LocationDM> result = new List<LocationDM>();
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Locations_List]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    var columns = ResolveColumns(dr);
+                    while (await dr.ReadAsync())
+                    {
+                        result.Add(await InternalReadLocationAsync(dr, columns));
+                    }
+                }
+            }
+            return result;
         }
 
-        public Locations GetSingle(int idTenant, int itemKey)
+
+        public async Task<LocationDM> GetSingleAsync(int idCliente, int idLocation, bool includeDeleted = false)
         {
-            return _context.Set<Locations>().FirstOrDefault(tl => tl.Id.Equals(itemKey) && tl.IdCliente.Equals(idTenant));
+            LocationDM result = null;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Locations_Get]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdLocation", SqlDbType.Int).Value = idLocation;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    var columns = ResolveColumns(dr);
+                    if (await dr.ReadAsync())
+                    {
+                        result = await InternalReadLocationAsync(dr, columns);
+                    }
+                }
+            }
+            return result;
         }
 
-        public void Add(int idTenant, Locations entity)
+        public async Task<int> AddAsync(int idCliente, LocationInputDM location)
         {
-            if (!entity.IdCliente.Equals(idTenant)) throw new ArgumentException("idTenant not valid");
-            _context.Set<Locations>().Add(entity);
-            _context.SaveChanges();
+            SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
+            parId.Direction = ParameterDirection.Output;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Locations_Add]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = location.Nome;
+                cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, -1).Value = location.Descrizione;
+                cmd.Parameters.Add("@pCapienzaMax", SqlDbType.SmallInt).Value = location.CapienzaMax;
+                cmd.Parameters.Add(parId);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                location.Id = (int)parId.Value;
+            }
+            return location.Id.Value;
         }
 
-        public void Update(int idTenant, Locations entity)
+        public async Task UpdateAsync(int idCliente, LocationInputDM location)
         {
-            //Attenzione! Non verifichiamo il tenant
-            if (entity.IdCliente != idTenant) throw new ArgumentException("idTenant not valid");
-            EntityEntry dbEntityEntry = _context.Entry<Locations>(entity);
-            dbEntityEntry.State = EntityState.Modified;
-            _context.SaveChanges();
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Locations_Modifica]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdLocation", SqlDbType.Int).Value = location.Id;
+                cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = location.Nome;
+                cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, -1).Value = location.Descrizione;
+                cmd.Parameters.Add("@pCapienzaMax", SqlDbType.SmallInt).Value = location.CapienzaMax;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
-        public virtual void Delete(int idTenant, int entityKey)
+        public async Task Delete(int idCliente, int idLocation)
         {
-            var entity = _context.Locations.Single(tl => tl.IdCliente.Equals(idTenant) && tl.Id.Equals(entityKey));
-            var entry = _context.Entry(entity);
-            entry.State = EntityState.Deleted;
-            _context.SaveChanges();
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Locations_Delete]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdLocation", SqlDbType.Int).Value = idLocation;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
     }
 }

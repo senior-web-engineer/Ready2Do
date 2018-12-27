@@ -2,7 +2,7 @@
 {
     public class AnagraficaClienteDM
     {
-        public int IdCliente { get; set; }
+        public int Id { get; set; }
 
         public string Nome { get; set; }
 
@@ -25,6 +25,7 @@
         public string Country { get; set; }
 
         public float? Latitudine { get; set; }
+
         public float? Longitudine { get; set; }
     }
 

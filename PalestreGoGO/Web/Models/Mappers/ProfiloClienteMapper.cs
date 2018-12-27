@@ -49,7 +49,7 @@ namespace Web.Models.Mappers
                     Country = model.Country,
                     PostalCode = model.CAP,
                     Indirizzo = model.Indirizzo,
-                    Coordinate = new CoordinateViewModel() {
+                    Coordinate = new CoordinateAPIModel() {
                         Latitudine = float.Parse(model.Latitudine,CultureInfo.InvariantCulture),
                         Longitudine = float.Parse(model.Longitudine, CultureInfo.InvariantCulture)
                     }

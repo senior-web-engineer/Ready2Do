@@ -34,7 +34,7 @@ namespace PalestreGoGo.WebAPI.ViewModel
 
         //[Required]
         [JsonProperty("coordinate")]
-        public CoordinateViewModel Coordinate { get; set; }
+        public CoordinateAPIModel Coordinate { get; set; }
 
     }
 }

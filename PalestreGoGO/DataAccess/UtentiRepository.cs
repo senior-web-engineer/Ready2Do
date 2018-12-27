@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using PalestreGoGo.DataModel;
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
+using PalestreGoGo.DataModel.Exceptions;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Dapper;
-using System.Data.SqlClient;
-using PalestreGoGo.DataModel.Exceptions;
-using Microsoft.Extensions.Configuration;
 using System.Data;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -20,35 +18,35 @@ namespace PalestreGoGo.DataAccess
 
         }
 
-        public async Task<List<ClienteFollowed>> GetGlientiFollowedAsync(Guid userId)
+        public async Task<List<ClienteFollowedDM>> GetGlientiFollowedAsync(Guid userId)
         {
-            IEnumerable<ClienteFollowed> result = null;
+            IEnumerable<ClienteFollowedDM> result = null;
             using (var cn = GetConnection())
             {
-                result = await cn.QueryAsync<ClienteFollowed>(StoredProcedure.SP_USER_CLIENTI_FOLLOWED,
+                result = await cn.QueryAsync<ClienteFollowedDM>(StoredProcedure.SP_USER_CLIENTI_FOLLOWED,
                                                             new { pUserId = userId },
                                                             commandType: System.Data.CommandType.StoredProcedure);
             }
             return result?.AsList();
         }
 
-        public async Task<RichiestaRegistrazione> RichiestaRegistrazioneSalvaAsync(string username, string code, Guid? correlationId)
+        public async Task<RichiestaRegistrazioneDM> RichiestaRegistrazioneSalvaAsync(string username, string code, Guid? correlationId)
         {
             using (var cn = GetConnection())
             {
-                return await cn.QuerySingleAsync<RichiestaRegistrazione>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_INSERT,
+                return await cn.QuerySingleAsync<RichiestaRegistrazioneDM>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_INSERT,
                     new { pUserCode = code, pUsername = username, pCorrelationId = correlationId },
                     commandType: System.Data.CommandType.StoredProcedure);
             }
         }
 
-        public async Task<RichiestaRegistrazione> CompletaRichiestaRegistrazioneAsync(string username, string code)
+        public async Task<RichiestaRegistrazioneDM> CompletaRichiestaRegistrazioneAsync(string username, string code)
         {
             try
             {
                 using (var cn = GetConnection())
                 {
-                    return await cn.QuerySingleAsync<RichiestaRegistrazione>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_COMPLETA,
+                    return await cn.QuerySingleAsync<RichiestaRegistrazioneDM>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_COMPLETA,
                         new { pUserCode = code, pUsername = username },
                         commandType: System.Data.CommandType.StoredProcedure);
                 }

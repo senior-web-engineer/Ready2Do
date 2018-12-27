@@ -1,14 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
 using Serilog;
 using Serilog.Context;
-using Serilog.Core;
+using System;
+using System.Data.SqlClient;
+using System.Globalization;
 
 namespace PalestreGoGo.DataAccess
 {

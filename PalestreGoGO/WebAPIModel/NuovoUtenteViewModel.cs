@@ -25,6 +25,11 @@ namespace PalestreGoGo.WebAPIModel
         [JsonProperty("cognome")]
         public string Cognome { get; set; }
 
+        [Required]
+        [MaxLength(100)]
+        [JsonProperty("displayName")]
+        public string DisplayName { get; set; }
+
         [Phone]
         [JsonProperty("phone")]
         public string Telefono { get; set; }

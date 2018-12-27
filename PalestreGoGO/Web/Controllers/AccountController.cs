@@ -131,7 +131,7 @@ namespace Web.Controllers
                 if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
                     float.TryParse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
                 {
-                    apiModel.Coordinate = new CoordinateViewModel(latitudine, longitudine);
+                    apiModel.Coordinate = new CoordinateAPIModel(latitudine, longitudine);
                     var result = await _apiClient.NuovoClienteAsync(apiModel);
                     if (result)
                     {

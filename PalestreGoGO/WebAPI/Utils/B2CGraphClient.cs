@@ -25,6 +25,11 @@ namespace PalestreGoGo.WebAPI.Utils
 
 
         const string API_USERS = "/users";
+
+        const string StruttureOwned = "extension_827f6baba88543a9952b028ac0e17bf9_struttureOwned";
+        const string StruttureGestite = "extension_827f6baba88543a9952b028ac0e17bf9_struttureGestite";
+        const string AccountConfirmedOn = "extension_827f6baba88543a9952b028ac0e17bf9_accountConfirmedOn";
+        const string Refereer = "extension_827f6baba88543a9952b028ac0e17bf9_refereer";
         #endregion
         string _clientId;
         string _clientSecret;
@@ -58,6 +63,12 @@ namespace PalestreGoGo.WebAPI.Utils
             var response = await SendGraphPostRequestAsync<AzureUser>(API_USERS, JsonConvert.SerializeObject(user));
             //var result = _msGraphSerializer.DeserializeObject<List<LocalAccountUser>>(response.Value);
             return response;
+        }
+
+        public async Task UpdateUserStruttureOwnedAsync(string userId, string struttureOwned)
+        {
+            string json = $"{{'{StruttureOwned}':'{struttureOwned}'}}";
+            await SendGraphPatchRequestAsync($"{API_USERS}/{userId}", json);
         }
 
         public async Task<AzureUser> GetUserById(string userId)
@@ -128,7 +139,7 @@ namespace PalestreGoGo.WebAPI.Utils
             //return JsonConvert.DeserializeObject<GraphResponse>(await response.Content.ReadAsStringAsync());
         }
 
-        private async Task<string> SendGraphPatchRequest(string api, string json)
+        private async Task<string> SendGraphPatchRequestAsync(string api, string json)
         {
             // NOTE: This client uses ADAL v2, not ADAL v4
             AuthenticationResult result = await _authContext.AcquireTokenAsync(aadGraphResourceId, _credential);

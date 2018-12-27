@@ -100,13 +100,13 @@
     <Build Include="dbo\Views\vAbbonamentiValidi.sql" />
     <Build Include="dbo\Stored Procedures\OBSOLETE_Schedules_GetForCliente.sql" />
     <Build Include="dbo\Tables\RichiesteRegistrazione.sql" />
-    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Insert.sql" />
-    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Complete.sql" />
+    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Add.sql" />
+    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Completa.sql" />
     <Build Include="dbo\Stored Procedures\Cliente_Header_Save.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_AnagraficaSave.sql" />
     <Build Include="dbo\Tables\ReservedRoutes.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_RouteValidate.sql" />
-    <Build Include="dbo\Stored Procedures\Clienti_OrarioSave.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_OrarioAperturaSave.sql" />
     <Build Include="dbo\Tables\Notifiche.sql" />
     <Build Include="dbo\Tables\TipologieNotifiche.sql" />
     <Build Include="dbo\Stored Procedures\Notifiche_Add.sql" />
@@ -186,6 +186,25 @@
     <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_Delete.sql" />
     <Build Include="dbo\Stored Procedures\TipologieAbbonamenti_CheckNome.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Add.sql" />
+    <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_Delete.sql" />
+    <Build Include="dbo\Tables\StatiCliente.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_ConfermaProvisioning.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_GetByUrlRoute.sql" />
+    <Build Include="dbo\Views\vClientiProvisioned.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_GetById.sql" />
+    <Build Include="dbo\Types\udtListOfImmagini.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_AddList.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_Modifica.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_Get.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_Lista.sql" />
+    <Build Include="dbo\Stored Procedures\TipologieClienti_Lista.sql" />
+    <Build Include="dbo\Stored Procedures\Locations_List.sql" />
+    <Build Include="dbo\Stored Procedures\Locations_Add.sql" />
+    <Build Include="dbo\Stored Procedures\Locations_Get.sql" />
+    <Build Include="dbo\Stored Procedures\Locations_Modifica.sql" />
+    <Build Include="dbo\Stored Procedures\Locations_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_Add.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
@@ -195,6 +214,7 @@
     <None Include="Scripts\Prepop\Prepop.Security.Roles.sql" />
     <None Include="Scripts\Prepop\Prepop.Utils.Date.sql" />
     <None Include="Scripts\Prepop\Prepop.Utils.Numbers.sql" />
+    <None Include="Scripts\Prepop\Prepop.StatiCliente.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

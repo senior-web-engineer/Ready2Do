@@ -10,6 +10,6 @@ namespace PalestreGoGo.WebAPI.Services
     {
         Task EnqueueConfirmationMailRequestAsync(ConfirmationMailMessage mailReq);
 
-        Task SendConfirmationMailRequestAsync(ConfirmationMailMessage mailReq);
+        //Task SendConfirmationMailRequestAsync(ConfirmationMailMessage mailReq);
     }
 }

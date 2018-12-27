@@ -49,4 +49,13 @@ BEGIN
 		Latitudine = @pLatitudine,
 		Longitudine = @pLongitudine
 	WHERE Id = @pIdCliente
+	AND IdStato >= 3 -- Solo provisioned
+
+	IF @@ROWCOUNT <> 1
+	BEGIN
+		RAISERROR(N'Impossibile trovare il Cliente [%i] da aggiornare',16,1,@pIdCliente);
+		RETURN -1
+	END
+
+	RETURN 0;
 END

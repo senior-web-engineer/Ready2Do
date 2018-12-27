@@ -9,6 +9,7 @@
 	[ThumbnailUrl]		NVARCHAR(1000)	NULL,
 	[Descrizione]		NVARCHAR(1000)	NULL,
 	[Ordinamento]		INT				NOT NULL CONSTRAINT DEF_ClientiImg_Order DEFAULT(0),
+	[DataCancellazione]	DATETIME2(2)	NULL,
 
 	CONSTRAINT PK_ClientiImmagini PRIMARY KEY (Id),
 	CONSTRAINT FK_ClientiImmagini_Clienti FOREIGN KEY (IdCliente) REFERENCES [dbo].[Clienti]([Id]),

@@ -1,15 +1,12 @@
-﻿using PalestreGoGo.DataModel;
-using System;
+﻿using ready2do.model.common;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
     public interface ITipologieClientiRepository 
     {
-        IEnumerable<TipologiaCliente> GetAll();
+        Task<IEnumerable<TipologiaClienteDM>> GetAllAsync(bool includeDeleted = false);
 
-        Task<TipologiaCliente> GetOneAsync(int idTipologia);
     }
 }

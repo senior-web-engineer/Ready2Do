@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PalestreGoGo.DataAccess
 {
@@ -11,13 +8,7 @@ namespace PalestreGoGo.DataAccess
         public static IServiceCollection AddDataAccessRepositories(this IServiceCollection services ,Action<DataAccessRepositoriesOptions> configure)
         {
             var config = new DataAccessRepositoriesOptions();
-            if (configure != null) configure(config);
-
-            services.AddDbContext<PalestreGoGoDbContext>(ctxOpt =>
-            {
-                ctxOpt.UseSqlServer(config.ConnectionString);
-            });
-
+            configure?.Invoke(config);
             services.AddTransient<ITipologieAbbonamentiRepository, TipologieAbbonamentiRepository>();
             services.AddTransient<ITipologieLezioniRepository, TipologieLezioniRepository>();
             services.AddTransient<IClientiRepository, ClientiRepository>();
@@ -31,6 +22,7 @@ namespace PalestreGoGo.DataAccess
             services.AddTransient<IUtentiRepository, UtentiRepository>();
             services.AddTransient<INotificheRepository, NotificheRepository>();
             services.AddTransient<IClientiUtentiRepository, ClientiUtentiRepository>();
+            services.AddTransient<IImmaginiClientiRepository, ImmaginiClientiRepository>();
             return services;
         }
     }

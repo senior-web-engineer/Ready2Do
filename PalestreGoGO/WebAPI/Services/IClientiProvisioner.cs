@@ -7,6 +7,6 @@ namespace PalestreGoGo.WebAPI.Services
 {
     public interface IClientiProvisioner
     {
-        Task ProvisionClienteAsync(string provisioningToken, string userId);
+        Task ProvisionClienteAsync(int idCliente, string userId);
     }
 }

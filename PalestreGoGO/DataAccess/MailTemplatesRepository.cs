@@ -1,10 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataModel;
 using System.Threading.Tasks;
-using Dapper;
-using System.Data.SqlClient;
 
 namespace PalestreGoGo.DataAccess
 {

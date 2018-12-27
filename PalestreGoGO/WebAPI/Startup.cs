@@ -87,7 +87,13 @@ namespace PalestreGoGo.WebAPI
             services.AddMvc()
                 // Abilitiamo i comportamenti introdotti con ASP.NET Core 2.2 (più recenti)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
-                .AddFluentValidation();
+                // Abilitiamo la FLUENTVALIDATION 
+                .AddFluentValidation(fv=> {
+                    //Registriamo tutti i validators (le classi che estendono AbstractValidator) presente nell'assembly che contiene Startup (il corrente)
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
+                    //Disabilitiamo il validator di default
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+                });
 
             Mapper.Initialize(x =>
             {

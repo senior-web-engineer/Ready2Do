@@ -38,7 +38,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 INVOCABILE DA:
                     - utente registrato 
          */
-        private readonly ILogger<ClientiController> _logger;
+        private readonly ILogger<AppuntamentiAPIController> _logger;
         private readonly IAppuntamentiRepository _repositoryAppuntamenti;
         private readonly IClientiRepository _clientiRepository;
         private readonly ISchedulesRepository _repositorySchedule;
@@ -46,7 +46,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly LogicAppsClient _clientLogicApp;
 
         public AppuntamentiAPIController(IConfiguration config,
-                                 ILogger<ClientiController> logger,
+                                 ILogger<AppuntamentiAPIController> logger,
                                  IAppuntamentiRepository repositoryAppuntamenti,
                                  IClientiRepository clientiRepository,
                                  ISchedulesRepository repositorySchedule,
