@@ -4,7 +4,7 @@
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
-        public int IdTipoImmagine { get; set; }
+        public int? IdTipoImmagine { get; set; }
         public string Nome { get; set; }
         public string Alt { get; set; }
         public string Url { get; set; }

@@ -163,7 +163,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPut("{idCliente:int}/profilo/banner")]
-        public async Task<IActionResult> ClienteSalvaBannerProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineViewModel banner)
+        public async Task<IActionResult> ClienteSalvaBannerProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineClienteInputDM banner)
         {
             if (banner == null) { return BadRequest(); }
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
@@ -174,16 +174,14 @@ namespace PalestreGoGo.WebAPI.Controllers
             var existing = (await _immaginiRepository.GetImages(idCliente, TipoImmagineDM.Sfondo)).SingleOrDefault();
             if(existing == null)
             {
-                _immaginiRepository.AddImagesAsync(idCliente)
+                banner.IdTipoImmagine = (int)TipoImmagineDM.Sfondo;
+                await _immaginiRepository.AddImageAsync(idCliente, banner);
             }
-            var img = existing.ClientiImmagini.SingleOrDefault(i => i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini()
+            else
             {
-                IdCliente = idCliente,
-                IdTipoImmagine = (int)TipoImmagine.Sfondo,
-                Ordinamento = 0,
-            };
-            img.Url = banner.Url;
-            await _repository.UpdateImageAsync(idCliente, img);
+                banner.Id = existing.Id;
+                await _immaginiRepository.UpdateImageAsync(idCliente, banner);
+            }
             return Ok();
         }
 

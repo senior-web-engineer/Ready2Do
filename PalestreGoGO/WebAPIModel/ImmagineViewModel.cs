@@ -4,6 +4,7 @@ using System.Text;
 
 namespace PalestreGoGo.WebAPIModel
 {
+    [Obsolete("Utilizzare ImmagineClienteInputDM")]
     public class ImmagineViewModel
     {
         public int? Id { get; set; }
