@@ -40,7 +40,6 @@ namespace PalestreGoGo.WebAPI.Services
                                       )
         {
             _logger = logger;
-            //this._userManager = userManager;
             _b2cClient = b2cClient;
             _confirmUserService = confirmService;
             _clientiProvisioner = clientiProvisioner;
@@ -50,7 +49,7 @@ namespace PalestreGoGo.WebAPI.Services
         }
 
         /// <summary>
-        /// Conferma l'email un Utente tramite il codice univoco precedentemente inviatogli all'indirizzo indicato 
+        /// Conferma l'email di un Utente tramite il codice univoco precedentemente inviatogli all'indirizzo indicato 
         /// in fase di registrazione
         /// </summary>
         /// <param name="username"></param>
@@ -70,13 +69,14 @@ namespace PalestreGoGo.WebAPI.Services
             catch (UserConfirmationException)
             {
                 _logger.LogWarning($"ConfirmUserEmailAsync -> Failed validation for user: {username} with code: [{code}]");
-                return new UserConfirmationViewModel()
+                return new UserConfirmationResultAPIModel()
                 {
                     IdUser = user.Id
                 };
             }
-            var result = new UserConfirmationViewModel(user.Id);
+            var result = new UserConfirmationResultAPIModel(user.Id);
             var claimStructureOwned = user.StruttureOwned;
+
             //Se è un owner ==> facciamo il provisioning del cliente
             if (!string.IsNullOrWhiteSpace(claimStructureOwned))
             {

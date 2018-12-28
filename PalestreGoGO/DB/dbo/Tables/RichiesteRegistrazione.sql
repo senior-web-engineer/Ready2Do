@@ -13,6 +13,7 @@ CREATE TABLE [dbo].[RichiesteRegistrazione]
 	UserCode			VARCHAR(1000)		NOT NULL,
 	UserName			VARCHAR(500)		NOT NULL,
 	Expiration			DATETIME2(2)		NOT NULL,
+	Refereer			INT					NULL,
 	DataConferma		DATETIME2(2)		NULL,
 	DataCancellazione	DATETIME2(2)		NULL, --Gestiamo la cancellazione logica per tenere traccia degli eventuali timeout durante la registrazione
 

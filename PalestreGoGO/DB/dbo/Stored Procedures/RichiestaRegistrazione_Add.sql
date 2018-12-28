@@ -6,6 +6,7 @@ CREATE PROCEDURE [dbo].[RichiestaRegistrazione_Add]
 	@pUsername			VARCHAR(500),
 	@pCorrelationId		UNIQUEIDENTIFIER = NULL,
 	@pExpiration		DATETIME2(2) = NULL,
+	@pRefereer			INT = NULL,
 	@pUserCode			VARCHAR(1000) OUTPUT
 AS
 BEGIN
@@ -42,14 +43,4 @@ BEGIN
 		SET @id =SCOPE_IDENTITY()
 	
 	COMMIT
-
-	--SELECT r.Id,
-	--	   r.CorrelationId,
-	--	   r.DataConferma,
-	--	   r.DataRichiesta,
-	--	   r.Expiration,
-	--	   r.UserCode,
-	--	   r.Username
-	--FROM RichiesteRegistrazione r
-	--WHERE r.Id = @id
 END

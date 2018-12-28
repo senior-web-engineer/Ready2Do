@@ -46,7 +46,13 @@ namespace PalestreGoGo.DataAccess
             {
                 using (var cn = GetConnection())
                 {
-                    return await cn.QuerySingleAsync<RichiestaRegistrazioneDM>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_COMPLETA,
+                    var cmd = cn.CreateCommand();
+                    cmd.CommandText = "RichiestaRegistrazione_Completa";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@pUserCode", SqlDbType.VarChar, 1000).Value = code;
+                    cmd.Parameters.Add("@pUserName", SqlDbType.VarChar, 500).Value = username;
+
+                    return await cn.QuerySingleAsync<RichiestaRegistrazioneDM>(RichiestaRegistrazione_Completa,
                         new { pUserCode = code, pUsername = username },
                         commandType: System.Data.CommandType.StoredProcedure);
                 }

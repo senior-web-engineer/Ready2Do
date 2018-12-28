@@ -18,15 +18,15 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/utenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class UtentiController : PalestreControllerBase
+    public class UtentiAPIController : PalestreControllerBase
     {
-        private readonly ILogger<UtentiController> _logger;
+        private readonly ILogger<UtentiAPIController> _logger;
         private readonly IUsersManagementService _userManagementService;
         private readonly IClientiRepository _repository;
         private readonly IUtentiRepository _repositoryUtenti;
         private readonly IAppuntamentiRepository _repositoryAppuntamenti;
 
-        public UtentiController(ILogger<UtentiController> logger,
+        public UtentiAPIController(ILogger<UtentiAPIController> logger,
                                  IUsersManagementService userManagementService,
                                  IClientiRepository repository,
                                  IAppuntamentiRepository repositoryAppuntamenti,
@@ -105,7 +105,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            var esitoConfirmation = await _userManagementService.ConfirmUserAsync(email, code);
+            var esitoConfirmation = await _userManagementService.ConfirmUserEmailAsync(email, code);
             if (!esitoConfirmation.Esito)
             {
                 _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");

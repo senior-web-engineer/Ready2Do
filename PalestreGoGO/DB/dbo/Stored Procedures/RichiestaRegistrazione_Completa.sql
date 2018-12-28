@@ -9,13 +9,17 @@ Il parametro @pEsitoConferma contiene l'esito della conferma e può assumere uno
 CREATE PROCEDURE [dbo].[RichiestaRegistrazione_Completa]
 	@pUserCode			VARCHAR(1000),
 	@pUserName			VARCHAR(500),
-	@pEsitoConferma		INT
+	@pEsitoConferma		INT OUT,
+	@pIdCliente			INT OUT,
+	@pIdRefereer		INT OUT
 AS
 BEGIN
 	DECLARE @dtOp DATETIME2 = SYSDATETIME()
 	DECLARE @dtExpiration DATETIME2;
 	DECLARE @dtConferma	DATETIME2;
 	DECLARE @STATO_PROVISIONED TINYINT = 3;
+	DECLARE @tblRichiesta TABLE (CorrelationId UNIQUEIDENTIFIER,
+								 Refereer INT);
 
 	SELECT  @dtExpiration = Expiration,
 			@dtConferma = DataConferma
@@ -44,7 +48,7 @@ BEGIN
 
 	UPDATE  R
 		SET R.DataConferma = @dtOp
-	OUTPUT inserted.Id, inserted.CorrelationId, inserted.DataConferma, inserted.DataRichiesta, inserted.Expiration, inserted.UserCode, inserted.UserName
+	OUTPUT inserted.CorrelationId, inserted.Refereer INTO @tblRichiesta (CorrelationId, Refereer)
 	FROM [RichiesteRegistrazione] R
 		INNER JOIN [Clienti] C ON C.Email = R.UserName
 	WHERE R.Username = @pUserName
@@ -62,6 +66,9 @@ BEGIN
 	END
 
 	SET @pEsitoConferma  = 1; -- OK!
-
+	SELECT @pIdRefereer = Refereer FROM @tblRichiesta
+	SELECT @pIdCliente = Id 
+	FROM Clienti c
+	INNER JOIN @tb WHERE CorrelationId
 	RETURN 0;
 END
