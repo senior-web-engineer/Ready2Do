@@ -9,8 +9,8 @@ namespace PalestreGoGo.DataAccess
 {
     public interface ISchedulesRepository
     {
-        Task<int> AddScheduleAsync(int idCliente, ScheduleBaseDM schedule);
-        Task UpdateScheduleAsync(int idCliente, ScheduleBaseDM schedule, TipoModificaScheduleDM tipoModifica);
+        Task<int> AddScheduleAsync(int idCliente, ScheduleInputDM schedule);
+        Task UpdateScheduleAsync(int idCliente, ScheduleInputDM schedule, TipoModificaScheduleDM tipoModifica);
         Task<ScheduleDM> GetScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false);
 
         /// <summary>

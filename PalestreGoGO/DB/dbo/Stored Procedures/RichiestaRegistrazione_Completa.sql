@@ -18,8 +18,12 @@ BEGIN
 	DECLARE @dtExpiration DATETIME2;
 	DECLARE @dtConferma	DATETIME2;
 	DECLARE @STATO_PROVISIONED TINYINT = 3;
-	DECLARE @tblRichiesta TABLE (CorrelationId UNIQUEIDENTIFIER,
-								 Refereer INT);
+	DECLARE @STATO_CONFERMATO TINYINT = 10;
+	DECLARE @tblRichiesta TABLE (CorrelationId	UNIQUEIDENTIFIER,
+								 Refereer		INT,
+								 IdCliente		INT);
+	BEGIN TRANSACTION
+	SET XACT_ABORT ON;
 
 	SELECT  @dtExpiration = Expiration,
 			@dtConferma = DataConferma
@@ -48,9 +52,9 @@ BEGIN
 
 	UPDATE  R
 		SET R.DataConferma = @dtOp
-	OUTPUT inserted.CorrelationId, inserted.Refereer INTO @tblRichiesta (CorrelationId, Refereer)
+	OUTPUT inserted.CorrelationId, inserted.Refereer, c.Id INTO @tblRichiesta (CorrelationId, Refereer, IdCliente)
 	FROM [RichiesteRegistrazione] R
-		INNER JOIN [Clienti] C ON C.Email = R.UserName
+		LEFT JOIN [Clienti] C ON C.CorrelationId = R.CorrelationId
 	WHERE R.Username = @pUserName
 	AND R.UserCode = @pUserCode
 	AND R.Expiration > @dtOp
@@ -66,9 +70,18 @@ BEGIN
 	END
 
 	SET @pEsitoConferma  = 1; -- OK!
-	SELECT @pIdRefereer = Refereer FROM @tblRichiesta
-	SELECT @pIdCliente = Id 
-	FROM Clienti c
-	INNER JOIN @tb WHERE CorrelationId
+	SELECT @pIdRefereer = Refereer,
+		   @pIdCliente = IdCliente
+		FROM @tblRichiesta
+	
+	-- Se la richiesta era associata ad un Cliente, cambiamo lo stato del Cliente a CONFERMATO
+	IF @pIdCliente IS NOT NULL
+	BEGIN
+		UPDATE [Clienti] 
+		SET IdStato = @STATO_CONFERMATO
+		WHERE Id = @pIdCliente
+	END
+
+	COMMIT
 	RETURN 0;
 END

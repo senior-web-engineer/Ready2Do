@@ -30,18 +30,36 @@ namespace PalestreGoGo.DataAccess
             return result?.AsList();
         }
 
-        public async Task<RichiestaRegistrazioneDM> RichiestaRegistrazioneSalvaAsync(string username, string code, Guid? correlationId)
+        public async Task<string> RichiestaRegistrazioneSalvaAsync(string username, DateTime expiration, Guid? correlationId, int? idRefereer)
         {
+            SqlParameter parCode = new SqlParameter("@pUserCode", SqlDbType.VarChar, 1000);
+            parCode.Direction = ParameterDirection.Output;
+
             using (var cn = GetConnection())
             {
-                return await cn.QuerySingleAsync<RichiestaRegistrazioneDM>(StoredProcedure.SP_RICHIESTE_REGISTRAZIONE_INSERT,
-                    new { pUserCode = code, pUsername = username, pCorrelationId = correlationId },
-                    commandType: System.Data.CommandType.StoredProcedure);
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "RichiestaRegistrazione_Insert";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pUsername", SqlDbType.VarChar, 500).Value = username;
+                cmd.Parameters.Add("@pCorrelationId", SqlDbType.UniqueIdentifier).Value = correlationId;
+                cmd.Parameters.Add("@pExpiration", SqlDbType.DateTime2).Value = expiration;
+                cmd.Parameters.Add("@pRefereer", SqlDbType.Int).Value = idRefereer;
+                cmd.Parameters.Add(parCode);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
             }
+            return parCode.Value as string;
         }
 
-        public async Task<RichiestaRegistrazioneDM> CompletaRichiestaRegistrazioneAsync(string username, string code)
+        public async Task<EsitoConfermaRegistrazioneDM> CompletaRichiestaRegistrazioneAsync(string username, string code)
         {
+            EsitoConfermaRegistrazioneDM result = new EsitoConfermaRegistrazioneDM();
+            SqlParameter parEsito = new SqlParameter("@pEsitoConferma", SqlDbType.Int);
+            parEsito.Direction = ParameterDirection.Output;
+            SqlParameter parIdCliente = new SqlParameter("@pIdCliente", SqlDbType.Int);
+            parIdCliente.Direction = ParameterDirection.Output;
+            SqlParameter parIdRefereer = new SqlParameter("@pIdRefereer", SqlDbType.Int);
+            parIdRefereer.Direction = ParameterDirection.Output;
             try
             {
                 using (var cn = GetConnection())
@@ -51,16 +69,21 @@ namespace PalestreGoGo.DataAccess
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@pUserCode", SqlDbType.VarChar, 1000).Value = code;
                     cmd.Parameters.Add("@pUserName", SqlDbType.VarChar, 500).Value = username;
-
-                    return await cn.QuerySingleAsync<RichiestaRegistrazioneDM>(RichiestaRegistrazione_Completa,
-                        new { pUserCode = code, pUsername = username },
-                        commandType: System.Data.CommandType.StoredProcedure);
+                    cmd.Parameters.Add(parEsito);
+                    cmd.Parameters.Add(parIdCliente);
+                    cmd.Parameters.Add(parIdRefereer);
+                    await cn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    result.EsitoConferma = (bool)parEsito.Value;
+                    result.IdCliente = (int?)parIdCliente.Value;
+                    result.IdRefereer = (int?)parIdRefereer.Value;
                 }
             }
             catch (SqlException exc)
             {
                 throw new UserConfirmationException($"Impossibile confermare la registrazione dell'utente [{username}] con il codice [{code}]", exc);
             }
+            return result;
         }
 
         public async Task<bool> UserFollowClienteAsync(string userId, int idCliente)

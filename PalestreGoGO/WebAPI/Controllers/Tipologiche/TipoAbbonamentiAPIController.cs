@@ -20,9 +20,9 @@ using System;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/{idCliente}/tipologiche/tipoabbonamenti")]
+    [Route("api/clienti/{idCliente}/tipologiche/tipoabbonamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TipoAbbonamentiAPIController : PalestreControllerBase
+    public class TipoAbbonamentiAPIController : APIControllerBase
     {
         private readonly ILogger<TipoAbbonamentiAPIController> _logger;
         private readonly ITipologieAbbonamentiRepository _repository;
@@ -34,102 +34,57 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet()]
-        public async Task<IActionResult> GetList([FromRoute]int idCliente, int pageSize = 25, int pageNumber = 1,  string sortColumn = "DataCreazione", 
+        public async Task<ActionResult<IEnumerable<TipologiaAbbonamentoDM>>> GetList([FromRoute]int idCliente, int pageSize = 25, int pageNumber = 1,  string sortColumn = "DataCreazione", 
                                                   bool sortAscending = false, bool includiCancellati = false, bool includiNonAttivi = false)
         {
-            
-
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return Forbid();
-            }
+            if (!authorized){return Forbid();}
             var tipoAbbonamenti = await _repository.GetListAsync(idCliente, pageNumber: pageNumber, pageSize: pageSize, includiCancellati: includiCancellati,
                                                                  includiNonAttivi: includiNonAttivi, sortColumn: sortColumn, sortAscending: sortAscending);
-            return new OkObjectResult(tipoAbbonamenti);
+            return Ok(tipoAbbonamenti);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne([FromRoute]int idCliente, [FromRoute]int id)
+        public async Task<ActionResult<TipologiaAbbonamentoDM>> GetOneAsync([FromRoute]int idCliente, [FromRoute]int id)
         {
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
-            }
+            if (!authorized) { return Forbid(); }
             var tipoAbbonamento = await _repository.GetOneAsync(idCliente, id);
-            if((tipoAbbonamento == null) || (tipoAbbonamento.IdCliente != idCliente))
-            {
-                return BadRequest();
-            }
-            //var result = Mapper.Map<TipologieAbbonamenti, TipologieAbbonamentiViewModel>(tipoAbbonamento);
-            return new OkObjectResult(tipoAbbonamento);
+            if((tipoAbbonamento == null) || (tipoAbbonamento.IdCliente != idCliente)){return BadRequest(); }
+            return Ok(tipoAbbonamento);
         }
 
 
         [HttpPost()]
-        public async Task<IActionResult> Create([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
+        public async Task<IActionResult> CreateAsync([FromRoute]int idCliente, [FromBody] TipologiaAbbonamentoInputDM model)
         {
             
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return Forbid();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var m = Mapper.Map<TipologieAbbonamentiViewModel, TipologieAbbonamenti>(model);
-            m.IdCliente = idCliente;
-            await _repository.AddAsync(idCliente, m);
-            return Ok(m.Id);
+            if (!authorized){return Forbid();}
+            if (!ModelState.IsValid){return BadRequest(); }
+            int id = await _repository.AddAsync(idCliente, model);
+            return CreatedAtAction("GetOneAsync", new { idCliente, id }, null);
         }
 
-        [HttpPut()]
-        public IActionResult Modify([FromRoute]int idCliente, [FromBody] TipologieAbbonamentiViewModel model)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> ModifyAsync([FromRoute]int idCliente, [FromRoute]int id, [FromBody] TipologiaAbbonamentoInputDM model)
         {
             //TODO: Verificare cosa succede se si modifica un tipo abbonamento per cui ci sono già abbonamenti attivi           
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return Forbid();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var m = Mapper.Map<TipologieAbbonamentiViewModel, TipologieAbbonamenti>(model);
-            var oldEntity = _repository.GetSingle(idCliente, m.Id);
-            if(oldEntity == null)
-            {
-                return BadRequest();
-            }
-            oldEntity.Costo = model.Costo;
-            oldEntity.DurataMesi = model.DurataMesi;
-            oldEntity.MaxLivCorsi = model.MaxLivCorsi;
-            oldEntity.Nome = model.Nome;
-            oldEntity.NumIngressi = model.NumIngressi;
-            _repository.Update(idCliente, oldEntity);            
-            return Ok();
+            if (!authorized){return Forbid();}
+            if (!ModelState.IsValid){return BadRequest();}
+            if(model.Id != id) { return BadRequest(); }
+            await _repository.UpdateAsync(idCliente, model);
+            return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute]int idCliente, [FromRoute] int id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute]int idCliente, [FromRoute] int id)
         {
-            //TODO: Assicurarsi di cancellare solo se non ci sono abbonamenti attivi in essere
-            //TODO: In futuro gestire la cancellazione logica
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
-            if (!authorized)
-            {
-                return Forbid();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            _repository.Delete(idCliente, id);
-            return new NoContentResult();
+            if (!authorized){return Forbid();}
+            await _repository.DeleteAsync(idCliente, id);
+            return NoContent();
         }
     }
 }

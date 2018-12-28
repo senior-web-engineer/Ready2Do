@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace PalestreGoGo.WebAPIModel
+namespace ready2do.model.common
 {
-    public class TipologieAbbonamentiViewModel
+    public class TipologiaAbbonamentoInputDM
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
@@ -14,5 +11,8 @@ namespace PalestreGoGo.WebAPIModel
         public short? NumIngressi { get; set; }
         public decimal? Costo { get; set; }
         public short? MaxLivCorsi { get; set; }
+        public DateTime ValidoDal { get; set; }
+        public DateTime? ValidoFinoAl { get; set; }
+
     }
 }

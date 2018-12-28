@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ready2do.model.common
 {
-    public class ScheduleBaseDM
+    public class ScheduleInputDM
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }

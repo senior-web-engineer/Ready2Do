@@ -13,6 +13,6 @@ namespace PalestreGoGo.DataAccess
         Task<LocationDM> GetSingleAsync(int idCliente, int idLocation, bool includeDeleted = false);
         Task<int> AddAsync(int idCliente, LocationInputDM location);
         Task UpdateAsync(int idCliente, LocationInputDM location);
-        Task Delete(int idCliente, int idLocation);
+        Task DeleteAsync(int idCliente, int idLocation);
     }
 }

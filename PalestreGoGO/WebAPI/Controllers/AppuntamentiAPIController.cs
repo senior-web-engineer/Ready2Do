@@ -25,7 +25,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente:int}/schedules/{idSchedule:int}/appuntamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AppuntamentiAPIController : PalestreControllerBase
+    public class AppuntamentiAPIController : APIControllerBase
     {
 
         /* 

@@ -4,8 +4,8 @@
 */
 CREATE PROCEDURE [dbo].[RichiestaRegistrazione_Add]
 	@pUsername			VARCHAR(500),
+	@pExpiration		DATETIME2(2),
 	@pCorrelationId		UNIQUEIDENTIFIER = NULL,
-	@pExpiration		DATETIME2(2) = NULL,
 	@pRefereer			INT = NULL,
 	@pUserCode			VARCHAR(1000) OUTPUT
 AS
@@ -29,8 +29,8 @@ BEGIN
 		EXEC RichiestaRegistrazione_Delete @pUsername = @pUserName
 
 		-- Inseriamo una richiesta SOLO se non ce n'è una già valida
-		INSERT INTO RichiesteRegistrazione(CorrelationId, UserCode, Username, Expiration)
-			SELECT @pCorrelationId, @pUserCode, @pUsername, @pExpiration
+		INSERT INTO RichiesteRegistrazione(CorrelationId, UserCode, Username, Expiration, Refereer)
+			SELECT @pCorrelationId, @pUserCode, @pUsername, @pExpiration, @pRefereer
 				WHERE NOT EXISTS(SELECT * FROM RichiesteRegistrazione 
 								WHERE Username = @pUsername AND DataCancellazione IS NULL AND Expiration > @dataOperazione )
 	

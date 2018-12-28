@@ -33,12 +33,12 @@ namespace Tests.WebAPI.Tipologiche
             _locationFixture = locationFixture;
         }
 
-        private Mock<LocationsController> SetupController(ClaimsPrincipal principal)
+        private Mock<LocationsAPIController> SetupController(ClaimsPrincipal principal)
         {
-            var loggerMock = new Mock<ILogger<LocationsController>>();
+            var loggerMock = new Mock<ILogger<LocationsAPIController>>();
             var dbCtx = Utils.BuildDbContext();
             var repo = new LocationsRepository(dbCtx);
-            var controllerMocked = new Mock<LocationsController>(repo, loggerMock.Object);
+            var controllerMocked = new Mock<LocationsAPIController>(repo, loggerMock.Object);
             controllerMocked.CallBase = true;
             controllerMocked.Setup(x => x.GetCurrentUser()).Returns(principal);
             return controllerMocked;

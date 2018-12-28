@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/abbonamenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AbbonamentiAPIController : PalestreControllerBase
+    public class AbbonamentiAPIController : APIControllerBase
     {
         private readonly IAbbonamentiRepository _repository;
         private readonly ILogger<AbbonamentiAPIController> _logger;

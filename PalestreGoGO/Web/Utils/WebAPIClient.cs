@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,75 +37,116 @@ namespace Web.Utils
             _appConfig = options?.Value;
         }
 
-        private async Task SendRequestAsync<T>(HttpMethod method, Uri uri, T model, string accessToken)
+        #region PRIVATE STUFF
+        private async Task SendPostRequestAsync<T>(string uri, T model, string accessToken)
         {
+            var response = await SendRequestAsync<T>(HttpMethod.Post, new Uri(uri), model, accessToken);
+            response.Dispose();
+        }
+        private async Task SendPutRequestAsync<T>(string uri, T model, string accessToken)
+        {
+            var response = await SendRequestAsync<T>(HttpMethod.Put, new Uri(uri), model, accessToken);
+            response.Dispose();
+        }
+
+        private async Task<HttpResponseMessage> SendRequestAsync<T>(HttpMethod method, Uri uri, T model, string accessToken)
+        {
+            Log.Information("Invocazione API [{uri}], Method: {method}", uri, method);
+            Log.Debug("AccessToken: {accessToken}", accessToken);
+            Log.Debug("Model: {model}", model);
             var request = new HttpRequestMessage(method, uri);
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
-            using (var content = new PushStreamContent((stream, httpContent, transportContext) =>
-                        {
-                            using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024))
-                            {
-                                using (var jsonWriter = new JsonTextWriter(writer) { Formatting = Formatting.None })
-                                {
-                                    var serializer = new JsonSerializer();
-                                    serializer.Serialize(writer, model);
-                                }
-                            }
-                        }, new MediaTypeHeaderValue("application/json")))
+            try
             {
-                //Usiamo uno stream per serializzare ed inviare i dati
-                request.Content = content;
-                var response = await sClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
+                using (var content = new PushStreamContent((stream, httpContent, transportContext) =>
+                            {
+                                using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024))
+                                {
+                                    using (var jsonWriter = new JsonTextWriter(writer) { Formatting = Formatting.None })
+                                    {
+                                        var serializer = new JsonSerializer();
+                                        serializer.Serialize(writer, model);
+                                    }
+                                }
+                            }, new MediaTypeHeaderValue("application/json")))
+                {
+                    //Usiamo uno stream per serializzare ed inviare i dati
+                    request.Content = content;
+                    var response = await sClient.SendAsync(request);
+                    response.EnsureSuccessStatusCode();
+                    return response;
+                }
+            }
+            catch (Exception exc)
+            {
+                Log.Error(exc, "Errore durante l'invocazione della API: {uri}, Method: {method}, Model: {model}", uri, method, model);
+                throw;
             }
         }
 
         private async Task<T> GetRequestAsync<T>(Uri uri, string accessToken)
         {
+            Log.Information("Invocazione API [{uri}]", uri);
+            Log.Debug("AccessToken: {accessToken}", accessToken);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             T result = default(T);
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
-            HttpResponseMessage response = await sClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            using (var streamResp = await response.Content.ReadAsStreamAsync())
+            try
             {
-                using (var sr = new StreamReader(streamResp))
+                using (HttpResponseMessage response = await sClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    using (var jsonReader = new JsonTextReader(sr))
+                    response.EnsureSuccessStatusCode();
+                    using (var streamResp = await response.Content.ReadAsStreamAsync())
                     {
-                        JsonSerializer serializer = new JsonSerializer();
-                        result = serializer.Deserialize<T>(jsonReader);
+                        using (var sr = new StreamReader(streamResp))
+                        {
+                            using (var jsonReader = new JsonTextReader(sr))
+                            {
+                                JsonSerializer serializer = new JsonSerializer();
+                                result = serializer.Deserialize<T>(jsonReader);
+                            }
+                        }
                     }
                 }
+            }
+            catch (Exception exc)
+            {
+                Log.Error(exc, "Errore durante l'invocazione della API: {uri}", uri);
+                throw;
             }
             return result;
         }
 
-        private async Task DeleteRequestAsync(Uri uri, string accessToken)
+        private async Task DeleteRequestAsync(string uri, string accessToken)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            HttpResponseMessage response = await sClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            Log.Information("Invocazione API [{uri}]", uri);
+            Log.Debug("AccessToken: {accessToken}", accessToken);
+            try
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                HttpResponseMessage response = await sClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception exc)
+            {
+                Log.Error(exc, "Errore durante l'invocazione della API: {uri}", uri);
+                throw;
+            }
+
         }
 
-        public async Task<bool> NuovoClienteAsync(NuovoClienteAPIModel cliente)
-        {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti");
-            var content = new StringContent(JsonConvert.SerializeObject(cliente), Encoding.UTF8, "application/json");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsync(uri, content);
-            return response.IsSuccessStatusCode;
-        }
+        #endregion
 
         public async Task<bool> NuovoUtenteAsync(NuovoUtenteViewModel utente, int? idStrutturaAffiliata)
         {
+            //TODO: Rimuovere l'idStrutturaAffiliata dalla querystring e metterlo nel body
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti?idref={idStrutturaAffiliata}");
             //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/clienti");
             var content = new StringContent(JsonConvert.SerializeObject(utente), Encoding.UTF8, "application/json");
@@ -113,37 +155,34 @@ namespace Web.Utils
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<ClienteWithImagesViewModel> GetClienteAsync(int idCliente)
+        #region CLIENTI
+        public async Task<bool> NuovoClienteAsync(NuovoClienteAPIModel cliente)
         {
-           return  await GetRequestAsync<ClienteWithImagesViewModel>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}"), null);
-            /*
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}");
-            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
-            return result;
-            */
+            try
+            {
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti", cliente, null);
+                return true;
+            }
+            catch (Exception exc)
+            {
+                Log.Error(exc, "Errore durante la creazione del cliente {cliente}.", cliente);
+                return false;
+            }
         }
 
-        public async Task<ClienteWithImagesViewModel> GetClienteAsync(string urlRoute)
+        public async Task<ClienteDM> GetClienteAsync(int idCliente)
         {
-            return await GetRequestAsync<ClienteWithImagesViewModel>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}"), null);
-/*
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}");
-            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) { return null; }
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
-            return result;
-            */
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}";
+            return await GetRequestAsync<ClienteDM>(new Uri(uri), null);
         }
 
+        public async Task<ClienteDM> GetClienteAsync(string urlRoute)
+        {
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}";
+            return await GetRequestAsync<ClienteDM>(new Uri(uri), null);
+        }
+
+        /*
         public async Task<ClienteWithImagesViewModel> GetClienteFromTokenAsync(string securityToken)
         {
             HttpClient client = new HttpClient();
@@ -155,89 +194,48 @@ namespace Web.Utils
             var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
             return result;
         }
+        */
 
-        public async Task<IEnumerable<TipologiaClienteViewModel>> GetTipologiClientiAsync()
+        public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloAPIModel profilo, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/tipologie");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(uri); ;
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            //NOTA: Forziamo la deserializzazione al tipo "locale" e non quello originale nell'assemblu WebApiDataModel
-            var result = JsonConvert.DeserializeObject<IEnumerable<TipologiaClienteViewModel>>(responseString, _serializerSettings);
-            return result;
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo", profilo, access_token);
         }
 
-        public async Task<IEnumerable<Models.LocationViewModel>> GetLocationsAsync(int idCliente)
+        public async Task ClienteSalvaBanner(int idCliente, ImmagineClienteInputDM banner, string access_token)
         {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations");
-            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<Models.LocationViewModel>>(responseString, _serializerSettings);
-            return result;
+            if (banner.IdTipoImmagine != (int)TipoImmagineDM.Sfondo) { throw new ArgumentException(nameof(banner)); }
+            if (!banner.Id.HasValue) { throw new ArgumentException(nameof(banner)); }
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti{idCliente:int}/images", banner, access_token);
         }
 
-        public async Task SaveLocationAsync(int idCliente, Models.LocationViewModel location, string access_token)
+        public async Task GallerySalvaImmagine(int idCliente, ImmagineClienteInputDM image, string access_token)
         {
-            if (location.Id.HasValue && location.Id.Value > 0)
+            if (image.Id.HasValue && image.Id.Value > 0)
             {
-                await SendRequestAsync(HttpMethod.Put, new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{location.Id}"), location, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{image.Id}", image, access_token);
             }
             else
             {
-                await SendRequestAsync(HttpMethod.Post,new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations"), location, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images", image, access_token);
+            }
+        }
+
+        public async Task<ImmagineClienteDM> DeleteImmagineGalleryAsync(int idCliente, int idImage, string access_token)
+        {
+            //Facciamo una DELETE custom perchè ci serve l'url ritornato (eccezionalmente) per poter cancellare il file dallo Storage
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{idImage}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            using (HttpResponseMessage response = await client.SendAsync(request))
+            {
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ImmagineClienteDM>(responseString, _serializerSettings);
             }
         }
 
 
-        public async Task<Models.LocationViewModel> GetOneLocationAsync(int idCliente, int idLocation, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<Models.LocationViewModel>(responseString, _serializerSettings);
-            return result;
-        }
-
-        public async Task DeleteOneLocationAsync(int idCliente, int idLocation, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-        }
-
-
-
-
-        public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloViewModel profilo, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Content = new StringContent(JsonConvert.SerializeObject(profilo), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-        }
-
-        public async Task ClienteSalvaBanner(int idCliente, ImmagineViewModel banner, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/banner");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Content = new StringContent(JsonConvert.SerializeObject(banner), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-        }
-
-        public async Task ClienteSalvaOrarioApertura(int idCliente, PalestreGoGo.WebAPIModel.OrarioAperturaViewModel orario, string access_token)
+        public async Task ClienteSalvaOrarioApertura(int idCliente, OrarioAperturaViewModel orario, string access_token)
         {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario");
@@ -257,159 +255,157 @@ namespace Web.Utils
             response.EnsureSuccessStatusCode();
         }
 
+        #endregion
+        #region TIPOLOGIE CLIENTE
+
+        public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync()
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/tipologie");
+            return await GetRequestAsync<IEnumerable<TipologiaClienteDM>>(uri, null);
+        }
+
+        #endregion
+
+        #region LOCATIONS
+
+        public async Task<IEnumerable<LocationDM>> GetLocationsAsync(int idCliente)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations");
+            return await GetRequestAsync<IEnumerable<LocationDM>>(uri, null);
+        }
+
+        public async Task SaveLocationAsync(int idCliente, LocationInputDM location, string access_token)
+        {
+            if (location.Id.HasValue && location.Id.Value > 0)
+            {
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{location.Id}", location, access_token);
+            }
+            else
+            {
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations", location, access_token);
+            }
+        }
+
+        public async Task<LocationInputDM> GetOneLocationAsync(int idCliente, int idLocation, string access_token)
+        {
+            return await GetRequestAsync<LocationInputDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}"), access_token);
+        }
+
+        public async Task DeleteOneLocationAsync(int idCliente, int idLocation, string access_token)
+        {
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}", access_token);
+        }
+        #endregion
+
         #region TIPOLOGIE LEZIONI
         public async Task SaveTipologiaLezioneAsync(int idCliente, Models.TipologieLezioniViewModel tipoLezione, string access_token)
         {
             if (tipoLezione.Id.HasValue && tipoLezione.Id.Value > 0)
             {
-                await SendRequestAsync(HttpMethod.Put, new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{tipoLezione.Id}"), tipoLezione, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{tipoLezione.Id}", tipoLezione, access_token);
             }
             else
             {
-                await SendRequestAsync(HttpMethod.Post, new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni"), tipoLezione, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni", tipoLezione, access_token);
             }
         }
 
         public async Task<IEnumerable<TipologiaLezioneDM>> GetTipologieLezioniClienteAsync(int idCliente)
         {
-            return await GetRequestAsync<IEnumerable<TipologiaLezioneDM>>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni"), null);
-            //Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni");
-            //HttpClient client = new HttpClient();
-            //HttpResponseMessage response = await client.GetAsync(uri); ;
-            //response.EnsureSuccessStatusCode();
-            //String responseString = await response.Content.ReadAsStringAsync();
-            ////NOTA: Forziamo la deserializzazione al tipo "locale" e non quello originale nell'assembly WebApiDataModel
-            //var result = JsonConvert.DeserializeObject<IEnumerable<Models.TipologieLezioniViewModel>>(responseString, _serializerSettings);
-            //return result;
+            return await GetRequestAsync<IEnumerable<TipologiaLezioneDM>>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni"), null);
         }
 
         public async Task<TipologiaLezioneDM> GetOneTipologiaLezione(int idCliente, int idTipologia, string access_token)
         {
-            return await GetRequestAsync<TipologiaLezioneDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{idTipologia}"), access_token);
+            return await GetRequestAsync<TipologiaLezioneDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idTipologia}"), access_token);
         }
 
         public async Task<bool> CheckNameTipologiaLezioneAsync(int idCliente, string nome, string access_token)
         {
-            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/checkname/{nome}"), access_token);
+            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/checkname/{nome}"), access_token);
         }
 
         public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idLocation, string access_token)
         {
-            await DeleteRequestAsync(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipolezioni/{idLocation}"), access_token);
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idLocation}", access_token);
         }
 
         #endregion
 
-
-        #region Tipologie Abbonamenti
-        public async Task<IEnumerable<TipologieAbbonamentiViewModel>> GetTipologieAbbonamentiClienteAsync(int idCliente, string access_token)
+        #region TIPOLOGIE ABBONAMENTI
+        public async Task<IEnumerable<TipologiaAbbonamentoDM>> GetTipologieAbbonamentiClienteAsync(int idCliente, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti");
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<TipologieAbbonamentiViewModel>>(responseString, _serializerSettings);
-            return result;
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti");
+            return await GetRequestAsync<IEnumerable<TipologiaAbbonamentoDM>>(uri, access_token);
         }
 
-        public async Task<TipologieAbbonamentiViewModel> GetOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
+        public async Task<TipologiaAbbonamentoDM> GetOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
         {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<TipologieAbbonamentiViewModel>(responseString, _serializerSettings);
-            return result;
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
+            return await GetRequestAsync<TipologiaAbbonamentoDM>(uri, access_token);
         }
 
-
-        public async Task SaveTipologiaAbbonamentoAsync(int idCliente, TipologieAbbonamentiViewModel tipoAbbonamento, string access_token)
+        public async Task SaveTipologiaAbbonamentoAsync(int idCliente, TipologiaAbbonamentoInputDM tipoAbbonamento, string access_token)
         {
             HttpClient client = new HttpClient();
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti");
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti");
             HttpRequestMessage request;
             if (tipoAbbonamento.Id.HasValue && tipoAbbonamento.Id.Value > 0)
             {
-                request = new HttpRequestMessage(HttpMethod.Put, uri);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{tipoAbbonamento.Id}", tipoAbbonamento, access_token);
             }
             else
             {
-                request = new HttpRequestMessage(HttpMethod.Post, uri);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti", tipoAbbonamento, access_token);
             }
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            //Sfruttiamo il fatto che i tipi di dati sono identici tra API e WEB per evitare di rimapparlo
-            request.Content = new StringContent(JsonConvert.SerializeObject(tipoAbbonamento), Encoding.UTF8, "application/json");
-            var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
         {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}", access_token);
         }
 
         #endregion
 
-        public async Task<IEnumerable<ScheduleDetailedApiModel>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
+        #region SCHEDULES
+        public async Task<IEnumerable<ScheduleDM>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToString("yyyyMMddTHHmmss")}&ed={end.ToString("yyyyMMddTHHmmss")}&lid={idLocation}");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(uri); ;
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<ScheduleDetailedApiModel>>(responseString, _serializerSettings);
-            return result;
+            return await GetRequestAsync<IEnumerable<ScheduleDM>>(uri, null);
         }
 
-        public async Task<ScheduleDetailedApiModel> GetScheduleAsync(int idCliente, int idEvento)
+        public async Task<ScheduleDM> GetScheduleAsync(int idCliente, int idEvento)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(uri); ;
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ScheduleDetailedApiModel>(responseString, _serializerSettings);
-            return result;
+            return await GetRequestAsync<ScheduleDM>(uri, null);
         }
 
-        public async Task SaveSchedule(int idCliente, ScheduleApiModel schedule, string access_token)
+        public async Task SaveSchedule(int idCliente, ScheduleInputDM schedule, string access_token)
         {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage();
-            request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules");
-            request.Content = new StringContent(JsonConvert.SerializeObject(schedule), Encoding.UTF8, "application/json");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Method = (schedule.Id.HasValue && schedule.Id.Value > 0) ? HttpMethod.Put : HttpMethod.Post;
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            if (schedule.Id.HasValue && schedule.Id.Value > 0)
+            {
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{schedule.Id}", schedule, access_token);
+            }
+            else
+            {
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules", schedule, access_token);
+            }
         }
+
+        #endregion
+
+
 
         public async Task<bool> CheckEmail(string email)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
-            return bool.Parse((await response.Content.ReadAsStringAsync()));
+            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}"), null);
         }
 
         public async Task<bool> CheckUrlRoute(string urlRoute, int? idCliente = null)
         {
             string tmpqs = idCliente.HasValue ? $"&idCliente={idCliente}" : "";
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}{tmpqs}");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
-            return bool.Parse((await response.Content.ReadAsStringAsync()));
+            return await GetRequestAsync<bool>(uri, null);            
         }
 
         public async Task<UserConfirmationViewModel> ConfermaAccount(string email, string code)
@@ -422,36 +418,6 @@ namespace Web.Utils
             return JsonConvert.DeserializeObject<UserConfirmationViewModel>(responseString);
         }
 
-        public async Task GallerySalvaImmagine(int idCliente, ImmagineViewModel image, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage();
-            request.Content = new StringContent(JsonConvert.SerializeObject(image), Encoding.UTF8, "application/json");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            if (image.Id.HasValue && image.Id.Value > 0)
-            {
-                request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/gallery/{image.Id}");
-                request.Method = HttpMethod.Put;
-            }
-            else
-            {
-                request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/gallery");
-                request.Method = HttpMethod.Post;
-            }
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-        }
-
-        public async Task<string> DeleteImmagineGalleryAsync(int idCliente, int idImage, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/gallery/{idImage}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<string>(responseString, _serializerSettings);
-        }
 
         public async Task<Models.AppuntamentoViewModel> GetAppuntamentoForCurrentUserAsync(int idCliente, int idEvento, string access_token)
         {
@@ -727,38 +693,18 @@ namespace Web.Utils
 
         public async Task AddCertificatoUtenteClienteAsync(int idCliente, string userId, ClienteUtenteCertificatoApiModel certificato, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati");
-            var content = new StringContent(JsonConvert.SerializeObject(certificato), Encoding.UTF8, "application/json");
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage();
-            request.RequestUri = uri;
-            request.Method = (!certificato.Id.HasValue) ? HttpMethod.Post : HttpMethod.Put;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Content = content;
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati", certificato, access_token);
         }
 
         public async Task DeleteCertificatoUtenteClienteAsync(int idCliente, string userId, int idCertificato, string access_token)
         {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/users/{userId}/certificati/{idCertificato}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/users/{userId}/certificati/{idCertificato}", access_token);
         }
 
         public async Task<IEnumerable<ClienteUtenteCertificatoApiModel>> GetCertificatiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati?incExp={includeExpired}&incDel={includeDeleted}");
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            string responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<ClienteUtenteCertificatoApiModel>>(responseString, _serializerSettings);
-            return result;
+            return await GetRequestAsync< IEnumerable<ClienteUtenteCertificatoApiModel>>(uri, access_token);
         }
 
         #endregion

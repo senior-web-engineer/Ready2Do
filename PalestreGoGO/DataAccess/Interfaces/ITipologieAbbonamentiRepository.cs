@@ -14,8 +14,8 @@ namespace PalestreGoGo.DataAccess
                                                                          bool includiCancellati = false, bool includiNonAttivi = false,
                                                                          DateTime? dataValutazione = null);
         Task<TipologiaAbbonamentoDM> GetOneAsync(int idCliente, int id);
-        Task<int> AddAsync(int idCliente, TipologiaAbbonamentoDM entity);
-        Task UpdateAsync(int idCliente, TipologiaAbbonamentoDM entity);
+        Task<int> AddAsync(int idCliente, TipologiaAbbonamentoInputDM entity);
+        Task UpdateAsync(int idCliente, TipologiaAbbonamentoInputDM entity);
         Task DeleteAsync(int idCliente, int id);
         Task<bool> CheckNomeAsync(int idCliente, string nome);
     }

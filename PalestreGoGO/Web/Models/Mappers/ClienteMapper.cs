@@ -65,10 +65,10 @@ namespace Web.Models.Mappers
             return result;
         }
 
-        public static ClienteProfiloViewModel MapToAPIModel(this ClienteProfileEditViewModel model)
+        public static ClienteProfiloAPIModel MapToAPIModel(this ClienteProfileEditViewModel model)
         {
             if (model == null) { throw new ArgumentNullException(nameof(model)); }
-            var result = new ClienteProfiloViewModel()
+            var result = new ClienteProfiloAPIModel()
             {
                 IdCliente = model.IdCliente,
                 Nome = model.Nome,

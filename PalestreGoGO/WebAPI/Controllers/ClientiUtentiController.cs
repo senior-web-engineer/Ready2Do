@@ -22,7 +22,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/users")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ClientiUtentiController : PalestreControllerBase
+    public class ClientiUtentiController : APIControllerBase
     {
         private readonly ILogger<ClientiUtentiController> _logger;
         private readonly IUsersManagementService _userManagementService;

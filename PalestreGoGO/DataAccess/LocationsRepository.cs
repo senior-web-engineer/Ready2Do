@@ -130,7 +130,7 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        public async Task Delete(int idCliente, int idLocation)
+        public async Task DeleteAsync(int idCliente, int idLocation)
         {
             using (var cn = GetConnection())
             {

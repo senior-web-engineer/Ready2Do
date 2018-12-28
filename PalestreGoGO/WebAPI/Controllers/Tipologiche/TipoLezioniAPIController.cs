@@ -15,9 +15,9 @@ using System.Threading.Tasks;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/{idCliente:int}/tipologiche/tipolezioni")]
+    [Route("api/clienti/{idCliente:int}/tipologiche/tipolezioni")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TipoLezioniAPIController : PalestreControllerBase
+    public class TipoLezioniAPIController : APIControllerBase
     {
         private readonly ITipologieLezioniRepository _repository;
 

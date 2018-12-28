@@ -96,7 +96,8 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        public async Task DeleteImageAsync(int idCliente, int idImmagine)
+        //Ritorna l'immagine cancellata
+        public async Task<ImmagineClienteDM> DeleteImageAsync(int idCliente, int idImmagine)
         {
             using (var cn = GetConnection())
             {
@@ -106,7 +107,12 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pIdImmagine", SqlDbType.Int).Value = idImmagine;
                 await cn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
+                //La SP ritorna l'immagine cancellata
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    var columns = ResolveColumnsImmagini(dr);
+                    return await InternalReadImmagineAsync(dr, columns);
+                }
             }
         }
         public async Task<int> AddImageAsync(int idCliente, ImmagineClienteInputDM immagine)
@@ -183,7 +189,7 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task<IEnumerable<ImmagineClienteDM>> GetImages(int idCliente, TipoImmagineDM? tipo, bool includeDeleted = false)
+        public async Task<IEnumerable<ImmagineClienteDM>> GetImages(int idCliente, TipoImmagineDM? tipo = null, bool includeDeleted = false)
         {
             List<ImmagineClienteDM> result = new List<ImmagineClienteDM>();
             using (var cn = GetConnection())

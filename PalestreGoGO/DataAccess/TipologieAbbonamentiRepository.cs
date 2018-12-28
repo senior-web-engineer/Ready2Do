@@ -92,7 +92,7 @@ namespace PalestreGoGo.DataAccess
             return (await GetListAsync(idCliente, 25, 1, id)).Item1.SingleOrDefault();
         }
 
-        public async Task<int> AddAsync(int idCliente, TipologiaAbbonamentoDM entity)
+        public async Task<int> AddAsync(int idCliente, TipologiaAbbonamentoInputDM entity)
         {
             SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
             parId.Direction = ParameterDirection.Output;
@@ -116,7 +116,7 @@ namespace PalestreGoGo.DataAccess
             return (int)parId.Value;
         }
 
-        public async Task UpdateAsync(int idCliente, TipologiaAbbonamentoDM entity)
+        public async Task UpdateAsync(int idCliente, TipologiaAbbonamentoInputDM entity)
         {
             using (var cn = GetConnection())
             {

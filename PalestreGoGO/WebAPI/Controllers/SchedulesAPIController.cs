@@ -19,7 +19,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente:int}/schedules")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class SchedulesAPIController : PalestreControllerBase
+    public class SchedulesAPIController : APIControllerBase
     {
         private readonly ILogger<SchedulesAPIController> _logger;
         private readonly ISchedulesRepository _repository;
@@ -39,10 +39,12 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(schedule.Id);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromBody] ScheduleChangeApiModel scheduleChange)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateSchedule([FromRoute] int idCliente, [FromRoute] int id, [FromBody] ScheduleChangeApiModel scheduleChange)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
+            if(scheduleChange.Schedule == null) { return BadRequest(); }
+            if(id != scheduleChange.Schedule.Id) { return BadRequest(); }
             await _repository.UpdateScheduleAsync(idCliente, scheduleChange.Schedule, scheduleChange.TipoModifica);
             return Ok();
         }

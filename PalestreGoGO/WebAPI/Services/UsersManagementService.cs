@@ -61,10 +61,10 @@ namespace PalestreGoGo.WebAPI.Services
             var user = await _b2cClient.GetUserByMailAsync(username);
             _logger.LogWarning($"ConfirmUserEmailAsync -> User [{username}]not founded");
             if (user == null) return new UserConfirmationResultAPIModel(false);
-            RichiestaRegistrazioneDM richiesta = null;
+            EsitoConfermaRegistrazioneDM esitoConferma= null;
             try
             {
-                richiesta = await _utentiRepository.CompletaRichiestaRegistrazioneAsync(username, code);
+                esitoConferma = await _utentiRepository.CompletaRichiestaRegistrazioneAsync(username, code);
             }
             catch (UserConfirmationException)
             {
@@ -74,6 +74,8 @@ namespace PalestreGoGo.WebAPI.Services
                     IdUser = user.Id
                 };
             }
+
+
             var result = new UserConfirmationResultAPIModel(user.Id);
             var claimStructureOwned = user.StruttureOwned;
 

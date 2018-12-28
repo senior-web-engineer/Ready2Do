@@ -10,9 +10,9 @@ namespace PalestreGoGo.DataAccess
     {
         Task AddImagesAsync(int idCliente, IEnumerable<ImmagineClienteInputDM> immagini);
         Task<int> AddImageAsync(int idCliente, ImmagineClienteInputDM immagine);
-        Task DeleteImageAsync(int idCliente, int idImmagine);
+        Task<ImmagineClienteDM> DeleteImageAsync(int idCliente, int idImmagine);
         Task UpdateImageAsync(int idCliente, ImmagineClienteInputDM immagine);
         Task<ImmagineClienteDM> GetImage(int idCliente, int idImmagine, bool includeDeleted = false);
-        Task<IEnumerable<ImmagineClienteDM>> GetImages(int idCliente, TipoImmagineDM? tipo, bool includeDeleted = false);
+        Task<IEnumerable<ImmagineClienteDM>> GetImages(int idCliente, TipoImmagineDM? tipo = null, bool includeDeleted = false);
     }
 }

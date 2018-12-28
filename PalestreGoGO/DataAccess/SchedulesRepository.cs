@@ -17,7 +17,7 @@ namespace PalestreGoGo.DataAccess
 
         }
 
-        public async Task<int> AddScheduleAsync(int idCliente, ScheduleBaseDM schedule)
+        public async Task<int> AddScheduleAsync(int idCliente, ScheduleInputDM schedule)
         {
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
             SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
@@ -52,7 +52,7 @@ namespace PalestreGoGo.DataAccess
             return schedule.Id.Value;
         }
 
-        public async Task UpdateScheduleAsync(int idCliente, ScheduleBaseDM schedule, TipoModificaScheduleDM tipoModifica)
+        public async Task UpdateScheduleAsync(int idCliente, ScheduleInputDM schedule, TipoModificaScheduleDM tipoModifica)
         {
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
             using (var cn = GetConnection())

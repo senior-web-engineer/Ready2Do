@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataAccess
     {
         Task<List<ClienteFollowedDM>> GetGlientiFollowedAsync(Guid userId);
         Task<bool> UserFollowClienteAsync(string userId, int idCliente);
-        Task<RichiestaRegistrazioneDM> RichiestaRegistrazioneSalvaAsync(string username, string code, Guid? correlationId);
-        Task<RichiestaRegistrazioneDM> CompletaRichiestaRegistrazioneAsync(string username, string code);
+        Task<string> RichiestaRegistrazioneSalvaAsync(string username, DateTime expiration, Guid? correlationId, int? idRefereer);
+        Task<EsitoConfermaRegistrazioneDM> CompletaRichiestaRegistrazioneAsync(string username, string code);
     }
 }

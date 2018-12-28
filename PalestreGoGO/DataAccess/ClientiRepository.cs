@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using PalestreGoGo.DataModel;
 using ready2do.model.common;
 using System;
@@ -74,7 +75,7 @@ namespace PalestreGoGo.DataAccess
             result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
             result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
             result.UrlRoute = dr.GetString(columns["UrlRoute"]);
-            result.OrarioApertura = await dr.IsDBNullAsync(columns["OrarioApertura"]) ? default(string) : dr.GetString(columns["OrarioApertura"]);
+            result.OrarioApertura = await dr.IsDBNullAsync(columns["OrarioApertura"]) ? null : JsonConvert.DeserializeObject<OrarioAperturaDM>(dr.GetString(columns["OrarioApertura"]));
             result.StorageContainer = dr.GetString(columns["StorageContainer"]);
             result.TipoCliente = new TipologiaClienteDM();
             result.TipoCliente.Id = dr.GetInt32(columns["IdTipologia"]);
@@ -231,8 +232,9 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task AggiornaAnagraficaClienteAsync(AnagraficaClienteDM anagrafica)
+        public async Task AggiornaAnagraficaClienteAsync(int idCliente, ClienteAnagraficaDM anagrafica)
         {
+            if(idCliente != anagrafica.Id) { throw new ArgumentException("Bad Tenant"); }
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -246,7 +248,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, 1000).Value = anagrafica.Descrizione;
                 cmd.Parameters.Add("@pIndirizzo", SqlDbType.NVarChar, 250).Value = anagrafica.Indirizzo;
                 cmd.Parameters.Add("@pCitta", SqlDbType.NVarChar, 100).Value = anagrafica.Citta;
-                cmd.Parameters.Add("@pPostalCode", SqlDbType.NVarChar, 10).Value = anagrafica.PostalCode;
+                cmd.Parameters.Add("@pPostalCode", SqlDbType.NVarChar, 10).Value = anagrafica.ZipOrPostalCode;
                 cmd.Parameters.Add("@pCountry", SqlDbType.NVarChar, 100).Value = anagrafica.Country;
                 cmd.Parameters.Add("@pLatitudine", SqlDbType.Float).Value = anagrafica.Latitudine;
                 cmd.Parameters.Add("@pLongitudine", SqlDbType.Float).Value = anagrafica.Longitudine;
@@ -256,15 +258,16 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        public async Task AggiornaOrarioAperturaClienteAsync(int idCliente, string orarioApertura)
+        public async Task AggiornaOrarioAperturaClienteAsync(int idCliente, OrarioAperturaDM orarioApertura)
         {
+            string json = (orarioApertura != null) ? JsonConvert.SerializeObject(orarioApertura) : null;
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Clienti_OrarioAperturaSave]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
-                cmd.Parameters.Add("@pOrarioApertura", SqlDbType.VarChar, -1).Value = orarioApertura;
+                cmd.Parameters.Add("@pOrarioApertura", SqlDbType.VarChar, -1).Value = json;
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }

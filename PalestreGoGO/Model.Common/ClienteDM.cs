@@ -20,8 +20,8 @@ namespace ready2do.model.common
         [JsonProperty("cap")]
         public string ZipOrPostalCode { get; set; }
         public string Country { get; set; }
-        public double? Latitudine { get; set; }
-        public double? Longitudine { get; set; }
+        public float? Latitudine { get; set; }
+        public float? Longitudine { get; set; }
         public string UrlRoute { get; set; }
     }
 
@@ -32,13 +32,14 @@ namespace ready2do.model.common
         public int IdTipologia { get; set; }
         public string IdUserOwner { get; set; }
     }
+
     public class ClienteDM : ClienteAnagraficaDM
     {
         public DateTime? DataCreazione { get; set; }
         public DateTime? DataProvisioning { get; set; }
         public TipologiaClienteDM TipoCliente {get;set;}
         public string StorageContainer { get; set; }
-        public string OrarioApertura { get; set; }
+        public OrarioAperturaDM OrarioApertura { get; set; }
 
     }
 }

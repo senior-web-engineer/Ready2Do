@@ -18,7 +18,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/users/{userId}/certificati")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class CertificatiUtentiAPIController : PalestreControllerBase
+    public class CertificatiUtentiAPIController : APIControllerBase
     {        
         private readonly IClientiUtentiRepository _repository;
         private readonly ILogger<CertificatiUtentiAPIController> _logger;

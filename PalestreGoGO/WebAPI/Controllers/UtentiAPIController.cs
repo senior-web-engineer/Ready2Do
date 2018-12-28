@@ -18,7 +18,7 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/utenti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class UtentiAPIController : PalestreControllerBase
+    public class UtentiAPIController : APIControllerBase
     {
         private readonly ILogger<UtentiAPIController> _logger;
         private readonly IUsersManagementService _userManagementService;

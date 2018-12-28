@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -7,27 +6,25 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
-using PalestreGoGo.WebAPI.Model.Mappers;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
-using PalestreGoGo.WebAPI.ViewModel;
 using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/clienti")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ClientiAPIController : PalestreControllerBase
+    public class ClientiAPIController : APIControllerBase
     {
-        const int DEFAULT_VALIDATION_VALIDITY = 2880; //48 Ore se non configurato diversamente
+        private const int DEFAULT_VALIDATION_VALIDITY = 2880; //48 Ore se non configurato diversamente
         private readonly ILogger<ClientiAPIController> _logger;
         private readonly IClientiRepository _repository;
         private readonly IUsersManagementService _userManagementService;
@@ -36,13 +33,15 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IClientiProvisioner _clientiProvisioner;
         private readonly IUserConfirmationService _userConfirmationService;
         private readonly IImmaginiClientiRepository _immaginiRepository;
+
         public ClientiAPIController(IConfiguration config,
                                  ILogger<ClientiAPIController> logger,
                                  IUsersManagementService userManagementService,
                                  IClientiRepository repository,
                                  IClientiUtentiRepository repoClientiUtenti,
                                  IClientiProvisioner clientiProvisioner,
-                                 IUserConfirmationService userConfirmationService)
+                                 IUserConfirmationService userConfirmationService,
+                                 IImmaginiClientiRepository immaginiRepository)
         {
             _config = config;
             _logger = logger;
@@ -51,35 +50,30 @@ namespace PalestreGoGo.WebAPI.Controllers
             _repoClientiUtenti = repoClientiUtenti;
             _clientiProvisioner = clientiProvisioner;
             _userConfirmationService = userConfirmationService;
+            _immaginiRepository = immaginiRepository;
         }
 
         [HttpGet("{id:int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetCliente([FromRoute(Name = "id")] int idCliente)
+        public async Task<ActionResult<ClienteDM>> GetCliente([FromRoute(Name = "id")] int idCliente)
         {
-            var cliente = await _repository.GetAsync(idCliente);
-            var result = Mapper.Map<ClienteWithImagesViewModel>(cliente);
-            if (!string.IsNullOrWhiteSpace(cliente.OrarioApertura))
-            {
-                result.OrarioApertura = JsonConvert.DeserializeObject<OrarioAperturaViewModel>(cliente.OrarioApertura);
-            }
-            return Ok(result);
+            var cliente = await _repository.GetClienteByIdAsync(idCliente);
+            if (cliente == null) return NotFound();
+            return Ok(cliente);
         }
 
         [HttpGet("{urlroute}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetCliente([FromRoute(Name = "urlroute")] string urlRoute)
+        public async Task<ActionResult<ClienteDM>> GetCliente([FromRoute(Name = "urlroute")] string urlRoute)
         {
+            if (string.IsNullOrWhiteSpace(urlRoute)) return BadRequest();
             var cliente = await _repository.GetClienteByUrlRouteAsync(urlRoute);
             if (cliente == null) return NotFound();
-            var result = Mapper.Map<ClienteWithImagesViewModel>(cliente);
-            if (!string.IsNullOrWhiteSpace(cliente.OrarioApertura))
-            {
-                result.OrarioApertura = JsonConvert.DeserializeObject<OrarioAperturaViewModel>(cliente.OrarioApertura);
-            }
-            return Ok(result);
+            return Ok(cliente);
         }
-      
+
 
         [HttpGet("checkurl")]
         [AllowAnonymous]
@@ -104,8 +98,6 @@ namespace PalestreGoGo.WebAPI.Controllers
 
             var result = await _repository.CheckUrlRouteValidity(url, idCliente);
             return Ok(result == UrlValidationResultDM.OK);
-            //var cliente = await _repository.GetByUrlAsync(url);
-            //return Ok(cliente == null);
         }
 
 
@@ -145,7 +137,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             nuovoClienteDM.StorageContainer = Guid.NewGuid().ToString("N").ToLowerInvariant();
             var resultDB = await _repository.CreateClienteAsync(nuovoClienteDM);
             //Step3: Provisioning Cliente
-            await _clientiProvisioner.ProvisionClienteAsync(resultDB.idCliente, user.Id); 
+            await _clientiProvisioner.ProvisionClienteAsync(resultDB.idCliente, user.Id);
             //Step4: Update B2C con la struttura gestita
             await _userManagementService.AggiungiStrutturaGestitaAsync(user, resultDB.idCliente);
             //Step5: Aggiorniamo lo stato di provisioning del Cliente
@@ -162,148 +154,126 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("{idCliente:int}/profilo/banner")]
-        public async Task<IActionResult> ClienteSalvaBannerProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineClienteInputDM banner)
-        {
-            if (banner == null) { return BadRequest(); }
-            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var existing = (await _immaginiRepository.GetImages(idCliente, TipoImmagineDM.Sfondo)).SingleOrDefault();
-            if(existing == null)
-            {
-                banner.IdTipoImmagine = (int)TipoImmagineDM.Sfondo;
-                await _immaginiRepository.AddImageAsync(idCliente, banner);
-            }
-            else
-            {
-                banner.Id = existing.Id;
-                await _immaginiRepository.UpdateImageAsync(idCliente, banner);
-            }
-            return Ok();
-        }
+        //[HttpPut("{idCliente:int}/profilo/banner")]
+        //public async Task<IActionResult> ClienteSalvaBannerProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineClienteInputDM banner)
+        //{
+        //    if (banner == null) { return BadRequest(); }
+        //    if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    var existing = (await _immaginiRepository.GetImages(idCliente, TipoImmagineDM.Sfondo)).SingleOrDefault();
+        //    if (existing == null)
+        //    {
+        //        banner.IdTipoImmagine = (int)TipoImmagineDM.Sfondo;
+        //        await _immaginiRepository.AddImageAsync(idCliente, banner);
+        //    }
+        //    else
+        //    {
+        //        banner.Id = existing.Id;
+        //        await _immaginiRepository.UpdateImageAsync(idCliente, banner);
+        //    }
+        //    return Ok();
+        //}
 
         [HttpPut("{idCliente:int}/profilo/anagrafica")]
-        public async Task<IActionResult> ClienteSalvaAnagrafica([FromRoute(Name = "idCliente")]int idCliente, [FromBody] AnagraficaClienteApiModel anagrafica)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ClienteAnagraficaDM>> ClienteSalvaAnagrafica([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteAnagraficaDM anagrafica)
         {
             if (anagrafica == null) { return BadRequest(); }
-            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+            if (!User.CanManageStructure(idCliente)) { return Forbid(); }
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            if (anagrafica.IdCliente != idCliente) { return BadRequest(); }
-
-
-            await _repository.UpdateAnagraficaAsync(anagrafica.ToDM());
-            return Ok();
+            if (anagrafica.Id != idCliente) { return BadRequest(); }
+            await _repository.AggiornaAnagraficaClienteAsync(idCliente, anagrafica);
+            return NoContent();
         }
 
         [HttpPut("{idCliente:int}/profilo/orario")]
-        public async Task<IActionResult> ClienteSalvaOrarioApertura([FromRoute(Name = "idCliente")]int idCliente, [FromBody] OrarioAperturaViewModel orario)
+        public async Task<IActionResult> ClienteSalvaOrarioApertura([FromRoute(Name = "idCliente")]int idCliente, [FromBody] OrarioAperturaDM orario)
         {
             if (orario == null) { return BadRequest(); }
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
             if (!ModelState.IsValid) { return BadRequest(); }
-            await _repository.UpdateOrarioAperturaAsync(idCliente, JsonConvert.SerializeObject(orario));
+            await _repository.AggiornaOrarioAperturaClienteAsync(idCliente, orario);
             return Ok();
         }
 
 
         [HttpPut("{idCliente:int}/profilo")]
-        public async Task<IActionResult> ClienteSalvaProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteProfiloViewModel profilo)
+        public async Task<IActionResult> ClienteSalvaProfilo([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteProfiloAPIModel profilo)
         {
             if (profilo == null) { return BadRequest(); }
-            if (idCliente != profilo.IdCliente) { return BadRequest(); }
+            if (idCliente != profilo.Anagrafica.Id) { return BadRequest(); }
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid){return BadRequest();}
+            //Salviamo le modifiche in transazione
+            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                return BadRequest();
-            }
-            var existing = await _repository.GetAsync(profilo.IdCliente);
-
-            existing.Descrizione = profilo.Descrizione;
-            existing.Citta = profilo.Indirizzo.Citta;
-            existing.Latitudine = profilo.Indirizzo.Coordinate.Latitudine;
-            existing.Longitudine = profilo.Indirizzo.Coordinate.Longitudine;
-            existing.Country = profilo.Indirizzo.Country;
-            existing.Indirizzo = profilo.Indirizzo.Indirizzo;
-            existing.Nome = profilo.Nome;
-            existing.NumTelefono = profilo.NumTelefono;
-            existing.RagioneSociale = profilo.RagioneSociale;
-            existing.ZipOrPostalCode = profilo.Indirizzo.PostalCode;
-            existing.OrarioApertura = JsonConvert.SerializeObject(profilo.OrarioApertura);
-
-            //Se è una nuova immagine, sovrascriviamo la precedente (manteniamo l'Id della vecchia)
-            if (!profilo.ImmagineHome.Id.HasValue || profilo.ImmagineHome.Id.Value <= 0)
-            {
-                var oldImg = existing.ClientiImmagini.SingleOrDefault(i => i.IdTipoImmagine == (int)TipoImmagine.Sfondo) ?? new ClientiImmagini();
-                oldImg.IdCliente = idCliente;
-                oldImg.IdTipoImmagine = (int)TipoImmagine.Sfondo;
-                //oldImg.Nome = profilo.ImmagineHome.Nome;
-                //oldImg.Alt = profilo.ImmagineHome.Alt;
-                //oldImg.Descrizione = profilo.ImmagineHome.Descrizione;
-                oldImg.Ordinamento = 0;
-                oldImg.Url = profilo.ImmagineHome.Url;
-                await _repository.UpdateImageAsync(idCliente, oldImg);
-            }
-            await _repository.UpdateAsync(existing);
-            return Ok();
+                await _repository.AggiornaAnagraficaClienteAsync(idCliente, profilo.Anagrafica);
+                await _repository.AggiornaOrarioAperturaClienteAsync(idCliente, profilo.OrarioApertura);
+                await _immaginiRepository.UpdateImageAsync(idCliente, profilo.ImmagineHome);
+                transaction.Complete();
+            }         
+            return NoContent();
         }
 
 
-        [HttpPost("{idCliente:int}/gallery")]
-        public async Task<IActionResult> ClienteAddImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineViewModel immagine)
-        {
-            if (immagine == null) { return BadRequest(); }
-            if (immagine.Id.HasValue) { return BadRequest(); } //Non deve avere un Id essendo una nuova immagine
-            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid) { return BadRequest(); }
-            var images = new ClientiImmagini[]{
-                new ClientiImmagini()
-                {
-                    IdCliente = idCliente,
-                    IdTipoImmagine = Constants.TIPOIMMAGINE_GALLERY,
-                    Alt = immagine.Alt,
-                    Descrizione = immagine.Descrizione,
-                    Nome = immagine.Nome,
-                    Ordinamento = immagine.Ordinamento,
-                    Url = immagine.Url
-                }
-            };
-            await _repository.AddImagesAsync(idCliente, images);
-            return Ok();
-        }
+        //[HttpPost("{idCliente:int}/gallery")]
+        //public async Task<IActionResult> ClienteAddImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ImmagineClienteInputDM immagine)
+        //{
+        //    if (immagine == null) { return BadRequest(); }
+        //    if (immagine.Id.HasValue) { return BadRequest(); } //Non deve avere un Id essendo una nuova immagine
+        //    if (!User.CanManageStructure(idCliente)) { return Forbid(); }
+        //    if (!ModelState.IsValid) { return BadRequest(); }
+        //    var images = new ClientiImmagini[]{
+        //        new ClientiImmagini()
+        //        {
+        //            IdCliente = idCliente,
+        //            IdTipoImmagine = Constants.TIPOIMMAGINE_GALLERY,
+        //            Alt = immagine.Alt,
+        //            Descrizione = immagine.Descrizione,
+        //            Nome = immagine.Nome,
+        //            Ordinamento = immagine.Ordinamento,
+        //            Url = immagine.Url
+        //        }
+        //    };
+        //    await _repository.AddImagesAsync(idCliente, images);
+        //    return Ok();
+        //}
 
-        [HttpPut("{idCliente:int}/gallery/{idImage}")]
-        public async Task<IActionResult> ClienteUpdateImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idImage")] int idImage, [FromBody] ImmagineViewModel immagine)
-        {
-            if (immagine == null) { return BadRequest(); }
-            if (!immagine.Id.HasValue || !immagine.Id.Value.Equals(idImage)) { return BadRequest(); } //Deve avere un Id essendo una immagine esistente
-            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid) { return BadRequest(); }
-            var existing = _repository.GetImage(idCliente, idImage);
-            existing.Alt = immagine.Alt;
-            existing.Descrizione = immagine.Descrizione;
-            existing.Nome = immagine.Nome;
-            existing.Ordinamento = immagine.Ordinamento;
-            existing.Url = immagine.Url;
-            await _repository.UpdateImageAsync(idCliente, existing);
-            return Ok();
-        }
+        //[HttpPut("{idCliente:int}/gallery/{idImage}")]
+        //public async Task<IActionResult> ClienteUpdateImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idImage")] int idImage, [FromBody] ImmagineViewModel immagine)
+        //{
+        //    if (immagine == null) { return BadRequest(); }
+        //    if (!immagine.Id.HasValue || !immagine.Id.Value.Equals(idImage)) { return BadRequest(); } //Deve avere un Id essendo una immagine esistente
+        //    if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+        //    if (!ModelState.IsValid) { return BadRequest(); }
+        //    var existing = _repository.GetImage(idCliente, idImage);
+        //    existing.Alt = immagine.Alt;
+        //    existing.Descrizione = immagine.Descrizione;
+        //    existing.Nome = immagine.Nome;
+        //    existing.Ordinamento = immagine.Ordinamento;
+        //    existing.Url = immagine.Url;
+        //    await _repository.UpdateImageAsync(idCliente, existing);
+        //    return Ok();
+        //}
 
-        [HttpDelete("{idCliente:int}/gallery/{idImage}")]
-        public async Task<IActionResult> ClienteDeleteImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idImage")] int idImage)
-        {
-            if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid) { return BadRequest(); }
-            var existing = _repository.GetImage(idCliente, idImage);
-            if (existing == null) return BadRequest();
-            await _repository.DeleteImageAsync(idCliente, idImage);
-            return Ok(existing.Url);
-        }
+        //[HttpDelete("{idCliente:int}/gallery/{idImage}")]
+        //public async Task<IActionResult> ClienteDeleteImmagineGallery([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idImage")] int idImage)
+        //{
+        //    if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
+        //    if (!ModelState.IsValid) { return BadRequest(); }
+        //    var existing = _repository.GetImage(idCliente, idImage);
+        //    if (existing == null) return BadRequest();
+        //    await _repository.DeleteImageAsync(idCliente, idImage);
+        //    return Ok(existing.Url);
+        //}
 
         ///// <summary>
         ///// 

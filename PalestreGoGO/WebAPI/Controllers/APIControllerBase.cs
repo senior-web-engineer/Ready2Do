@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
-    public class PalestreControllerBase: ControllerBase
+    public class APIControllerBase: ControllerBase
     {
         [NonAction]
         public virtual ClaimsPrincipal GetCurrentUser()

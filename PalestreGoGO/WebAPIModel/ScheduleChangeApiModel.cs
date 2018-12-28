@@ -8,7 +8,7 @@ namespace PalestreGoGo.WebAPIModel
 {
     public class ScheduleChangeApiModel
     {
-        public ScheduleBaseDM Schedule { get; set; }
+        public ScheduleInputDM Schedule { get; set; }
         public TipoModificaScheduleDM TipoModifica { get; set; }
     }
 }

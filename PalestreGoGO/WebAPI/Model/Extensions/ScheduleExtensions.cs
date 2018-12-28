@@ -16,7 +16,7 @@ namespace PalestreGoGo.WebAPI.Model.Extensions
         /// </summary>
         /// <param name="schedule"></param>
         /// <returns></returns>
-        public static bool IsPublicVisible (this ScheduleBaseDM schedule)
+        public static bool IsPublicVisible (this ScheduleInputDM schedule)
         {
             //Escludiamo i cancellati
             if (schedule.DataCancellazione.HasValue) return false;

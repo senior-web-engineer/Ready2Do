@@ -13,9 +13,10 @@ namespace PalestreGoGo.WebAPI.Services
     {
         Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser);
         Task AggiungiStrutturaGestitaAsync(AzureUser user, int idCliente);
+        Task<AzureUser> GetUserByIdAsync(string id);
 
 
-//        Task<string> RegisterUserAsync(AzureUser user);
+        //        Task<string> RegisterUserAsync(AzureUser user);
 
         Task<UserConfirmationResultAPIModel> ConfirmUserEmailAsync(string username, string code);
 
@@ -23,8 +24,7 @@ namespace PalestreGoGo.WebAPI.Services
 
         //Task<LocalAccountUser> GetUserByUsernameAsync(string username);
 
-    //    Task<AzureUser> GetUserByIdAsync(string id);
-
+    
         //Task<IList<Claim>> GetUserCalimsAsync(LocalAccountUser user);
     }
 }
