@@ -16,12 +16,12 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/users/notifiche")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class NotificheController : APIControllerBase
+    public class NotificheAPIController : APIControllerBase
     {
-        private readonly ILogger<NotificheController> _logger;
+        private readonly ILogger<NotificheAPIController> _logger;
         private readonly INotificheRepository _notificheRepo;
 
-        public NotificheController(ILogger<NotificheController> logger,
+        public NotificheAPIController(ILogger<NotificheAPIController> logger,
                                         INotificheRepository notificheRepo)
         {
             this._logger = logger;

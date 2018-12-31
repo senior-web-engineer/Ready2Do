@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ready2do.model.common
 {
-    public partial class UtenteClienteAbbonamentoDM
+    public class AbbonamentoUtenteInputDM
     {
         public int? Id { get; set; }
         public int IdCliente { get; set; }
         public string UserId { get; set; }
-        public int IdTipoAbbonamento { get; set; }        
+        public int IdTipoAbbonamento { get; set; }
         public DateTime DataInizioValidita { get; set; }
         public DateTime Scadenza { get; set; }
         public short? IngressiIniziali { get; set; }
@@ -18,11 +15,6 @@ namespace ready2do.model.common
 
         public decimal? Importo { get; set; }
         public decimal? ImportoPagato { get; set; }
-
-        public DateTime? DataCreazione { get; set; }
-        public DateTime? DataCancellazione { get; set; }
-
-        public TipologiaAbbonamentoDM TipoAbbonamento { get; set; }
 
     }
 }

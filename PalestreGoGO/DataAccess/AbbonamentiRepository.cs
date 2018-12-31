@@ -15,7 +15,7 @@ namespace PalestreGoGo.DataAccess
         {
         }
 
-        public async Task<int> SaveAbbonamentoAsync(int idCliente, UtenteClienteAbbonamentoDM abbonamento)
+        public async Task<int> SaveAbbonamentoAsync(int idCliente, AbbonamentoUtenteInputDM abbonamento)
         {
             var parametri = new DynamicParameters(
                     new
@@ -60,9 +60,9 @@ namespace PalestreGoGo.DataAccess
         /// <param name="includeDeleted"></param>
         /// <param name="idEvento">se specificato limita i risultati ai soli abbonamenti compatibili con l'evento</param>
         /// <returns></returns>
-        public async Task<IEnumerable<UtenteClienteAbbonamentoDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null)
+        public async Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null)
         {
-            List<UtenteClienteAbbonamentoDM> result = new List<UtenteClienteAbbonamentoDM>();
+            List<AbbonamentoUtenteDM> result = new List<AbbonamentoUtenteDM>();
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -78,7 +78,7 @@ namespace PalestreGoGo.DataAccess
                 {
                     while (await dr.ReadAsync())
                     {
-                        result.Add(new UtenteClienteAbbonamentoDM()
+                        result.Add(new AbbonamentoUtenteDM()
                         {
                             DataCancellazione = dr.IsDBNull(dr.GetOrdinal("DataCancellazione")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("DataCancellazione")),
                             DataCreazione = dr.GetDateTime(dr.GetOrdinal("DataCreazione")),
@@ -113,11 +113,11 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task<UtenteClienteAbbonamentoDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento)
+        public async Task<AbbonamentoUtenteDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento)
         {
             using (var cn = GetConnection())
             {
-                return await cn.QuerySingleAsync<UtenteClienteAbbonamentoDM>("[Clienti_Utenti_AbbonamentoGet]", new
+                return await cn.QuerySingleAsync<AbbonamentoUtenteDM>("[Clienti_Utenti_AbbonamentoGet]", new
                 {
                     pIdCliente = idCliente,
                     pIdAbbonamento = idAbbonamento

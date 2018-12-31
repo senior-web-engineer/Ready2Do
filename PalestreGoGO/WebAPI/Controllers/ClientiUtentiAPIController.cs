@@ -22,16 +22,16 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Produces("application/json")]
     [Route("api/clienti/{idCliente}/users")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ClientiUtentiController : APIControllerBase
+    public class ClientiUtentiAPIController : APIControllerBase
     {
-        private readonly ILogger<ClientiUtentiController> _logger;
+        private readonly ILogger<ClientiUtentiAPIController> _logger;
         private readonly IUsersManagementService _userManagementService;
         private readonly IClientiRepository _clientiRepo;
         private readonly IClientiUtentiRepository _clientiUtentiRepo;
         private readonly IAppuntamentiRepository _appuntamentiRepo;
 
-        public ClientiUtentiController(IUsersManagementService userManagementService,
-                                        ILogger<ClientiUtentiController> logger,
+        public ClientiUtentiAPIController(IUsersManagementService userManagementService,
+                                        ILogger<ClientiUtentiAPIController> logger,
                                         IClientiRepository clientiRepo,
                                         IClientiUtentiRepository clientiUtentiRepo,
                                         IAppuntamentiRepository appuntamentiRepo)
