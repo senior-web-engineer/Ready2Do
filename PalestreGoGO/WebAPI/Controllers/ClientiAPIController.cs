@@ -58,8 +58,13 @@ namespace PalestreGoGo.WebAPI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ClienteDM>> GetCliente([FromRoute(Name = "id")] int idCliente)
         {
+            _logger.LogDebug($"Begin [{ControllerContext.HttpContext.Request.Path}]");
             var cliente = await _repository.GetClienteByIdAsync(idCliente);
-            if (cliente == null) return NotFound();
+            if (cliente == null)
+            {
+                _logger.LogTrace($"Cliente Not Founded: {idCliente}");
+                return NotFound();
+            }
             return Ok(cliente);
         }
 
@@ -67,9 +72,14 @@ namespace PalestreGoGo.WebAPI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ClienteDM>> GetCliente([FromRoute(Name = "urlroute")] string urlRoute)
         {
+            _logger.LogDebug($"Begin [{ControllerContext.HttpContext.Request.Path}]");
             if (string.IsNullOrWhiteSpace(urlRoute)) return BadRequest();
             var cliente = await _repository.GetClienteByUrlRouteAsync(urlRoute);
-            if (cliente == null) return NotFound();
+            if (cliente == null)
+            {
+                _logger.LogDebug($"Cliente Not Founded: {urlRoute}");
+                return NotFound();
+            }
             return Ok(cliente);
         }
 

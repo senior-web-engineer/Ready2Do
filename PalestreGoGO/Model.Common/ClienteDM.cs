@@ -20,8 +20,8 @@ namespace ready2do.model.common
         [JsonProperty("cap")]
         public string ZipOrPostalCode { get; set; }
         public string Country { get; set; }
-        public float? Latitudine { get; set; }
-        public float? Longitudine { get; set; }
+        public double? Latitudine { get; set; }
+        public double? Longitudine { get; set; }
         public string UrlRoute { get; set; }
     }
 

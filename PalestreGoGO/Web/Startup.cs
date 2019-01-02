@@ -109,6 +109,7 @@ namespace Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseHttpsRedirection();
             app.UseSession();
             app.UseAuthentication();
             app.UseStaticFiles();

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace PalestreGoGo.WebAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/clienti{idCliente:int}/images")]
+    [Route("api/clienti/{idCliente:int}/images")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ImmaginiClientiAPIController : APIControllerBase
     {

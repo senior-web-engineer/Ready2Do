@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("{userId}/{idAbbonamento}")]
+        [HttpDelete("{idAbbonamento}")]
         public async Task<IActionResult> DeleteAbbonamento([FromRoute]int idCliente, [FromRoute]string userId, [FromRoute] int idAbbonamento)
         {
             if (!User.CanManageStructure(idCliente)) { return Forbid(); }

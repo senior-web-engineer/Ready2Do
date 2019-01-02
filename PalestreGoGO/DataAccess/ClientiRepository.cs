@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PalestreGoGo.DataModel;
 using ready2do.model.common;
@@ -12,8 +13,10 @@ namespace PalestreGoGo.DataAccess
 {
     public class ClientiRepository : BaseRepository, IClientiRepository
     {
-        public ClientiRepository(IConfiguration configuration) : base(configuration)
+        private ILogger<ClientiRepository> _logger;
+        public ClientiRepository(IConfiguration configuration, ILogger<ClientiRepository> logger) : base(configuration)
         {
+            _logger = logger;
         }
 
         #region PRIVATE STUFF
@@ -70,8 +73,8 @@ namespace PalestreGoGo.DataAccess
             result.Citta = dr.GetString(columns["Citta"]);
             result.ZipOrPostalCode = await dr.IsDBNullAsync(columns["ZipOrPostalCode"]) ? default(string) : dr.GetString(columns["ZipOrPostalCode"]);
             result.Country = await dr.IsDBNullAsync(columns["Country"]) ? default(string) : dr.GetString(columns["Country"]);
-            result.Latitudine = await dr.IsDBNullAsync(columns["Latitudine"]) ? default(float) : dr.GetFloat(columns["Latitudine"]);
-            result.Longitudine = await dr.IsDBNullAsync(columns["Longitudine"]) ? default(float) : dr.GetFloat(columns["Longitudine"]);
+            result.Latitudine = await dr.IsDBNullAsync(columns["Latitudine"]) ? default(double?) : dr.GetDouble(columns["Latitudine"]);
+            result.Longitudine = await dr.IsDBNullAsync(columns["Longitudine"]) ? default(double?) : dr.GetDouble(columns["Longitudine"]);
             result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
             result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
             result.UrlRoute = dr.GetString(columns["UrlRoute"]);
@@ -167,7 +170,7 @@ namespace PalestreGoGo.DataAccess
                 await cmd.ExecuteNonQueryAsync();
                 return parCode.Value as string;
             }
-        }       
+        }
 
         /// <summary>
         /// Cambia lo stato del Cliente da NotProvisioned a Provisioned
@@ -190,6 +193,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<ClienteDM> GetClienteByUrlRouteAsync(string urlRoute)
         {
+            _logger.LogDebug($"Inizio GetClienteByUrlRouteAsync({urlRoute})");
             ClienteDM result = null;
             using (var cn = GetConnection())
             {
@@ -204,6 +208,10 @@ namespace PalestreGoGo.DataAccess
                     {
                         var columns = ResolveColumnsCliente(dr);
                         result = await InternalReadClienteAsync(dr, columns);
+                    }
+                    else
+                    {
+                        _logger.LogDebug($"Impossibile trovare il cliente con la UrlRoute: {urlRoute}");
                     }
                 }
             }
@@ -234,7 +242,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task AggiornaAnagraficaClienteAsync(int idCliente, ClienteAnagraficaDM anagrafica)
         {
-            if(idCliente != anagrafica.Id) { throw new ArgumentException("Bad Tenant"); }
+            if (idCliente != anagrafica.Id) { throw new ArgumentException("Bad Tenant"); }
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -291,7 +299,7 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        
+
 
         #region PREFERENZE
         public async Task<string> GetPreferenzaCliente(int idCliente, string key)

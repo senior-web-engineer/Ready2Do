@@ -33,13 +33,13 @@ namespace PalestreGoGo.WebAPI.Controllers
                                  ISchedulesRepository repositorySchedules,
                                  IUtentiRepository repositoryUtenti)
         {
-            this._logger = logger;
-            this._userManagementService = userManagementService;
-            this._repository = repository;
-            this._repositoryAppuntamenti = repositoryAppuntamenti;
-            this._repositoryUtenti = repositoryUtenti;
-            this._repositorySchedules = repositorySchedules;
-    }
+            _logger = logger;
+            _userManagementService = userManagementService;
+            _repository = repository;
+            _repositoryAppuntamenti = repositoryAppuntamenti;
+            _repositoryUtenti = repositoryUtenti;
+            _repositorySchedules = repositorySchedules;
+        }
 
         /// <summary>
         /// Verifica se l'email specificata esiste già nel DB o meno
@@ -67,20 +67,14 @@ namespace PalestreGoGo.WebAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> NuovoUtente([FromBody]NuovoUtenteViewModel newUser, [FromQuery(Name = "idref")]int? idStrutturaAffiliata)
         {
-            if (newUser == null)
-            {
-                return new BadRequestResult();
-            }
-            if (!ModelState.IsValid)
-            {
-                return new BadRequestResult();
-            }
+            if (newUser == null) { return new BadRequestResult(); }
+            if (!ModelState.IsValid) { return new BadRequestResult(); }
             var token = Guid.NewGuid().ToString("N");
             var appUser = new AzureUser(newUser.Email, newUser.Password)
             {
                 Cognome = newUser.Cognome,
                 Nome = newUser.Nome,
-                TelephoneNumber = newUser.Telefono,        
+                TelephoneNumber = newUser.Telefono,
                 Refereer = idStrutturaAffiliata?.ToString()
             };
 
@@ -153,10 +147,10 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (string.IsNullOrWhiteSpace(User.UserId()) || !User.UserId().Equals(userId))
             {
                 return Forbid();
-            }            
+            }
             var result = new List<ClienteFollowedApiModel>();
             var clienti = await _repositoryUtenti.GetGlientiFollowedAsync(userId);
-            for(int idx = 0; clienti != null &&  idx < clienti.Count; idx++)
+            for (int idx = 0; clienti != null && idx < clienti.Count; idx++)
             {
                 result.Add(new ClienteFollowedApiModel()
                 {

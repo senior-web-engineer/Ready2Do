@@ -35,8 +35,8 @@ namespace Web.Models
 
         public string EventsBaseUrl { get; set; }
 
-        public float Latitude { get; set; }
-        public float Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
         public string DataMinima { get; set; }
         public string DataMassima { get; set; }

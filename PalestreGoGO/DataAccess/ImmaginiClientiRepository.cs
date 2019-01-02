@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ready2do.model.common;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,10 @@ namespace PalestreGoGo.DataAccess
 {
     public class ImmaginiClientiRepository : BaseRepository, IImmaginiClientiRepository
     {
-        public ImmaginiClientiRepository(IConfiguration configuration) : base(configuration)
+        private readonly ILogger<ImmaginiClientiRepository> _logger;
+        public ImmaginiClientiRepository(IConfiguration configuration, ILogger<ImmaginiClientiRepository> logger) : base(configuration)
         {
-
+            _logger = logger;
         }
         #region PRIVATE STAFF
 
@@ -191,11 +193,12 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<ImmagineClienteDM>> GetImages(int idCliente, TipoImmagineDM? tipo = null, bool includeDeleted = false)
         {
+            _logger.LogDebug($"Begin GetImages(idCliente:{idCliente}, tipo:{tipo}, includeDeleted:{includeDeleted})");
             List<ImmagineClienteDM> result = new List<ImmagineClienteDM>();
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
-                cmd.CommandText = "[dbo].[ImmaginiCliente_List]";
+                cmd.CommandText = "[dbo].[ImmaginiCliente_Lista]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pIdTipoImmagine", SqlDbType.Int).Value = tipo;
@@ -214,6 +217,7 @@ namespace PalestreGoGo.DataAccess
                     }
                 }
             }
+            _logger.LogDebug($"End GetImages(idCliente:{idCliente}, tipo:{tipo}, includeDeleted:{includeDeleted}). Num. Items Returned: {result?.Count ?? 0}");
             return result;
         }
     }
