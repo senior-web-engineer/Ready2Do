@@ -104,7 +104,7 @@ namespace Web.Controllers
             {
 
                 /* Creiamo il l'utenza*/
-                var apiModel = new NuovoClienteViewModel()
+                var apiModel = new NuovoClienteAPIModel()
                 {
                     Citta = model.Citta,
                     ZipOrPostalCode = model.CAP,

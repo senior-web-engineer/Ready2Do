@@ -119,7 +119,7 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task<IEnumerable<ScheduleDM>> SchedulesLookupAsync(List<int> idSchedules, bool includeDeleted = false)
+        public async Task<IEnumerable<ScheduleDM>> SchedulesLookupAsync(IEnumerable<int> idSchedules, bool includeDeleted = false)
         {
             List<ScheduleDM> result = new List<ScheduleDM>();
             DataTable dt = new DataTable();

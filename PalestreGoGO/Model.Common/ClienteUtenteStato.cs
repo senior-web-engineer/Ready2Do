@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PalestreGoGo.DataModel
+namespace ready2do.model.common
 {
     /// <summary>
     /// Non tutte le combinazioni di stati sono valide, 
-    /// la coerenza è demndata al codice applicativo
+    /// la coerenza è demandata al codice applicativo
     /// </summary>
     [Flags]
     public enum ClienteUtenteStato: int

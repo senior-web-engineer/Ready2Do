@@ -1,9 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
-using Moq;
-using PalestreGoGo.WebAPI.ViewModel.Mappers;
-using System;
-using System.Security.Claims;
+﻿using System;
 using Xunit.Abstractions;
 
 namespace Tests.WebAPI
@@ -22,7 +17,7 @@ namespace Tests.WebAPI
                 Mapper.Initialize(x =>
                 {
                     x.AddProfile<DomainToViewModelMappingProfile>();
-                    x.AddProfile<DMToApiModelProfile>();
+                    //x.AddProfile<DMToApiModelProfile>();
                 });
             }
         }

@@ -21,11 +21,11 @@ namespace Web.Utils
         /// <param name="secuirtyToken"></param>
         /// <param name="storageContainer"></param>
         /// <returns></returns>
-        public static string GenerateSASAuthenticationToken(string secuirtyToken, string storageContainer, string encryptKey)
+        public static string GenerateSASAuthenticationToken(int idCliente, string storageContainer, string encryptKey)
         {
             var token = new SASTokenModel()
             {
-                SecurityToken = secuirtyToken,
+                IdCliente = idCliente,
                 ContainerName = storageContainer,
                 CreationTime = DateTime.Now
             };

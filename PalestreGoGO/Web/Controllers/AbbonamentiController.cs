@@ -143,7 +143,7 @@ namespace Web.Controllers
 
 
         [HttpPost("{cliente}/abbonamenti/tipologie")]
-        public async Task<IActionResult> TipoAbbonamentoSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.TipologiaAbbonamentoViewModel tipoAbbonamento)
+        public async Task<IActionResult> TipoAbbonamentoSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] TipologiaAbbonamentoViewModel tipoAbbonamento)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale

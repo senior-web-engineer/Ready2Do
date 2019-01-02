@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ready2do.model.common;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -89,24 +90,27 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(idCliente);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return Redirect("/"); }
-            var vm = cliente.MapToHomeViewModel();
-            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.IdCliente))?.ToList();
+            //Leggiamo le immagini per il cliente
+            var imgHome = (await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Sfondo, null)).FirstOrDefault();
+            var imgsGallery = await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Gallery, null);
+            var vm = cliente.MapToHomeViewModel(imgHome, imgsGallery);
+            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.Id.Value))?.ToList();
             vm.EventsBaseUrl = string.Format("/{0}/eventi/", cliente.UrlRoute);
-            vm.GoogleStaticMapUrl = GoogleAPIUtils.GetStaticMapUrl(cliente.Nome, cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine, _appConfig.GoogleAPI.GoogleMapsAPIKey);
-            vm.ExternalGoogleMapUrl = GoogleAPIUtils.GetExternalMapUrl(cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine);
-            //vm.GoogleStaticMapUrl = this.BuildMapUrlForCliente(cliente);
-            //ViewData["ReturnUrl"] = Request.Path.ToString();
-            //ViewData["Sale"] = locations;
-            ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(cliente.UrlRoute, cliente.IdCliente, _appConfig.EncryptKey);
-            //ViewData["ClienteRoute"] = urlRoute;
-            //ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
-            ViewData["IdCliente"] = cliente.IdCliente;
-            //ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
-            vm.Latitude = cliente.Indirizzo.Coordinate.Latitudine;
-            vm.Longitude = cliente.Indirizzo.Coordinate.Longitudine;
+            if (cliente.Latitudine.HasValue && cliente.Longitudine.HasValue)
+            {
+                vm.Latitude = cliente.Latitudine.Value;
+                vm.Longitude = cliente.Longitudine.Value;
+                vm.GoogleStaticMapUrl = GoogleAPIUtils.GetStaticMapUrl(cliente.Nome, cliente.Latitudine.Value, cliente.Longitudine.Value, _appConfig.GoogleAPI.GoogleMapsAPIKey);
+                vm.ExternalGoogleMapUrl = GoogleAPIUtils.GetExternalMapUrl(cliente.Latitudine.Value, cliente.Longitudine.Value);
+            }
+            else
+            {
+                //TODO: Gestire il caso in cui non siano presenti le coordinate
+            }
+            ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(cliente.UrlRoute, cliente.Id.Value, _appConfig.EncryptKey);
+            ViewData["IdCliente"] = cliente.Id;
             vm.DataMinima = DateTime.Now.ToString("yyyy-MM-dd");
             vm.DataMassima = DateTime.Now.AddMonths(2).ToString("yyyy-MM-dd");
-           
             return View(vm);
         }
 
@@ -120,33 +124,27 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return Redirect("/"); }
-            var vm = cliente.MapToHomeViewModel();
-            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.IdCliente))?.ToList();
+            //Leggiamo le immagini per il cliente
+            var imgHome = (await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Sfondo, null)).FirstOrDefault();
+            var imgsGallery = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery, null);
+            var vm = cliente.MapToHomeViewModel(imgHome, imgsGallery);
+            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.Id.Value))?.ToList();
             vm.EventsBaseUrl = string.Format("/{0}/eventi/", urlRoute);
-            vm.GoogleStaticMapUrl = GoogleAPIUtils.GetStaticMapUrl(cliente.Nome, cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine, _appConfig.GoogleAPI.GoogleMapsAPIKey);
-            vm.ExternalGoogleMapUrl = GoogleAPIUtils.GetExternalMapUrl(cliente.Indirizzo.Coordinate.Latitudine, cliente.Indirizzo.Coordinate.Longitudine);
-            //vm.GoogleStaticMapUrl = this.BuildMapUrlForCliente(cliente);
-            //ViewData["ReturnUrl"] = Request.Path.ToString();
-            //ViewData["Sale"] = locations;
-            ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(urlRoute, cliente.IdCliente, _appConfig.EncryptKey);
-            //ViewData["ClienteRoute"] = urlRoute;
-            //ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
-            ViewData["IdCliente"] = cliente.IdCliente;
-            //ViewBag.UtenteNormale = User.GetUserTypeForCliente(cliente.IdCliente) == UserType.NormalUser;
-            vm.Latitude = cliente.Indirizzo.Coordinate.Latitudine;
-            vm.Longitude = cliente.Indirizzo.Coordinate.Longitudine;
+            if (cliente.Latitudine.HasValue && cliente.Longitudine.HasValue)
+            {
+                vm.Latitude = cliente.Latitudine.Value;
+                vm.Longitude = cliente.Longitudine.Value;
+                vm.GoogleStaticMapUrl = GoogleAPIUtils.GetStaticMapUrl(cliente.Nome, cliente.Latitudine.Value, cliente.Longitudine.Value, _appConfig.GoogleAPI.GoogleMapsAPIKey);
+                vm.ExternalGoogleMapUrl = GoogleAPIUtils.GetExternalMapUrl(cliente.Latitudine.Value, cliente.Longitudine.Value);
+            }
+            else
+            {
+                //TODO: Gestire il caso in cui non siano presenti le coordinate
+            }
+            ViewData["AuthToken"] = SecurityUtils.GenerateAuthenticationToken(urlRoute, cliente.Id.Value, _appConfig.EncryptKey);
+            ViewData["IdCliente"] = cliente.Id;
             vm.DataMinima = DateTime.Now.ToString("yyyy-MM-dd");
             vm.DataMassima = DateTime.Now.AddMonths(2).ToString("yyyy-MM-dd");
-            //ViewBag.IsFollowing = false;
-            //if (ViewBag.UtenteNormale)
-            //{
-            //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-            //    var follwed = await _apiClient.ClientiFollowedByUserAsync(User.UserId().Value, accessToken);
-            //    if (follwed.Any(f => f.IdCliente.Equals(cliente.IdCliente))){
-            //        ViewBag.IsFollowing = true;
-            //    }
-            //}
-            //ViewData["UserRole"] = User.GetUserRoleForCliente(cliente.IdCliente);
             return View(vm);
         }
 
@@ -155,25 +153,19 @@ namespace Web.Controllers
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-            if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin()) { return Forbid(); }
-            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
-            ViewData["IdCliente"] = cliente.IdCliente;
+            if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin()) { return Forbid(); }
+            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.Id.Value, cliente.StorageContainer, _appConfig.EncryptKey);
+            ViewData["IdCliente"] = cliente.Id.Value;
             var vm = new GalleryEditViewModel();
             vm.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                                 _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                                 cliente.StorageContainer);
-            if (cliente.Immagini != null)
+            var immagini = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
+            if (immagini != null)
             {
-                foreach (var img in cliente.Immagini)
+                foreach (var img in immagini)
                 {
-                    vm.Images.Add(new ImageViewModel()
-                    {
-                        Id = img.Id,
-                        Alt = img.Alt,
-                        Caption = img.Nome,
-                        Url = img.Url,
-                        Ordinamento = img.Ordinamento
-                    });
+                    vm.Images.Add(img);
                 }
             }
             return View("Gallery", vm);
@@ -190,8 +182,19 @@ namespace Web.Controllers
                 return Forbid();
             }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var urlImage = await _apiClient.DeleteImmagineGalleryAsync(idCliente, imageId, accessToken);
-            await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, urlImage);
+            var imgDeleted = await _apiClient.DeleteImmagineGalleryAsync(idCliente, imageId, accessToken);
+            //Cancelliamo i files da Azure
+            if (imgDeleted != null)
+            {
+                if (!string.IsNullOrEmpty(imgDeleted.Url) && (imgDeleted.Url.Contains(_appConfig.Azure.Storage.BlobStorageBaseUrl)))
+                {
+                    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, imgDeleted.Url);
+                }
+                if (!string.IsNullOrEmpty(imgDeleted.ThumbnailUrl) && (imgDeleted.ThumbnailUrl.Contains(_appConfig.Azure.Storage.BlobStorageBaseUrl)))
+                {
+                    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, imgDeleted.ThumbnailUrl);
+                }
+            }
             return await GalleryEdit(urlRoute);
         }
 

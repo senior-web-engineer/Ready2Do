@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Web.Services;
 using System.Net;
 using Web.Models.Mappers;
+using ready2do.model.common;
 
 namespace Web.Controllers
 {
@@ -56,13 +57,17 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return RedirectToAction("Index", "Home"); }
-            ViewData["IdCliente"] = cliente.IdCliente;
-            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
+            ViewData["IdCliente"] = cliente.Id;
+            //ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
             ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                     _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                    cliente.StorageContainer);
-
-            ClienteHeaderViewModel vm = cliente.MapToClienteHeaderVM();
+            var immagine = (await _apiClient.GetImmaginiClienteAsync(idCliente: cliente.Id.Value, tipoImmagini: TipoImmagineDM.Sfondo)).Single();
+            ClienteHeaderViewModel vm = new ClienteHeaderViewModel()
+            {
+                IdCliente = cliente.Id.Value,
+                ImmagineHome = immagine
+            };
             return View("BannerEdit", vm);
         }
 
@@ -72,14 +77,14 @@ namespace Web.Controllers
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (string.IsNullOrWhiteSpace(accessToken)) return Forbid();
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            //Se non troviamo il cliente redirect alla home
-            if (cliente == null) { return RedirectToAction("Index", "Home"); }
-            ViewData["IdCliente"] = cliente.IdCliente;
-
-            var image = cliente.ImmagineHome ?? new ImmagineViewModel() { Nome = "Image Header" };
-            image.Url = model.UrlImmagineHome;
-            await _apiClient.ClienteSalvaBanner(cliente.IdCliente, image, accessToken);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            ViewData["IdCliente"] = idCliente;
+            var image = new ImmagineClienteInputDM()
+            {
+                Url = model.UrlImmagineHome,
+                Nome = "Image Header"
+            };
+            await _apiClient.ClienteSalvaBanner(idCliente, image, accessToken);
             return RedirectToAction("GetBanner");
         }
         #endregion
@@ -93,7 +98,7 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return RedirectToAction("Index", "Home"); }
-            ViewData["IdCliente"] = cliente.IdCliente;
+            ViewData["IdCliente"] = cliente.Id.Value;
             ViewData["GoogleMapsAPIUrl"] = GoogleAPIUtils.GetGoogleMapsAPIUrl(_appConfig.GoogleAPI.GoogleMapsAPIKey);
             //ViewData["UrlGoolePlaces"] = GoogleAPIUtils.GetGooglePlacesAPIUrl(_appConfig.GoogleAPI.GoogleMapsAPIKey);
 
@@ -137,7 +142,7 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return RedirectToAction("Index", "Home"); }
-            ViewData["IdCliente"] = cliente.IdCliente;
+            ViewData["IdCliente"] = cliente.Id;
             ViewData["GoogleMapsAPIUrl"] = GoogleAPIUtils.GetGoogleMapsAPIUrl(_appConfig.GoogleAPI.GoogleMapsAPIKey);
             var vm = cliente.OrarioApertura != null ? cliente.OrarioApertura.MapOrarioApertura() : new Models.OrarioAperturaViewModel();
             return View("OrariApertura", vm);

@@ -66,7 +66,7 @@ namespace Web.Controllers.Clienti
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             ViewData["IdCliente"] = idCliente;
             ViewData["TabId"] = tabId;
-            ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            var utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             var vm = utente.MapToClienteUtenteViewModel();
             var tAbb = _apiClient.GetAbbonamentiForUserAsync(idCliente, userId, accessToken, true);
@@ -149,7 +149,7 @@ namespace Web.Controllers.Clienti
             //      oppure se la scelta del tipo avviene nella view
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
@@ -186,7 +186,7 @@ namespace Web.Controllers.Clienti
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            ClienteUtenteApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
@@ -208,7 +208,7 @@ namespace Web.Controllers.Clienti
                 return View("EditAbbonamento", new AbbonamentoUtenteViewModel(model));
             }
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
-            await _apiClient.EditAbbonamentoClienteAsync(idCliente, model.MapToAPIModel(), accessToken);
+            await _apiClient.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel(), accessToken);
             return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 0 });
         }
         #endregion

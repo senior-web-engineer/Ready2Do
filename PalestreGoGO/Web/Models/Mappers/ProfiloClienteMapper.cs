@@ -1,4 +1,5 @@
 ﻿using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,25 +10,25 @@ namespace Web.Models.Mappers
 {
     public static class ProfiloClienteMapper
     {
-        public static AnagraficaClienteViewModel ToAnagraficaClienteViewModel(this ClienteWithImagesViewModel cliente)
+        public static AnagraficaClienteViewModel ToAnagraficaClienteViewModel(this ClienteDM cliente)
         {
-            if(cliente == null) { return null; }
+            if (cliente == null) { return null; }
             return new AnagraficaClienteViewModel()
             {
-                CAP = cliente.Indirizzo?.PostalCode,
-                Indirizzo = cliente.Indirizzo?.Indirizzo,
-                Citta = cliente.Indirizzo?.Citta,
-                Country = cliente.Indirizzo?.Country,
-                Latitudine = cliente.Indirizzo?.Coordinate?.Latitudine.ToString(CultureInfo.InvariantCulture),
-                Longitudine = cliente.Indirizzo?.Coordinate?.Longitudine.ToString(CultureInfo.InvariantCulture),
+                CAP = cliente.ZipOrPostalCode,
+                Indirizzo = cliente.Indirizzo,
+                Citta = cliente.Citta,
+                Country = cliente.Country,
+                Latitudine = cliente.Latitudine?.ToString(CultureInfo.InvariantCulture),
+                Longitudine = cliente.Indirizzo?.ToString(CultureInfo.InvariantCulture),
                 Descrizione = cliente.Descrizione,
                 Email = cliente.Email,
                 EsitoLookup = (short)(cliente.Indirizzo != null ? 1 : 0),
-                IdCliente = cliente.IdCliente,
+                IdCliente = cliente.Id.Value,
                 Nome = cliente.Nome,
                 NumTelefono = cliente.NumTelefono,
                 RagioneSociale = cliente.RagioneSociale,
-                UrlRoute = cliente.UrlRoute
+                UrlRoute = cliente.UrlRoute,                
             };
         }
 

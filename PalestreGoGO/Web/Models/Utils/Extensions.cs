@@ -2,29 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ready2do.model.common;
 
 namespace Web.Models.Utils
 {
     public static class Extensions
     {
-        public static void GetMinMax(this GiornoViewModel giorno, out TimeSpan? min, out TimeSpan? max)
+        public static void GetMinMax(this GiornoAperturaDM  giorno, out TimeSpan? min, out TimeSpan? max)
         {
             min = max = null;
-            if ((giorno == null) || (giorno.TipoOrario == TipoOrarioViewModel.Chiuso)) return;
+            if ((giorno == null) || (giorno.TipoOrario == TipoOrarioAperturaDM.Chiuso)) return;
             switch (giorno.TipoOrario)
             {
-                case TipoOrarioViewModel.Continuato:
-                case TipoOrarioViewModel.Spezzato:
-                    min = TimeSpan.Parse(giorno.Mattina.Inizio);
-                    max = TimeSpan.Parse(giorno.Pomeriggio.Fine);
+                case TipoOrarioAperturaDM.Continuato:
+                case TipoOrarioAperturaDM.Spezzato:
+                    min = giorno.Mattina.Inizio.Value;
+                    max = giorno.Pomeriggio.Fine.Value;
                     break;
-                case TipoOrarioViewModel.Mattina:
-                    min = TimeSpan.Parse(giorno.Mattina.Inizio);
-                    max = TimeSpan.Parse(giorno.Mattina.Fine);
+                case TipoOrarioAperturaDM.Mattina:
+                    min = giorno.Mattina.Inizio;
+                    max = giorno.Mattina.Fine;
                     break;
-                case TipoOrarioViewModel.Pomeriggio:
-                    min = TimeSpan.Parse(giorno.Pomeriggio.Inizio);
-                    max = TimeSpan.Parse(giorno.Pomeriggio.Fine);
+                case TipoOrarioAperturaDM.Pomeriggio:
+                    min = giorno.Pomeriggio.Inizio;
+                    max = giorno.Pomeriggio.Fine;
                     break;
             }
         }

@@ -12,6 +12,7 @@ namespace PalestreGoGo.WebAPI.Services
     public class ClientiProvisioner : IClientiProvisioner
     {
         private readonly IClientiRepository _repositoryClienti;
+        private readonly IImmaginiClientiRepository _repositoryImmagini;
         private readonly ILogger<ClientiProvisioner> _logger;
         private readonly IConfiguration _config;
 
@@ -23,10 +24,12 @@ namespace PalestreGoGo.WebAPI.Services
         /// <param name="logger"></param>
         public ClientiProvisioner(IConfiguration config,
                                   IClientiRepository repositoryClienti, 
+                                  IImmaginiClientiRepository repositoryImmagini,
                                   ILogger<ClientiProvisioner> logger)
         {
             _config = config;
             _repositoryClienti = repositoryClienti;
+            _repositoryImmagini = repositoryImmagini;
             _logger = logger;
         }
 
@@ -47,7 +50,7 @@ namespace PalestreGoGo.WebAPI.Services
                 Nome = "Default Hero Image",
                 IdCliente = idCliente
             };
-            await _repositoryClienti.AddImagesAsync(idCliente, new ImmagineClienteDM[] { defaultHeroImage });
+            await _repositoryImmagini.AddImageAsync(idCliente, defaultHeroImage );
             //TODO: Aggiungere eventuali steps per il provisioning
 
             await _repositoryClienti.ConfermaProvisioningAsync(idCliente);

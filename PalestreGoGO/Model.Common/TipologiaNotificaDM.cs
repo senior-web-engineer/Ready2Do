@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace PalestreGoGo.DataModel
+namespace ready2do.model.common
 {
-    public class TipologiaNotifica
+    public class TipologiaNotificaDM
     {
         public int Id { get; set; }
         [MaxLength(50)]

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace PalestreGoGo.DataModel
+namespace ready2do.model.common
 {
     public class NotificaDM
     {

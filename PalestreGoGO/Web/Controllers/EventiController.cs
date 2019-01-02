@@ -1,21 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using PalestreGoGo.WebAPIModel;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Web.Utils;
+using Web.Configuration;
 using Web.Models;
 using Web.Services;
-using Web.Configuration;
-using System.Globalization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Web.Utils;
 
 namespace Web.Controllers
 {
@@ -88,7 +89,7 @@ namespace Web.Controllers
                 return View("EditEvento", evento);
             }
 
-            if((evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue) ||
+            if ((evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue) ||
                 (evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue))
             {
                 ModelState.AddModelError("DataOraCancellazione", "E' necessario specificare sia la Data che l'Ora limite per la Cancellazione dell'evento");
@@ -99,15 +100,15 @@ namespace Web.Controllers
             {
                 var dtCanc = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value);
                 var dtEvento = evento.Data.Value.Add(evento.OraInizio.Value);
-                if(dtEvento < dtCanc)
+                if (dtEvento < dtCanc)
                 {
                     ModelState.AddModelError("DataOraCancellazioneTooLate", "La Data limite per la Cancellazione dell'evento deve essere anteriore alla data dell'evento stesso.");
                     return View("EditEvento", evento);
                 }
             }
 
-                //TODO: Verificare che la data cancellazione sia antecedente la data evento e le eventuali
-                ScheduleApiModel apiVM = new ScheduleApiModel()
+            //TODO: Verificare che la data cancellazione sia antecedente la data evento e le eventuali
+            ScheduleDM apiVM = new ScheduleDM()
             {
                 CancellabileFinoAl = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value),
                 DataOraInizio = (evento.Data.Value).Add(evento.OraInizio.Value),
@@ -116,7 +117,7 @@ namespace Web.Controllers
                 IdLocation = evento.IdLocation.Value,
                 Istruttore = evento.Istruttore,
                 Note = evento.Note,
-             //   OraInizio = evento.OraInizio.Value,
+                //   OraInizio = evento.OraInizio.Value,
                 PostiDisponibili = evento.PostiDisponibili,
                 IdTipoLezione = evento.IdTipoLezione.Value,
                 Id = evento.Id
@@ -164,9 +165,9 @@ namespace Web.Controllers
             ViewBag.IdCliente = idCliente;
             ViewBag.Cliente = urlRoute;
             ViewBag.IdEvento = idEvento;
-            var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf=>cf.IdCliente.Equals(idCliente));
+            var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf => cf.IdCliente.Equals(idCliente));
             ViewBag.ClienteFollowed = followInfo != null;
-            ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;                   
+            ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;
             var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
             return View("Appuntamento", appuntamento);
         }
@@ -187,10 +188,10 @@ namespace Web.Controllers
 
 
         [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/delete")]
-        public async Task<IActionResult> DeleteAppuntamento([FromRoute(Name = "cliente")] string urlRoute, 
-                                                            [FromRoute(Name = "idEvento")]int idEvento, 
+        public async Task<IActionResult> DeleteAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
+                                                            [FromRoute(Name = "idEvento")]int idEvento,
                                                             [FromRoute(Name = "idAppuntamento")]int idAppuntamento,
-                                                            [FromQuery(Name ="returnUrl")] string returnUrl)
+                                                            [FromQuery(Name = "returnUrl")] string returnUrl)
         {
             //NOTA: idEvento non utilizzato
             if (string.IsNullOrWhiteSpace(returnUrl)) { return BadRequest(); }
@@ -204,12 +205,12 @@ namespace Web.Controllers
         }
 
 
-        private ScheduleViewModel internalBuildViewModel(ScheduleDetailedApiModel apiModel)
+        private ScheduleViewModel internalBuildViewModel(ScheduleDM apiModel)
         {
             ScheduleViewModel vm = new ScheduleViewModel()
             {
-                DataCancellazioneMax = apiModel.CancellabileFinoAl.Date,
-                OraCancellazioneMax = apiModel.CancellabileFinoAl.TimeOfDay,
+                DataCancellazioneMax = apiModel.CancellabileFinoAl?.Date,
+                OraCancellazioneMax = apiModel.CancellabileFinoAl?.TimeOfDay,
                 Title = apiModel.Title,
                 Data = apiModel.DataOraInizio.Date,
                 IdLocation = apiModel.IdLocation,
@@ -219,8 +220,8 @@ namespace Web.Controllers
                 OraInizio = apiModel.DataOraInizio.TimeOfDay,
                 PostiDisponibili = apiModel.PostiDisponibili,
                 Id = apiModel.Id,
-                DataChiusuraIscrizioni = apiModel.DataOraChiusuraIscrizioni.Date,
-                OraChiusuraIscrizioni = apiModel.DataOraChiusuraIscrizioni.TimeOfDay
+                DataChiusuraIscrizioni = apiModel.DataChiusuraIscrizione?.Date,
+                OraChiusuraIscrizioni = apiModel.DataChiusuraIscrizione?.TimeOfDay
             };
             return vm;
         }

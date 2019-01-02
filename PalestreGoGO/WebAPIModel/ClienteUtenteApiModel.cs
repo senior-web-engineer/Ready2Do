@@ -1,11 +1,16 @@
-﻿using System;
+﻿using ready2do.model.common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
-    public class ClienteUtenteApiModel
+    /// <summary>
+    /// Versione di un UtenteCliente con i dati proveniente da B2C
+    /// integrati con i dati presenti a Sistema (Es: DataAssociazione, Stato, ecc.)
+    /// </summary>
+    public class ClienteUtenteDetailsApiModel
     {
         public int IdCliente { get; set; }
         public string IdUtente { get; set; }
@@ -17,7 +22,7 @@ namespace PalestreGoGo.WebAPIModel
         public DateTime UtlimoAggiornamento { get; set; }
         public DateTime DataAssociazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
-        public ClienteUtenteStatoApiModel Stato { get; set; }
+        public ClienteUtenteStato Stato { get; set; }
         
     }
 }

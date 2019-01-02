@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using FluentValidation.AspNetCore;
+﻿using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
-using PalestreGoGo.WebAPI.ViewModel.Mappers;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
@@ -94,12 +90,7 @@ namespace PalestreGoGo.WebAPI
                     //Disabilitiamo il validator di default
                     fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
                 });
-
-            Mapper.Initialize(x =>
-            {
-                x.AddProfile<DomainToViewModelMappingProfile>();
-            });
-
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });

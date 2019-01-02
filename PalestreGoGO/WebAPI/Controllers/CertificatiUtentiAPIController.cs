@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
-using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
@@ -30,13 +26,12 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCertificati([FromRoute]int idCliente, [FromRoute]string userId,
+        public async Task<ActionResult<IEnumerable<UtenteClienteCertificatoDM>>> GetCertificati([FromRoute]int idCliente, [FromRoute]string userId,
                                                         [FromQuery(Name ="expired")]bool includeExpired = true, 
                                                         [FromQuery(Name="deleted")]bool includeDeleted = false)
         {
             if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            var certificati = await _repository.GetCertificatiUtente(idCliente, userId, includeExpired, includeDeleted);
-            var result = Mapper.Map<IEnumerable<UtenteClienteCertificatoDM>, IEnumerable<ClienteUtenteApiModel>>(certificati);
+            var result = await _repository.GetCertificatiUtente(idCliente, userId, includeExpired, includeDeleted);
             return Ok(result);
         }
     }

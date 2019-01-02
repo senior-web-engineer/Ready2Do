@@ -12,7 +12,9 @@ namespace PalestreGoGo.WebAPI.Services
     public interface IUsersManagementService
     {
         Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser);
+
         Task AggiungiStrutturaGestitaAsync(AzureUser user, int idCliente);
+
         Task<AzureUser> GetUserByIdAsync(string id);
 
 
@@ -20,7 +22,7 @@ namespace PalestreGoGo.WebAPI.Services
 
         Task<UserConfirmationResultAPIModel> ConfirmUserEmailAsync(string username, string code);
 
-  //      Task<AzureUser> GetUserByMailAsync(string email);
+        Task<AzureUser> GetUserByMailAsync(string email);
 
         //Task<LocalAccountUser> GetUserByUsernameAsync(string username);
 

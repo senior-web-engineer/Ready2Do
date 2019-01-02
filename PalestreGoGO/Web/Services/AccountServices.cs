@@ -25,7 +25,7 @@ namespace Web.Services
         }
         public async Task<ClientRegistrationViewModel> BuildRegisterClienteViewModelAsync(string returnUrl)
         {
-            var allTipologie = await _apiClient.GetTipologiClientiAsync();
+            var allTipologie = await _apiClient.GetTipologieClientiAsync();
             var vm = new ClientRegistrationViewModel()
             {
                 ReturnUrl = returnUrl,

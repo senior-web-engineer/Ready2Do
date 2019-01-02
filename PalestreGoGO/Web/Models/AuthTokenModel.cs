@@ -20,8 +20,8 @@ namespace Web.Models
 
     public class SASTokenModel
     {
-        [JsonProperty(PropertyName ="st")]
-        public string SecurityToken { get; set; }
+        [JsonProperty(PropertyName ="id")]
+        public int IdCliente { get; set; }
 
         [JsonProperty(PropertyName = "ct")]
         public DateTime CreationTime { get; set; }

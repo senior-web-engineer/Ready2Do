@@ -41,37 +41,37 @@
     <h2 class="r2d-section-title">Gestione galleria immagine </h2>
     <input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />
 
-        @{Dictionary<string, string> parms;}
+    @{Dictionary<string, string> parms;}
 
-        @for (int row = 0; row < 3; row++)
-        {
-            <div class="row">
-                <div class="col l2 hide-on-med-and-down"></div>
-                @for (int col = 1; col <= 3; col++)
-                {
-                    int idx = col + (row * 3);
-                    parms = new Dictionary<string, string> { { "imageOrder", idx.ToString() } };
-                    <div class="col s4 l3">
-                        @{
-                            var imgCurrent = Model.Images.SingleOrDefault(i => i.Ordinamento == idx);
-                            <div class="gallery_item_container">
-                                <div class="thumb_container">
-                                    <span class="valign_helper">
-                                        <img id='@string.Format("galleryImg-{0}",idx)' class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx)" alt="Immagine @(@idx)" />
-                                        <span class="r2g-img-subtitle">Immagine @idx</span>
-                                    </span>
-                                </div>
-                                @if (imgCurrent != null)
-                                {
-                                    <a class="inline" onclick="deleteImage(@imgCurrent.Id)">Elimina</a>
-                                }
+    @for (int row = 0; row < 3; row++)
+    {
+        <div class="row">
+            <div class="col l2 hide-on-med-and-down"></div>
+            @for (int col = 1; col <= 3; col++)
+            {
+                int idx = col + (row * 3);
+                parms = new Dictionary<string, string> { { "imageOrder", idx.ToString() } };
+                <div class="col s4 l3">
+                    @{
+                        var imgCurrent = Model.Images.SingleOrDefault(i => i.Ordinamento == idx);
+                        <div class="gallery_item_container">
+                            <div class="thumb_container">
+                                <span class="valign_helper">
+                                    <img id='@string.Format("galleryImg-{0}",idx)' class="thumb_image" src='@(imgCurrent?.Url ?? "/img/no-image-available.png")' onclick="choseImage(this, @idx, @(imgCurrent?.Id ??-1))" alt="Immagine @(@idx)" />
+                                    <span class="r2g-img-subtitle">Immagine @idx</span>
+                                </span>
                             </div>
-                        }
-                        <div class="col l1 hide-on-med-and-down"></div>
-                    </div>
-                }
-            </div>
-        }
+                            @if (imgCurrent != null)
+                            {
+                                <a class="inline" onclick="deleteImage(@imgCurrent.Id)">Elimina</a>
+                            }
+                        </div>
+                    }
+                    <div class="col l1 hide-on-med-and-down"></div>
+                </div>
+            }
+        </div>
+    }
     </div>
 </section>
 
@@ -112,6 +112,7 @@
         var modal;
         var btnFileSelect;
         var currentFileIdx; //Indice dell'immagine attualmente in upload
+        var currentImageId;
         document.addEventListener("DOMContentLoaded", function (event) {
            //Init Uploader
             uploader = new qq.azure.FineUploaderBasic({
@@ -160,9 +161,10 @@
             btnFileSelect = document.getElementById('fileSelect');
         });
 
-        function choseImage(e, imageOrder) {
+        function choseImage(e, imageOrder, imgId) {
             var selectedFile;
             currentFileIdx = imageOrder;
+            currentImageId = imgId;
             if (btnFileSelect) {
                 btnFileSelect.click()
             }
@@ -173,7 +175,7 @@
             if (files) {
                 $("#spinner").show();
                 uploader.reset();
-                uploader.addFiles(files[0], { fileOrder: currentFileIdx, idCliente: @(ViewBag.IdCliente) });
+                uploader.addFiles(files[0], { fileOrder: currentFileIdx, idCliente: @(ViewBag.IdCliente), imageId = currentImageId });
             }
         }
 

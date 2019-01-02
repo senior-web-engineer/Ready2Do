@@ -14,10 +14,10 @@ namespace Web.Models.Mappers
             return new AppuntamentoUtenteViewModel()
             {
                 Cancellabile = (apiModel.Schedule.CancellabileFinoAl > DateTime.Now),
-                DataCancellazione = apiModel.DataCancellazione,
+                DataCancellazione = apiModel.Appuntamento.DataCancellazione,
                 DataOra = apiModel.Schedule.DataOraInizio,
-                DataOraIscrizione = apiModel.DataPrenotazione,
-                Id = apiModel.IdAppuntamento,
+                DataOraIscrizione = apiModel.Appuntamento.DataCreazione,
+                Id = apiModel.Appuntamento.Id.Value,
                 IdEvento = apiModel.Schedule.Id.Value,
                 Nome = apiModel.Schedule.Title                
             };

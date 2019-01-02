@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ready2do.model.common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Web.Models
     {
         public ClienteHomeViewModel()
         {
-            Images = new List<ImageViewModel>();
+            Images = new List<ImmagineClienteDM>();
         }
 
         public int IdCliente { get; set; }
@@ -23,11 +24,11 @@ namespace Web.Models
 
         public OrarioAperturaViewModel OrarioApertura { get; set; }
 
-        public ImageViewModel ImmagineHome { get; set; }
+        public ImmagineClienteDM ImmagineHome { get; set; }
 
-        public List<ImageViewModel> Images { get; set; }
+        public List<ImmagineClienteDM> Images { get; set; }
 
-        public List<LocationViewModel> Locations { get; set; }
+        public List<LocationDM> Locations { get; set; }
 
         public string GoogleStaticMapUrl { get; set; }
         public string ExternalGoogleMapUrl { get; set; }

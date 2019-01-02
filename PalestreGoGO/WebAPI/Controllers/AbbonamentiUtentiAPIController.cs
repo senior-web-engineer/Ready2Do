@@ -1,14 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
-using PalestreGoGo.DataModel;
 using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.Utils;
-using PalestreGoGo.WebAPI.ViewModel;
-using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
 using System;
 using System.Collections.Generic;

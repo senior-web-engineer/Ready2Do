@@ -61,20 +61,30 @@ namespace Web.Utils
             }
             try
             {
-                using (var content = new PushStreamContent((stream, httpContent, transportContext) =>
-                            {
-                                using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024))
-                                {
-                                    using (var jsonWriter = new JsonTextWriter(writer) { Formatting = Formatting.None })
-                                    {
-                                        var serializer = new JsonSerializer();
-                                        serializer.Serialize(writer, model);
-                                    }
-                                }
-                            }, new MediaTypeHeaderValue("application/json")))
+                if (model != null)
                 {
-                    //Usiamo uno stream per serializzare ed inviare i dati
-                    request.Content = content;
+                    using (var content = new PushStreamContent((stream, httpContent, transportContext) =>
+                                {
+                                    using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024))
+                                    {
+                                        using (var jsonWriter = new JsonTextWriter(writer) { Formatting = Formatting.None })
+                                        {
+                                            var serializer = new JsonSerializer();
+                                            serializer.Serialize(writer, model);
+                                        }
+                                    }
+                                }, new MediaTypeHeaderValue("application/json")))
+                    {
+                        //Usiamo uno stream per serializzare ed inviare i dati
+                        request.Content = content;
+                        var response = await sClient.SendAsync(request);
+                        response.EnsureSuccessStatusCode();
+                        return response;
+                    }
+                }
+                else
+                {
+                    request.Content = new StringContent(""); //Empty content
                     var response = await sClient.SendAsync(request);
                     response.EnsureSuccessStatusCode();
                     return response;
@@ -234,15 +244,16 @@ namespace Web.Utils
             }
         }
 
-
-        public async Task ClienteSalvaOrarioApertura(int idCliente, OrarioAperturaViewModel orario, string access_token)
+        public async Task<IEnumerable<ImmagineClienteDM>> GetImmaginiClienteAsync(int idCliente, TipoImmagineDM tipoImmagini, string access_token = null)
         {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Content = new StringContent(JsonConvert.SerializeObject(orario), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images?tipo={tipoImmagini}");
+            return await GetRequestAsync<IEnumerable<ImmagineClienteDM>>(uri, access_token);
+        }
+
+
+        public async Task ClienteSalvaOrarioApertura(int idCliente, OrarioAperturaDM orario, string access_token)
+        {
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario", orario, access_token);
         }
 
         public async Task ClienteSalvaAnagrafica(int idCliente, AnagraficaClienteApiModel anagrafica, string access_token)
@@ -405,17 +416,16 @@ namespace Web.Utils
         {
             string tmpqs = idCliente.HasValue ? $"&idCliente={idCliente}" : "";
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}{tmpqs}");
-            return await GetRequestAsync<bool>(uri, null);            
+            return await GetRequestAsync<bool>(uri, null);
         }
 
-        public async Task<UserConfirmationViewModel> ConfermaAccount(string email, string code)
+        public async Task<UserConfirmationResultAPIModel> ConfermaAccount(string email, string code)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/confirmation?email={email}&code={code}");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsync(uri, null);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<UserConfirmationViewModel>(responseString);
+            using (var response = await SendRequestAsync<UserConfirmationResultAPIModel>(HttpMethod.Post, uri, null, null))
+            {
+                return JsonConvert.DeserializeObject<UserConfirmationResultAPIModel>(await response.Content.ReadAsStringAsync());
+            }
         }
 
 
@@ -591,11 +601,11 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<ClienteUtenteApiModel>>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<IEnumerable<UtenteClienteDM>>(responseString, _serializerSettings);
             return result.MapToClienteUtenteViewModel();
         }
 
-        public async Task<ClienteUtenteApiModel> GetUtenteCliente(int idCliente, string userId, string access_token)
+        public async Task<ClienteUtenteDetailsApiModel> GetUtenteCliente(int idCliente, string userId, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}");
             HttpClient client = new HttpClient();
@@ -604,7 +614,7 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteUtenteApiModel>(responseString, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<ClienteUtenteDetailsApiModel>(responseString, _serializerSettings);
             return result;
         }
 
@@ -677,7 +687,7 @@ namespace Web.Utils
         public async Task<IEnumerable<ClienteUtenteCertificatoApiModel>> GetCertificatiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati?incExp={includeExpired}&incDel={includeDeleted}");
-            return await GetRequestAsync< IEnumerable<ClienteUtenteCertificatoApiModel>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<ClienteUtenteCertificatoApiModel>>(uri, access_token);
         }
 
         #endregion

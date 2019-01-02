@@ -1,4 +1,5 @@
 ﻿using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace Web.Models.Mappers
 {
     public static class UtentiMapper
     {
-        public static List<ClienteUtenteViewModel> MapToClienteUtenteViewModel(this IEnumerable<ClienteUtenteApiModel> utenti)
+        public static List<ClienteUtenteViewModel> MapToClienteUtenteViewModel(this IEnumerable<UtenteClienteDM> utenti)
         {
             if (utenti == null) return null;
             var result = new List<ClienteUtenteViewModel>();
@@ -20,7 +21,7 @@ namespace Web.Models.Mappers
             return result;
         }
 
-        public static ClienteUtenteViewModel MapToClienteUtenteViewModel(this ClienteUtenteApiModel utente)
+        public static ClienteUtenteViewModel MapToClienteUtenteViewModel(this UtenteClienteDM utente)
         {
             if (utente == null) return null;
             return new ClienteUtenteViewModel()
@@ -29,13 +30,10 @@ namespace Web.Models.Mappers
                 {
                     Nome = utente.Nome,
                     Cognome = utente.Cognome,
-                    Email = utente.Email,
-                    NumTelefono = utente.TelephoneNumber,
                     Stato = (ClienteUtenteStatoViewModel)((int)utente.Stato),
                     DisplayName = utente.DisplayName,
                     IdCliente = utente.IdCliente,
-                    IdUtente = utente.IdUtente,
-                    DataAssociazione = utente.DataAssociazione,
+                    IdUtente = utente.UserId
                 },
                 Abbonamenti = null,
                 Certificati = null,
@@ -43,7 +41,30 @@ namespace Web.Models.Mappers
             };
         }
 
-        public static UserHeaderViewModel MapToUserHeaderViewModel(this ClienteUtenteApiModel utente)
+        public static ClienteUtenteViewModel MapToClienteUtenteViewModel(this ClienteUtenteDetailsApiModel utente)
+        {
+            if (utente == null) return null;
+            return new ClienteUtenteViewModel()
+            {
+                UserInfo = new UserHeaderViewModel()
+                {
+                    Nome = utente.Nome,
+                    Cognome = utente.Cognome,
+                    Stato = (ClienteUtenteStatoViewModel)((int)utente.Stato),
+                    DisplayName = utente.DisplayName,
+                    IdCliente = utente.IdCliente,
+                    DataAssociazione = utente.DataAssociazione,
+                    Email = utente.Email,
+                    IdUtente = utente.IdUtente,
+                    NumTelefono = utente.TelephoneNumber
+                },
+                Abbonamenti = null,
+                Certificati = null,
+                Appuntamenti = null
+            };
+        }
+        
+        public static UserHeaderViewModel MapToUserHeaderViewModel(this ClienteUtenteDetailsApiModel utente)
         {
             if (utente == null) return null;
             return new UserHeaderViewModel()

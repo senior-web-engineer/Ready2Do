@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +7,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
 using Web.Utils;
@@ -44,12 +45,12 @@ namespace Web.Controllers.API
         //[AllowAnonymous]
         public async Task<IActionResult> GetBlobSAS([FromQuery]string _method, [FromQuery]string bloburi, [FromQuery] string qqtimestamp)
         {
-            if (!Uri.IsWellFormedUriString(bloburi, UriKind.Absolute)){return BadRequest();}
-            if (!HttpContext.Request.Headers.ContainsKey(Constants.CUSTOM_HEADER_TOKEN_AUTH)){return BadRequest();}
+            if (!Uri.IsWellFormedUriString(bloburi, UriKind.Absolute)) { return BadRequest(); }
+            if (!HttpContext.Request.Headers.ContainsKey(Constants.CUSTOM_HEADER_TOKEN_AUTH)) { return BadRequest(); }
             var headers = HttpContext.Request.Headers[Constants.CUSTOM_HEADER_TOKEN_AUTH];
-            if (!TryParseToken(headers.FirstOrDefault(), out var token)){return Forbid();}
+            if (!TryParseToken(headers.FirstOrDefault(), out var token)) { return Forbid(); }
             //Verificare che l'utente specificato (tramite il securityToken sia l'owner del container)
-            var cliente = await _apiClient.GetClienteFromTokenAsync(token.SecurityToken);
+            var cliente = await _apiClient.GetClienteAsync(token.IdCliente);
             if ((cliente == null) || (!token.ContainerName.Equals(cliente.StorageContainer)))
             {
                 _logger.LogCritical("Token COMPROMESSO. Il container name non coincide con quello dell'utente");
@@ -57,21 +58,21 @@ namespace Web.Controllers.API
             }
             //Verifichiamo che l'URI del blob utilizzi il container di proprietà dell'utente identificato dal token
             CloudBlob azureBlob = new CloudBlob(new Uri(bloburi));
-            if (!azureBlob.Container.Name.Equals(token.ContainerName)){return Forbid();}
+            if (!azureBlob.Container.Name.Equals(token.ContainerName)) { return Forbid(); }
             await AzureStorageUtils.EnsureContainerExists(_appConfig.Azure, token.ContainerName);
             var sas = AzureStorageUtils.GetSasForBlob(_appConfig.Azure, bloburi, _method);
             return Ok(sas);
         }
 
         [HttpPost]
-        public async Task<IActionResult> FileUploaded(string blob, string uuid, string name, string container, int fileOrder)
+        public async Task<IActionResult> FileUploaded(string blob, string uuid, string name, string container, int fileOrder, int imageId)
         {
             if (!Uri.IsWellFormedUriString(container, UriKind.Absolute)) { return BadRequest(); }
             if (!HttpContext.Request.Headers.ContainsKey(Constants.CUSTOM_HEADER_TOKEN_AUTH)) { return BadRequest(); }
             var headers = HttpContext.Request.Headers[Constants.CUSTOM_HEADER_TOKEN_AUTH];
             if (!TryParseToken(headers.FirstOrDefault(), out var token)) { return Forbid(); }
-            //Verificare che l'utente specificato (tramite il securityToken sia l'owner del container)
-            var cliente = await _apiClient.GetClienteFromTokenAsync(token.SecurityToken);
+            ////Verificare che l'utente specificato (tramite il securityToken sia l'owner del container)
+            var cliente = await _apiClient.GetClienteAsync(token.IdCliente);
             if ((cliente == null) || (!token.ContainerName.Equals(cliente.StorageContainer)))
             {
                 _logger.LogCritical("Token COMPROMESSO. Il container name non coincide con quello dell'utente");
@@ -81,15 +82,17 @@ namespace Web.Controllers.API
             string url = $"{container}/{blob}";
             CloudBlob azureBlob = new CloudBlob(new Uri(url));
             if (!azureBlob.Container.Name.Equals(token.ContainerName)) { return Unauthorized(); }
+            //TODO: Verificare che l'id immagine sia valorizzata correttamente 
             //Salviamo l'informazione sull'immagine caricata nel DB
-            var oldImage = cliente.Immagini.SingleOrDefault(i => i.Ordinamento.Equals(fileOrder)) ?? new ImmagineViewModel();
-            oldImage.Alt = "";
-            oldImage.Descrizione = "";
-            oldImage.Nome = name;
-            oldImage.Ordinamento = fileOrder;
-            oldImage.Url = url;
+            ImmagineClienteDM immagine = new ImmagineClienteDM()
+            {
+                Id = imageId >= 0 ? imageId : (int?)null,
+                Nome = name,
+                Ordinamento = fileOrder,
+                Url = url
+            };
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.GallerySalvaImmagine(cliente.IdCliente, oldImage, accessToken);
+            await _apiClient.GallerySalvaImmagine(cliente.Id.Value, immagine, accessToken);
             return Ok(url);
         }
 

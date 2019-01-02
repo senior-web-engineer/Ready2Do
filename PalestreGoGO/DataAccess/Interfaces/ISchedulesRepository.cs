@@ -22,7 +22,7 @@ namespace PalestreGoGo.DataAccess
         /// <param name="idSchedules"></param>
         /// <param name="includeDeleted"></param>
         /// <returns></returns>
-        Task<IEnumerable<ScheduleDM>> SchedulesLookupAsync(List<int> idSchedules, bool includeDeleted = false);
+        Task<IEnumerable<ScheduleDM>> SchedulesLookupAsync(IEnumerable<int> idSchedules, bool includeDeleted = false);
 
         Task<IEnumerable<ScheduleDM>> GetScheduleListAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null, int? idTipoLezione = null, 
                                                             bool soloPostiDisp = false, bool soloIscrizAperte = false, int pageSize = 25, int pageNumber = 1, 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ready2do.model.common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace Web.Models
         #endregion
 
         [Required]
-        public ImageViewModel ImmagineHome { get; set; }
+        public ImmagineClienteDM ImmagineHome { get; set; }
         
         
         public OrarioAperturaViewModel OrarioAperturaVM { get; set; }

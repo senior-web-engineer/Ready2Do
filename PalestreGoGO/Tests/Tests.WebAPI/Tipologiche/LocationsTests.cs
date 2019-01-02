@@ -6,6 +6,7 @@ using PalestreGoGo.DataAccess;
 using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.ViewModel;
 using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Tests.WebAPI.Tipologiche
 {
     public class LocationsTestsFixture
     {
-        public LocationApiModel Location;
+        public LocationDM Location;
     }
 
     public class LocationsTests : BaseTipologicheTests, IClassFixture<LocationsTestsFixture>

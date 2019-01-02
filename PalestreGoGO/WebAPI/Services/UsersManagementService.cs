@@ -65,6 +65,12 @@ namespace PalestreGoGo.WebAPI.Services
             try
             {
                 esitoConferma = await _utentiRepository.CompletaRichiestaRegistrazioneAsync(username, code);
+                var result = new UserConfirmationResultAPIModel(user.Id)
+                {
+                    IdStrutturaAffiliate = esitoConferma.IdRefereer,
+                    IdCliente = esitoConferma.IdCliente
+                };
+                return result;
             }
             catch (UserConfirmationException)
             {
@@ -74,30 +80,6 @@ namespace PalestreGoGo.WebAPI.Services
                     IdUser = user.Id
                 };
             }
-
-
-            var result = new UserConfirmationResultAPIModel(user.Id);
-            var claimStructureOwned = user.StruttureOwned;
-
-            //Se è un owner ==> facciamo il provisioning del cliente
-            if (!string.IsNullOrWhiteSpace(claimStructureOwned))
-            {
-                await _clientiProvisioner.ProvisionClienteAsync(richiesta.CorrelationId.ToString(), user.Id);
-                result.IdStrutturaAffiliate = int.Parse(claimStructureOwned);
-            }
-            else
-            {
-                //Se è un utente "ORDINARIO" ed in fase di registrazione è stata specificata la struttura di affiliazione andiamo a censire l'associazione sul DB
-                if (!string.IsNullOrWhiteSpace(user.Refereer))
-                {
-                    int idStrutturaAffiliata = int.Parse(user.Refereer);
-                    await _repositoryClientiUtenti.AssociaUtenteAsync(idStrutturaAffiliata, user.Id, user.Nome, user.Cognome, user.DisplayName);
-                    result.IdStrutturaAffiliate = idStrutturaAffiliata;
-                }
-
-            }
-            _logger.LogInformation($"ConfirmUserAsync -> Successfully validated user {username}");
-            return result;
         }
 
         public async Task<AzureUser> GetUserByMailAsync(string email)
@@ -125,7 +107,7 @@ namespace PalestreGoGo.WebAPI.Services
         /// </summary>
         /// <param name="newUser">Dati del nuovo utente</param>
         /// <returns>Ritorna l'utente creato</returns>
-        public async Task<AzureUser> GetOrCreateUserAsyn(AzureUser newUser)
+        public async Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser)
         {
             //Se l'utente esiste già lo recuperiamo
             var user = await _b2cClient.GetUserByMailAsync(newUser.SignInNames[0].Value);
@@ -164,6 +146,8 @@ namespace PalestreGoGo.WebAPI.Services
             await _b2cClient.UpdateUserStruttureOwnedAsync(user.Id, user.StruttureOwned);
         }
 
+   
+
         //public async Task<string> RegisterOwnerAsync(AzureUser user, string idCliente, Guid correlationId)
         //{
         //    if (user == null) throw new ArgumentNullException(nameof(user));
@@ -177,34 +161,30 @@ namespace PalestreGoGo.WebAPI.Services
         //    return createdUser.Id;
         //}
 
-        public async Task<string> RegisterUserAsync(AzureUser user)
-        {
-            if (user == null) throw new ArgumentNullException(nameof(user));
-            //var createdUser = await _b2cClient.CreateUserAsync(user);
-            var createdUser = await internalCreateUserAsync(user, false);
-            _logger.LogInformation($"Created a new user (UserId: {createdUser.UserPrincipalName}) affiliated with referer: {createdUser.Refereer}");
+        //public async Task<string> RegisterUserAsync(AzureUser user)
+        //{
+        //    if (user == null) throw new ArgumentNullException(nameof(user));
+        //    //var createdUser = await _b2cClient.CreateUserAsync(user);
+        //    var createdUser = await internalCreateUserAsync(user, false);
+        //    _logger.LogInformation($"Created a new user (UserId: {createdUser.UserPrincipalName}) affiliated with referer: {createdUser.Refereer}");
 
-            return createdUser.Id;
-        }
+        //    return createdUser.Id;
+        //}
 
-        protected async Task<AzureUser> internalCreateUserAsync(AzureUser user, bool isCliente, Guid? correlationId = null)
-        {
-            var createdUser = await _b2cClient.CreateUserAsync(user);
-            _logger.LogDebug($"User with email: {user.Emails[0]} created");
-            string code = GenerateEmailConfirmationToken(createdUser);
-            string userName = user.SignInNames[0].Value;
-            var richiesta = await _utentiRepository.RichiestaRegistrazioneSalvaAsync(userName, code, correlationId);
-            _logger.LogTrace($"RegisterUser-> generated code [{code}]for user: {userName}");
-            await _confirmUserService.SendConfirmationMailRequestAsync(new ConfirmationMailMessage(userName, code, richiesta.CorrelationId.ToString("D"), isCliente));
-            _logger.LogInformation($"Created a new account with password and enqueued confirmation mail send. UserId: {createdUser.Id}");
-            return createdUser;
-        }
+        //protected async Task<AzureUser> internalCreateUserAsync(AzureUser user, bool isCliente, Guid? correlationId = null)
+        //{
+        //    var createdUser = await _b2cClient.CreateUserAsync(user);
+        //    _logger.LogDebug($"User with email: {user.Emails[0]} created");
+        //    string code = GenerateEmailConfirmationToken(createdUser);
+        //    string userName = user.SignInNames[0].Value;
+        //    var richiesta = await _utentiRepository.RichiestaRegistrazioneSalvaAsync(userName, code, correlationId);
+        //    _logger.LogTrace($"RegisterUser-> generated code [{code}]for user: {userName}");
+        //    await _confirmUserService.SendConfirmationMailRequestAsync(new ConfirmationMailMessage(userName, code, richiesta.CorrelationId.ToString("D"), isCliente));
+        //    _logger.LogInformation($"Created a new account with password and enqueued confirmation mail send. UserId: {createdUser.Id}");
+        //    return createdUser;
+        //}
 
-        protected string GenerateEmailConfirmationToken(AzureUser user)
-        {
-            //TODO: Generare il token in modo sicuro
-            return s_random.Next(1000000, 9999999).ToString();
-        }
+
 
     }
 }

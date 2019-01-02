@@ -29,9 +29,9 @@ namespace PalestreGoGo.WebAPI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<ImmagineClienteDM>>> GetImagesCliente([FromRoute(Name = "idCliente")] int idCliente)
+        public async Task<ActionResult<IEnumerable<ImmagineClienteDM>>> GetImagesCliente([FromRoute(Name = "idCliente")] int idCliente, [FromQuery(Name ="tipo")]TipoImmagineDM? tipo = null)
         {
-            var result = await _immaginiRepository.GetImages(idCliente);
+            var result = await _immaginiRepository.GetImages(idCliente, tipo);
             return Ok(result);
         }
 

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,11 +24,13 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IClientiRepository _repository;
         private readonly IUtentiRepository _repositoryUtenti;
         private readonly IAppuntamentiRepository _repositoryAppuntamenti;
+        private readonly ISchedulesRepository _repositorySchedules;
 
         public UtentiAPIController(ILogger<UtentiAPIController> logger,
                                  IUsersManagementService userManagementService,
                                  IClientiRepository repository,
                                  IAppuntamentiRepository repositoryAppuntamenti,
+                                 ISchedulesRepository repositorySchedules,
                                  IUtentiRepository repositoryUtenti)
         {
             this._logger = logger;
@@ -37,6 +38,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             this._repository = repository;
             this._repositoryAppuntamenti = repositoryAppuntamenti;
             this._repositoryUtenti = repositoryUtenti;
+            this._repositorySchedules = repositorySchedules;
     }
 
         /// <summary>
@@ -82,8 +84,9 @@ namespace PalestreGoGo.WebAPI.Controllers
                 Refereer = idStrutturaAffiliata?.ToString()
             };
 
-            await _userManagementService.RegisterUserAsync(appUser);
-
+            //await _userManagementService.RegisterUserAsync(appUser);
+            //TODO: RIvedere il meecanismo di registrazione degli utenti ordinari!
+            throw new NotImplementedException();
             return Ok();
         }
 
@@ -98,7 +101,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns>Ritorna l'url della homepage del cliente appena confermatp in caso di esito positivo</returns>
         [HttpPost("confirmation")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfermaUtente([FromQuery]string email, [FromQuery]string code)
+        public async Task<ActionResult<UserConfirmationResultAPIModel>> ConfermaUtente([FromQuery]string email, [FromQuery]string code)
         {
             _logger.LogTrace($"ConfirmEmail -> Received request for user: [{email ?? "NULL"}], code: [{code ?? "NULL"}]");
             if (email == null || code == null)
@@ -111,25 +114,35 @@ namespace PalestreGoGo.WebAPI.Controllers
                 _logger.LogWarning($"ConfirmMail -> Failed validation for user: {email} with code: [{code}]");
                 return BadRequest();
             }
-            var cliente = await _repository.GetByIdUserOwnerAsync(esitoConfirmation.IdUser);
-            if (cliente != null)
-            {
-                esitoConfirmation.IdCliente = cliente.Id;
-            }
-            //TODO: Ritornare un CreatedAt con l'url del cliente?
+            //var cliente = await _repository.GetByIdUserOwnerAsync(esitoConfirmation.IdUser);
+            //if (cliente != null)
+            //{
+            //    esitoConfirmation.IdCliente = cliente.Id;
+            //}
+            ////TODO: Ritornare un CreatedAt con l'url del cliente?
             return Ok(esitoConfirmation);
         }
 
         [HttpGet("{userId}/appuntamenti")]
-        public async Task<IActionResult> GetAppuntamentiForUser([FromRoute] string userId, [FromQuery] bool includePast = false)
+        public async Task<ActionResult<IEnumerable<AppuntamentoUserApiModel>>> GetAppuntamentiForUser([FromRoute] string userId, [FromQuery] bool includePast = false)
         {
+            IEnumerable<AppuntamentoUserApiModel> result = null;
             //Verifichiamo che lo userId nella route sia coerente con l'utente chiamante
             if (string.IsNullOrWhiteSpace(User.UserId()) || !User.UserId().Equals(userId))
             {
                 return Forbid();
             }
             var appuntamenti = await _repositoryAppuntamenti.GetAppuntamentiUtenteAsync(User.UserId(), dtInizioSchedule: DateTime.Now);
-            var result = Mapper.Map<IEnumerable<AppuntamentoUserApiModel>>(appuntamenti);
+            if (appuntamenti != null)
+            {
+                var idSchedules = appuntamenti.Select(a => a.ScheduleId).Distinct();
+                var schedules = await _repositorySchedules.SchedulesLookupAsync(idSchedules, true);
+                result = appuntamenti.Select(a => new AppuntamentoUserApiModel()
+                {
+                    Appuntamento = a,
+                    Schedule = schedules.Single(s => s.Id.Equals(a.ScheduleId))
+                });
+            }
             return Ok(result);
         }
 

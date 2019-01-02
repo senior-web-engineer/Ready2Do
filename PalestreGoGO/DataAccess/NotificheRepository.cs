@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using PalestreGoGo.DataModel;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace PalestreGoGo.DataAccess
         {
             using (var cn = GetConnection())
             {
-                return await cn.QueryAsync<NotificaConTipoDM, TipologiaNotifica, NotificaConTipoDM>("[dbo].[Notifiche_Lista]",
+                return await cn.QueryAsync<NotificaConTipoDM, TipologiaNotificaDM, NotificaConTipoDM>("[dbo].[Notifiche_Lista]",
                                                     (notifica, tipoNotifica) =>
                                                     {
                                                         notifica.Tipo = tipoNotifica;

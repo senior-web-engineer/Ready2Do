@@ -45,20 +45,7 @@ namespace Tests.WebAPI
                 .AddJsonFile("appsettings.json")
                 .Build();
         }
-        public static PalestreGoGoDbContext BuildDbContext()
-        {
-            var serviceProvider = new ServiceCollection()
-                        .AddEntityFrameworkSqlServer()
-                        .BuildServiceProvider();
-
-            var builder = new DbContextOptionsBuilder<PalestreGoGoDbContext>();
-
-            builder.UseSqlServer(Config.GetConnectionString("DefaultConnection"))
-                    .UseInternalServiceProvider(serviceProvider);
-
-            return new PalestreGoGoDbContext(builder.Options);
-        }
-
+       
         public static ClaimsPrincipal GetGlobalAdminUser()
         {
             var claims = new List<Claim>()

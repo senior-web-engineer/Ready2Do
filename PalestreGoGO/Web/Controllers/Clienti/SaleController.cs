@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,9 +58,8 @@ namespace Web.Controllers
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()){return Forbid();}
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Modifica Sala";
-            Models.LocationViewModel location = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            location = await _apiClient.GetOneLocationAsync(idCliente, idSala, accessToken);
+            var location = await _apiClient.GetOneLocationAsync(idCliente, idSala, accessToken);
             return View("SalaEdit", location);
         }
 
@@ -71,15 +71,13 @@ namespace Web.Controllers
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()){return Forbid();}
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Nuova Sala";
-            Models.LocationViewModel location = null;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            location = new Models.LocationViewModel();
-            return View("SalaEdit", location);
+            return View("SalaEdit", new LocationDM());
         }
 
 
         [HttpPost("sale")]
-        public async Task<IActionResult> SalaSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.LocationViewModel location)
+        public async Task<IActionResult> SalaSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] LocationInputDM location)
         {
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
