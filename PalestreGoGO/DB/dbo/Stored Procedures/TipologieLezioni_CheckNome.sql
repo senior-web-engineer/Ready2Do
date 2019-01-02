@@ -7,10 +7,11 @@
 CREATE PROCEDURE [dbo].[TipologieLezioni_CheckNome]
 	@pIdCliente			int,
 	@pNomeTipoLezione	NVARCHAR(100),
+	@pId				int = NULL,
 	@pResult			BIT OUT
 AS
 BEGIN
-	IF EXISTS(SELECT * FROM TipologieLezioni WHERE IdCliente = @pIdCliente AND Nome = @pNomeTipoLezione AND DataCancellazione IS NULL)
+	IF EXISTS(SELECT * FROM TipologieLezioni WHERE IdCliente = @pIdCliente AND Nome = @pNomeTipoLezione AND DataCancellazione IS NULL AND ((@pId IS NULL) OR (Id <> @pId)))
 		SET @pResult = 0
 	ELSE
 		SET @pResult = 1;

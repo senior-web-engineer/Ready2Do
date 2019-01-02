@@ -24,7 +24,7 @@ BEGIN
 	SET @logMsg = CONCAT('BEGIN ', OBJECT_NAME(@@PROCID), '(@pId=', @pId, ', @pIdCliente=', @pIdCliente, ', @pNome=',@pNome, ', @pDescrizione=', @pDescrizione,
 					     ', @pDurata=', @pDurata, ', @pMaxPartecipanti=', @pMaxPartecipanti,', @pLimiteCancellazioneMinuti=',@pLimiteCancellazioneMinuti,
 						 ', @pLivello=',@pLivello,', @pPrezzo=', @pPrezzo, ')')
-	exec [dbo].[internal_LogMessage] @pIdCliente, 'L', @logMsg, @dtOperazione
+	exec [dbo].[internal_LogMessage] @pIdCliente, NULL, 'L', @logMsg, @dtOperazione
 	
 	UPDATE TipologieLezioni
 		SET IdCliente = @pIdCliente, 
@@ -53,13 +53,13 @@ BEGIN
 	IF @@ROWCOUNT = 0
 	BEGIN
 		set @logMsg = CONCAT(OBJECT_NAME(@@PROCID),'Impossibile eseguire l''aggiornamento perché i parametri passati non sono validi oppure si sta cercando di aggiornare il prezzo ma esiste una prenotazione attiva associata')
-		exec [dbo].[internal_LogMessage] @pIdCliente, 'E', @logMsg
+		exec [dbo].[internal_LogMessage] @pIdCliente, NULL,'E', @logMsg
 		RAISERROR('Parametri non validi!', 16, 0);
 		RETURN -1;
 	END
 	
 	set @logMsg = CONCAT('END ', OBJECT_NAME(@@PROCID))
-	exec [dbo].[internal_LogMessage] @pIdCliente, 'V', @logMsg
+	exec [dbo].[internal_LogMessage] @pIdCliente, NULL,'V', @logMsg
 	
 	RETURN 0
 END

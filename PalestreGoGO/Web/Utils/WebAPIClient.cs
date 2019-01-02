@@ -309,7 +309,7 @@ namespace Web.Utils
         #endregion
 
         #region TIPOLOGIE LEZIONI
-        public async Task SaveTipologiaLezioneAsync(int idCliente, Models.TipologieLezioniViewModel tipoLezione, string access_token)
+        public async Task SaveTipologiaLezioneAsync(int idCliente, TipologiaLezioneDM tipoLezione, string access_token)
         {
             if (tipoLezione.Id.HasValue && tipoLezione.Id.Value > 0)
             {
@@ -331,9 +331,10 @@ namespace Web.Utils
             return await GetRequestAsync<TipologiaLezioneDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idTipologia}"), access_token);
         }
 
-        public async Task<bool> CheckNameTipologiaLezioneAsync(int idCliente, string nome, string access_token)
+        public async Task<bool> CheckNameTipologiaLezioneAsync(int idCliente, string nome, string access_token, int? id)
         {
-            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/checkname/{nome}"), access_token);
+            string queryString = id.HasValue ? $"?id={id}" : "";
+            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/checkname/{nome}{queryString}"), access_token);
         }
 
         public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idLocation, string access_token)

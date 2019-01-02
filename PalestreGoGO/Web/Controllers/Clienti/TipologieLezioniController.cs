@@ -48,7 +48,7 @@ namespace Web.Controllers.Clienti
             }
             ViewData["IdCliente"] = idCliente;
             var lezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
-            return View("ListaLezioni", lezioni.ToList());
+            return View("ListaLezioni", lezioni.ToVM());
         }
 
         [HttpGet("{id:int}")]
@@ -109,7 +109,7 @@ namespace Web.Controllers.Clienti
             }
             if (tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione, accessToken);
+            await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione.ToDM(), accessToken);
             return RedirectToAction("ListaLezioni");
         }
 
@@ -130,11 +130,12 @@ namespace Web.Controllers.Clienti
 
         [Produces("application/json")]
         [HttpGet("checkname")]
-        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nome)
+        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nome, int? IdCliente, int? id)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            _logger.LogDebug($"Begin CheckNome({urlRoute},{nome},{IdCliente},{id}) - Path: {ControllerContext.HttpContext.Request.Path}?{ControllerContext.HttpContext.Request.QueryString}");
+            //int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            bool isValid = await _apiClient.CheckNameTipologiaLezioneAsync(idCliente, nome, accessToken);
+            bool isValid = await _apiClient.CheckNameTipologiaLezioneAsync(IdCliente.Value, nome, accessToken, id);
             if (isValid)
             {
                 return Json(data: true);

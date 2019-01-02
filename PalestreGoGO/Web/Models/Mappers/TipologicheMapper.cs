@@ -26,5 +26,33 @@ namespace Web.Models.Mappers
                 Prezzo = apiModel.Prezzo
             };
         }
+
+        public static IList<TipologieLezioniViewModel> ToVM(this IEnumerable<TipologiaLezioneDM> apiModel)
+        {
+            if (apiModel == null) { return null; }
+            List<TipologieLezioniViewModel> result = new List<TipologieLezioniViewModel>();
+            foreach (var tl in apiModel)
+            {
+                result.Add(tl.ToVM());
+            }
+            return result;
+        }
+
+        public static TipologiaLezioneDM ToDM(this TipologieLezioniViewModel viewModel)
+        {
+            return new TipologiaLezioneDM()
+            {
+                Descrizione = viewModel.Descrizione,
+                Durata = viewModel.Durata,
+                Id = viewModel.Id,
+                IdCliente = viewModel.IdCliente,
+                LimiteCancellazioneMinuti = viewModel.LimiteCancellazioneMinuti,
+                Livello = viewModel.Livello,
+                MaxPartecipanti = viewModel.MaxPartecipanti,
+                Nome = viewModel.Nome,
+                Prezzo = viewModel.Prezzo,                
+            };
+        }
     }
+
 }

@@ -134,12 +134,13 @@ namespace PalestreGoGo.DataAccess
         /// <param name="idTenant"></param>
         /// <param name="nome"></param>
         /// <returns>True se il nome è disponibile, False se già utilizzato</returns>
-        public async Task<bool> CheckNameAsync(int idTenant, string nome)
+        public async Task<bool> CheckNameAsync(int idTenant, string nome, int? id)
         {
             var parameters = new DynamicParameters(new
             {
                 pIdCliente = idTenant,
-                pNomeTipoLezione = nome
+                pNomeTipoLezione = nome,
+                pId = id
             });
             parameters.Add("pResult", dbType: DbType.Boolean, direction: ParameterDirection.Output);
             using (var cn = GetConnection())

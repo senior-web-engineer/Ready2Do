@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.DataAccess
 {
-    public interface ITipologieLezioniRepository //: IBaseRepository<TipologieLezioni, int>
+    public interface ITipologieLezioniRepository 
     {
         Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000);
         Task<int> CountAsync(int idTenant);
@@ -16,6 +16,6 @@ namespace PalestreGoGo.DataAccess
         Task<int> AddAsync(int idTenant, TipologiaLezioneDM entity);
         Task UpdateAsync(int idTenant, TipologiaLezioneDM entity);
         Task DeleteAsync(int idTenant, int itemKey);
-        Task<bool> CheckNameAsync(int idTenant, string nome);
+        Task<bool> CheckNameAsync(int idTenant, string nome, int? id);
     }
 }
