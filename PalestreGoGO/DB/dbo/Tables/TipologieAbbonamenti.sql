@@ -7,7 +7,7 @@
 	[NumIngressi]		SMALLINT		NULL,
 	[Costo]				DECIMAL(10,2)	NULL,
 	[MaxLivCorsi]		SMALLINT		NULL,
-	[ValidoDal]			DATETIME2(2)	NOT NULL,
+	[ValidoDal]			DATETIME2(2)	NOT NULL CONSTRAINT [DEF_TipologieAbbonamenti_ValidoDal] DEFAULT (sysdatetime()),
 	[ValidoFinoAl]		DATETIME2(2)	NULL,
 	[DataCreazione]		DATETIME2(2)	NOT NULL CONSTRAINT DEF_TipologieAbbonamenti_DataCreazione default(sysdatetime()),
 	[DataCancellazione]	DATETIME2(2)	NULL,
