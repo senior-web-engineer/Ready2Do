@@ -3,6 +3,6 @@ import './css/global-format.scss';
 import './css/clienti.scss';
 
 require('./js/ready2do');
-
+require('./js/r2do.EditEvento');
 
 

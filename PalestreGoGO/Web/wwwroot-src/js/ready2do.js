@@ -34,3 +34,8 @@ let timePickeri18n = {
     clear: 'Cancella',
     done: 'Ok'
 };
+
+//Modulo parent (empty)
+var ready2do = (function () {
+    return { };
+})();
