@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\ProfiloUtente\**" />
+    <Content Remove="Views\ProfiloUtente\**" />
+    <EmbeddedResource Remove="Views\ProfiloUtente\**" />
+    <None Remove="Views\ProfiloUtente\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\js\jquery-cropper.common.js" />
     <Content Remove="wwwroot\js\jquery-cropper.esm.js" />
     <Content Remove="wwwroot\js\jquery-cropper.min.js" />
@@ -191,7 +198,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\ProfiloUtente\" />
     <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 

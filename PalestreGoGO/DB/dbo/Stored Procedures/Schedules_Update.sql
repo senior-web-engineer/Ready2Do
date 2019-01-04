@@ -1,8 +1,9 @@
 ﻿/*
 La procedura consente la modifica dei dati di uno Schedule (o di più di uno se lo Schedule è ricorrente).
+Se per uno schedule ci sono 
 Distinguiamo i seguenti casi:
-- Schedule singolo -> niente di particolare, controlliamo solo che i posti inseriti siano sufficienti per le prenotazioni già esistenti
-- Schedule ricorrrente + TipoModifica = 'S' -> lo schedule diventa indipendente (azzeramento IdParent), stesso controllo di cui opra
+- Schedule singolo -> Controlliamo che i posti inseriti siano sufficienti per le prenotazioni già esistenti 
+- Schedule ricorrrente + TipoModifica = 'S' -> lo schedule diventa indipendente (azzeramento IdParent), stesso controllo di cui sopra
 - Schedule ricorrrente + TipoModifica = 'N' -> 
 
 Gestione modifica RICORRENZA:
@@ -45,7 +46,9 @@ BEGIN
 			@oldDataOraInizio	DATETIME2(2),
 			@numPrenotazioni	INT,
 			@recurrencyEqual	BIT,
-			@differences		INT
+			@differences		INT,
+			@waitListPossibile	BIT = 0,
+			@oldPostiDispon		INT
 
 
 	SET @pTipoModifica = UPPER(COALESCE(@pTipoModifica, 'S'))
@@ -56,7 +59,6 @@ BEGIN
 		RETURN -5;
 	END	 
 
-
 BEGIN TRANSACTION
 SET XACT_ABORT ON;
 
@@ -64,7 +66,9 @@ SET XACT_ABORT ON;
 	SELECT  @oldRecurrency = COALESCE(s.Recurrency, p.Recurrency),
 			@oldIdParent = s.IdParent,
 			@oldDataOraInizio = s.DataOraInizio,
-			@numPrenotazioni = (s.PostiDisponibili - s.PostiResidui) 
+			@oldPostiDispon = s.PostiDisponibili,
+			@numPrenotazioni = (s.PostiDisponibili - s.PostiResidui),
+			@waitListPossibile = CASE WHEN COALESCE(s.WaitListDisponibile,0) = 1 AND PostiResidui = 0 THEN 1 ELSE 0 END
 	FROM Schedules s WITH (UPDLOCK)
 		LEFT JOIN Schedules p ON s.IdParent = p.Id -- join con l'eventuale parent per prendere la recurrency
 	WHERE s.Id = @pId 
@@ -73,12 +77,20 @@ SET XACT_ABORT ON;
 	--Se non era un evento ricorrente applichiamo direttamente la modifica
 	IF @oldIdParent IS NULL
 	BEGIN
-		-- Dobbiamo considerare che i Posti disponibili  se modificati non possono essere inferiori alle pronotazioni già prese
+		-- Se ci sono prenotazioni
+		-- Dobbiamo considerare che i Posti disponibili se modificati non possono essere inferiori alle pronotazioni già prese
 		IF @pPosti < @numPrenotazioni
 		BEGIN
 			ROLLBACK
 			RAISERROR(N'Impossibile ridurre i posti disponibile al di sotto del numero di prenotiazioni già prese', 16 ,1);
 			RETURN -1;
+		END
+
+		IF (@oldPostiDispon > @pPosti) AND (@waitListPossibile = 1)
+		BEGIN
+			-- Se sono aumentati i posti e c'erano utenti in Waiting list, devono essere convertiti
+			--TODO: COMPLETARE
+			EXEC --[dbo].[internal_ListeAttesa_PromuoviToAppuntamento] 
 		END
 
 		UPDATE Schedules
@@ -100,7 +112,21 @@ SET XACT_ABORT ON;
 				VisibileFinoAl = @pVisibileFinoAl
 		WHERE Id = @pId
 		AND IdCliente = @pIdCliente
+		
+		--Se è stata cambiata la DataOraInizio dell'evento:
+		-- 1. generariam degli eventi di notifica per gli utenti già iscritti
+		-- 2. se ci sono 
+		IF @oldDataOraInizio <> @pDataOraInizio
+		BEGIN
+			-- Se è possibile che ci siano utenti in WaitingList, andiamo ad aggiornarne la scadenza
+			IF @waitListPossibile = 1
+			BEGIN
+				UPDATE ListeAttesa
+					SET DataScadenza = @pDataOraInizio
+				WHERE IdSchedule = @pId
+			END
 
+		END
 		IF @pRecurrency IS NOT NULL
 		BEGIN
 			-- Se è stata specificata una ricorrenza, inseriamo gli eventi figli		

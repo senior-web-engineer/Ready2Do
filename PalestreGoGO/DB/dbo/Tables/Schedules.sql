@@ -1,4 +1,9 @@
-﻿CREATE TABLE [dbo].[Schedules]
+﻿/*
+####### NOTE #####
+* DataChiusuraIscrizioni: Indica la data oltre la quale per uno schedule non è consentito agli utenti di iscriversi "direttamente", è però possibile
+*						  che a seguito di una cancellazione un utente in WaitingList venga iscritto all'evento dopo questa data dal sistema
+*/
+CREATE TABLE [dbo].[Schedules]
 (
 	[Id]						INT				NOT NULL	IDENTITY(1,1),
 	[IdCliente]					INT				NOT NULL,

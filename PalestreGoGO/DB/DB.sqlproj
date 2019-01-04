@@ -69,6 +69,7 @@
     <Folder Include="utils\Tables" />
     <Folder Include="dbo\Functions" />
     <Folder Include="dbo\Types" />
+    <Folder Include="dbo\Stored Procedures\events" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Clienti.sql" />
@@ -206,6 +207,14 @@
     <Build Include="dbo\Stored Procedures\Locations_Delete.sql" />
     <Build Include="dbo\Stored Procedures\ImmaginiCliente_Add.sql" />
     <Build Include="dbo\Tables\ListeAttesa.sql" />
+    <Build Include="dbo\Stored Procedures\ListeAttesa_Cancel.sql" />
+    <Build Include="dbo\Tables\SystemEvents.sql" />
+    <Build Include="dbo\Stored Procedures\internal_SystemaEvents_Add.sql" />
+    <Build Include="dbo\Functions\internal_Appuntamento_AsJSON.sql" />
+    <Build Include="dbo\Functions\internal_AppuntamentoDaConfermare_AsJSON.sql" />
+    <Build Include="dbo\Functions\internal_ListaAttesa_AsJSON.sql" />
+    <Build Include="dbo\Stored Procedures\ListeAttesa_CleanExpired.sql" />
+    <Build Include="dbo\Stored Procedures\internal_ListeAttesa_PromuoviToAppuntamento.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

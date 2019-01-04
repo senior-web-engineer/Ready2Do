@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model.Common", "Model.Commo
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.LogicApp.AppuntamentiDaConfermare", "Azure.LogicApp.AppuntamentiDaConfermare\Azure.LogicApp.AppuntamentiDaConfermare.deployproj", "{F079EEB7-AD73-4C74-B4E8-990146DE2525}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Func.WaitingListExpiration", "Azure.Func.WaitingListExpiration\Azure.Func.WaitingListExpiration.csproj", "{367D5A1C-3268-48EF-9756-EF35E5DCE039}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{F079EEB7-AD73-4C74-B4E8-990146DE2525}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F079EEB7-AD73-4C74-B4E8-990146DE2525}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F079EEB7-AD73-4C74-B4E8-990146DE2525}.Release|Any CPU.Build.0 = Release|Any CPU
+		{367D5A1C-3268-48EF-9756-EF35E5DCE039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{367D5A1C-3268-48EF-9756-EF35E5DCE039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{367D5A1C-3268-48EF-9756-EF35E5DCE039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{367D5A1C-3268-48EF-9756-EF35E5DCE039}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

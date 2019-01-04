@@ -6,18 +6,30 @@ Parametri:
  @pUserId: Utente per cui l'appuntamento viene creato, se null indica un appuntamento per un utente GUEST
  @pIdAbbonamento: Se NON specificato sta ad indicare un AppuntamentoDaConfermare, facciamo però il controllo che effettivamente non esista un abbonamento valido per l'utente
 
+** GESTIONE WAITING LIST **
+1.	Se per un Evento non ci sono posti disponibile ma è abilitata la Waiting List, la procedura, invece di creare un Appuntamento, genera un record nella Waiting List.
+	Questo comportamento è possibile SOLO se specificato un IdAbbonamento, per gli AppuntamentiDaConfermare non gestiamo questa funzionalità (almeno per ora) perché
+	la gestione si complicherebbe.
+	D'altronde un A.D.C. non decremente i posti disponibili fino alla conferma dello stesso per cui non avrebbe molto senso metterlo in WL. Al momento della conferma eventualmente,
+	se non ci sono posti disponibili potrebbe essere inserito in WL.
+2.	Per gli utenti GUEST non ha senso (e non è tecnicamente possibile) gestire la WL
+
 RETURNS:
 	 1: OK
 	-1: Nessun abbonamento valido per l'utente - evento
 	-4: Data Chisura Iscrizione superata
     -5: Nessun posto disponibile per l'evento
 	-8: IdAbbonamento non specificato ma abbonamento esistente per l'utente
+   -10: Ingressi insufficienti per l'abbonamento utente
+
 ATTENZIONE:
-La procedura ritorna un primo recordset (scalare) per indicare il tipo di appuntamento registrato
-Il secondo recordset contiene il dettaglio dello specifico tipo (Appuntamento o AppuntamentoDaConfermare)
+Ritorniamo un record del tipo:  TipoResult - JSON
+TipoResult è una stringa che indica il tipo di contenuto JSON
 
-NOTE: 
-
+~~~ CHANGES HISTORY ~~~
+20190104
+	- Gestione WaitingList
+	- Cambiato formato ritorno, invece di tornare 2 record, ne ritorniamo uno solo con una colonna JSON con i dettagli
 */
 CREATE PROCEDURE [dbo].[Appuntamenti_Add]
 	@pIdCliente					INT,
@@ -26,8 +38,7 @@ CREATE PROCEDURE [dbo].[Appuntamenti_Add]
 	@pIdAbbonamento				INT = NULL,
 	@pNote						NVARCHAR(1000),
 	@pNominativo				NVARCHAR(200),
-	@pTimeoutManagerPayload		NVARCHAR(MAX),
-	@pIdAppuntamento			INT OUTPUT
+	@pTimeoutManagerPayload		NVARCHAR(MAX)
 AS
 BEGIN
 SET NOCOUNT ON;
@@ -35,17 +46,23 @@ SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 SET XACT_ABORT ON;
 
 DECLARE @dtOperazione		DATETIME2 = SYSDATETIME(),
+		@dtInizioSchedule	DATETIME2,
 		@idAbbonamento		INT = NULL,
 		@numIngressiResidui INT = NULL,
 		@numPostiResidui	INT = NULL,
 		@livelloLezione		INT = NULL,
+		@idAppuntamento		INT = NULL,
+		@idWL				INT = NULL,
+		@waitListEnabled	BIT = 0,
 		@dataChiusuraIscriz	DATETIME2 = NULL,
 		@expirationWindowMinutes	INT = NULL;
 
 -- Verifichiamo che la data termine per le iscrizioni non sia stata superata
 SELECT @numPostiResidui = s.PostiResidui,
 	   @dataChiusuraIscriz = COALESCE(s.DataChiusuraIscrizioni, s.[DataOraInizio]),
-	   @livelloLezione = tl.Livello
+	   @livelloLezione = tl.Livello,
+	   @waitListEnabled = COALESCE(WaitListDisponibile,0),
+	   @dtInizioSchedule = DataOraInizio
 FROM Schedules s
 	INNER JOIN TipologieLezioni tl ON s.IdTipoLezione = tl.Id
 WHERE s.Id = @pScheduleId
@@ -54,11 +71,6 @@ IF COALESCE(@dataChiusuraIscriz, '1900-01-01') < @dtOperazione
 BEGIN
 	RAISERROR(N'Il termine per l''iscrizione è scaduto.', 16, 0);
 	RETURN -4;
-END
-IF COALESCE(@numPostiResidui, -1) <= 0
-BEGIN
-	RAISERROR(N'Nessun posto disponibile per l''evento',16, 0);
-	RETURN -5
 END
 
 BEGIN TRANSACTION
@@ -74,6 +86,7 @@ BEGIN TRANSACTION
 											AND au.Scadenza > @dtOperazione 
 											AND ((ta.MaxLivCorsi IS NULL) OR (ta.MaxLivCorsi >= @livelloLezione)))
 			BEGIN
+				ROLLBACK
 				RAISERROR(N'IdAbbonamento non specificato ma l''utente ha almeno un abbonamento valido',16, 0);
 				RETURN -8
 			END
@@ -83,15 +96,16 @@ BEGIN TRANSACTION
 			SELECT @expirationWindowMinutes  = CASE WHEN DATEDIFF(minute, @dtOperazione, @dataChiusuraIscriz) > @expirationWindowMinutes THEN @expirationWindowMinutes
 												ELSE DATEDIFF(minute, @dtOperazione, @dataChiusuraIscriz) 
 												END
-			-- Inseriamo un AppuntamentoDaConfermare 
+			-- Inseriamo un AppuntamentoDaConfermare (NON TENIAMO CONTO DELLE DISPONIBILITA')
 			INSERT INTO AppuntamentiDaConfermare(IdCliente, UserId, ScheduleId, DataCreazione, DataExpiration, TimeoutManagerPayload)
 				VALUES(@pIdCliente, @pUserId, @pScheduleId, @dtOperazione, DATEADD(minute,@expirationWindowMinutes,@dtOperazione), @pTimeoutManagerPayload)
 
-			SET @pIdAppuntamento = SCOPE_IDENTITY();
+			SET @idAppuntamento = SCOPE_IDENTITY();
 			-- Ritorno il tipo di appuntamento
-			SELECT 'DaConfermare' AS TipoAppuntamento
-			-- e come secondo recordset il dettaglio dell'appuntamento da confermare
-			SELECT * FROM AppuntamentiDaConfermare AS adc WHERE Id = @pIdAppuntamento
+			SELECT 'AppuntamentoDaConfermare' AS TipoAppuntamento, 
+					[dbo].[internal_AppuntamentoDaConfermare_AsJSON](@idAppuntamento) AS [JSON]
+			-- Terminiamo la transazione
+			GOTO FINE_TRANS;
 		END
 		ELSE
 		-- Appuntamento in caso di IdAbbonamento specificato
@@ -115,10 +129,19 @@ BEGIN TRANSACTION
 			-- Verifichiamo che sia stato trovato un abbonamento valido
 			IF @idAbbonamento IS NULL
 			BEGIN
+				ROLLBACK;
 				RAISERROR(N'Impossibile trovare l''abboanamento su cui addebitare l''appuntamento', 16, 0);
 				RETURN -1;
 			END
 
+			--Verifichiamo l'utente abbia ancora ingressi a disposizione (se NULL vuol dire che non sono gestiti gli ingressi)
+			IF @numIngressiResidui = 0
+			BEGIN
+				ROLLBACK;
+				RAISERROR(N'L''utente [%s] non dispone di ingressi residui sull''abbonamento specificato [IdAbbonamento: %i]', 16, 0, @pUserId, @pIdAbbonamento);
+				RETURN -10;
+			END
+		
 			-- Scaliamo un ingresso dall'abbonamento (se previsti)
 			IF COALESCE(@numIngressiResidui, -1) > 0
 			BEGIN
@@ -129,50 +152,89 @@ BEGIN TRANSACTION
 						   CONCAT('Decrementato 1 Ingresso per Appuntamento a Schedule: ', @pScheduleId)
 			END
 
-			-- Inseriamo l'appuntamento
+			-- Decrementiamo i posti disponibili per l'evento (schedule)
+			UPDATE Schedules
+				SET PostiResidui = PostiResidui -1
+			WHERE Id = @pScheduleId
+			AND PostiResidui > 0
+
+			--Se abbiamo aggiornato lo Schedules (quindi c'era un posto disponibile) ==> Generiamo l'appuntamento
+			IF @@ROWCOUNT > 0
+			BEGIN
+				-- Inseriamo l'appuntamento
+				INSERT INTO Appuntamenti (IdCliente, UserId, ScheduleId, IdAbbonamento, DataPrenotazione, Note, Nominativo)
+					VALUES(@pIdCliente, @pUserId, @pScheduleId, @idAbbonamento, @dtOperazione, @pNote, @pNominativo)
+				SET @idAppuntamento = SCOPE_IDENTITY();
+
+				-- Ritorno il tipo di appuntamento
+				SELECT 'AppuntamentoConfermato' AS TipoAppuntamento,
+					[dbo].[internal_Appuntamento_AsJSON](@idAppuntamento) AS [JSON]
+
+				GOTO FINE_TRANS;
+			END
+			-- Se invece non c'erano posti disponibili, inseriamo un record in Waiting List (se abilitata per lo schedule)
+			ELSE
+			BEGIN
+				-- Se la WL non è abilitata ==> errore!
+				IF COALESCE(@waitListEnabled,0) = 0
+				BEGIN
+					ROLLBACK;
+					RAISERROR(N'Nessun posto disponibile per l''evento',16, 0);
+					RETURN -5
+				END
+				ELSE
+				BEGIN
+					INSERT INTO ListeAttesa(IdCliente, IdSchedule, UserId, IdAbbonamento, DataScadenza)
+						VALUES(@pIdCliente, @pScheduleId, @pUserId, @pIdAbbonamento, @dtInizioSchedule);
+					
+					SET @idWL = SCOPE_IDENTITY();
+
+					--TODO: Gestire il ritorno del record in WL
+					SELECT 'WaitingList' AS TipoAppuntamento, 
+					[dbo].internal_ListaAttesa_AsJSON(@idWL) AS [JSON]
+	
+					GOTO FINE_TRANS;
+				END
+			END
+		END 
+	END
+	-- APPUNTAMENTO PER UTENTE GUEST
+	ELSE
+	BEGIN
+		--ATTENZIONE! Per gli utenti GUEST non gestiamo la lista d'attesa
+		-- Inseriamo l'appuntamento (solo se ci sono posti disponibili)
+		IF EXISTS(SELECT 1 FROM Schedules s WITH (UPDLOCK) WHERE Id = @pScheduleId AND PostiResidui > 0)
+		BEGIN
 			INSERT INTO Appuntamenti (IdCliente, UserId, ScheduleId, IdAbbonamento, DataPrenotazione, Note, Nominativo)
-				VALUES(@pIdCliente, @pUserId, @pScheduleId, @idAbbonamento, @dtOperazione, @pNote, @pNominativo)
-			SET @pIdAppuntamento = SCOPE_IDENTITY();
+				VALUES(@pIdCliente, NULL, @pScheduleId, NULL, @dtOperazione, @pNote, @pNominativo)
+			SET @idAppuntamento = SCOPE_IDENTITY();
 
 			-- Riduciamo i posti disponibili per l'evento (schedule)
 			UPDATE Schedules
 				SET PostiResidui = PostiResidui -1
 			WHERE Id = @pScheduleId
 			AND PostiResidui > 0
-
-			IF @@ROWCOUNT = 0
+			
+			IF @@ROWCOUNT <> 1
 			BEGIN
-				RAISERROR(N'Nessun posto disponibile per l''evento',16, 0);
+				ROLLBACK
+				RAISERROR(N'Impossibile creare l''appuntamento GUEST poiché non ci sono disponibilità', 16, 0);
 				RETURN -5
 			END
-
+			
 			-- Ritorno il tipo di appuntamento
-			SELECT 'Confermato' AS TipoAppuntamento
-			-- e come secondo recordset il dettaglio dell'appuntamento da confermare
-			SELECT * FROM Appuntamenti WHERE Id = @pIdAppuntamento
-
-		END 
+			SELECT 'AppuntamentoConfermato' AS TipoAppuntamento,
+			[dbo].[internal_Appuntamento_AsJSON](@idAppuntamento) AS [JSON]
+			GOTO FINE_TRANS;
+		END
+		ELSE
+		BEGIN
+			ROLLBACK;
+			RAISERROR(N'Impossibile creare l''appuntamento GUEST poiché non ci sono disponibilità', 16, 0);
+			RETURN -5
+		END
 	END
-	-- APPUNTAMENTO PER UTENTE GUEST
-	ELSE
-	BEGIN
-		-- Inseriamo l'appuntamento
-		INSERT INTO Appuntamenti (IdCliente, UserId, ScheduleId, IdAbbonamento, DataPrenotazione, Note, Nominativo)
-			VALUES(@pIdCliente, NULL, @pScheduleId, NULL, @dtOperazione, @pNote, @pNominativo)
-		SET @pIdAppuntamento = SCOPE_IDENTITY();
-
-		-- Riduciamo i posti disponibili per l'evento (schedule)
-		UPDATE Schedules
-			SET PostiResidui = PostiResidui -1
-		WHERE Id = @pScheduleId
-		AND PostiResidui > 0
-		
-		-- Ritorno il tipo di appuntamento
-		SELECT 'Confermato' AS TipoAppuntamento
-		-- e come secondo recordset il dettaglio dell'appuntamento da confermare
-		SELECT * FROM Appuntamenti WHERE Id = @pIdAppuntamento
-	END
+FINE_TRANS:
 COMMIT;
 RETURN 1
-
 END
