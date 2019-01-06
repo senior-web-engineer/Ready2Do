@@ -38,7 +38,8 @@ CREATE PROCEDURE [dbo].[Appuntamenti_Add]
 	@pIdAbbonamento				INT = NULL,
 	@pNote						NVARCHAR(1000),
 	@pNominativo				NVARCHAR(200),
-	@pTimeoutManagerPayload		NVARCHAR(MAX)
+	@pTimeoutManagerPayload		NVARCHAR(MAX),
+	@pIdAppuntamento			INT OUTPUT -- valorizzato solo viene preso effettivamente un abbonamento 
 AS
 BEGIN
 SET NOCOUNT ON;
@@ -51,7 +52,6 @@ DECLARE @dtOperazione		DATETIME2 = SYSDATETIME(),
 		@numIngressiResidui INT = NULL,
 		@numPostiResidui	INT = NULL,
 		@livelloLezione		INT = NULL,
-		@idAppuntamento		INT = NULL,
 		@idWL				INT = NULL,
 		@waitListEnabled	BIT = 0,
 		@dataChiusuraIscriz	DATETIME2 = NULL,
@@ -91,7 +91,7 @@ BEGIN TRANSACTION
 				RETURN -8
 			END
 			--Recuperiamo la finestra di timeout di un AppuntamentoDaConfermare per il cliente. Se non configurata usiamo un default di 48h
-			SELECT @expirationWindowMinutes = COALESCE([Value], (48*60)) FROM ClientiPreferenze WHERE [Key] = 'APPUNTAMENTIDACONFERMARE.EXPIRATION.WINDOW.MINUTES'
+			SELECT @expirationWindowMinutes = COALESCE(CAST([Value] AS INT), (48*60)) FROM ClientiPreferenze WHERE [Key] = 'APPUNTAMENTIDACONFERMARE.EXPIRATION.WINDOW.MINUTES'
 			-- Andiamo a calcore la finestra effettiva tenendo conto della data chiusura iscrizioni
 			SELECT @expirationWindowMinutes  = CASE WHEN DATEDIFF(minute, @dtOperazione, @dataChiusuraIscriz) > @expirationWindowMinutes THEN @expirationWindowMinutes
 												ELSE DATEDIFF(minute, @dtOperazione, @dataChiusuraIscriz) 
@@ -100,10 +100,10 @@ BEGIN TRANSACTION
 			INSERT INTO AppuntamentiDaConfermare(IdCliente, UserId, ScheduleId, DataCreazione, DataExpiration, TimeoutManagerPayload)
 				VALUES(@pIdCliente, @pUserId, @pScheduleId, @dtOperazione, DATEADD(minute,@expirationWindowMinutes,@dtOperazione), @pTimeoutManagerPayload)
 
-			SET @idAppuntamento = SCOPE_IDENTITY();
+			SET @pIdAppuntamento = SCOPE_IDENTITY();
 			-- Ritorno il tipo di appuntamento
 			SELECT 'AppuntamentoDaConfermare' AS TipoAppuntamento, 
-					[dbo].[internal_AppuntamentoDaConfermare_AsJSON](@idAppuntamento) AS [JSON]
+					[dbo].[internal_AppuntamentoDaConfermare_AsJSON](@pIdAppuntamento) AS [JSON]
 			-- Terminiamo la transazione
 			GOTO FINE_TRANS;
 		END
@@ -146,10 +146,7 @@ BEGIN TRANSACTION
 			IF COALESCE(@numIngressiResidui, -1) > 0
 			BEGIN
 				UPDATE AbbonamentiUtenti SET IngressiResidui = IngressiResidui -1 WHERE Id = @idAbbonamento;
-				-- Loggiamo la transazione
-				INSERT INTO AbbonamentiTransazioni (IdAbbonamento, Testo)
-					SELECT @idAbbonamento,
-						   CONCAT('Decrementato 1 Ingresso per Appuntamento a Schedule: ', @pScheduleId)
+				EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'APP', -1, @dtOperazione, @pScheduleId, NULL
 			END
 
 			-- Decrementiamo i posti disponibili per l'evento (schedule)
@@ -164,11 +161,11 @@ BEGIN TRANSACTION
 				-- Inseriamo l'appuntamento
 				INSERT INTO Appuntamenti (IdCliente, UserId, ScheduleId, IdAbbonamento, DataPrenotazione, Note, Nominativo)
 					VALUES(@pIdCliente, @pUserId, @pScheduleId, @idAbbonamento, @dtOperazione, @pNote, @pNominativo)
-				SET @idAppuntamento = SCOPE_IDENTITY();
+				SET @pIdAppuntamento = SCOPE_IDENTITY();
 
 				-- Ritorno il tipo di appuntamento
 				SELECT 'AppuntamentoConfermato' AS TipoAppuntamento,
-					[dbo].[internal_Appuntamento_AsJSON](@idAppuntamento) AS [JSON]
+					[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]
 
 				GOTO FINE_TRANS;
 			END
@@ -188,10 +185,9 @@ BEGIN TRANSACTION
 						VALUES(@pIdCliente, @pScheduleId, @pUserId, @pIdAbbonamento, @dtInizioSchedule);
 					
 					SET @idWL = SCOPE_IDENTITY();
+					EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'WLI', -1, @dtOperazione, NULL, @idWL
 
-					--TODO: Gestire il ritorno del record in WL
-					SELECT 'WaitingList' AS TipoAppuntamento, 
-					[dbo].internal_ListaAttesa_AsJSON(@idWL) AS [JSON]
+					SELECT 'WaitingList' AS TipoAppuntamento, [dbo].internal_ListaAttesa_AsJSON(@idWL) AS [JSON]
 	
 					GOTO FINE_TRANS;
 				END
@@ -207,7 +203,7 @@ BEGIN TRANSACTION
 		BEGIN
 			INSERT INTO Appuntamenti (IdCliente, UserId, ScheduleId, IdAbbonamento, DataPrenotazione, Note, Nominativo)
 				VALUES(@pIdCliente, NULL, @pScheduleId, NULL, @dtOperazione, @pNote, @pNominativo)
-			SET @idAppuntamento = SCOPE_IDENTITY();
+			SET @pIdAppuntamento = SCOPE_IDENTITY();
 
 			-- Riduciamo i posti disponibili per l'evento (schedule)
 			UPDATE Schedules
@@ -224,7 +220,7 @@ BEGIN TRANSACTION
 			
 			-- Ritorno il tipo di appuntamento
 			SELECT 'AppuntamentoConfermato' AS TipoAppuntamento,
-			[dbo].[internal_Appuntamento_AsJSON](@idAppuntamento) AS [JSON]
+			[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]
 			GOTO FINE_TRANS;
 		END
 		ELSE

@@ -8,9 +8,12 @@
 	@pIngressiResidui		smallint,
 	@pImporto				decimal(10,2),
 	@pImportoPagato			decimal(10,2),
-	@pIdAbbonamento		int output --Se valorizzato in INPUT verrà fatto un update
+	@pIdAbbonamento			int output --Se valorizzato in INPUT verrà fatto un update
 AS
 BEGIN
+	DECLARE @deltaIngressi INT
+	DECLARE @dtOperazione datetime2 = sysdatetime()
+
 	IF @pIdAbbonamento IS NULL OR @pIdAbbonamento <= 0
 	BEGIN
 		INSERT INTO AbbonamentiUtenti(IdCliente, UserId, IdTipoAbbonamento, DataInizioValidita, Scadenza, IngressiIniziali, IngressiResidui, Importo, ImportoPagato)
@@ -19,6 +22,8 @@ BEGIN
 	END
 	ELSE
 	BEGIN
+		DECLARE @tblChanges TABLE(IdAbbonamento INT, OldIngressiResidui SMALLINT, NewIngressiResidui SMALLINT)
+
 		UPDATE AbbonamentiUtenti
 		SET DataInizioValidita = @pDataInizioValidita,
 			Scadenza = @pScadenza,
@@ -26,6 +31,8 @@ BEGIN
 			IngressiResidui = @pIngressiResidui,
 			Importo = @pImporto,
 			ImportoPagato = @pImportoPagato
+			OUTPUT inserted.Id, deleted.IngressiResidui, inserted.IngressiResidui 
+				INTO @tblChanges(IdAbbonamento, OldIngressiResidui, NewIngressiResidui)
 		WHERE Id = @pIdAbbonamento
 		AND IdCliente = @pIdCliente
 		AND UserId = @pUserId
@@ -36,6 +43,11 @@ BEGIN
 			RAISERROR(N'Parametri non validi', 16, 0);
 			RETURN -1
 		END
+
+		--Tracciamo la modifica agli ingressi
+		SELECT @deltaIngressi = NewIngressiResidui - OldIngressiResidui FROM @tblChanges
+		EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @pIdAbbonamento, 'EDT', @deltaIngressi, @dtOperazione, NULL, NULL
+
 	END
 	RETURN 1;
 END

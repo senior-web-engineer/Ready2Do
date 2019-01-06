@@ -39,7 +39,7 @@ BEGIN
 		-- e ci prendiamo un UPDLOCK (sul record specifico) così da evitare aggiornamenti concorrenti
 		UPDATE A
 			SET A.DataCancellazione = @dtOperazione
-			OUTPUT inserted.Id, inserted.ScheduleId, inserted.IdAbbonamento, S.CancellabileFinoAl, S.CancellabileFinoAl, S.PostiResidui, COALESCE(S.WaitListDisponibile, 0)
+			OUTPUT inserted.Id, inserted.ScheduleId, inserted.IdAbbonamento, S.CancellabileFinoAl, S.PostiResidui, COALESCE(S.WaitListDisponibile, 0)
 				INTO @tblUpdated(Id, ScheduleId, IdAbbonamento, ScheduleCancellabileFinoAl, PostiResidui, WaitListAvailable)
 		FROM Appuntamenti A
 			INNER JOIN Schedules S WITH (UPDLOCK) ON A.ScheduleId = S.Id
@@ -66,7 +66,7 @@ BEGIN
 		-- NOTA: non andiamo a verificare la presenza di utenti in WL se l'utente non è completo perché NON DOVREBBERO ESSERCENE
 		IF EXISTS(SELECT 1 FROM @tblUpdated t WHERE t.WaitListAvailable = 1 AND PostiResidui = 0)
 		BEGIN			
-			EXEC [dbo].[internal_ListeAttesa_PromuoviToAppuntamento] 1, @idSchedule, @numRecordPromoted OUT
+			EXEC [internal_ListeAttesa_PromuoviToAppuntamento] 1, @idSchedule, @numRecordPromoted OUT
 			IF @numRecordPromoted > 0
 			BEGIN
 				SET @mustIncrementPosti = 0; -- Non dobbiamo aumentare i Posti disponibili avendo convertito un utente in lista
@@ -87,6 +87,9 @@ BEGIN
 				SET IngressiResidui = IngressiResidui +1
 			WHERE Id = @idAbbonamento
 			AND IngressiResidui IS NOT NULL -- se non sono previsti ingressi per questo abbonamento non facciamo riaccrediti
+			
+			--Tracciamo la transazione
+			EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'CAP', 1, @dtOperazione, @idAbbonamento, NULL
 		END
 
 	COMMIT

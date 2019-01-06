@@ -1,4 +1,4 @@
-﻿require('./js/ready2do');
+﻿require('./ready2do');
 
 //SottomModule pattern
 ready2do.editEvento = (function () {

@@ -138,7 +138,6 @@
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoList.sql" />
     <Build Include="dbo\Stored Procedures\Clienti_Utenti_AbbonamentoGet.sql" />
     <Build Include="dbo\Views\vAppuntamenti.sql" />
-    <Build Include="dbo\Views\vAbbonamentiTransazioni.sql" />
     <Build Include="dbo\Views\vAbbonamentiUtenti.sql" />
     <Build Include="dbo\Views\vTipologieAbbonamenti.sql" />
     <Build Include="dbo\Views\vTipologieClienti.sql" />
@@ -215,6 +214,10 @@
     <Build Include="dbo\Functions\internal_ListaAttesa_AsJSON.sql" />
     <Build Include="dbo\Stored Procedures\ListeAttesa_CleanExpired.sql" />
     <Build Include="dbo\Stored Procedures\internal_ListeAttesa_PromuoviToAppuntamento.sql" />
+    <Build Include="dbo\Stored Procedures\events\internal_Schedule_NotifyChanges.sql" />
+    <Build Include="dbo\Functions\ClientePreferenzaGet.sql" />
+    <Build Include="dbo\Stored Procedures\events\internal_WaitList_NotifyPromotion.sql" />
+    <Build Include="dbo\Stored Procedures\internal_AbbonamentiUtenti_LogTransazione.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
@@ -225,6 +228,7 @@
     <None Include="Scripts\Prepop\Prepop.Utils.Date.sql" />
     <None Include="Scripts\Prepop\Prepop.Utils.Numbers.sql" />
     <None Include="Scripts\Prepop\Prepop.StatiCliente.sql" />
+    <None Include="Scripts\Prepop\Prepop.DEFAULT.ClientiPreferenze.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
