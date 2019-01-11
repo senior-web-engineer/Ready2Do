@@ -18,7 +18,6 @@ using Web.Utils;
 namespace Web.Controllers.API
 {
     [Route("{cliente}/eventi")]
-    //[Authorize]
     public class EventFeedsController : ControllerBase
     {
         private readonly AppConfig _appConfig;
@@ -38,8 +37,8 @@ namespace Web.Controllers.API
         [HttpGet("feeds")]
         public async Task<IActionResult> GetEvents([FromRoute(Name = "cliente")] string clientRoute, [FromQuery] string lid, [FromQuery] string start, [FromQuery] string end)
         {
+            _logger.LogInformation($"Gettings events for [{clientRoute}], Location: {lid}, StartDate:{start}, EndDate: {end}");
             AuthTokenModel token;
-            DateTime startDate, endDate;
             int idLocation = -1;
             int? idLocationNullable = null;
             if (string.IsNullOrEmpty(clientRoute))
@@ -51,11 +50,14 @@ namespace Web.Controllers.API
                 idLocationNullable = idLocation;
             }
 
-            if (!DateTime.TryParseExact(start, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate))
+            DateTime? startDate = start.FromIS8601();
+            DateTime? endDate = end.FromIS8601();
+            
+            if (!startDate.HasValue)
             {
                 return BadRequest();
             }
-            if (!DateTime.TryParseExact(end, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
+            if (!endDate.HasValue)
             {
                 return BadRequest();
             }
@@ -68,6 +70,7 @@ namespace Web.Controllers.API
             var headerValue = header.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(headerValue))
             {
+                _logger.LogWarning("Unauthorized access to GetEvents(...)");
                 return Unauthorized();
             }
             try
@@ -82,6 +85,7 @@ namespace Web.Controllers.API
             }
             if (token == null || !clientRoute.Equals(token.ClientRoute))
             {
+                _logger.LogWarning("Unauthorized access to GetEvents(...)");
                 return Unauthorized();
             }
 
@@ -91,7 +95,7 @@ namespace Web.Controllers.API
                 return Unauthorized();
             }
             //var cliente = await WebAPIClient.GetClienteAsync(clientRoute, _appConfig.WebAPI.BaseAddress);
-            var schedules = await _apiClient.GetSchedulesAsync(token.IdCliente, startDate, endDate, idLocationNullable);
+            var schedules = await _apiClient.GetSchedulesAsync(token.IdCliente, startDate.Value, endDate.Value, idLocationNullable);
             var result = schedules.MapToSchedulerEventViewModel();
 
             return Ok(result);

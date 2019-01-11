@@ -85,42 +85,48 @@ namespace PalestreGoGo.WebAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetSchedules([FromRoute]int idCliente, [FromQuery(Name = "sd")] string start = null, [FromQuery(Name = "ed")]string end = null,
                                                         [FromQuery(Name = "lid")]int? idLocation = null, [FromQuery(Name = "tlid")]int? idTipoLezione = null,
-                                                        [FromQuery(Name = "onlyavailable")]bool soloPostiDisp = false, [FromQuery(Name = "onlyopen")]bool soloIscrizAperte = true,
-                                                        [FromQuery(Name = "psize")]int pageSize = 25, [FromQuery(Name = "pnum")]int pageNumber = 1,
-                                                        [FromQuery(Name = "sortcol")]string sortColumn = "dataorainizio", [FromQuery(Name = "asc")]bool ascending = true,
-                                                        [FromQuery(Name = "deleted")]bool includeDeleted = false)
+                                                        [FromQuery(Name = "onlyavailable")]bool? soloPostiDisp = false, [FromQuery(Name = "onlyopen")]bool? soloIscrizAperte = true,
+                                                        [FromQuery(Name = "psize")]int? pageSize = 25, [FromQuery(Name = "pnum")]int? pageNumber = 1,
+                                                        [FromQuery(Name = "sortcol")]string sortColumn = "dataorainizio", [FromQuery(Name = "asc")]bool? ascending = true,
+                                                        [FromQuery(Name = "deleted")]bool? includeDeleted = false)
         {
             //Gli item cancellati sono visibili solo dal gestore della struttura
-            if (!User.CanManageStructure(idCliente) && includeDeleted) return BadRequest();
+            if (!User.CanManageStructure(idCliente) && includeDeleted.Value) return BadRequest();
             //Gli utenti NON amministratori possono vedere solo gli schedule per cui sono aperte le iscrizioni
-            if (!User.CanManageStructure(idCliente) && !soloIscrizAperte) return BadRequest();
+            if (!User.CanManageStructure(idCliente) && !(soloIscrizAperte.Value)) return BadRequest();
 
             DateTime startDate, endDate;
             IEnumerable<ScheduleDM> schedules;
-            if (string.IsNullOrEmpty(end))
+            if (string.IsNullOrEmpty(start))
             {
                 startDate = DateTime.Now.AddDays(-10); // Default: Oggi -10 gg
+                _logger.LogTrace($"Empty StartDate. Used default [{startDate}]");
             }
-            else if (!DateTime.TryParseExact(start.Replace("T", " "), "u", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out startDate))
+            else if (!DateTime.TryParse(start, null, DateTimeStyles.RoundtripKind , out startDate))
             {
+                _logger.LogWarning($"Invalid StartDate parameter[{startDate}]. Return BAD_REQUEST");
                 return BadRequest();
             }
             if (string.IsNullOrEmpty(end))
             {
                 endDate = DateTime.Now.AddDays(10); // Default: Oggi +10 gg
+                _logger.LogTrace($"Empty EndDate. Used default [{endDate}]");
             }
-            else if (!DateTime.TryParseExact(end.Replace("T", " "), "u", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out endDate))
+            else if (!DateTime.TryParse(end, null, DateTimeStyles.RoundtripKind, out endDate))
             {
+                _logger.LogWarning($"Invalid EndDate parameter[{end}]. Return BAD_REQUEST");
                 return BadRequest();
             }
 
             /*Limitiamo il range temporale per cui ritornare gli schedules a 60 giorni*/
-            if (endDate.Subtract(startDate).TotalDays > 60)
+            var rangeDays = endDate.Subtract(startDate).TotalDays;
+            if (rangeDays > 60)
             {
+                _logger.LogWarning($"Richiesto un range troppo ampio [{rangeDays}]. StartDate: {startDate}, EndDate: {endDate}");
                 return BadRequest();
             }
 
-            schedules = await _repository.GetScheduleListAsync(idCliente, startDate, endDate, idLocation, idTipoLezione, soloPostiDisp, soloIscrizAperte, pageSize, pageNumber, sortColumn, ascending, includeDeleted);
+            schedules = await _repository.GetScheduleListAsync(idCliente, startDate, endDate, idLocation, idTipoLezione, soloPostiDisp.Value, soloIscrizAperte.Value, pageSize.Value, pageNumber.Value, sortColumn, ascending.Value, includeDeleted.Value);
             return Ok(schedules);
         }
 

@@ -5,12 +5,14 @@ using ready2do.model.common;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
@@ -382,7 +384,7 @@ namespace Web.Utils
         #region SCHEDULES
         public async Task<IEnumerable<ScheduleDM>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToString("yyyyMMddTHHmmss")}&ed={end.ToString("yyyyMMddTHHmmss")}&lid={idLocation}");
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToISO8601(true)}&ed={end.ToISO8601(true)}&lid={idLocation}");
             return await GetRequestAsync<IEnumerable<ScheduleDM>>(uri, null);
         }
 
