@@ -9,7 +9,7 @@
             <div class="r2d-sidenav-topspacer"></div>
         </li>
         <li class="no-padding">
-            <a class="r2d-text-bold" asp-action="Index" asp-controller="Clienti">
+            <a class="r2d-text-bold" asp-action="Index" asp-controller="Clienti" asp-route-cliente="@Model.ClienteRoute">
                 Home
             </a>
         </li>
@@ -20,17 +20,17 @@
                     <div class="collapsible-body">
                         <ul>
                             <li class="@(Model.CurrentController.Equals("profilocliente") && Model.CurrentAction.Equals("getanagrafica") ? "active" : "")">
-                                <a class="r2d-sidenav-item" asp-action="GetAnagrafica" asp-controller="ProfiloCliente">
+                                <a class="r2d-sidenav-item" asp-action="GetAnagrafica" asp-controller="ProfiloCliente" asp-route-cliente="@Model.ClienteRoute">
                                     Anagrafica
                                 </a>
                             </li>
                             <li class="@(Model.CurrentController.Equals("profilocliente") && Model.CurrentAction.Equals("getbanner") ? "active" : "")">
-                                <a class="r2d-sidenav-item" asp-action="GetBanner" asp-controller="ProfiloCliente">
+                                <a class="r2d-sidenav-item" asp-action="GetBanner" asp-controller="ProfiloCliente" asp-route-cliente="@Model.ClienteRoute">
                                     Immagine Profilo
                                 </a>
                             </li>
                             <li class="@(Model.CurrentController.Equals("profilocliente") && Model.CurrentAction.Equals("getorarioapertura") ? "active" : "")">
-                                <a class="r2d-sidenav-item" asp-action="GetOrarioApertura" asp-controller="ProfiloCliente">
+                                <a class="r2d-sidenav-item" asp-action="GetOrarioApertura" asp-controller="ProfiloCliente" asp-route-cliente="@Model.ClienteRoute">
                                     Orario Apertura
                                 </a>
                             </li>
@@ -40,22 +40,22 @@
             </ul>
         </li>
         <li class="@(Model.CurrentController.Equals("scheduler") ? "active" : "")">
-            <a class="r2d-text-bold" asp-action="Index" asp-controller="Scheduler">Calendari</a>
+            <a class="r2d-text-bold" asp-action="Index" asp-controller="Scheduler" asp-route-cliente="@Model.ClienteRoute">Calendari</a>
         </li>
         <li class="@(Model.CurrentController.Equals("clienti") && Model.CurrentAction.Equals("galleryedit")  ? "active" : "")">
-            <a class="r2d-text-bold" asp-action="GalleryEdit" asp-controller="Clienti">Galleria Immagini</a>
+            <a asp-controller="Clienti" asp-action="GalleryEdit" class="r2d-text-bold" asp-route-cliente="@Model.ClienteRoute">Galleria Immagini</a>
         </li>
         <li class="@(Model.CurrentController.Equals("sale") ? "active" : "")">
-            <a class="r2d-text-bold " asp-action="ListaSale" asp-controller="Sale">Sale e Trainer</a>
+            <a class="r2d-text-bold " asp-action="ListaSale" asp-controller="Sale" asp-route-cliente="@Model.ClienteRoute">Sale e Trainer</a>
         </li>
         <li class="@(Model.CurrentController.Equals("tipologielezioni") ? "active" : "")">
-            <a class="r2d-text-bold" asp-action="ListaLezioni" asp-controller="TipologieLezioni">Tipologie Lezioni</a>
+            <a class="r2d-text-bold" asp-action="ListaLezioni" asp-controller="TipologieLezioni" asp-route-cliente="@Model.ClienteRoute">Tipologie Lezioni</a>
         </li>
         <li class="@(Model.CurrentController.Equals("abbonamenti") ? "active" : "")">
-            <a class="r2d-text-bold" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti">Tipologia Abbonamenti</a>
+            <a class="r2d-text-bold" asp-action="TipoAbbonamenti" asp-controller="Abbonamenti" asp-route-cliente="@Model.ClienteRoute">Tipologia Abbonamenti</a>
         </li>
         <li class="@(Model.CurrentController.Equals("utenticliente")  ? "active" : "")">
-            <a class="r2d-text-bold" asp-action="GetListaUtenti" asp-controller="UtentiCliente">Utenti</a>
+            <a class="r2d-text-bold" asp-action="GetListaUtenti" asp-controller="UtentiCliente" asp-route-cliente="@Model.ClienteRoute">Utenti</a>
         </li>
         <li>
             <partial name="_Banner_RettangoloMedio" />

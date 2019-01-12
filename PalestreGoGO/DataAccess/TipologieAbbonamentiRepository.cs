@@ -151,7 +151,7 @@ namespace PalestreGoGo.DataAccess
             }
         }
 
-        public async Task<bool> CheckNomeAsync(int idCliente, string nome)
+        public async Task<bool> CheckNomeAsync(int idCliente, string nome, int? id)
         {
             SqlParameter parResult = new SqlParameter("@pResult", SqlDbType.Bit);
             parResult.Direction = ParameterDirection.Output;
@@ -162,6 +162,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pNomeTipoAbbonamento", SqlDbType.NVarChar, 100).Value = nome;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdAbbonamento", SqlDbType.Int).Value = id;
                 cmd.Parameters.Add(parResult);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();

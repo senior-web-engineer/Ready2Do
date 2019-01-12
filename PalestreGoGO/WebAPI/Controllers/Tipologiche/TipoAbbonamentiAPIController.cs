@@ -77,5 +77,15 @@ namespace PalestreGoGo.WebAPI.Controllers
             await _repository.DeleteAsync(idCliente, id);
             return NoContent();
         }
+
+        [HttpGet("checknome")]
+        public async Task<IActionResult> CheckNome([FromRoute]int idCliente, [FromQuery]string nome, [FromQuery]int? id)
+        {
+            bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
+            if (!authorized) { return Forbid(); }
+            var result = await _repository.CheckNomeAsync(idCliente, nome, id);
+            return Ok(result);
+        }
+
     }
 }

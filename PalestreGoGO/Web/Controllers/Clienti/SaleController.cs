@@ -19,32 +19,29 @@ namespace Web.Controllers
     [Route("/{cliente}/sale")]
     public class SaleController : Controller
     {
-            private readonly ILogger<AccountController> _logger;
-            private readonly AppConfig _appConfig;
-            private readonly WebAPIClient _apiClient;
-            private readonly ClienteResolverServices _clientiResolver;
+        private readonly ILogger<AccountController> _logger;
+        private readonly AppConfig _appConfig;
+        private readonly WebAPIClient _apiClient;
+        private readonly ClienteResolverServices _clientiResolver;
 
-            public SaleController(ILogger<AccountController> logger,
-                                     IOptions<AppConfig> apiOptions,
-                                     WebAPIClient apiClient,
-                                     ClienteResolverServices clientiResolver
-                                )
-            {
-                _logger = logger;
-                _appConfig = apiOptions.Value;
-                _apiClient = apiClient;
-                _clientiResolver = clientiResolver;
-            }
+        public SaleController(ILogger<AccountController> logger,
+                                 IOptions<AppConfig> apiOptions,
+                                 WebAPIClient apiClient,
+                                 ClienteResolverServices clientiResolver
+                            )
+        {
+            _logger = logger;
+            _appConfig = apiOptions.Value;
+            _apiClient = apiClient;
+            _clientiResolver = clientiResolver;
+        }
 
         #region Gestione Locations
+        [Authorize(Policy = "CanEditStruttura")]
         [HttpGet()]
         public async Task<IActionResult> ListaSale([FromRoute(Name = "cliente")]string urlRoute)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
             ViewData["IdCliente"] = idCliente;
             var locations = await _apiClient.GetLocationsAsync(idCliente);
             return View("ListaSale", locations.ToList());
@@ -55,7 +52,7 @@ namespace Web.Controllers
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()){return Forbid();}
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Modifica Sala";
             var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -68,7 +65,10 @@ namespace Web.Controllers
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()){return Forbid();}
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return RedirectToAction("Index", "Clienti", new { cliente = urlRoute });
+            }
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Nuova Sala";
             var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -82,9 +82,11 @@ namespace Web.Controllers
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()){return Forbid();}
-            if (!ModelState.IsValid){
-                if ((location != null) & (location.Id > 0)) {
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
+            if (!ModelState.IsValid)
+            {
+                if ((location != null) & (location.Id > 0))
+                {
                     return View("SalaEdit", location);
                 }
             }
@@ -100,10 +102,7 @@ namespace Web.Controllers
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             await _apiClient.DeleteOneLocationAsync(idCliente, idSala, accessToken);
             return RedirectToAction("ListaSale");

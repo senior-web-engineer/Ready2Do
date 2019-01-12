@@ -363,7 +363,6 @@ namespace Web.Utils
         {
             HttpClient client = new HttpClient();
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti");
-            HttpRequestMessage request;
             if (tipoAbbonamento.Id.HasValue && tipoAbbonamento.Id.Value > 0)
             {
                 await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{tipoAbbonamento.Id}", tipoAbbonamento, access_token);
@@ -377,6 +376,13 @@ namespace Web.Utils
         public async Task DeleteOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
         {
             await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}", access_token);
+        }
+
+        public async Task<bool> CheckNomeTipologiaAbbonamentoAsync(int idCliente, string nome, int? id, string access_token)
+        {
+            string qsOpz = id.HasValue ? $"&id={id}" : "";
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/checknome?nome={nome}{qsOpz}");
+            return await GetRequestAsync<bool>(uri, access_token);
         }
 
         #endregion

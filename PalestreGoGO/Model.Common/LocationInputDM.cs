@@ -7,6 +7,8 @@
         public string Nome { get; set; }
         public string Descrizione { get; set; }
         public short? CapienzaMax { get; set; }
-
+        public string Colore { get; set; }
+        public string UrlImage { get; set; }
+        public string UrlIcon { get; set; }
     }
 }

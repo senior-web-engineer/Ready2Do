@@ -3,18 +3,17 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
+using Web.Models.Mappers;
 using Web.Services;
 using Web.Utils;
 
@@ -76,55 +75,22 @@ namespace Web.Controllers
 
         [HttpPost("{cliente}/eventi/new")]
         [HttpPost("{cliente}/eventi/edit/{id}")]
-        public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] ScheduleViewModel evento, [FromRoute(Name = "id")] int? idEvento)
+        public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] ScheduleInputViewModel evento, [FromRoute(Name = "id")] int? idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
-            var locations = await _apiClient.GetLocationsAsync(idCliente);
             if (!ModelState.IsValid)
             {
+                var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
+                var locations = await _apiClient.GetLocationsAsync(idCliente);
                 ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
                 ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
                 ViewData["IdCliente"] = idCliente;
-                return View("EditEvento", evento);
+                return View("EditEvento", new ScheduleViewModel(evento));
             }
 
-            if ((evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue) ||
-                (evento.DataCancellazioneMax.HasValue && !evento.OraCancellazioneMax.HasValue))
-            {
-                ModelState.AddModelError("DataOraCancellazione", "E' necessario specificare sia la Data che l'Ora limite per la Cancellazione dell'evento");
-                return View("EditEvento", evento);
-            }
-
-            if (evento.DataCancellazioneMax.HasValue)
-            {
-                var dtCanc = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value);
-                var dtEvento = evento.Data.Value.Add(evento.OraInizio.Value);
-                if (dtEvento < dtCanc)
-                {
-                    ModelState.AddModelError("DataOraCancellazioneTooLate", "La Data limite per la Cancellazione dell'evento deve essere anteriore alla data dell'evento stesso.");
-                    return View("EditEvento", evento);
-                }
-            }
-
-            //TODO: Verificare che la data cancellazione sia antecedente la data evento e le eventuali
-            ScheduleDM apiVM = new ScheduleDM()
-            {
-                CancellabileFinoAl = evento.DataCancellazioneMax.Value.Add(evento.OraCancellazioneMax.Value),
-                DataOraInizio = (evento.Data.Value).Add(evento.OraInizio.Value),
-                Title = evento.Title,
-                IdCliente = idCliente,
-                IdLocation = evento.IdLocation.Value,
-                Istruttore = evento.Istruttore,
-                Note = evento.Note,
-                //   OraInizio = evento.OraInizio.Value,
-                PostiDisponibili = evento.PostiDisponibili,
-                IdTipoLezione = evento.IdTipoLezione.Value,
-                Id = evento.Id
-            };
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveSchedule(idCliente, apiVM, accessToken);
-            return RedirectToAction("Index", "Schedules");
+            await _apiClient.SaveSchedule(idCliente, evento.ToApiModel(idCliente), accessToken);
+            return RedirectToAction("Index", "Scheduler", new { cliente=urlRoute, lid=evento.IdLocation});
         }
 
 

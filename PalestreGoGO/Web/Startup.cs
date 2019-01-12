@@ -17,6 +17,9 @@ using Web.Utils;
 using Microsoft.AspNetCore.Authentication;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using FluentValidation.AspNetCore;
+using Web.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 
 //using 
@@ -53,7 +56,7 @@ namespace Web
             //services.AddDataProtection()
             //    .PersistKeysToAzureBlobStorage(new Uri("<blob URI including SAS token>"));
 
-          
+
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -62,7 +65,20 @@ namespace Web
             .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
             .AddCookie();
 
-            services.AddMvc();
+            services.AddMvc()
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining(this.GetType());
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true; //Per ora lasciamo abilitata la validazione di default (DataAnnotations) fino alla migrazione completa
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanEditStruttura", policy => policy.Requirements.Add(new CadEditStrutturaRequirement()));
+            });
+            services.AddSingleton<IAuthorizationHandler, CanEditStrutturaHandler>();
+
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.ViewLocationExpanders.Add(new SharedViewsLocationExpander());

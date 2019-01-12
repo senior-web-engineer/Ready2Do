@@ -1,65 +1,7 @@
+var EntryPoint =
 /******/ (function(modules) { // webpackBootstrap
-/******/ 	// install a JSONP callback for chunk loading
-/******/ 	function webpackJsonpCallback(data) {
-/******/ 		var chunkIds = data[0];
-/******/ 		var moreModules = data[1];
-/******/ 		var executeModules = data[2];
-/******/
-/******/ 		// add "moreModules" to the modules object,
-/******/ 		// then flag all "chunkIds" as loaded and fire callback
-/******/ 		var moduleId, chunkId, i = 0, resolves = [];
-/******/ 		for(;i < chunkIds.length; i++) {
-/******/ 			chunkId = chunkIds[i];
-/******/ 			if(installedChunks[chunkId]) {
-/******/ 				resolves.push(installedChunks[chunkId][0]);
-/******/ 			}
-/******/ 			installedChunks[chunkId] = 0;
-/******/ 		}
-/******/ 		for(moduleId in moreModules) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
-/******/ 				modules[moduleId] = moreModules[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
-/******/
-/******/ 		while(resolves.length) {
-/******/ 			resolves.shift()();
-/******/ 		}
-/******/
-/******/ 		// add entry modules from loaded chunk to deferred list
-/******/ 		deferredModules.push.apply(deferredModules, executeModules || []);
-/******/
-/******/ 		// run deferred modules when all chunks ready
-/******/ 		return checkDeferredModules();
-/******/ 	};
-/******/ 	function checkDeferredModules() {
-/******/ 		var result;
-/******/ 		for(var i = 0; i < deferredModules.length; i++) {
-/******/ 			var deferredModule = deferredModules[i];
-/******/ 			var fulfilled = true;
-/******/ 			for(var j = 1; j < deferredModule.length; j++) {
-/******/ 				var depId = deferredModule[j];
-/******/ 				if(installedChunks[depId] !== 0) fulfilled = false;
-/******/ 			}
-/******/ 			if(fulfilled) {
-/******/ 				deferredModules.splice(i--, 1);
-/******/ 				result = __webpack_require__(__webpack_require__.s = deferredModule[0]);
-/******/ 			}
-/******/ 		}
-/******/ 		return result;
-/******/ 	}
-/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
-/******/ 	// object to store loaded and loading chunks
-/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 	// Promise = chunk loading, 0 = chunk loaded
-/******/ 	var installedChunks = {
-/******/ 		"js": 0
-/******/ 	};
-/******/
-/******/ 	var deferredModules = [];
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -138,18 +80,9 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
-/******/ 	var jsonpArray = window["webpackJsonp"] = window["webpackJsonp"] || [];
-/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
-/******/ 	jsonpArray.push = webpackJsonpCallback;
-/******/ 	jsonpArray = jsonpArray.slice();
-/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
-/******/ 	var parentJsonpFunction = oldJsonpFunction;
 /******/
-/******/
-/******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push(["./wwwroot-src/app.js","vendors~js"]);
-/******/ 	// run deferred modules when ready
-/******/ 	return checkDeferredModules();
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./wwwroot-src/app.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -158,11 +91,11 @@
 /*!****************************!*\
   !*** ./wwwroot-src/app.js ***!
   \****************************/
-/*! no exports provided */
+/*! exports provided: r2dEditEvento */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./materialize-src/sass/materialize.scss */ \"./wwwroot-src/materialize-src/sass/materialize.scss\");\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/global-format.scss */ \"./wwwroot-src/css/global-format.scss\");\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./css/clienti.scss */ \"./wwwroot-src/css/clienti.scss\");\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__);\n\n\n\n\n__webpack_require__(/*! ./js/ready2do */ \"./wwwroot-src/js/ready2do.js\");\n\n__webpack_require__(/*! ./js/r2do.EditEvento */ \"./wwwroot-src/js/r2do.EditEvento.js\");\n\n//# sourceURL=webpack:///./wwwroot-src/app.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./materialize-src/sass/materialize.scss */ \"./wwwroot-src/materialize-src/sass/materialize.scss\");\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/global-format.scss */ \"./wwwroot-src/css/global-format.scss\");\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./css/clienti.scss */ \"./wwwroot-src/css/clienti.scss\");\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _js_r2do_EditEvento__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/r2do.EditEvento */ \"./wwwroot-src/js/r2do.EditEvento.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"r2dEditEvento\", function() { return _js_r2do_EditEvento__WEBPACK_IMPORTED_MODULE_3__[\"r2dEditEvento\"]; });\n\n\n\n\n\n\n__webpack_require__(/*! ./js/ready2do */ \"./wwwroot-src/js/ready2do.js\");\n\n\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/app.js?");
 
 /***/ }),
 
@@ -173,7 +106,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mat
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwroot-src/css/clienti.scss?");
+eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/css/clienti.scss?");
 
 /***/ }),
 
@@ -184,7 +117,7 @@ eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwr
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwroot-src/css/global-format.scss?");
+eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/css/global-format.scss?");
 
 /***/ }),
 
@@ -192,10 +125,23 @@ eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwr
 /*!*******************************************!*\
   !*** ./wwwroot-src/js/r2do.EditEvento.js ***!
   \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: r2dEditEvento */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-eval("__webpack_require__(/*! ./ready2do */ \"./wwwroot-src/js/ready2do.js\"); //SottomModule pattern\n\n\nready2do.editEvento = function () {\n  var _init = function _init() {};\n\n  return {\n    init: _init\n  };\n}();\n\n//# sourceURL=webpack:///./wwwroot-src/js/r2do.EditEvento.js?");
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"r2dEditEvento\", function() { return r2dEditEvento; });\n/* harmony import */ var _r2do_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./r2do.i18n */ \"./wwwroot-src/js/r2do.i18n.js\");\n\n\nfunction _r2dEditEvento() {\n  this._selectInstances = [];\n  this._datePickDataEvento = null;\n  this._timePickOraEvento = null;\n  this._datePickCancellabileFinoAl = null;\n  this._timePickCancellabileFinoAl = null;\n  this._datePickAperturaIscriz = null;\n  this._timePickAperturaIscriz = null;\n  this._datePickChiusuraIscriz = null;\n  this._timePickChiusuraIscriz = null;\n  this._datePickInizioVisibIscriz = null;\n  this._timePickInizioVisibIscriz = null;\n  this._datePickFineVisibIscriz = null;\n  this._timePickFineVisibIscriz = null;\n  this._checkCancellazionConsentita = null;\n  this._checkWaitListAvailable = null;\n  this._dataEvento = null;\n  this._tipoRicorrenza = null;\n  /* OPZIONI */\n\n  this._buildOpzioniDatePicker = function (minDate, defaultDate) {\n    var result = {\n      format: \"dd/mm/yyyy\",\n      i18n: _r2do_i18n__WEBPACK_IMPORTED_MODULE_0__[\"default\"].getDateI18N()\n    };\n\n    if (defaultDate) {\n      result.defaultDate = dataEvento;\n      result.setDefaultDate = true;\n    }\n\n    if (minDate) {\n      result.minDate = minDate;\n    }\n\n    return result;\n  };\n\n  this._builOpzioniTimePicker = function () {\n    var result = {\n      twelveHour: false,\n      i18n: _r2do_i18n__WEBPACK_IMPORTED_MODULE_0__[\"default\"].getTimeI18N()\n    };\n    return result;\n  };\n\n  this._getElemById = function (elemId) {\n    var elem = document.getElementById(elemId);\n    return elem;\n  };\n\n  this.init = function (dataEvento, oraEvento) {\n    console.log('EditEvento Init in progress...');\n    var object = this;\n    this._dataEvento = dataEvento; //Iniziliziamo tutte le select\n\n    var selectElems = document.querySelectorAll('select');\n    this._selectInstances = M.FormSelect.init(selectElems); //Iniziliziamo gli Expandables\n\n    var accordionElems = document.querySelectorAll('.collapsible.expandable');\n    M.Collapsible.init(accordionElems, {\n      accordion: false\n    }); //Iniziliaziamo tutti i DatePicker e TimePicker\n\n    this._datePickDataEvento = M.Datepicker.init(this._getElemById('dataEvento'), this._buildOpzioniDatePicker(new Date(), dataEvento));\n    this._datePickCancellabileFinoAl = M.Datepicker.init(this._getElemById('dataCancellazione'), this._buildOpzioniDatePicker(new Date()));\n    this._datePickAperturaIscriz = M.Datepicker.init(this._getElemById('dataAperturaIscrizioni'), this._buildOpzioniDatePicker(new Date()));\n    this._datePickChiusuraIscriz = M.Datepicker.init(this._getElemById('dataChiusuraIscrizioni'), this._buildOpzioniDatePicker(new Date()));\n    this._datePickInizioVisibIscriz = M.Datepicker.init(this._getElemById('visibileDalDate'), this._buildOpzioniDatePicker(new Date()));\n    this._datePickFineVisibIscriz = M.Datepicker.init(this._getElemById('visibileFinoAlDate'), this._buildOpzioniDatePicker(new Date()));\n    this._timePickOraEvento = M.Timepicker.init(this._getElemById('oraEvento'), this._builOpzioniTimePicker());\n    this._timePickCancellabileFinoAl = M.Timepicker.init(this._getElemById('oraCancellazione'), this._builOpzioniTimePicker());\n    this._timePickAperturaIscriz = M.Timepicker.init(this._getElemById('oraAperturaIscrizioni'), this._builOpzioniTimePicker());\n    this._timePickChiusuraIscriz = M.Timepicker.init(this._getElemById('oraChiusuraIscrizioni'), this._builOpzioniTimePicker());\n    this._timePickInizioVisibIscriz = M.Timepicker.init(this._getElemById('visibileDalTime'), this._builOpzioniTimePicker());\n    this._timePickFineVisibIscriz = M.Timepicker.init(this._getElemById('VisibileFinoAlTime'), this._builOpzioniTimePicker()); //CheckBox\n\n    this._checkWaitListAvailable = this._getElemById('waitListDisponibile');\n    this._checkCancellazionConsentita = this._getElemById('cancellazioneConsentita');\n\n    this._checkCancellazionConsentita.addEventListener('change', function (e) {\n      object._handleCancellazioneChange(e);\n    });\n\n    this._handleCancellazioneChange(); //Lo chiamiamo esplicitamente per gestire lo stato iniziale\n    //Ricorrenza\n\n\n    this._tipoRicorrenza = this._getElemById('tipoRicorrenza');\n\n    this._tipoRicorrenza.addEventListener('change', function (e) {\n      object._handleTipoRicorrenzaChange(e);\n    }); //RadiButton Tipologia Fine Ricorrenza\n\n\n    this._getElemById('rbFineRicorrenzaNum').addEventListener('change', function (e) {\n      object._handleTipoFineRicorrenzaChange(e, 'rbFineRicorrenzaNum');\n    });\n\n    this._getElemById('rbFineRicorrenzaDate').addEventListener('change', function (e) {\n      object._handleTipoFineRicorrenzaChange(e, 'rbFineRicorrenzaDate');\n    });\n\n    return 0;\n  };\n\n  this._handleCancellazioneChange = function (event) {\n    if (this._checkCancellazionConsentita.checked) {\n      this._getElemById('dataCancellazione').disabled = false;\n      this._getElemById('oraCancellazione').disabled = false;\n      this._checkWaitListAvailable.disabled = false;\n    } else {\n      this._getElemById('dataCancellazione').disabled = true;\n      this._getElemById('oraCancellazione').disabled = true;\n      this._checkWaitListAvailable.disabled = true;\n    }\n  };\n\n  this._handleTipoRicorrenzaChange = function (event) {\n    var value = this._tipoRicorrenza.value;\n    console.log(\"Inside _handleTipoRicorrenzaChange. Value = \" + value);\n\n    switch (value) {\n      case \"none\":\n        console.log(\"handling value: \" + value);\n\n        this._manageSelectStatus(this._getElemById('weekDaysRecurrency'), false);\n\n        this._getElemById('dataFineRecurrency').enabled = false;\n        this._getElemById('numRipetizioni').enabled = false;\n        this._getElemById('rbFineRicorrenzaNum').enabled = false;\n        this._getElemById('rbFineRicorrenzaDate').enabled = false;\n        break;\n\n      case \"daily\":\n        console.log(\"handling value: \" + value);\n\n        this._manageSelectStatus(this._getElemById('weekDaysRecurrency'), false);\n\n        this._getElemById('dataFineRecurrency').enabled = true;\n        this._getElemById('numRipetizioni').enabled = true;\n        this._getElemById('rbFineRicorrenzaNum').enabled = true;\n        this._getElemById('rbFineRicorrenzaDate').enabled = true;\n        break;\n\n      case \"weekly\":\n        console.log(\"handling value: \" + value);\n\n        this._manageSelectStatus(this._getElemById('weekDaysRecurrency'), true);\n\n        this._getElemById('dataFineRecurrency').enabled = true;\n        this._getElemById('numRipetizioni').enabled = true;\n        this._getElemById('rbFineRicorrenzaNum').enabled = true;\n        this._getElemById('rbFineRicorrenzaDate').enabled = true;\n        break;\n\n      case \"montly\":\n        console.log(\"handling value: \" + value);\n\n        this._manageSelectStatus(this._getElemById('weekDaysRecurrency'), true);\n\n        this._getElemById('dataFineRecurrency').enabled = true;\n        this._getElemById('numRipetizioni').enabled = true;\n        this._getElemById('rbFineRicorrenzaNum').enabled = true;\n        this._getElemById('rbFineRicorrenzaDate').enabled = true;\n        break;\n\n      default:\n        console.log(\"handling ELSE value: \" + value);\n        break;\n    } //if (this._checkCancellazionConsentita.checked) {\n    //    this._getElemById('dataCancellazione').disabled = false;\n    //    this._getElemById('oraCancellazione').disabled = false;\n    //    this._checkWaitListAvailable.disabled = false;\n    //} else {\n    //    this._getElemById('dataCancellazione').disabled = true;\n    //    this._getElemById('oraCancellazione').disabled = true;\n    //    this._checkWaitListAvailable.disabled = true;\n    //}\n\n  };\n\n  this._manageSelectStatus = function (elem, enabled) {\n    //Dato che non ho trovato un modo funzionante per disabilitare una Select, la distruggo e la ricreo ogni volta\n    var instance = M.FormSelect.getInstance(elem); //let wrapper = instance.wrapper;\n\n    instance.destroy();\n    console.log(\"Select instance destroyed\");\n\n    if (!enabled) {\n      elem.setAttribute(\"disabled\", true);\n      elem.value = [];\n      console.log(\"Addedd disabled attribute to element\");\n    } else {\n      elem.removeAttribute(\"disabled\");\n      console.log(\"Removed disabled attribute to element\");\n    }\n\n    M.FormSelect.init(elem);\n  };\n\n  this._handleTipoFineRicorrenzaChange = function (event, elemId) {\n    if (this._getElemById(elemId).checked) {\n      if (elemId === 'rbFineRicorrenzaNum') {\n        document.getElementById('numRipetizioni').enabled = true;\n        document.getElementById('dataFineRecurrency').enabled = false;\n      } else {\n        document.getElementById('numRipetizioni').enabled = false;\n        document.getElementById('dataFineRecurrency').enabled = true;\n      }\n    }\n  };\n}\n\nvar r2dEditEvento = new _r2dEditEvento();\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/js/r2do.EditEvento.js?");
+
+/***/ }),
+
+/***/ "./wwwroot-src/js/r2do.i18n.js":
+/*!*************************************!*\
+  !*** ./wwwroot-src/js/r2do.i18n.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* Internazionalizzazione */\nfunction MaterilizeI18N() {\n  var datePickerI18n = {\n    \"it\": {\n      months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],\n      monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],\n      weekdays: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],\n      weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],\n      weekdaysAbbrev: ['D', 'L', 'M', 'M', 'G', 'V', 'S'],\n      clear: 'Cancella',\n      cancel: 'Annulla',\n      today: 'Oggi'\n    }\n  };\n  var timePickeri18n = {\n    \"it\": {\n      cancel: 'Annulla',\n      clear: 'Cancella',\n      done: 'Ok'\n    }\n  };\n\n  this.getDateI18N = function (local) {\n    //Per ora gestiamo solo l'italiano\n    return datePickerI18n[\"it\"];\n  };\n\n  this.getTimeI18N = function (local) {\n    //Per ora gestiamo solo l'italiano\n    return timePickeri18n[\"it\"];\n  };\n}\n\n;\n/* harmony default export */ __webpack_exports__[\"default\"] = (new MaterilizeI18N()); //const r2sMatI18N =\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/js/r2do.i18n.js?");
 
 /***/ }),
 
@@ -204,9 +150,9 @@ eval("__webpack_require__(/*! ./ready2do */ \"./wwwroot-src/js/ready2do.js\"); /
   !*** ./wwwroot-src/js/ready2do.js ***!
   \************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-eval("/* WEBPACK VAR INJECTION */(function(Promise) {function r2d_hi() {\n  console.log(\"HI\");\n}\n\nvar myFirstPromise = new Promise(function (resolve, reject) {\n  // Chiamiamo resolve(...) quando viene eseguito correttamente, e reject(...) quando fallisce.\n  // In questo esempio viene utilizzato setTimeout(...) per simulare un'operazione asincrona.\n  // Nella realtà probabilmente utilizzerai qualcosa del tipo XHR o HTML5 API.\n  setTimeout(function () {\n    resolve(\"Success!\"); // È andato tutto perfettamente!\n  }, 250);\n});\nmyFirstPromise.then(function (successMessage) {\n  // successMessage viene passato alla funzione resolve(...) .\n  // Non deve essere necessariamente una stringa, ma nel caso sia solo un messaggio probabilmemte lo sarà.\n  console.log(\"Yay! \" + successMessage);\n});\nvar datetPickerI18n = {\n  months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],\n  monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],\n  weekdays: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],\n  weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],\n  weekdaysAbbrev: ['D', 'L', 'M', 'M', 'G', 'V', 'S'],\n  clear: 'Cancella',\n  cancel: 'Annulla',\n  today: 'Oggi'\n};\nvar timePickeri18n = {\n  cancel: 'Annulla',\n  clear: 'Cancella',\n  done: 'Ok'\n}; //Modulo parent (empty)\n\nvar ready2do = function () {\n  return {};\n}();\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! es6-promise-promise */ \"./node_modules/es6-promise-promise/index.js\")))\n\n//# sourceURL=webpack:///./wwwroot-src/js/ready2do.js?");
+eval("//Modulo parent (empty)\nvar ready2do = function () {\n  return {};\n}();\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/js/ready2do.js?");
 
 /***/ }),
 
@@ -217,18 +163,7 @@ eval("/* WEBPACK VAR INJECTION */(function(Promise) {function r2d_hi() {\n  cons
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./wwwroot-src/materialize-src/sass/materialize.scss?");
-
-/***/ }),
-
-/***/ 0:
-/*!***********************!*\
-  !*** vertx (ignored) ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("/* (ignored) */\n\n//# sourceURL=webpack:///vertx_(ignored)?");
+eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/materialize-src/sass/materialize.scss?");
 
 /***/ })
 

@@ -24,7 +24,6 @@ namespace Web.Models
         [Required]
         [DataType(DataType.Date)]
         [Display(Name ="Data Evento")]
-        //[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? Data { get; set; }
 
         [Required]
@@ -56,9 +55,12 @@ namespace Web.Models
         [Display(Name = "Posti Disponibili")]
         public int PostiDisponibili { get; set; }
 
+        //NON MODIFICABILE - SOLO PER INFORMAZIONE IN EDIT
+        [Display(Name = "Posti Residui")]
+        public int PostiResidui { get; set; }
+
         [Display(Name = "Cancellabile fino al giorno")]
         [DataType(DataType.Date)]
-
         public DateTime? DataCancellazioneMax { get; set; }
 
         [Display(Name = "Cancellabile fino all'ora")]

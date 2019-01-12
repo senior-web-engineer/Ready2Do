@@ -17,6 +17,6 @@ namespace PalestreGoGo.DataAccess
         Task<int> AddAsync(int idCliente, TipologiaAbbonamentoInputDM entity);
         Task UpdateAsync(int idCliente, TipologiaAbbonamentoInputDM entity);
         Task DeleteAsync(int idCliente, int id);
-        Task<bool> CheckNomeAsync(int idCliente, string nome);
+        Task<bool> CheckNomeAsync(int idCliente, string nome, int? id);
     }
 }

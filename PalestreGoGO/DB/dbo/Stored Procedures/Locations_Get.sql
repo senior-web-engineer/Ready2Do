@@ -13,6 +13,9 @@ BEGIN
 			,[CapienzaMax]
 			,[DataCreazione]
 			,[DataCancellazione]
+			,[Colore]
+			,[ImageUrl]
+			,[IconUrl]
 	FROM Locations
 	WHERE IdCliente = @pIdCliente
 	AND Id = @pIdLocation

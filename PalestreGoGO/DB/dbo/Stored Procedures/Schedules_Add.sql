@@ -57,21 +57,21 @@ SET XACT_ABORT ON;
  	
 		BEGIN TRANSACTION
 		-- Inseriamo l'evento padre
-		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, VisibileFinoAl, Note, UserIdOwner, [Recurrency])
-			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pVisibileFinoAl, @pNote, @pUserIdOwner, @pRecurrency)
+		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellazioneConsentita, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, VisibileFinoAl, Note, UserIdOwner, [Recurrency], WaitListDisponibile)
+			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellazionePossib, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pVisibileFinoAl, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile)
 		SET @pId = SCOPE_IDENTITY();
 
-		EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, 
+		EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pCancellazionePossib, 
 														@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner,
-														@pRecurrency, @pVisibileDal, @pVisibileFinoAl
+														@pRecurrency, @pWaitListDisponibile, @pVisibileDal, @pVisibileFinoAl
 
 		COMMIT
 	END
 	ELSE
 	-- EVENTO SINGOLO (NON RICORRENTE)
 	BEGIN
-		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, VisibileFinoAl, Note, UserIdOwner)
-			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pVisibileFinoAl, @pNote, @pUserIdOwner)
+		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellazioneConsentita, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, VisibileFinoAl, Note, UserIdOwner, WaitListDisponibile)
+			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellazionePossib, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pVisibileFinoAl, @pNote, @pUserIdOwner, @pWaitListDisponibile)
 
 		SET @pId = SCOPE_IDENTITY();
 	END

@@ -19,6 +19,7 @@ namespace Web.ViewComponents
             {
                 vm.CurrentController = ViewContext.RouteData.Values["Controller"].ToString().ToLowerInvariant();
                 vm.CurrentAction = ViewContext.RouteData.Values["Action"].ToString().ToLowerInvariant();
+                vm.ClienteRoute = ViewContext.RouteData.Values["Cliente"].ToString();
             }
             return View(vm);
         }

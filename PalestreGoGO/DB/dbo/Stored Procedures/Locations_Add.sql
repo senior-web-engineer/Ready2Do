@@ -3,6 +3,9 @@
 	@pNome			NVARCHAR(100),
 	@pDescrizione	NVARCHAR(MAX),
 	@pCapienzaMax	SMALLINT,
+	@pColore		VARCHAR(10) = NULL,
+	@pImageUrl		VARCHAR(1000) = NULL,
+	@pIconUrl		VARCHAR(1000) = NULL,
 	@pId			INT OUT
 AS
 BEGIN
@@ -12,8 +15,8 @@ BEGIN
 		RETURN -1;
 	END
 
-	INSERT INTO Locations(IdCliente, Nome, Descrizione, CapienzaMax)
-	 VALUES(@pIdCliente, @pNome, @pDescrizione, @pCapienzaMax)
+	INSERT INTO Locations(IdCliente, Nome, Descrizione, CapienzaMax, Colore, ImageUrl, IconUrl)
+	 VALUES(@pIdCliente, @pNome, @pDescrizione, @pCapienzaMax, @pColore, @pImageUrl, @pIconUrl)
 
 	 SET @pId = SCOPE_IDENTITY();
 END

@@ -7,10 +7,11 @@
 CREATE PROCEDURE [dbo].[TipologieAbbonamenti_CheckNome]
 	@pIdCliente				int,
 	@pNomeTipoAbbonamento	NVARCHAR(100),
+	@pIdAbbonamento			int = null,
 	@pResult				BIT OUT
 AS
 BEGIN
-	IF EXISTS(SELECT * FROM TipologieAbbonamenti WHERE IdCliente = @pIdCliente AND Nome = @pNomeTipoAbbonamento AND DataCancellazione IS NULl)
+	IF EXISTS(SELECT * FROM TipologieAbbonamenti WHERE IdCliente = @pIdCliente AND Nome = @pNomeTipoAbbonamento AND DataCancellazione IS NULL AND ((@pIdAbbonamento IS NULL) OR (Id <> @pIdAbbonamento)))
 		SET @pResult = 0
 	ELSE
 		SET @pResult = 1;

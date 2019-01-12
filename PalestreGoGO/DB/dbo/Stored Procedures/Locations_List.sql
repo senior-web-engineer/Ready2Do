@@ -12,6 +12,9 @@ BEGIN
 			,[CapienzaMax]
 			,[DataCreazione]
 			,[DataCancellazione]
+			,[Colore]
+			,[ImageUrl]
+			,[IconUrl]
 	FROM Locations
 	WHERE IdCliente = @pIdCliente
 	AND ((@pIncludeDeleted = 0) OR (DataCancellazione IS NULL))

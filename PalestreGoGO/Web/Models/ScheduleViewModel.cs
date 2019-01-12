@@ -16,23 +16,37 @@ namespace Web.Models
             new SelectListItem("GRATUITO per TUTTI)", "20")
         };
 
-            //public ScheduleViewModel()
-            //{
-            //    DataEventoOptions = new DatePickerOptionJSModel()
-            //    {
-            //        DefaultDate = DateTime.Now,
-            //        MinDate = DateTime.Now,
-            //        SetDefaultDate = true
-            //    };
-            //    DataCancellazioneOptions = new DatePickerOptionJSModel()
-            //    {
-            //        DefaultDate = DateTime.Now,
-            //        MinDate = DateTime.Now,
-            //        SetDefaultDate = true
-            //    };
-            //}
+        public ScheduleViewModel()
+        {
 
-        //public DatePickerOptionJSModel DataEventoOptions { get; set; }
-        //public DatePickerOptionJSModel DataCancellazioneOptions { get; set; }
+        }
+
+        public ScheduleViewModel(ScheduleInputViewModel schedIn)
+        {
+            this.CancellazioneConsentita = schedIn.CancellazioneConsentita;
+            this.Data = schedIn.Data;
+            this.DataAperturaIscrizioni = schedIn.DataAperturaIscrizioni;
+            this.DataCancellazioneMax = schedIn.DataCancellazioneMax;
+            this.DataChiusuraIscrizioni = schedIn.DataChiusuraIscrizioni;
+            this.Id = schedIn.Id;
+            this.IdLocation = schedIn.IdLocation;
+            this.IdTipoLezione = schedIn.IdTipoLezione;
+            this.Istruttore = schedIn.Istruttore;
+            this.Note = schedIn.Note;
+            this.OraAperturaIscrizioni = schedIn.OraAperturaIscrizioni;
+            this.OraCancellazioneMax = schedIn.OraCancellazioneMax;
+            this.OraChiusuraIscrizioni = schedIn.OraChiusuraIscrizioni;
+            this.OraInizio = schedIn.OraInizio;
+            this.PostiDisponibili = schedIn.PostiDisponibili;
+            this.PostiResidui = schedIn.PostiResidui;
+            this.Recurrency = schedIn.Recurrency;
+            this.TipoSchedule = schedIn.TipoSchedule;
+            this.Title = schedIn.Title;
+            this.VisibileDalDate = schedIn.VisibileDalDate;
+            this.VisibileDalTime = schedIn.VisibileDalTime;
+            this.VisibileFinoAlDate = schedIn.VisibileFinoAlDate;
+            this.VisibileFinoAlTime = schedIn.VisibileFinoAlTime;
+            this.WaitListDisponibile = schedIn.WaitListDisponibile;
+        }
     }
 }

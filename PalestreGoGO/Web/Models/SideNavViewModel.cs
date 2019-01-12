@@ -11,6 +11,7 @@ namespace Web.Models
 
         public string CurrentController { get; set; }
         public string CurrentAction { get; set; }
+        public string ClienteRoute { get; set; }
 
         public string ActiveSectionName
         {

@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace PalestreGoGo.DataAccess
 {
     public class SchedulesRepository : BaseRepository, ISchedulesRepository
     {
 
-        public SchedulesRepository(IConfiguration configuration): base(configuration)
+        public SchedulesRepository(IConfiguration configuration) : base(configuration)
         {
 
         }
@@ -22,6 +23,8 @@ namespace PalestreGoGo.DataAccess
             if (!schedule.IdCliente.Equals(idCliente)) throw new ArgumentException("Bad Tenant");
             SqlParameter parId = new SqlParameter("@pId", SqlDbType.Int);
             parId.Direction = ParameterDirection.Output;
+            string jsonRecurrency = (schedule.Recurrency != null ? JsonConvert.SerializeObject(schedule.Recurrency) : null);
+            Log.Debug("Salvataggio nuovo schedule. {@Schedule} - SerializedRecurrency: {jsonRecurrency}", schedule, jsonRecurrency);
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -42,7 +45,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pVisibileFinoAl", SqlDbType.DateTime2).Value = schedule.VisibileFinoAl;
                 cmd.Parameters.Add("@pNote", SqlDbType.NVarChar, 1000).Value = schedule.Note;
                 cmd.Parameters.Add("@pUserIdOwner", SqlDbType.NVarChar, 450).Value = schedule.UserIdOwner;
-                cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = JsonConvert.SerializeObject(schedule.Recurrency);
+                cmd.Parameters.Add("@pRecurrency", SqlDbType.NVarChar, -1).Value = jsonRecurrency;
                 cmd.Parameters.Add("@pWaitListDisponibile", SqlDbType.Bit).Value = schedule.WaitListDisponibile;
                 cmd.Parameters.Add(parId);
                 await cn.OpenAsync();
@@ -130,7 +133,7 @@ namespace PalestreGoGo.DataAccess
                 row["Id"] = i;
                 dt.Rows.Add(row);
             }
-            using(var cn = GetConnection())
+            using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Schedules_Lookup]";
@@ -217,6 +220,10 @@ namespace PalestreGoGo.DataAccess
             result.Add("NomeLocation", reader.GetOrdinal("NomeLocation"));
             result.Add("CapienzaMaxLocation", reader.GetOrdinal("CapienzaMaxLocation"));
             result.Add("DescrizioneLocation", reader.GetOrdinal("DescrizioneLocation"));
+            result.Add("ColoreLocation", reader.GetOrdinal("ColoreLocation"));
+            result.Add("ImageUrlLocation", reader.GetOrdinal("ImageUrlLocation"));
+            result.Add("IconUrlLocation", reader.GetOrdinal("IconUrlLocation"));
+
             result.Add("NomeTipoLezione", reader.GetOrdinal("NomeTipoLezione"));
             result.Add("DescrizioneTipoLezione", reader.GetOrdinal("DescrizioneTipoLezione"));
             result.Add("DurataTipoLezione", reader.GetOrdinal("DurataTipoLezione"));
@@ -264,13 +271,16 @@ namespace PalestreGoGo.DataAccess
             result.TipologiaLezione.Livello = reader.GetInt16(columns["LivelloTipoLezione"]);
             result.TipologiaLezione.MaxPartecipanti = await reader.IsDBNullAsync(columns["MaxPartecipantiTipoLezione"]) ? default(int?) : reader.GetInt32(columns["MaxPartecipantiTipoLezione"]);
             result.TipologiaLezione.Nome = reader.GetString(columns["NomeTipoLezione"]);
-            result.TipologiaLezione.Prezzo = await reader.IsDBNullAsync(columns["PrezzoTipologiaLezione"]) ? default(decimal?) : reader.GetDecimal(columns["PrezzoTipologiaLezione"]); 
+            result.TipologiaLezione.Prezzo = await reader.IsDBNullAsync(columns["PrezzoTipologiaLezione"]) ? default(decimal?) : reader.GetDecimal(columns["PrezzoTipologiaLezione"]);
             result.Location = new LocationDM();
             result.Location.CapienzaMax = await reader.IsDBNullAsync(columns["CapienzaMaxLocation"]) ? default(short?) : reader.GetInt16(columns["CapienzaMaxLocation"]);
             result.Location.Descrizione = await reader.IsDBNullAsync(columns["DescrizioneLocation"]) ? null : reader.GetString(columns["DescrizioneLocation"]);
             result.Location.Id = result.IdLocation;
             result.Location.IdCliente = result.IdCliente;
             result.Location.Nome = reader.GetString(columns["NomeLocation"]);
+            result.Location.Colore = await reader.IsDBNullAsync(columns["ColoreLocation"]) ? null : reader.GetString(columns["ColoreLocation"]);
+            result.Location.UrlImage = await reader.IsDBNullAsync(columns["ImageUrlLocation"]) ? null : reader.GetString(columns["ImageUrlLocation"]);
+            result.Location.UrlIcon = await reader.IsDBNullAsync(columns["IconUrlLocation"]) ? null : reader.GetString(columns["IconUrlLocation"]);
             return result;
         }
         #endregion

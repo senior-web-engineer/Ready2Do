@@ -43,6 +43,7 @@ namespace Web.Services
 
         public async Task<int> GetIdClienteFromRouteAsync(string clienteRoute)
         {
+            if (string.IsNullOrWhiteSpace(clienteRoute)) return -1;
             int idCliente = -1;
             if (!_cache.TryGetValue(clienteRoute, out idCliente))
             {

@@ -58,7 +58,7 @@ namespace PalestreGoGo.WebAPI
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            //Aggiungiamo due2 dsitinti JWTBeare per gestire le 2 authority (user/struttura)
+                //Aggiungiamo due2 dsitinti JWTBeare per gestire le 2 authority (user/struttura)
                 //.AddJwtBearer(jwtOptions =>
                 //{
                 //    jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:UserPolicy"]}/v2.0/";
@@ -79,18 +79,19 @@ namespace PalestreGoGo.WebAPI
                         OnMessageReceived = MessageReceived
                     };
                 });
-           
+
             services.AddMvc()
                 // Abilitiamo i comportamenti introdotti con ASP.NET Core 2.2 (più recenti)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
                 // Abilitiamo la FLUENTVALIDATION 
-                .AddFluentValidation(fv=> {
+                .AddFluentValidation(fv =>
+                {
                     //Registriamo tutti i validators (le classi che estendono AbstractValidator) presente nell'assembly che contiene Startup (il corrente)
                     fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
                     //Disabilitiamo il validator di default
                     fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
                 });
-            
+           
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });

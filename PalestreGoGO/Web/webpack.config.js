@@ -12,7 +12,11 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'wwwroot/dist'),
-        filename: '[name].bundle.js'
+        filename: '[name].bundle.js',
+        //Queste 2 configurazioni sono per richiamare gli export del bundle dall pagine HTML
+        //vedi: https://itnext.io/calling-a-es6-webpacked-class-from-outside-js-scope-f36dc77ea130
+        libraryTarget: 'var',
+        library: 'EntryPoint'
     },
     optimization: {
         splitChunks: {
@@ -31,13 +35,13 @@ module.exports = {
         rules: [
             // BABEL
             {
-                test: /\.js$/,
+                test: /\.jsx?$/,
                 exclude: /(node_modules|bower_components)/,
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env']
-                    }
+                        presets: [['@babel/preset-env', {"useBuiltIns":"entry"} ]]
+                    },
                 }
             },
             // SASS

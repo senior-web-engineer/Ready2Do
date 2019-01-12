@@ -5,6 +5,9 @@
 	[Nome]					NVARCHAR(100)	NOT NULL,
 	[Descrizione]			NVARCHAR(MAX)	NULL,
 	[CapienzaMax]			SMALLINT		NULL,
+	[Colore]				VARCHAR(10)		NULL,
+	[ImageUrl]				VARCHAR(1000)	NULL,
+	[IconUrl]				VARCHAR(1000)	NULL,
 	[DataCreazione]			DATETIME2(2)	NOT NULL CONSTRAINT DEF_Locations_DataCreazione DEFAULT (SYSDATETIME()),
 	[DataCancellazione]		DATETIME2(2)	NULL,
 

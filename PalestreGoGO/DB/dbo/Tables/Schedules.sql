@@ -27,6 +27,7 @@ CREATE TABLE [dbo].[Schedules]
 	--20181201-Recurrent Events
 	[Recurrency]				NVARCHAR(MAX)	NULL,
 	[IdParent]					INT				NULL,
+	[DataCreazione]				DATETIME2(2)	NOT NULL CONSTRAINT DEF_Schedules_Creaz DEFAULT(sysdatetime()),
 	CONSTRAINT PK_Schedules PRIMARY KEY (Id),
 	CONSTRAINT FK_Schedules_Clienti FOREIGN KEY (IdCliente) REFERENCES [Clienti]([Id]),
 	CONSTRAINT FK_Schedules_Locations FOREIGN KEY (IdLocation) REFERENCES [Locations](Id),

@@ -251,7 +251,10 @@
                 events: {
                     url: '@Html.Raw(Model.EventsBaseUrl + "feeds")',
                     type: 'GET',
-                    data: { lid: '@s.Id' }
+                    data: { lid: '@s.Id' },
+                },
+                loading: function (isLoading, view) {
+                    console.log("Calendar isLoading:" + isLoading + ", view: " + view);
                 },
                 eventClick: function (calEvent, jsEvent, view) {
                     $("#spinner").show();

@@ -30,36 +30,36 @@
         <div class="input-field col s8 offset-s2 l3 offset-l2">
             <input id="inputDataInizioValidita" class="datepicker" type="text" asp-for="DataInizioValidita" />
             <label>Inizio Validità:</label>
-            <span asp-validation-for="DataInizioValidita" ></span>
+            <span asp-validation-for="DataInizioValidita"></span>
         </div>
         <div class="input-field col s8 offset-s2 l3 offset-l1">
             <input id="inputScadenza" class="datepicker" type="text" asp-for="Scadenza" />
             <label>Scadenza</label>
-            <span asp-validation-for="Scadenza" ></span>
+            <span asp-validation-for="Scadenza"></span>
         </div>
     </div>
     <div class="row">
         <div class="input-field col s8 offset-s2 l3 offset-l2">
             <input type="number" asp-for="IngressiIniziali" id="IngressiIniziali" />
             <label>Ingressi Iniziali</label>
-            <span asp-validation-for="IngressiIniziali" ></span>
+            <span asp-validation-for="IngressiIniziali"></span>
         </div>
         <div class="input-field col s8 offset-s2 l3 offset-l1">
             <input type="number" asp-for="IngressiResidui" />
             <label>Ingressi Residui</label>
-            <span asp-validation-for="IngressiResidui" ></span>
+            <span asp-validation-for="IngressiResidui"></span>
         </div>
     </div>
     <div class="row">
         <div class="input-field col s8 offset-s2 l3 offset-l2">
             <input type="number" asp-for="Importo" id="inputImporto" />
             <label>Prezzo Abbonamento</label>
-            <span asp-validation-for="Importo" ></span>
+            <span asp-validation-for="Importo"></span>
         </div>
         <div class="input-field col s8 offset-s2 l3 offset-l1">
             <input type="number" asp-for="ImportoPagato" />
             <label>Importo Pagato</label>
-            <span asp-validation-for="ImportoPagato" ></span>
+            <span asp-validation-for="ImportoPagato"></span>
         </div>
     </div>
 
@@ -106,7 +106,7 @@
         function refreshDataScadenza() {
             var m = moment(dataInizioValidita).add(numeroMesiAbbonamento, 'months');
             dtpScadenza.setDate(m.toDate());
-            dtpScadenza.setInputValue(dtpScadenza.toString());                            
+            dtpScadenza.setInputValue(dtpScadenza.toString());
         }
 
         $(document).ready(function () {

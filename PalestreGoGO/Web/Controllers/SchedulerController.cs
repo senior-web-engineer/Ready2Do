@@ -16,10 +16,11 @@ using Newtonsoft.Json;
 using System.Text;
 using Web.Models.Utils;
 using Web.Models.Mappers;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Web.Controllers
 {
-    //[Authorize]
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
     [Route("{cliente}/schedules")]
     public class SchedulerController : Controller
     {
@@ -44,6 +45,10 @@ namespace Web.Controllers
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "lid")] int? idActiveLocation)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return RedirectToAction("Index", "Clienti", new { cliente = urlRoute });
+            }
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             ViewData["IdCliente"] = idCliente;
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, idCliente);

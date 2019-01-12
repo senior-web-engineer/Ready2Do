@@ -27,6 +27,9 @@ namespace PalestreGoGo.DataAccess
             result.Add("CapienzaMax", dr.GetOrdinal("CapienzaMax"));
             result.Add("DataCreazione", dr.GetOrdinal("DataCreazione"));
             result.Add("DataCancellazione", dr.GetOrdinal("DataCancellazione"));
+            result.Add("Colore", dr.GetOrdinal("Colore"));
+            result.Add("ImageUrl", dr.GetOrdinal("ImageUrl"));
+            result.Add("IconUrl", dr.GetOrdinal("IconUrl"));
             return result;
         }
 
@@ -40,6 +43,7 @@ namespace PalestreGoGo.DataAccess
             result.CapienzaMax = await dr.IsDBNullAsync(columns["CapienzaMax"]) ? default(short?) : dr.GetInt16(columns["CapienzaMax"]);
             result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
+            result.Colore = await dr.IsDBNullAsync(columns["Colore"]) ? null : dr.GetString(columns["Colore"]);
             return result;
         }
         #endregion
@@ -105,6 +109,9 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = location.Nome;
                 cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, -1).Value = location.Descrizione;
                 cmd.Parameters.Add("@pCapienzaMax", SqlDbType.SmallInt).Value = location.CapienzaMax;
+                cmd.Parameters.Add("@pColore", SqlDbType.VarChar, 10).Value = location.Colore;
+                cmd.Parameters.Add("@pImageUrl", SqlDbType.VarChar, 1000).Value = location.UrlImage;
+                cmd.Parameters.Add("@pIconUrl", SqlDbType.VarChar, 1000).Value = location.UrlIcon;
                 cmd.Parameters.Add(parId);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -125,6 +132,9 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pNome", SqlDbType.NVarChar, 100).Value = location.Nome;
                 cmd.Parameters.Add("@pDescrizione", SqlDbType.NVarChar, -1).Value = location.Descrizione;
                 cmd.Parameters.Add("@pCapienzaMax", SqlDbType.SmallInt).Value = location.CapienzaMax;
+                cmd.Parameters.Add("@pColore", SqlDbType.VarChar, 10).Value = location.Colore;
+                cmd.Parameters.Add("@pImageUrl", SqlDbType.VarChar, 1000).Value = location.UrlImage;
+                cmd.Parameters.Add("@pIconUrl", SqlDbType.VarChar, 1000).Value = location.UrlIcon;
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }

@@ -13,7 +13,7 @@
 	@pIncludeDeleted	BIT = 0
 AS
 BEGIN
-	DECLARE @sql NVARCHAR(MAX);
+DECLARE @sql NVARCHAR(MAX);
 	DECLARE @sortDirection VARCHAR(10);
 	DECLARE @newLine CHAR(2) = CHAR(13) + CHAR(10)
 
@@ -61,6 +61,9 @@ BEGIN
 							l.Nome AS NomeLocation,
 							l.CapienzaMax AS CapienzaMaxLocation,
 							l.Descrizione AS DescrizioneLocation,
+							l.Colore AS ColoreLocation,
+							l.ImageUrl AS ImageUrlLocation,
+							l.IconUrl AS IconUrlLocation,
 							tl.Nome AS NomeTipoLezione,
 							tl.Descrizione AS DescrizioneTipoLezione,
 							tl.Durata AS DurataTipoLezione,
@@ -68,7 +71,8 @@ BEGIN
 							tl.Livello AS LivelloTipoLezione,
 							tl.MaxPartecipanti AS MaxPartecipantiTipoLezione,
 							tl.DataCreazione AS TipoLezioneDataCreazione,
-							tl.DataCancellazione AS TipoLezioneDataCancellazione
+							tl.DataCancellazione AS TipoLezioneDataCancellazione,
+							tl.Prezzo AS PrezzoTipologiaLezione
 					FROM [Schedules] s
 						LEFT JOIN [Schedules] sp ON s.IdParent = sp.Id
 					INNER JOIN [Locations] l ON s.IdLocation = l.Id
@@ -80,7 +84,7 @@ BEGIN
 	END
 	IF @pEndDate IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.DataOraInizio <= @DataOraInizio '		
+		SET @sql = @sql + @newLine + 'AND s.DataOraInizio <= @pEndDate '		
 	END
 	IF @pIdLocation IS NOT NULL
 	BEGIN
@@ -96,7 +100,7 @@ BEGIN
 	END
 	IF @pSoloIscrizAperte IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND GETDATE() BETWEEN s.DataAperturaIscrizioni AND s.DataChiusuraIscrizioni  '		
+		SET @sql = @sql + @newLine + 'AND GETDATE() BETWEEN COALESCE(s.DataAperturaIscrizioni,''1900-01-01'') AND COALESCE(s.DataChiusuraIscrizioni,s.DataOraInizio)  '
 	END
 	IF COALESCE(@pIncludeDeleted, 0) <> 1
 	BEGIN
@@ -106,6 +110,8 @@ BEGIN
 	SET @sql = @sql + '		ORDER BY ' + @pSortColumn  + ' ' + @sortDirection + '
 							OFFSET @pPageSize * (@pPageNumber - 1) ROWS
 							FETCH NEXT @pPageSize ROWS ONLY';
-
-	PRINT @sql
+	
+	--PRINT @sql
+	EXEC sp_executesql @sql, N'@pPageSize int, @pPageNumber int, @pIdCliente int, @pStartDate datetime2, @pEndDate datetime2, @pIdLocation int, @pTipoLezione int', 
+						@pStartDate=@pStartDate, @pEndDate=@pEndDate, @pIdLocation=@pIdLocation, @pTipoLezione=@pTipoLezione, @pPageSize=@pPageSize, @pPageNumber=@pPageNumber, @pIdCliente=@pIdCliente
 END

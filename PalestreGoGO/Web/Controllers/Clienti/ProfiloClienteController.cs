@@ -56,7 +56,11 @@ namespace Web.Controllers
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
-            if (cliente == null) { return RedirectToAction("Index", "Home"); }
+            if (cliente == null) { return RedirectToAction("Index", "Home", new { cliente = urlRoute }); }
+            if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin())
+            {
+                return RedirectToAction("Index", "Clienti", new { cliente = urlRoute });
+            }
             ViewData["IdCliente"] = cliente.Id;
             //ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer, _appConfig.EncryptKey);
             ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
@@ -78,6 +82,10 @@ namespace Web.Controllers
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (string.IsNullOrWhiteSpace(accessToken)) return Forbid();
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
             ViewData["IdCliente"] = idCliente;
             var image = new ImmagineClienteInputDM()
             {
@@ -98,6 +106,10 @@ namespace Web.Controllers
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return RedirectToAction("Index", "Home"); }
+            if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin())
+            {
+                return RedirectToAction("Index", "Clienti", new { cliente = urlRoute });
+            }
             ViewData["IdCliente"] = cliente.Id.Value;
             ViewData["GoogleMapsAPIUrl"] = GoogleAPIUtils.GetGoogleMapsAPIUrl(_appConfig.GoogleAPI.GoogleMapsAPIKey);
             //ViewData["UrlGoolePlaces"] = GoogleAPIUtils.GetGooglePlacesAPIUrl(_appConfig.GoogleAPI.GoogleMapsAPIKey);
@@ -111,15 +123,20 @@ namespace Web.Controllers
         {
             float latitudine, longitudine;
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrWhiteSpace(accessToken)){return Forbid();}
+            if (string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
             //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
             var userType = User.GetUserTypeForCliente(idCliente);
-            if (!userType.IsAtLeastAdmin()){return Forbid();}
-            if (!ModelState.IsValid){return View("SaveAnagrafica", model);}
+            if (!userType.IsAtLeastAdmin()) { return Forbid(); }
+            if (!ModelState.IsValid) { return View("SaveAnagrafica", model); }
 
-            
+
             //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
             if (!float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out latitudine) ||
                 !float.TryParse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out longitudine))
@@ -141,7 +158,11 @@ namespace Web.Controllers
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
-            if (cliente == null) { return RedirectToAction("Index", "Home"); }
+            if (cliente == null) { return RedirectToAction("Index", "Home", new { cliente = urlRoute }); }
+            if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin())
+            {
+                return RedirectToAction("Index", "Clienti", new { cliente = urlRoute });
+            }
             ViewData["IdCliente"] = cliente.Id;
             ViewData["GoogleMapsAPIUrl"] = GoogleAPIUtils.GetGoogleMapsAPIUrl(_appConfig.GoogleAPI.GoogleMapsAPIKey);
             var vm = cliente.OrarioApertura != null ? cliente.OrarioApertura.MapOrarioApertura() : new Models.OrarioAperturaViewModel();
@@ -155,6 +176,10 @@ namespace Web.Controllers
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
             var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
             var userType = User.GetUserTypeForCliente(idCliente);
             if (!userType.IsAtLeastAdmin()) { return Forbid(); }
@@ -166,395 +191,6 @@ namespace Web.Controllers
         }
         #endregion
 
-
-        //private object BuildMapUrlForCliente(ClienteWithImagesViewModel cliente)
-        //{
-        //    return $"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Clabel:{WebUtility.UrlEncode(cliente.Nome)}%7C{cliente.Indirizzo.Coordinate.Latitudine},{cliente.Indirizzo.Coordinate.Longitudine}&size=640x250&scale=2&maptype=roadmap&zoom=14&key={_appConfig.GoogleAPI.GoogleMapsAPIKey}";
-        //}
-
-        //[HttpGet("{cliente}/gallery")]
-        //public async Task<IActionResult> GalleryEdit([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-        //    if (!User.GetUserTypeForCliente(cliente.IdCliente).IsAtLeastAdmin()) { return Forbid(); }
-        //    ViewData["SASToken"] = GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
-        //    ViewData["IdCliente"] = cliente.IdCliente;
-        //    var vm = new GalleryEditViewModel();
-        //    vm.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
-        //                                        _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
-        //                                        cliente.StorageContainer);
-        //    if (cliente.Immagini != null)
-        //    {
-        //        foreach (var img in cliente.Immagini)
-        //        {
-        //            vm.Images.Add(new ImageViewModel()
-        //            {
-        //                Id = img.Id,
-        //                Alt = img.Alt,
-        //                Caption = img.Nome,
-        //                Url = img.Url,
-        //                Ordinamento = img.Ordinamento
-        //            });
-        //        }
-        //    }
-        //    return View("Gallery", vm);
-        //}
-
-        //[HttpDelete("{cliente}/gallery/delete/{imageId}")]
-        //public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "imageId")]int imageId)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    var userType = User.GetUserTypeForCliente(idCliente);
-        //    if (!userType.IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    var urlImage = await _apiClient.DeleteImmagineGalleryAsync(idCliente, imageId, accessToken);
-        //    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, urlImage);
-        //    return await GalleryEdit(urlRoute);
-        //}
-
-
-        //[HttpGet("{cliente}/profilo")]
-        //public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-        //    var userType = User.GetUserTypeForCliente(cliente.IdCliente);
-        //    if (!userType.IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    var vm = cliente.MapToProfileEditVM();
-        //    ViewData["IdCliente"] = cliente.IdCliente;
-        //    ViewData["SASToken"] = this.GenerateSASAuthenticationToken(cliente.SecurityToken, cliente.StorageContainer);
-        //    ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
-        //                                        _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
-        //                                       cliente.StorageContainer);
-        //    ViewData["MapUrl"] = this.BuildMapUrlForCliente(cliente);
-
-        //    return View("Profilo", vm);
-        //}
-
-        //[HttpPost("{cliente}/profilo")]
-        //public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute, ClienteProfileEditViewModel profilo)
-        //{
-        //    float latitudine, longitudine;
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    if (string.IsNullOrEmpty(accessToken))
-        //    {
-        //        return Forbid();
-        //    }
-        //    var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-        //    var userType = User.GetUserTypeForCliente(cliente.IdCliente);
-        //    if (!userType.IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View("Profilo", profilo);
-        //    }
-        //    //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
-        //    if (!float.TryParse(profilo.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out latitudine) ||
-        //        !float.TryParse(profilo.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out longitudine))
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
-        //        return View("Profilo", profilo);
-        //    }
-        //    //Salviamo il profilo
-        //    var apiModel = profilo.MapToAPIModel();
-        //    await _apiClient.ClienteSalvaProfilo(cliente.IdCliente, apiModel, accessToken);
-        //    return RedirectToAction("ProfileEdit", new { cliente = urlRoute });
-        //}
-
-        //#region Gestione Locations
-        //[HttpGet("{cliente}/sale")]
-        //public async Task<IActionResult> Sale([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    ViewData["IdCliente"] = idCliente;
-        //    var locations = await _apiClient.GetLocationsAsync(idCliente);
-        //    return View("Sale", locations.ToList());
-        //}
-
-        //[HttpGet("{cliente}/sale/{id:int}")]
-        //public async Task<IActionResult> Sala([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idSala)
-        //{
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    ViewData["IdCliente"] = idCliente;
-        //    Models.LocationViewModel location = null;
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    location = await _apiClient.GetOneLocationAsync(idCliente, idSala, accessToken);
-        //    return View("Sala", location);
-        //}
-
-        //[HttpGet("{cliente}/sale/new")]
-        //public async Task<IActionResult> SalaNew([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idSala)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-
-        //    Models.LocationViewModel location = null;
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    location = new Models.LocationViewModel();
-        //    return View("Sala", location);
-        //}
-
-
-        //[HttpPost("{cliente}/sale")]
-        //public async Task<IActionResult> SalaSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.LocationViewModel location)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View("Sala", location);
-        //    }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    await _apiClient.SaveLocationAsync(idCliente, location, accessToken);
-        //    return RedirectToAction("Sale");
-        //}
-
-
-        //[HttpGet("{cliente}/sale/{id}/delete")]
-        //public async Task<IActionResult> SalaDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")] int idSala)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    await _apiClient.DeleteOneLocationAsync(idCliente, idSala, accessToken);
-        //    return RedirectToAction("Sale");
-        //}
-
-        //#endregion
-
-        //#region Gestione Tipologie Lezioni
-        //[HttpGet("{cliente}/lezioni")]
-        //public async Task<IActionResult> Lezioni([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-
-        //    ViewData["IdCliente"] = idCliente;
-        //    var lezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
-        //    return View("Lezioni", lezioni.ToList());
-        //}
-
-        //[HttpGet("{cliente}/lezioni/{id:int}")]
-        //public async Task<IActionResult> LezioneEdit([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idLezione)
-        //{
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    ViewData["IdCliente"] = idCliente;
-
-        //    Models.TipologieLezioniViewModel tipoLezione = null;
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    if (idLezione > 0)
-        //    {
-        //        tipoLezione = await _apiClient.GetOneTipologiaLezione(idCliente, idLezione, accessToken);
-        //    }
-        //    if (tipoLezione == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View("Lezione", tipoLezione);
-        //}
-
-        //[HttpGet("{cliente}/lezioni/new")]
-        //public async Task<IActionResult> LezioneAdd([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    ViewData["IdCliente"] = idCliente;
-        //    Models.TipologieLezioniViewModel tipoLezione = new Models.TipologieLezioniViewModel();
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    return View("Lezione", tipoLezione);
-        //}
-
-
-        //[HttpPost("{cliente}/lezioni")]
-        //public async Task<IActionResult> LezioneSave([FromRoute(Name = "cliente")]string urlRoute, [FromForm] Models.TipologieLezioniViewModel tipoLezione)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View("Lezione", tipoLezione);
-        //    }
-        //    if (tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione, accessToken);
-        //    return RedirectToAction("Lezioni");
-        //}
-
-        //[HttpGet("{cliente}/lezioni/{id}/delete")]
-        //public async Task<IActionResult> LezioneDelete([FromRoute(Name = "cliente")]string urlRoute, [FromRoute] int idSala)
-        //{
-        //    //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    await _apiClient.DeleteOneTipologiaLezioneAsync(idCliente, idSala, accessToken);
-        //    return RedirectToAction("Lezioni");
-        //}
-
-        //#endregion
-
-        //#region Gestione Associazione Utenti
-
-        ///// <summary>
-        ///// Associa l'utente corrente alla struttura (cliente)
-        ///// </summary>
-        ///// <param name="urlRoute"></param>
-        ///// <returns></returns>
-        //[HttpPost("{cliente}/associa")]
-        //public async Task<IActionResult> AddAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name ="returnUrl")]string returnUrl)
-        //{
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    await _apiClient.ClienteFollowAsync(idCliente, accessToken);
-        //    if (!string.IsNullOrWhiteSpace(returnUrl))
-        //    {
-        //        //Possibile problema di sicurezza? (Open Redirect?)
-        //        return Redirect(returnUrl);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Index", new { cliente = urlRoute });
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Associa l'utente corrente alla struttura (cliente)
-        ///// </summary>
-        ///// <param name="urlRoute"></param>
-        ///// <returns></returns>
-        //[HttpPost("{cliente}/disassocia")]
-        //public async Task<IActionResult> RemoveAssociazioneUserToCliente([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    await _apiClient.ClienteUnFollowAsync(idCliente, accessToken);
-        //    return RedirectToAction("Index", new { cliente = urlRoute });
-        //}
-        //#endregion
-
-        //#region Gestione Utenti del Cliente
-        //[HttpGet("{cliente}/users")]
-        //public async Task<IActionResult> GetUtentiCliente([FromRoute(Name = "cliente")]string urlRoute)
-        //{
-        //    var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di gestione degli utenti
-        //    var userType = User.GetUserTypeForCliente(idCliente);
-        //    if (!userType.IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    var tipologieAbbnamenti = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
-        //    var vm = await _apiClient.GetUtentiClienteConAbbonamenti(idCliente, accessToken);
-        //    ViewBag.IdCliente = idCliente;
-        //    if (tipologieAbbnamenti != null && tipologieAbbnamenti.Count() > 0)
-        //    {
-        //        ViewBag.TipologieAbbonamenti = tipologieAbbnamenti.Select(ta => new KeyValuePair<int, string>(ta.Id.Value, ta.Nome));
-        //    }
-        //    return View("Utenti",vm);
-        //}
-        //#endregion
-
-        //#region Helpers
-        ///// <summary>
-        ///// Genera una stringa rappresentante un "token" per l'autenticazione delle chiamate Ajax
-        ///// </summary>
-        ///// <param name="secuirtyToken"></param>
-        ///// <param name="storageContainer"></param>
-        ///// <returns></returns>
-        //private string GenerateSASAuthenticationToken(string secuirtyToken, string storageContainer)
-        //{
-        //    var token = new SASTokenModel()
-        //    {
-        //        SecurityToken = secuirtyToken,
-        //        ContainerName = storageContainer,
-        //        CreationTime = DateTime.Now
-        //    };
-        //    string json = JsonConvert.SerializeObject(token, Formatting.None);
-        //    //Cifriamo il json ottenuto
-        //    var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
-        //    return result;
-        //}
-
-        //private string GenerateAuthenticationToken(string clientRouteUrl, int idCliente)
-        //{
-        //    var token = new AuthTokenModel()
-        //    {
-        //        ClientRoute = clientRouteUrl,
-        //        CreationTime = DateTime.Now,
-        //        IdCliente = idCliente
-        //    };
-        //    string json = JsonConvert.SerializeObject(token, Formatting.None);
-        //    //Cifriamo il json ottenuto
-        //    var result = SecurityUtils.EncryptStringWithAes(json, Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
-        //    return result;
-        //}
-        //#endregion
 
     }
 }
