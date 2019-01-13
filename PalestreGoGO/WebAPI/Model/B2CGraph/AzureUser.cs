@@ -20,49 +20,49 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
         [JsonProperty(PropertyName = "createdDateTime", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime? CreatedDateTime { get; set; }
 
-        [JsonProperty("accountEnabled")]
-        public bool Enabled { get; set; }
+        [JsonProperty("accountEnabled", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Enabled { get; set; }
 
-        [JsonProperty("creationType")]
+        [JsonProperty("creationType", NullValueHandling = NullValueHandling.Ignore)]
         public string CreationType { get; private set; }
 
-        [JsonProperty("givenName")]
+        [JsonProperty("givenName", NullValueHandling = NullValueHandling.Ignore)]
         public string Nome { get; set; }
 
-        [JsonProperty("surname")]
+        [JsonProperty("surname", NullValueHandling = NullValueHandling.Ignore)]
         public string Cognome { get; set; }
 
-        [JsonProperty("displayName", DefaultValueHandling = DefaultValueHandling.Include)]
+        [JsonProperty("displayName", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string DisplayName { get; set; }
 
-        [JsonProperty("mobile")]
+        [JsonProperty("mobile", NullValueHandling = NullValueHandling.Ignore)]
         public string Mobile { get; private set; }
 
-        [JsonProperty("otherMails")]
+        [JsonProperty("otherMails", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> Emails { get; set; }
 
-        [JsonProperty("passwordProfile")]
+        [JsonProperty("passwordProfile", NullValueHandling = NullValueHandling.Ignore)]
         public PasswordProfile PasswordProfile { get; set; }
 
-        [JsonProperty("preferredLanguage")]
+        [JsonProperty("preferredLanguage", NullValueHandling = NullValueHandling.Ignore)]
         public string PreferredLanguage { get; set; }
         
-        [JsonProperty("postalCode")]
+        [JsonProperty("postalCode", NullValueHandling = NullValueHandling.Ignore)]
         public string PostalCode { get; private set; }
 
-        [JsonProperty("state")]
+        [JsonProperty("state", NullValueHandling = NullValueHandling.Ignore)]
         public string State { get; private set; }
 
-        [JsonProperty("streetAddress")]
+        [JsonProperty("streetAddress", NullValueHandling = NullValueHandling.Ignore)]
         public string streetAddress { get; private set; }
 
-        [JsonProperty("signInNames")]
+        [JsonProperty("signInNames", NullValueHandling = NullValueHandling.Ignore)]
         public List<SignInName> SignInNames { get; set; }
 
-        [JsonProperty("userPrincipalName")]
+        [JsonProperty("userPrincipalName", NullValueHandling = NullValueHandling.Ignore)]
         public string UserPrincipalName { get; set; }
 
-        [JsonProperty("telephoneNumber")]
+        [JsonProperty("telephoneNumber", NullValueHandling = NullValueHandling.Ignore)]
         public string TelephoneNumber { get; set; }
 
         #region Extensions Property
@@ -71,34 +71,34 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
          //TODO: Sarà pertanto necessario customizzare la serializzazione di queste proprietà
          */
 
-        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_refereer")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_refereer", NullValueHandling = NullValueHandling.Ignore)]
         public string Refereer { get; set; }
 
-        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_accountConfirmedOn")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_accountConfirmedOn", NullValueHandling = NullValueHandling.Ignore)]
         public string AccountConfirmedOn { get; set; }
 
 
-        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureOwned")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureOwned", NullValueHandling = NullValueHandling.Ignore)]
         public string StruttureOwned { get; set; }
 
-        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureGestite")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureGestite", NullValueHandling = NullValueHandling.Ignore)]
         public string StruttureGestite { get; set; }
 
-        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_isGlobalAdmin")]
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_isGlobalAdmin", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsGlobalAdmin { get; set; }
         #endregion
 
         public AzureUser()
+        {
+        }
+
+        public AzureUser(string email, string password) : this()
         {
             // Deve essere valorizzate sempre a LocalAccount
             this.CreationType = "LocalAccount";
             this.Enabled = true;
             this.SignInNames = new List<SignInName>();
             this.Emails = new List<string>();
-        }
-
-        public AzureUser(string email, string password) : this()
-        {
             this.SignInNames.Add(new SignInName(SignInNameType.emailAddress) { Value = email });
             this.Emails.Add(email);
             this.PasswordProfile = new PasswordProfile()

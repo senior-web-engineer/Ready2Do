@@ -11,6 +11,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
+using Serilog;
+using System.Web;
 
 namespace PalestreGoGo.WebAPI.Utils
 {
@@ -87,6 +90,18 @@ namespace PalestreGoGo.WebAPI.Utils
             return result;
         }
 
+        /// <summary>
+        /// Prende in input un AzureUser con le sole proprietà da aggiornare
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task UpdateUserProfile(string userId, AzureUser user)
+        {
+            if(user == null) { throw new ArgumentNullException(nameof(user)); }
+            string api = $"{API_USERS}/{HttpUtility.UrlEncode(userId)}";
+            await SendGraphPatchRequestAsync(api, JsonConvert.SerializeObject(user));
+        }
+
         private async Task<T> SendGraphPostRequestAsync<T>(string api, string json)where T:class
         {
             // NOTE: This client uses ADAL v2, not ADAL v4
@@ -145,7 +160,7 @@ namespace PalestreGoGo.WebAPI.Utils
             AuthenticationResult result = await _authContext.AcquireTokenAsync(aadGraphResourceId, _credential);
             HttpClient http = new HttpClient();
             string url = string.Format("{0}{1}{2}?{3}", aadGraphEndpoint, _tenant, api, aadGraphVersion);
-
+            Log.Information("Sending PATCH request to Endpoint: {url} - Payload: {json}", url, json);
             HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), url);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -157,7 +172,6 @@ namespace PalestreGoGo.WebAPI.Utils
                 object formatted = JsonConvert.DeserializeObject(error);
                 throw new WebException("Error Calling the Graph API: \n" + JsonConvert.SerializeObject(formatted, Formatting.Indented));
             }
-
             return await response.Content.ReadAsStringAsync();
         }
 

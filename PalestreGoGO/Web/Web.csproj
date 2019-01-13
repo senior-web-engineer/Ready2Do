@@ -127,6 +127,7 @@
   </ItemGroup>-->
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Utils\Common.Utils.csproj" />
     <ProjectReference Include="..\Model.Common\Model.Common.csproj" />
     <ProjectReference Include="..\WebAPIModel\WebAPIModel.csproj" />
   </ItemGroup>

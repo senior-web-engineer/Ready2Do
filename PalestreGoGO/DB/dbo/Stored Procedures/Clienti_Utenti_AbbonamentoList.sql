@@ -3,10 +3,14 @@
 	@pUserId			varchar(100),
 	@pIdEvento			int = null,
 	@pIncludeDeleted	bit = 0,
-	@pIncludeExpired	bit = 0
+	@pIncludeExpired	bit = 0,
+	@pMaxItems			int = 2147483647 --default MaxInt
 AS
 BEGIN
-	SELECT 	 au.[Id]				
+	SET @pMaxItems = COALESCE(@pMaxItems, 2147483647);
+
+	SELECT 	TOP(@pMaxItems) 
+			au.[Id]				
 			,au.[IdCliente]			
 			,au.[UserId]			
 			,au.[DataInizioValidita]
@@ -38,4 +42,5 @@ BEGIN
 										INNER JOIN TipologieLezioni tl ON s.IdTipoLezione = tl.Id
 										WHERE s.Id = @pIdEvento
 										AND tl.Livello <= ta.MaxLivCorsi))
+	ORDER BY au.DataCreazione DESC -- gli ultimi li ritorniamo per primi
 END

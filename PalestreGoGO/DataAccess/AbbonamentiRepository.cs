@@ -60,7 +60,7 @@ namespace PalestreGoGo.DataAccess
         /// <param name="includeDeleted"></param>
         /// <param name="idEvento">se specificato limita i risultati ai soli abbonamenti compatibili con l'evento</param>
         /// <returns></returns>
-        public async Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null)
+        public async Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null, int? maxItems = null)
         {
             List<AbbonamentoUtenteDM> result = new List<AbbonamentoUtenteDM>();
             using (var cn = GetConnection())
@@ -73,6 +73,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pIdEvento", SqlDbType.Int).Value = idEvento;
                 cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
                 cmd.Parameters.Add("@pIncludeExpired", SqlDbType.Bit).Value = includeExpired;
+                cmd.Parameters.Add("@pMaxItems", SqlDbType.Int).Value = maxItems;               
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {

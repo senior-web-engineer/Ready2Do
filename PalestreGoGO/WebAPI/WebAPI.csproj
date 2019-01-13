@@ -53,6 +53,7 @@
   </ItemGroup>-->
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Utils\Common.Utils.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\DataModel\DataModel.csproj" />
     <ProjectReference Include="..\WebAPIModel\WebAPIModel.csproj" />

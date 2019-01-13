@@ -1,0 +1,15 @@
+﻿@model UserProfileViewModel;
+
+@{
+    ViewData["Title"] = "Index";
+    //TODO: gestire layout specifico per l'utente (??)
+    Layout = "_LayoutClienti";
+}
+
+Autenticato: @User.Identity.IsAuthenticated;
+
+Benvenuto @User.Identity.Name;
+
+<h2>Le mie prenotazioni</h2>
+
+@*DA IMPLEMENTARE*@

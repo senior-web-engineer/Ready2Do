@@ -168,7 +168,6 @@
     <Build Include="dbo\Stored Procedures\Appuntamenti_Get4User.sql" />
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Get4User.sql" />
     <Build Include="dbo\Stored Procedures\Appuntamenti_Lista4Utente.sql" />
-    <Build Include="dbo\Stored Procedures\Appuntamenti_Lista4UtenteCliente.sql" />
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Lista4UtenteCliente.sql" />
     <Build Include="dbo\Views\vAppuntamentiDaConfermareFull.sql" />
     <Build Include="dbo\Stored Procedures\Appuntamenti_Get.sql" />

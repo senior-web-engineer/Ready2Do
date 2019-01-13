@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PalestreGoGo.DataAccess;
+using PalestreGoGo.WebAPI.Business;
 using PalestreGoGo.WebAPI.Services;
 using PalestreGoGo.WebAPI.Utils;
 using Swashbuckle.AspNetCore.Swagger;
@@ -37,6 +38,7 @@ namespace PalestreGoGo.WebAPI
             services.AddTransient<IClientiProvisioner, ClientiProvisioner>();
             services.AddTransient<IUserConfirmationService, UserConfirmationService>();
             services.AddTransient<IUsersManagementService, UsersManagementService>();
+            services.AddTransient<UtentiBusiness, UtentiBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

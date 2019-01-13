@@ -9,6 +9,7 @@ using PalestreGoGo.WebAPI.ViewModel;
 using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,6 +110,10 @@ namespace PalestreGoGo.WebAPI.Services
         /// <returns>Ritorna l'utente creato</returns>
         public async Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser)
         {
+            if((newUser == null) || (newUser.SignInNames == null) || (newUser.SignInNames.Count == 0))
+            {
+                throw new ArgumentException(nameof(newUser));
+            }
             //Se l'utente esiste già lo recuperiamo
             var user = await _b2cClient.GetUserByMailAsync(newUser.SignInNames[0].Value);
             if (user != null)
@@ -146,7 +151,18 @@ namespace PalestreGoGo.WebAPI.Services
             await _b2cClient.UpdateUserStruttureOwnedAsync(user.Id, user.StruttureOwned);
         }
 
-   
+        public async Task SaveProfileChangesAsync(string userId, UtenteInputDM profilo)
+        {
+            Log.Debug("Salvataggio profilo: {@Profilo}", profilo);
+            var azUser = new AzureUser()
+            {
+                Cognome = profilo.Cognome,
+                DisplayName = profilo.DisplayName,
+                Nome = profilo.Nome,
+                TelephoneNumber = profilo.TelephoneNumber
+            };
+            await _b2cClient.UpdateUserProfile(userId, azUser);
+        }
 
         //public async Task<string> RegisterOwnerAsync(AzureUser user, string idCliente, Guid correlationId)
         //{

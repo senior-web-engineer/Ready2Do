@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Linq;
+using Common.Utils;
+using PalestreGoGo.WebAPI.Business;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
@@ -28,14 +30,18 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IClientiRepository _clientiRepo;
         private readonly IClientiUtentiRepository _clientiUtentiRepo;
         private readonly IAppuntamentiRepository _appuntamentiRepo;
+        private readonly IAbbonamentiRepository _abbonamentiRepo;
         private readonly ISchedulesRepository _schedulesRepo;
+        private readonly UtentiBusiness _utentiBusiness;
 
         public ClientiUtentiAPIController(IUsersManagementService userManagementService,
                                         ILogger<ClientiUtentiAPIController> logger,
                                         IClientiRepository clientiRepo,
                                         IClientiUtentiRepository clientiUtentiRepo,
                                         IAppuntamentiRepository appuntamentiRepo,
-                                        ISchedulesRepository schedulesRepo)
+                                        IAbbonamentiRepository abbonamentiRepo,
+                                        ISchedulesRepository schedulesRepo,
+                                        UtentiBusiness utentiBusiness)
         {
             _logger = logger;
             _clientiRepo = clientiRepo;
@@ -43,6 +49,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             _clientiUtentiRepo = clientiUtentiRepo;
             _appuntamentiRepo = appuntamentiRepo;
             _schedulesRepo = schedulesRepo;
+            _abbonamentiRepo = abbonamentiRepo;
+            _utentiBusiness = utentiBusiness;
         }
 
         #region Utenti Clienti
@@ -72,20 +80,54 @@ namespace PalestreGoGo.WebAPI.Controllers
 
 
         /// <summary>
-        /// Ritorna il dettaglio di un utente associato ad un cliente
+        /// Ritorna il dettaglio di un'associazione di un utente ad un cliente
         /// </summary>
         /// <remarks>
-        /// Può essere invocata solo dal gestore del tenant
+        /// Non ritorna i dati anagrafici aggiornati dell'utente (quelli su B2C) ma la copia locale. 
+        /// Utilizzare la GetUserProfile per ottenere i dati aggiornati da B2C (che ha come side effect l'aggiornamento della copia locale).
         /// </remarks>
-        /// <param name="idCliente"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="idCliente">ID del cliente (dalla route)</param>
+        /// <param name="userId">Identificativo dell'utente (dalla route)</param>
+        /// <param name="numAbbonamentiToIncl">indica il numero massimo di abbonamenti da includere nella risposta</param>
+        /// <param name="includeAppuntamentiFrom">DataOra in formato ISO8601 indicante la data da cui si vogliono gli appuntamenti</param>
+        /// <param name="includeAppuntamentiTo">DataOra in formato ISO8601 indicante la data fino a cui si vogliono gli appuntamenti</param>
+        /// <param name="includeAppuntamentiDaConfermare">Flag indicante se includere anche gli appuntamenti da confermare nel range di date specificate dagli altri parametri</param>
+        /// <param name="includeCertificati">Flag indicante se includere nella risposta anche i Certificati per l'utente</param>
+        /// <returns>Ritorna i dettagli dell'utente</returns>
         [HttpGet("{userId}")]
-        public async Task<ActionResult<ClienteUtenteDetailsApiModel>> GetUserDetails([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId, [FromQuery(Name = "incStato")] bool includeStato = false)
+        public async Task<ActionResult<AssociazioneUtenteClienteDM>> GetDetagliAssociazioneUtente([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId,
+                                                                                                [FromQuery(Name = "incAbb")] int? numAbbonamentiToIncl = 0,
+                                                                                                [FromQuery(Name = "apFrom")] string includeAppuntamentiFrom = null,
+                                                                                                [FromQuery(Name = "apTo")] string includeAppuntamentiTo = null,
+                                                                                                [FromQuery(Name = "incAppDaConf")] bool? includeAppuntamentiDaConfermare = false,
+                                                                                                [FromQuery(Name = "incCert")] bool? includeCertificati = false)
         {
-            if (!GetCurrentUser().CanManageStructure(idCliente)) return Forbid();
-            UtenteClienteDM utente = await _clientiUtentiRepo.GetUtenteCliente(idCliente, userId, includeStato);
-            if (utente == null) return BadRequest(); //Se non l'ho trovato i parametri non sono corretti
+            //Solo i gestori della struttura o gli utenti (solo per se stessi) possono richiamare l'operazione
+            if (!GetCurrentUser().CanManageStructure(idCliente) || !GetCurrentUser().UserId().Equals(userId)) return Forbid();
+            DateTime? appuntamentiFrom = includeAppuntamentiFrom.FromIS8601();
+            if (!string.IsNullOrEmpty(includeAppuntamentiFrom) && !appuntamentiFrom.HasValue) { return BadRequest(); /* formato data errato*/ }
+            DateTime? appuntamentiTo = includeAppuntamentiTo.FromIS8601();
+            if (!string.IsNullOrEmpty(includeAppuntamentiTo) && !appuntamentiTo.HasValue) { return BadRequest(); /* formato data errato*/ }
+
+            AssociazioneUtenteClienteDM result = await _utentiBusiness.GetDettagliAssociazionoConCliente(idCliente, userId, numAbbonamentiToIncl, appuntamentiFrom, appuntamentiTo,
+                                                                                                         includeAppuntamentiDaConfermare, includeCertificati);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Ritorna le informazioni anagrafiche di un utente aggiornate da B2C integrandole con i dati sull'associazione con il Cliente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("{userId}/profile")]
+        public async Task<ActionResult<ClienteUtenteDetailsApiModel>> GetUserProfile([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId)
+        {
+            //Solo i gestori della struttura possono richiamare l'operazione
+            if (!GetCurrentUser().CanManageStructure(idCliente)) { return Forbid(); }
+            var utente = await _clientiUtentiRepo.GetUtenteCliente(idCliente, userId, false);
+            if (utente == null) { return BadRequest(); }
+
             //Se ho trovato l'associazione utente-cliente, recupero i dettagli dell'utente
             AzureUser azUser = await _userManagementService.GetUserByIdAsync(userId);
             if (azUser == null)
@@ -116,8 +158,9 @@ namespace PalestreGoGo.WebAPI.Controllers
                 await _clientiUtentiRepo.AssociaUtenteAsync(idCliente, userId, azUser.Nome, azUser.Cognome, azUser.DisplayName);
             }
             return Ok(result);
+
         }
-        #endregion
+
 
         /// <summary>
         /// Invocabile dall'owner di una struttura per ottenere tutti gli appuntamenti per un utente
@@ -146,10 +189,13 @@ namespace PalestreGoGo.WebAPI.Controllers
                 result = dmData.Select(a => new AppuntamentoUserApiModel()
                 {
                     Appuntamento = a,
-                    Schedule = schedules.Single(s=>s.Id.Equals(a.ScheduleId))
+                    Schedule = schedules.Single(s => s.Id.Equals(a.ScheduleId))
                 });
             }
             return Ok(result);
         }
+
+        #endregion
+
     }
 }

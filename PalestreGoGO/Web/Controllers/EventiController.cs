@@ -131,11 +131,14 @@ namespace Web.Controllers
             ViewBag.IdCliente = idCliente;
             ViewBag.Cliente = urlRoute;
             ViewBag.IdEvento = idEvento;
-            var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf => cf.IdCliente.Equals(idCliente));
-            ViewBag.ClienteFollowed = followInfo != null;
+            //TODO: Modificare l'API invocata usando quella specifica del cliente per verificare lo stato
+            //var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf => cf.IdCliente.Equals(idCliente));
+            throw new NotImplementedException();
+            /*ViewBag.ClienteFollowed = followInfo != null;
             ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;
             var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
             return View("Appuntamento", appuntamento);
+            */
         }
 
         [HttpPost("{cliente}/eventi/{idEvento}/appuntamento")]

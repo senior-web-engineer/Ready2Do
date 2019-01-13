@@ -24,7 +24,10 @@ namespace PalestreGoGo.DataAccess
         /// <param name="includeDeleted"></param>
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoBaseDM>> GetAllAppuntamenti(int idCliente, int idSchedule, bool includiConfermati, bool includiNonConfermati, bool includeDeleted = false);
+
+        [Obsolete("Verificare se questa operazione ha ancora senso di esistere")]
         Task<IEnumerable<AppuntamentoDM>> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
+
         Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
 
         Task<AppuntamentoDM> GetAppuntamentoAsync(int idCliente, int idSchedule, int idAppuntamento);

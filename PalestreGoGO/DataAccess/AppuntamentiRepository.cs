@@ -202,6 +202,8 @@ namespace PalestreGoGo.DataAccess
             }
             return result;
         }
+
+        [Obsolete("Credo non abbia più motivo di esistere, è stata sostituita dalla GetAppuntamentiUtenteAsync")]
         public async Task<IEnumerable<AppuntamentoDM>> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false)
         {
             List<AppuntamentoDM> result = new List<AppuntamentoDM>();
@@ -369,7 +371,7 @@ namespace PalestreGoGo.DataAccess
             using (var cn = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
             {
                 var cmd = cn.CreateCommand();
-                cmd.CommandText = "[dbo].[Appuntamenti_Lista4UtenteCliente]";
+                cmd.CommandText = "[dbo].[Appuntamenti_Lista4Utente]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 100).Value = userId;

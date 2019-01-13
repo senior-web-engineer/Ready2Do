@@ -7,7 +7,7 @@ namespace PalestreGoGo.DataAccess
 {
     public interface IUtentiRepository
     {
-        Task<List<ClienteFollowedDM>> GetGlientiFollowedAsync(Guid userId);
+        Task<List<ClienteFollowedDM>> GetGlientiFollowedAsync(string userId);
         Task<bool> UserFollowClienteAsync(string userId, int idCliente);
         Task<string> RichiestaRegistrazioneSalvaAsync(string username, DateTime expiration, Guid? correlationId, int? idRefereer);
         Task<EsitoConfermaRegistrazioneDM> CompletaRichiestaRegistrazioneAsync(string username, string code);

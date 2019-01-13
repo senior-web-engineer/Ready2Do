@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Common.Utils;
+using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -198,6 +200,40 @@ namespace Web.Utils
             return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimCognome))?.Value;
         }
 
+        public static DateTime? EmailConfirmedOn(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            string value = principal.Claims.SingleOrDefault(c => c.Type.Equals(Constants.ClaimEmailConfirmedOn))?.Value;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                try
+                {
+                    return long.Parse(value).FromUnixTimeSeconds();
+                }
+                catch
+                {
+                    Log.Error($"Errore durante la lettura del Claim {Constants.ClaimEmailConfirmedOn}, valore non valido [{value}]");
+                }
+            }
+            return null;
+        }
+        public static DateTime? TelephoneConfirmedOn(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            string value = principal.Claims.SingleOrDefault(c => c.Type.Equals(Constants.ClaimTelephoneConfirmedOn))?.Value;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                try
+                {
+                    return long.Parse(value).FromUnixTimeSeconds();
+                }
+                catch
+                {
+                    Log.Error($"Errore durante la lettura del Claim {Constants.ClaimTelephoneConfirmedOn}, valore non valido [{value}]");
+                }
+            }
+            return null;
+        }
         public static bool CanViewSidebar(this ClaimsPrincipal principal, int idCliente)
         {
             return principal.Identity.IsAuthenticated && principal.GetUserTypeForCliente(idCliente).IsAtLeastAdmin();

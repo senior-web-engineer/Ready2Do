@@ -1,0 +1,61 @@
+﻿@model UserProfileViewModel
+
+@{
+    Layout = "_LayoutClienti";
+}
+<form asp-controller="Users" asp-action="RegisterUtente" asp-route-idref="@ViewBag.IdAffiliato" asp-route-returnUrl="@ViewBag.ReturnUrl" method="POST">
+    <div class="row">
+        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+            <div class="input-field">
+                <input type="email" asp-for="Email" disabled>
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+            <div class="input-field">
+                <input type="text" asp-for="Nome" class="validate">
+                <label asp-for="Nome"></label>
+                <span asp-validation-for="Nome"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+            <div class="input-field">
+                <input type="text" asp-for="Cognome" class="validate">
+                <label asp-for="Cognome"></label>
+                <span asp-validation-for="Cognome"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+            <div class="input-field">
+                <input type="text" asp-for="DisplayName" class="validate">
+                <label asp-for="DisplayName"></label>
+                <span asp-validation-for="DisplayName"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+            <div class="input-field">
+                <input type="text" asp-for="TelephoneNumber" class="validate">
+                <label asp-for="TelephoneNumber"></label>
+                <span asp-validation-for="TelephoneNumber"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 center">
+            <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Salva</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

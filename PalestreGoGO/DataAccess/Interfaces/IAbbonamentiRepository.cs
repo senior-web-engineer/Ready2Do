@@ -11,7 +11,7 @@ namespace PalestreGoGo.DataAccess
     {
         Task<int> SaveAbbonamentoAsync(int idCliente, AbbonamentoUtenteInputDM abbonamento);
         Task DeleteAbbonamentoAsync(int idCliente, string userId, int idAbbonamento);
-        Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null);
+        Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired, bool includeDeleted, int? idEvento = null, int? maxItems = null);
         Task<AbbonamentoUtenteDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento);
     }
 }

@@ -63,6 +63,7 @@ namespace PalestreGoGo.WebAPI.Controllers
 
         [HttpGet()]
         [AllowAnonymous]
+        [Obsolete("Verificare se questa operazione ha ancora senso di esistere")]
         public async Task<IActionResult> GetAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
             AppuntamentoViewModel result = new AppuntamentoViewModel();

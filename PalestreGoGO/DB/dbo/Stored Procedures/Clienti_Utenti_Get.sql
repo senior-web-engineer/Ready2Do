@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Clienti_Utenti_Get]
 	@pIdCliente			INT,
 	@pUserId			VARCHAR(100),
-	@pIncludeStato		BIT = 0
+	@pIncludeStato		BIT = 0 --dovrebbe essere obsoleto questo parametro
 AS
 BEGIN
 	IF COALESCE(@pIncludeStato, 0) = 1
@@ -60,7 +60,8 @@ BEGIN
 			WHERE u.IdCliente = @pIdCliente
 			AND u.UserId = @pUserId
 		)
-		SELECT u.IdCliente,
+		SELECT TOP 1 -- solo l'ultimo record ci interessa
+			   u.IdCliente,
 			   u.UserId,
 			   u.Cognome,
 			   u.Nome,
@@ -96,12 +97,12 @@ BEGIN
 						) cer ON u.IdCliente = cer.IdCliente AND u.UserId = cer.UserId
 		WHERE u.IdCliente = @pIdCliente
 		AND u.UserId = @pUserId
-
-	--Non riapplichiamo l'ordinamento perché la #tblUsers dovrebbe già essere ordinata con il criterio voluto
+		ORDER BY DataCreazione DESC -- Prendiamo solo l'ultimo record, quelli storici non ci interessano
 	END
 	ELSE
 	BEGIN
-		SELECT u.IdCliente,
+		SELECT TOP 1 -- solo l'ultimo record ci interessa
+				   u.IdCliente,
 				   u.UserId,
 				   u.Cognome,
 				   u.Nome,
@@ -112,6 +113,6 @@ BEGIN
 			FROM ClientiUtenti u
 		WHERE u.IdCliente = @pIdCliente
 		AND u.UserId = @pUserId
-
+		ORDER BY DataCreazione DESC -- Prendiamo solo l'ultimo record, quelli storici non ci interessano
 	END
 END

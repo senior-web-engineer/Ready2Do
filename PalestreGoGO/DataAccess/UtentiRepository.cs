@@ -18,14 +18,14 @@ namespace PalestreGoGo.DataAccess
 
         }
 
-        public async Task<List<ClienteFollowedDM>> GetGlientiFollowedAsync(Guid userId)
+        public async Task<List<ClienteFollowedDM>> GetGlientiFollowedAsync(string userId)
         {
             IEnumerable<ClienteFollowedDM> result = null;
             using (var cn = GetConnection())
             {
-                result = await cn.QueryAsync<ClienteFollowedDM>(StoredProcedure.SP_USER_CLIENTI_FOLLOWED,
+                result = await cn.QueryAsync<ClienteFollowedDM>("[dbo].[Utenti_ClientiFollowed]",
                                                             new { pUserId = userId },
-                                                            commandType: System.Data.CommandType.StoredProcedure);
+                                                            commandType: CommandType.StoredProcedure);
             }
             return result?.AsList();
         }

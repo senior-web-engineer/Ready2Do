@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ready2do.model.common;
 using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
@@ -17,6 +18,7 @@ using Web.Utils;
 namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Route("me")]
     public class UsersController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -36,28 +38,39 @@ namespace Web.Controllers
         }
 
         //Ritorna il profilo dell'utente
-        [HttpGet()]
-        public async Task<IActionResult> Index()
+        [HttpGet("profilo")]
+        public async Task<IActionResult> GetProfilo()
         {
             string accessToken = await HttpContext.GetTokenAsync("access_token");
             var userId = User.UserId();
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return Forbid();
-            }
-            var items = await _apiClient.GetAppuntamentiForCurrentUserAsync(userId, accessToken);
-            var vm = new UserProfileViewModel();
-            var appuntamenti = new List<AppuntamentoUtenteViewModel>();
-            vm.Appuntamenti = appuntamenti;
-            AppuntamentoUtenteViewModel appuntamento;
-            foreach (var i in items)
-            {
-               
-                appuntamento = i.MapToViewModel();
-                appuntamenti.Add(appuntamento);
-            }
-            return View(vm);
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
+
+            var utenteDM  = await _apiClient.GetProfiloUtente(accessToken);
+            var vm = UserProfileViewModel.FromUtenteDM(utenteDM);
+            vm.Email = User.Email();
+            vm.EMailConfirmed = User.EmailConfirmedOn().HasValue;
+            return View("Profilo", vm);
         }
+
+
+
+        [HttpPost("profilo")]
+        public async Task<IActionResult> SalvaProfilo(UtenteInputDM profilo)
+        {
+            if (profilo == null) return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                var model = UserProfileViewModel.FromUtenteDM(profilo);
+                model.Email = User.Email();
+                model.EMailConfirmed = User.EmailConfirmedOn().HasValue;
+                model.TelephoneConfirmed = User.TelephoneConfirmedOn().HasValue;
+                return View("Profilo", model);
+            }
+            string accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _apiClient.SalvaProfiloUtente(profilo, accessToken);
+            return RedirectToAction("GetProfilo");
+        }
+
 
         #region Gestione Associazione Utenti
 
@@ -71,7 +84,7 @@ namespace Web.Controllers
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-//            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            //            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             await _apiClient.ClienteFollowAsync(idCliente, accessToken);
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
@@ -80,7 +93,7 @@ namespace Web.Controllers
             }
             else
             {
-                return RedirectToAction("Index", new { idCliente = idCliente});
+                return RedirectToAction("Index", new { idCliente = idCliente });
             }
         }
 
@@ -94,7 +107,7 @@ namespace Web.Controllers
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-  //          int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            //          int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             await _apiClient.ClienteUnFollowAsync(idCliente, accessToken);
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
