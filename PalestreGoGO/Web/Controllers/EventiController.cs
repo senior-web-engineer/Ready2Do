@@ -46,7 +46,7 @@ namespace Web.Controllers
                                                     [FromQuery(Name = "date")] string dataEvento,
                                                     [FromQuery(Name = "time")] string oraEvento)
         {
-            var vm = new ScheduleViewModel();
+            var vm = new ScheduleEditViewModel();
             DateTime dataParsed;
             TimeSpan timeParsed;
             int idLocation;
@@ -85,7 +85,7 @@ namespace Web.Controllers
                 ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
                 ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
                 ViewData["IdCliente"] = idCliente;
-                return View("EditEvento", new ScheduleViewModel(evento));
+                return View("EditEvento", new ScheduleEditViewModel(evento));
             }
 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -108,6 +108,28 @@ namespace Web.Controllers
             ViewData["IdCliente"] = idCliente;
             return View("EditEvento", internalBuildViewModel(evento));
         }
+
+        /// <summary>
+        /// Action che ritorna i dati di un evento in visualizzazione.
+        /// In base alla tipologia di utente chiamante saranno abilitate o meno le funzioni di registrazioni o di amministrazione
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <param name="idEvento"></param>
+        /// <returns></returns>
+        [HttpGet("{cliente}/eventi/{id}")]
+        [AllowAnonymous] //Visibile anche dagli utenti anonimi
+        public async Task<IActionResult> ViewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")] int idEvento)
+        {
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var userType = User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin();
+            ViewData["UserType"] = userType;
+
+            return View("ViewEvento");
+        }
+
+
+
+
 
         /// <summary>
         /// Se l'utente non è autenticato vedrà solo i dettagli dell'evento senza poter creare/modificare l'appuntamento
@@ -174,9 +196,9 @@ namespace Web.Controllers
         }
 
 
-        private ScheduleViewModel internalBuildViewModel(ScheduleDM apiModel)
+        private ScheduleEditViewModel internalBuildViewModel(ScheduleDM apiModel)
         {
-            ScheduleViewModel vm = new ScheduleViewModel()
+            ScheduleEditViewModel vm = new ScheduleEditViewModel()
             {
                 DataCancellazioneMax = apiModel.CancellabileFinoAl?.Date,
                 OraCancellazioneMax = apiModel.CancellabileFinoAl?.TimeOfDay,

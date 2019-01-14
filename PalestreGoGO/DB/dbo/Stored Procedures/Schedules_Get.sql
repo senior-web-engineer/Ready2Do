@@ -28,6 +28,9 @@ BEGIN
 			l.Nome AS NomeLocation,
 			l.CapienzaMax AS CapienzaMaxLocation,
 			l.Descrizione AS DescrizioneLocation,
+			l.Colore AS ColoreLocation,
+			l.ImageUrl AS ImageUrlLocation,
+			l.IconUrl AS IconUrlLocation,
 			tl.Nome AS NomeTipoLezione,
 			tl.Descrizione AS DescrizioneTipoLezione,
 			tl.Durata AS DurataTipoLezione,
@@ -35,7 +38,8 @@ BEGIN
 			tl.Livello AS LivelloTipoLezione,
 			tl.MaxPartecipanti AS MaxPartecipantiTipoLezione,
 			tl.DataCreazione AS TipoLezioneDataCreazione,
-			tl.DataCancellazione AS TipoLezioneDataCancellazione
+			tl.DataCancellazione AS TipoLezioneDataCancellazione,
+			tl.Prezzo AS PrezzoTipologiaLezione
 	FROM [Schedules] s
 		LEFT JOIN [Schedules] sp ON s.IdParent = sp.Id
 	INNER JOIN [Locations] l ON s.IdLocation = l.Id

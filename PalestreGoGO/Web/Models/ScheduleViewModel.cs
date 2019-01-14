@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
-    public class ScheduleViewModel : ScheduleInputViewModel
+    public class ScheduleEditViewModel : ScheduleInputViewModel
     {
         public List<SelectListItem> TipologieSchedule { get; } = new List<SelectListItem>()
         {
@@ -16,12 +16,12 @@ namespace Web.Models
             new SelectListItem("GRATUITO per TUTTI)", "20")
         };
 
-        public ScheduleViewModel()
+        public ScheduleEditViewModel()
         {
 
         }
 
-        public ScheduleViewModel(ScheduleInputViewModel schedIn)
+        public ScheduleEditViewModel(ScheduleInputViewModel schedIn)
         {
             this.CancellazioneConsentita = schedIn.CancellazioneConsentita;
             this.Data = schedIn.Data;

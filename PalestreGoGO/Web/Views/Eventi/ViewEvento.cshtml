@@ -1,0 +1,45 @@
+﻿@using Web.Utils;
+
+@{
+    Layout = "_LayoutClienti";
+}
+<head>
+
+</head>
+
+<div class="row">
+    <!-- TAB per gli Owner-->
+    @if (((UserType)ViewBag.UserType).IsAtLeastAdmin())
+    {
+        <div class="col s10">
+            <ul class="tabs">
+                <li class="tab col s3"><a class="active" href="#tabEvento">Evento</a></li>
+                <li class="tab col s3"><a href="#tabIscritti">Iscritti</a></li>
+            </ul>
+        </div>
+    }
+    <!-- TAB EVENTO -->
+    <!-- Nota che se l'utente non è un admin non sarà un tab  -->
+    <!-- Per default questo tab viene sempre caricato, l'altro degli iscritti verrà caricato on demand quando cliccato (si può fare?)  -->
+    <div id="tabEvento" class="col s10">
+        <!-- Riempire con i dati dell'evento -->
+    </div>
+    <!-- Per ora gli iscritti li possono vedere solo i gestori -->
+    @if (((UserType)ViewBag.UserType).IsAtLeastAdmin())
+    {
+        <div id="tabIscritti">
+            <!-- Contenuto letto dinamicamente -->
+        </div>
+    }
+    </div>
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            ////EntryPoint è il nome definito in WebPack
+            //EntryPoint.r2dEditEvento.init();
+        });
+    </script>
+
+}

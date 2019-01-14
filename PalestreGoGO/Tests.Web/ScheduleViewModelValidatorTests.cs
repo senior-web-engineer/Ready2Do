@@ -11,9 +11,9 @@ namespace Tests.Web
     {
         private ScheduleInputViewModelValidator validator;
 
-        private ScheduleViewModel GetValidModel()
+        private ScheduleEditViewModel GetValidModel()
         {
-            return new ScheduleViewModel()
+            return new ScheduleEditViewModel()
             {
                 Data = DateTime.Now.AddDays(15).Date,
                 DataAperturaIscrizioni = DateTime.Now.AddDays(1).Date,

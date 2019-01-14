@@ -19,10 +19,10 @@ namespace Web.Models.Mappers
             }).ToArray();
         }
 
-        public static ScheduleViewModel ToVM(this ScheduleDM schedule)
+        public static ScheduleEditViewModel ToVM(this ScheduleDM schedule)
         {
             if (schedule == null) return null;
-            return new ScheduleViewModel()
+            return new ScheduleEditViewModel()
             {
                 Data = schedule.DataOraInizio.Date,
                 OraInizio = schedule.DataOraInizio.TimeOfDay,
