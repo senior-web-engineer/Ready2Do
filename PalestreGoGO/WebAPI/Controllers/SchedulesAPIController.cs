@@ -48,7 +48,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Ritorna i dettagli di uno Schedule
+        /// Ritorna uno Schedule
         /// </summary>
         /// <remarks>
         /// ATTENZIONE! Al momento ritorna tutti i dettagli dello schedule. 
@@ -70,6 +70,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(schedule);
         }
 
+
+        public async Task<I>
         /// <summary>
         /// Ritorna gli Schedules per un range temporale
         /// </summary>

@@ -95,7 +95,7 @@ namespace Web.Controllers
 
 
         [HttpGet("{cliente}/eventi/edit/{id}")]
-        public async Task<IActionResult> EditEvento([FromRoute(Name = "cliente")]string urlRoute,
+        public async Task<IActionResult> DettaglioEvento([FromRoute(Name = "cliente")]string urlRoute,
                                                     [FromRoute(Name = "id")] int idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);

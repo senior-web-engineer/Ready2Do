@@ -4,6 +4,6 @@
     {
         public TipologiaLezioneDM TipologiaLezione { get; set; }
         public LocationDM Location { get; set; }
-
     }
+
 }
