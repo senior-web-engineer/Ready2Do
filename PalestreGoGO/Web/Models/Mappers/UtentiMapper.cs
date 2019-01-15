@@ -30,7 +30,7 @@ namespace Web.Models.Mappers
                 {
                     Nome = utente.Nome,
                     Cognome = utente.Cognome,
-                    Stato = (ClienteUtenteStatoViewModel)((int)utente.Stato),
+                    Stato = (ClienteUtenteStatoViewModel)(utente is UtenteClienteDetailsDM ? (int)(((UtenteClienteDetailsDM)utente).Stato) : 0),
                     DisplayName = utente.DisplayName,
                     IdCliente = utente.IdCliente,
                     IdUtente = utente.UserId

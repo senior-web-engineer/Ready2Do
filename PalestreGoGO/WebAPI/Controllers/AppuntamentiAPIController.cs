@@ -61,42 +61,67 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
 
+        /// <summary>
+        /// Se invocata da un gestore ritorna tutti gli appuntamenti per lo Schedule (gli utenti iscritti)
+        /// Se invece il chiamante è un utente normale ritorna solo il suo appuntamento se esiste
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <param name="page">Numero di pagina di dati corrente</param>
+        /// <param name="pageSize">Numero di items per pagina</param>
+        /// <returns></returns>
         [HttpGet()]
-        [AllowAnonymous]
-        [Obsolete("Verificare se questa operazione ha ancora senso di esistere")]
-        public async Task<IActionResult> GetAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
+        public async Task<ActionResult<IEnumerable<AppuntamentoDM>>> GetAppuntamentiForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
-            AppuntamentoViewModel result = new AppuntamentoViewModel();
-            //Leggiamo i dati sull'evento
-            var schedule = await _repositorySchedule.GetScheduleAsync(idCliente, idSchedule);
-            result.IdEvento = idSchedule;
-            result.DataOra = string.Format("{0}T{1}Z", schedule.DataOraInizio.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), schedule.DataOraInizio.TimeOfDay.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
-            result.DurataMinuti = schedule.TipologiaLezione.Durata;
-            result.Istruttore = schedule.Istruttore;
-            result.MaxDataOraCancellazione = schedule.CancellabileFinoAl.HasValue
-                                                    ? schedule.CancellabileFinoAl.Value.ToString("o", CultureInfo.InvariantCulture)
-                                                    : schedule.DataOraInizio.ToString("0", CultureInfo.InvariantCulture);
-            result.Nome = schedule.Title;
-            result.NomeSala = schedule?.Location?.Nome;
-            result.PostiDisponibili = schedule.PostiDisponibili;
-            result.PostiResidui = schedule.PostiResidui.Value;
-
-            //Verifichiamo se esiste un appuntamento per l'utente chiamante per l'evento
-            if (User.Identity.IsAuthenticated)
+            bool isGestore = GetCurrentUser().CanManageStructure(idCliente);
+            if (!isGestore)
             {
-                var idUser = User.UserId();
-                if (!string.IsNullOrWhiteSpace(idUser))
-                {
-                    var appuntuamento = (await _repositoryAppuntamenti.GetAppuntamentoForUserAsync(idCliente, idSchedule, idUser,false)).SingleOrDefault();
-                    if (appuntuamento != null)
-                    {
-                        result.IdAppuntamento = appuntuamento.Id;
-                        result.DataOraIscrizione = appuntuamento.DataCreazione.ToString("o", CultureInfo.InvariantCulture);
-                    }
-                }
+                //Se non è il gestore ritorno l'eventuale appuntamento esistente per l'utente
+                var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoForUserAsync(idCliente, idSchedule, GetCurrentUser().UserId());
+                return Ok(new AppuntamentoDM[] { appuntamento });
             }
+            else
+            {
+                //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo
+                var result = await _repositoryAppuntamenti.GetAllAppuntamenti(idCliente, idSchedule, true, false, false);
+                return Ok(result);
+            }
+        }
+
+        /// <summary>
+        /// Ritorna tutti gli appuntamenti da confermare per lo schedule specificato
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <returns></returns>
+        [HttpGet("unconfirmed")]
+        public async Task<ActionResult<IEnumerable<AppuntamentoDaConfermareDM>>> GetAppuntamentiNonConfermatiForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
+        {
+            //Solo il gestore può invocare questa API
+            if (!GetCurrentUser().CanManageStructure(idCliente)) { return Forbid(); }
+
+            //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo
+            var result = await _repositoryAppuntamenti.GetAllAppuntamenti(idCliente, idSchedule, false, true, false);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Ritorna gli iscritti in waitlist
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <returns></returns>
+        [HttpGet("waitlist")]
+        public async Task<ActionResult<IEnumerable<WaitListRegistration>>> GetWaitListForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
+        {
+            //Solo il gestore può invocare questa API
+            if (!GetCurrentUser().CanManageStructure(idCliente)) { return Forbid(); }
+
+            //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo
+            var result = await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, false, false);
+            return Ok(result);
+        }
+
 
         /// <summary>
         /// Crea un nuovo appuntamento per l'utente corrente rappresentato dal Token di autorizzazione utilizzato.
@@ -111,7 +136,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost()]
         public async Task<IActionResult> TakeAppuntamentoForCurrentUser([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule,
-                                                                            [FromBody] NuovoAppuntamentoApiModel model)
+                                                                                    [FromBody] NuovoAppuntamentoApiModel model)
         {
             if (model == null) return BadRequest();
             if (model.IdEvento != idSchedule) return BadRequest();

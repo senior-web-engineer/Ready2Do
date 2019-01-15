@@ -216,6 +216,7 @@
     <Build Include="dbo\Functions\ClientePreferenzaGet.sql" />
     <Build Include="dbo\Stored Procedures\events\internal_WaitList_NotifyPromotion.sql" />
     <Build Include="dbo\Stored Procedures\internal_AbbonamentiUtenti_LogTransazione.sql" />
+    <Build Include="dbo\Stored Procedures\ListeAttesa_List4Schedule.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

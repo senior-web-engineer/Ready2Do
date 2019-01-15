@@ -13,7 +13,37 @@ namespace PalestreGoGo.DataAccess
 {
     public class ClientiUtentiRepository : BaseRepository, IClientiUtentiRepository
     {
-        public ClientiUtentiRepository(IConfiguration configuration): base(configuration)
+        internal static Dictionary<string, int> GetColumnsOrdinals(SqlDataReader dr, Dictionary<string, string> aliases = null)
+        {
+            Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
+
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            result["UserId"] = dr.GetOrdinal(getColumnName("UserId"));
+            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdCliente"));
+            result["Nome"] = dr.GetOrdinal(getColumnName("Nome"));
+            result["Cognome"] = dr.GetOrdinal(getColumnName("Cognome"));
+            result["UserDisplayName"] = dr.GetOrdinal(getColumnName("UserDisplayName"));
+            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazione"));
+            result["DataAggiornamento"] = dr.GetOrdinal(getColumnName("DataAggiornamento"));
+            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazione"));
+            return result;
+        }
+
+        internal static async Task<T> ReadUtenteClienteAsync<T>(SqlDataReader reader, Dictionary<string, int> columns) where T : UtenteClienteDM, new()
+        {
+            T result = new T();
+            result.Nome = reader.GetString(columns["Nome"]);
+            result.Cognome = reader.GetString(columns["Cognome"]);
+            result.DisplayName = reader.GetString(columns["UserDisplayName"]);
+            result.UserId = reader.GetString(columns["UserId"]);
+            result.IdCliente = reader.GetInt32(columns["IdCliente"]);
+            result.DataAssociazione = reader.GetDateTime(columns["DataCreazione"]);
+            result.UtlimoAggiornamento = reader.GetDateTime(columns["DataAggiornamento"]);
+            result.DataCancellazione = await reader.IsDBNullAsync(columns["DataCancellazione"]) ? (DateTime?)null : reader.GetDateTime(columns["DataCancellazione"]);
+            return result;
+        }
+
+        public ClientiUtentiRepository(IConfiguration configuration) : base(configuration)
         {
 
         }
@@ -24,7 +54,7 @@ namespace PalestreGoGo.DataAccess
                                                                         SortOrderDM sortOrder = SortOrderDM.Ascending)
         {
             List<UtenteClienteDM> result = new List<UtenteClienteDM>();
-            UtenteClienteDM item;
+            UtenteClienteDM item = null;
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -38,37 +68,21 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add(new SqlParameter("@pOrderAscending", (sortOrder == SortOrderDM.Ascending)));
 
                 await cn.OpenAsync();
-                int idColIdUser, idColNome, idColCognome, idColDisplpayName, idColDataCreaz, idColDataMod, idColDataDel;
-
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    idColIdUser = reader.GetOrdinal("UserId");
-                    idColNome = reader.GetOrdinal("Nome");
-                    idColCognome = reader.GetOrdinal("Cognome");
-                    idColDisplpayName = reader.GetOrdinal("UserDisplayName");
-                    idColDataCreaz = reader.GetOrdinal("DataCreazione");
-                    idColDataMod = reader.GetOrdinal("DataAggiornamento");
-                    idColDataDel = reader.GetOrdinal("DataCancellazione");
-
-
+                    var columns = GetColumnsOrdinals(reader);
                     while (reader.Read())
                     {
-                        item = new UtenteClienteDM()
-                        {
-                            Nome = reader.GetString(idColNome),
-                            Cognome = reader.GetString(idColCognome),
-                            DisplayName = reader.GetString(idColDisplpayName),
-                            UserId = reader.GetString(idColIdUser),
-                            IdCliente = idCliente,
-                            DataAssociazione = reader.GetDateTime(idColDataCreaz),
-                            UtlimoAggiornamento = reader.GetDateTime(idColDataMod),
-                            DataCancellazione = await reader.IsDBNullAsync(idColDataDel) ? (DateTime?)null : reader.GetDateTime(idColDataDel),
-                        };
-                        result.Add(item);
                         if (includeStato)
                         {
-                            item.Stato = await ReadStatoUtenteAsync(reader);
+                            item = await ReadUtenteClienteAsync<UtenteClienteDetailsDM>(reader, columns);
+                            ((UtenteClienteDetailsDM)item).Stato = await ReadStatoUtenteAsync(reader);
                         }
+                        else
+                        {
+                            item = await ReadUtenteClienteAsync<UtenteClienteDM>(reader, columns);
+                        }
+                        result.Add(item);
                     }
                 }
                 return result;
@@ -97,32 +111,18 @@ namespace PalestreGoGo.DataAccess
                 await cn.OpenAsync();
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
+                    var columns = GetColumnsOrdinals(reader);
                     if (reader.HasRows)
                     {
-                        idColIdUser = reader.GetOrdinal("UserId");
-                        idColNome = reader.GetOrdinal("Nome");
-                        idColCognome = reader.GetOrdinal("Cognome");
-                        idColDisplpayName = reader.GetOrdinal("UserDisplayName");
-                        idColDataCreaz = reader.GetOrdinal("DataCreazione");
-                        idColDataMod = reader.GetOrdinal("DataAggiornamento");
-                        idColDataDel = reader.GetOrdinal("DataCancellazione");
-
-                        await reader.ReadAsync();
-                        result = new UtenteClienteDM()
-                        {
-                            Nome = reader.GetString(idColNome),
-                            Cognome = reader.GetString(idColCognome),
-                            DisplayName = reader.GetString(idColDisplpayName),
-                            UserId = reader.GetString(idColIdUser),
-                            IdCliente = idCliente,
-                            DataAssociazione = reader.GetDateTime(idColDataCreaz),
-                            UtlimoAggiornamento = reader.GetDateTime(idColDataMod),
-                            DataCancellazione = await reader.IsDBNullAsync(idColDataDel) ? (DateTime?)null : reader.GetDateTime(idColDataDel)
-                        };
                         if (includeStato)
                         {
-                            result.Stato = await ReadStatoUtenteAsync(reader);
+                            result = await ReadUtenteClienteAsync<UtenteClienteDetailsDM>(reader, columns);
+                            ((UtenteClienteDetailsDM)result).Stato = await ReadStatoUtenteAsync(reader);
                         }
+                        else
+                        {
+                            result = await ReadUtenteClienteAsync<UtenteClienteDM>(reader, columns);
+                        }                        
                     }
                 }
             }
@@ -143,7 +143,7 @@ namespace PalestreGoGo.DataAccess
             idColHasCertScad = reader.GetOrdinal("HasCertificatoScaduto");
             idColHasCertValid = reader.GetOrdinal("HasCertificatoValido");
 
-            if (!(await reader.IsDBNullAsync(idColHasAbbAtt)) && reader.GetByte(idColHasAbbAtt)>0)
+            if (!(await reader.IsDBNullAsync(idColHasAbbAtt)) && reader.GetByte(idColHasAbbAtt) > 0)
             {
                 result |= ClienteUtenteStato.AbbonamentoValido;
             }
@@ -160,17 +160,17 @@ namespace PalestreGoGo.DataAccess
                         break;
                 }
             }
-            if (!(await reader.IsDBNullAsync(idColHasAbbScad)) && reader.GetByte(idColHasAbbScad)>0)
+            if (!(await reader.IsDBNullAsync(idColHasAbbScad)) && reader.GetByte(idColHasAbbScad) > 0)
             {
                 result |= ClienteUtenteStato.AbbonamenoScaduto;
             }
             hasCertScadIsNull = await reader.IsDBNullAsync(idColHasCertScad);
             hasCertValidIsNull = await reader.IsDBNullAsync(idColHasCertValid);
-            if (!hasCertScadIsNull && reader.GetByte(idColHasCertScad)>0)
+            if (!hasCertScadIsNull && reader.GetByte(idColHasCertScad) > 0)
             {
                 result |= ClienteUtenteStato.CertificatoScaduto;
             }
-            if (!hasCertValidIsNull && reader.GetByte(idColHasCertValid)>0)
+            if (!hasCertValidIsNull && reader.GetByte(idColHasCertValid) > 0)
             {
                 result |= ClienteUtenteStato.CertificatoValido;
             }

@@ -70,8 +70,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(schedule);
         }
 
-
-        public async Task<I>
         /// <summary>
         /// Ritorna gli Schedules per un range temporale
         /// </summary>

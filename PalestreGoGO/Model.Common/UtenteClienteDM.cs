@@ -13,11 +13,9 @@ namespace ready2do.model.common
         public DateTime? UtlimoAggiornamento { get; set; }
         public DateTime? DataAssociazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
-        public ClienteUtenteStato Stato { get; set; }
 
         public UtenteClienteDM()
         {
-            Stato = ClienteUtenteStato.Unknown;
         }
     }
 }

@@ -147,7 +147,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 IdUtente = azUser.Id,
                 DataAssociazione = utente.DataAssociazione.Value,
                 DataCancellazione = utente.DataCancellazione,
-                Stato = utente.Stato
+                Stato = ClienteUtenteStato.Unknown
             };
 
             //Se è cambiato qualcosa nei dati dell'utente su B2C, aggiorniamo i dati locali

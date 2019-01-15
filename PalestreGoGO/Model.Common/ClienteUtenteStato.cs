@@ -6,6 +6,7 @@ namespace ready2do.model.common
     /// Non tutte le combinazioni di stati sono valide, 
     /// la coerenza è demandata al codice applicativo
     /// </summary>
+    [Obsolete]
     [Flags]
     public enum ClienteUtenteStato: int
     {

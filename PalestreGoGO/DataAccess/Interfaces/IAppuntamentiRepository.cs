@@ -25,8 +25,15 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoBaseDM>> GetAllAppuntamenti(int idCliente, int idSchedule, bool includiConfermati, bool includiNonConfermati, bool includeDeleted = false);
 
-        [Obsolete("Verificare se questa operazione ha ancora senso di esistere")]
-        Task<IEnumerable<AppuntamentoDM>> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
+        /// <summary>
+        /// Ritorna, se esiste, l'appuntamento per l'utente chiamante
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <param name="userId"></param>
+        /// <param name="includeDeleted"></param>
+        /// <returns></returns>
+        Task<AppuntamentoDM> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId);
 
         Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
 
@@ -100,7 +107,9 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                                  DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                 string sortBy = "DataOraInizio", bool sortAscending = true, 
+                                                                                 string sortBy = "DataOraInizio", bool sortAscending = true,
                                                                                  bool includiCancellati = false);
+
+        Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsAsync(int idCliente, int idSchedule, bool includeConverted = false, bool includeDeleted = false);
     }
 }

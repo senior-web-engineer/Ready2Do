@@ -584,8 +584,16 @@ namespace Web.Utils
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<UtenteClienteDM>>(responseString, _serializerSettings);
-            return result.MapToClienteUtenteViewModel();
+            if (!includeStatus)
+            {
+                var result = JsonConvert.DeserializeObject<IEnumerable<UtenteClienteDM>>(responseString, _serializerSettings);
+                return result.MapToClienteUtenteViewModel();
+            }
+            else
+            {
+                var result = JsonConvert.DeserializeObject<IEnumerable<UtenteClienteDetailsDM>>(responseString, _serializerSettings);
+                return result.MapToClienteUtenteViewModel();
+            }
         }
 
         public async Task<ClienteUtenteDetailsApiModel> GetUtenteCliente(int idCliente, string userId, string access_token)
