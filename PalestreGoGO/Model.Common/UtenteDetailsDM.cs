@@ -12,8 +12,6 @@ namespace ready2do.model.common
 {
         //Nota: al momento non include i dati del profilo
 
-        public string UserId { get; set; }
-
         public IList<ClienteAssociatoUtenteDM> ClientiAssociati { get; set; }
 
         public UtenteDetailsDM()
