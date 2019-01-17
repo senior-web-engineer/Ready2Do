@@ -258,7 +258,7 @@
                 },
                 eventClick: function (calEvent, jsEvent, view) {
                     $("#spinner").show();
-                    var url = '@Html.Raw(Model.EventsBaseUrl)' + calEvent.id + "/appuntamento";
+                    var url = '@Html.Raw(Model.EventsBaseUrl)' + calEvent.id ;
                     window.location = url;
                 }
                 });

@@ -13,7 +13,6 @@ namespace Web.Models.Mappers
         {
             if (utenti == null) return null;
             var result = new List<ClienteUtenteViewModel>();
-            ClienteUtenteViewModel item;
             foreach (var u in utenti)
             {
                 result.Add(u.MapToClienteUtenteViewModel());

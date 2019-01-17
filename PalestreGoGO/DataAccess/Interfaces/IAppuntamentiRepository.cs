@@ -110,6 +110,6 @@ namespace PalestreGoGo.DataAccess
                                                                                  string sortBy = "DataOraInizio", bool sortAscending = true,
                                                                                  bool includiCancellati = false);
 
-        Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsAsync(int idCliente, int idSchedule, bool includeConverted = false, bool includeDeleted = false);
+        Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsAsync(int idCliente, int idSchedule, string userId = null, bool includeConverted = false, bool includeDeleted = false);        
     }
 }

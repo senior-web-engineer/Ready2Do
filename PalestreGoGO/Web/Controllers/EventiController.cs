@@ -94,74 +94,79 @@ namespace Web.Controllers
         }
 
 
-        [HttpGet("{cliente}/eventi/edit/{id}")]
+        [HttpGet("{cliente}/eventi/{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> DettaglioEvento([FromRoute(Name = "cliente")]string urlRoute,
                                                     [FromRoute(Name = "id")] int idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
-            var locations = await _apiClient.GetLocationsAsync(idCliente);
-            var evento = await _apiClient.GetScheduleAsync(idCliente, idEvento);
-            ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
-            ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
             ViewData["IdCliente"] = idCliente;
-            return View("EditEvento", internalBuildViewModel(evento));
-        }
-
-        /// <summary>
-        /// Action che ritorna i dati di un evento in visualizzazione.
-        /// In base alla tipologia di utente chiamante saranno abilitate o meno le funzioni di registrazioni o di amministrazione
-        /// </summary>
-        /// <param name="urlRoute"></param>
-        /// <param name="idEvento"></param>
-        /// <returns></returns>
-        [HttpGet("{cliente}/eventi/{id}")]
-        [AllowAnonymous] //Visibile anche dagli utenti anonimi
-        public async Task<IActionResult> ViewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")] int idEvento)
-        {
-            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var userType = User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin();
-            ViewData["UserType"] = userType;
-
-            return View("ViewEvento");
-        }
-
-
-
-
-
-        /// <summary>
-        /// Se l'utente non è autenticato vedrà solo i dettagli dell'evento senza poter creare/modificare l'appuntamento
-        /// Se invece l'utente è autenticato può creare un nuovo appuntamento o annullarne uno precedentemente preso.
-        /// Come verifichiamo che l'utente sia "associato" alla struttura?
-        /// </summary>
-        /// <param name="urlRoute"></param>
-        /// <param name="idEvento"></param>
-        /// <returns></returns>
-        [HttpGet("{cliente}/eventi/{idEvento}/appuntamento")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
-        {
-            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var schedule = await _apiClient.GetScheduleAsync(idCliente, idEvento);
-            string accessToken = null;
+            ViewData["UserType"] = User.GetUserTypeForCliente(idCliente);
+            var vm = new DettaglioEventoViewModel();
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            vm.Schedule = await _apiClient.GetScheduleAsync(idCliente, idEvento);
             if (User.Identity.IsAuthenticated)
             {
-                accessToken = await HttpContext.GetTokenAsync("access_token");
+                vm.Appuntamenti = await _apiClient.GetAppuntamentiForEventoAsync(idCliente, idEvento, accessToken);
+                vm.AppuntamentiDaConfermare = await _apiClient.GetAppuntamentiDaConferamareForEventoAsync(idCliente, idEvento, accessToken);
+                vm.WaitListRegistrations = await _apiClient.GetWaitListRegistrationsForEventoAsync(idCliente, idEvento, accessToken);
             }
-            ViewBag.IdCliente = idCliente;
-            ViewBag.Cliente = urlRoute;
-            ViewBag.IdEvento = idEvento;
-            //TODO: Modificare l'API invocata usando quella specifica del cliente per verificare lo stato
-            //var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf => cf.IdCliente.Equals(idCliente));
-            throw new NotImplementedException();
-            /*ViewBag.ClienteFollowed = followInfo != null;
-            ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;
-            var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
-            return View("Appuntamento", appuntamento);
-            */
+            return View("DettaglioEvento", vm);
         }
+
+        ///// <summary>
+        ///// Action che ritorna i dati di un evento in visualizzazione.
+        ///// In base alla tipologia di utente chiamante saranno abilitate o meno le funzioni di registrazioni o di amministrazione
+        ///// </summary>
+        ///// <param name="urlRoute"></param>
+        ///// <param name="idEvento"></param>
+        ///// <returns></returns>
+        //[HttpGet("{cliente}/eventi/{id}")]
+        //[AllowAnonymous] //Visibile anche dagli utenti anonimi
+        //public async Task<IActionResult> ViewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")] int idEvento)
+        //{
+        //    var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+        //    var userType = User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin();
+        //    ViewData["UserType"] = userType;
+
+        //    return View("ViewEvento");
+        //}
+
+
+
+
+
+        ///// <summary>
+        ///// Se l'utente non è autenticato vedrà solo i dettagli dell'evento senza poter creare/modificare l'appuntamento
+        ///// Se invece l'utente è autenticato può creare un nuovo appuntamento o annullarne uno precedentemente preso.
+        ///// Come verifichiamo che l'utente sia "associato" alla struttura?
+        ///// </summary>
+        ///// <param name="urlRoute"></param>
+        ///// <param name="idEvento"></param>
+        ///// <returns></returns>
+        //[HttpGet("{cliente}/eventi/{idEvento}/appuntamento")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GetAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
+        //{
+        //    var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+        //    var schedule = await _apiClient.GetScheduleAsync(idCliente, idEvento);
+        //    string accessToken = null;
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        accessToken = await HttpContext.GetTokenAsync("access_token");
+        //    }
+        //    ViewBag.IdCliente = idCliente;
+        //    ViewBag.Cliente = urlRoute;
+        //    ViewBag.IdEvento = idEvento;
+        //    //TODO: Modificare l'API invocata usando quella specifica del cliente per verificare lo stato
+        //    //var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf => cf.IdCliente.Equals(idCliente));
+        //    throw new NotImplementedException();
+        //    /*ViewBag.ClienteFollowed = followInfo != null;
+        //    ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;
+        //    var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
+        //    return View("Appuntamento", appuntamento);
+        //    */
+        //}
 
         [HttpPost("{cliente}/eventi/{idEvento}/appuntamento")]
         public async Task<IActionResult> AddAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
@@ -173,7 +178,7 @@ namespace Web.Controllers
                 IdEvento = idEvento,
                 IdUtente = User.UserId()
             };
-            await _apiClient.SalvaAppuntamentoForCurrentUser(idCliente, apiModel, access_token);
+            await _apiClient.TakeAppuntamentoForCurrentUser(idCliente, apiModel, access_token);
             return RedirectToAction("GetAppuntamentoEvento", new { cliente = urlRoute, idEvento = idEvento });
         }
 

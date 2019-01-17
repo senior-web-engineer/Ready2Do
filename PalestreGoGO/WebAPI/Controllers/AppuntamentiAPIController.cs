@@ -78,7 +78,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 //Se non è il gestore ritorno l'eventuale appuntamento esistente per l'utente
                 var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoForUserAsync(idCliente, idSchedule, GetCurrentUser().UserId());
-                return Ok(new AppuntamentoDM[] { appuntamento });
+                IEnumerable<AppuntamentoDM> result = appuntamento != null ? new AppuntamentoDM[] { appuntamento } : null;
+                return Ok(result);
             }
             else
             {
@@ -88,8 +89,10 @@ namespace PalestreGoGo.WebAPI.Controllers
             }
         }
 
+
         /// <summary>
-        /// Ritorna tutti gli appuntamenti da confermare per lo schedule specificato
+        /// Si il chiamante è un gestore, ritorna tutti gli appuntamenti da confermare per lo schedule specificato.
+        /// Se il chiamante è un utente normale ritorna SOLO il suo appuntamento da confermare (e solo alcune informazioni)
         /// </summary>
         /// <param name="idCliente"></param>
         /// <param name="idSchedule"></param>
@@ -98,11 +101,17 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<ActionResult<IEnumerable<AppuntamentoDaConfermareDM>>> GetAppuntamentiNonConfermatiForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
             //Solo il gestore può invocare questa API
-            if (!GetCurrentUser().CanManageStructure(idCliente)) { return Forbid(); }
-
-            //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo
-            var result = await _repositoryAppuntamenti.GetAllAppuntamenti(idCliente, idSchedule, false, true, false);
-            return Ok(result);
+            if (!GetCurrentUser().CanManageStructure(idCliente))
+            {
+                var app = await _repositoryAppuntamenti.GetAppuntamentoDaConfermareForUserAsync(idCliente, idSchedule, GetCurrentUser().UserId());
+                return Ok(app);
+            }
+            else
+            {
+                //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo)
+                var result = await _repositoryAppuntamenti.GetAllAppuntamenti(idCliente, idSchedule, false, true, false);
+                return Ok(result);
+            }
         }
 
         /// <summary>
@@ -115,10 +124,12 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<ActionResult<IEnumerable<WaitListRegistration>>> GetWaitListForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
             //Solo il gestore può invocare questa API
-            if (!GetCurrentUser().CanManageStructure(idCliente)) { return Forbid(); }
+            if (!GetCurrentUser().CanManageStructure(idCliente)) {
+                return Ok(await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, GetCurrentUser().UserId(), false, false));
+            }
 
-            //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo
-            var result = await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, false, false);
+            //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo)
+            var result = await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, null, false, false);
             return Ok(result);
         }
 

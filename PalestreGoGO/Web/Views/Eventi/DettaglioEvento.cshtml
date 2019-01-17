@@ -1,4 +1,5 @@
 ﻿@using Web.Utils;
+@model DettaglioEventoViewModel;
 
 @{
     Layout = "_LayoutClienti";
@@ -15,23 +16,36 @@
             <ul class="tabs">
                 <li class="tab col s3"><a class="active" href="#tabEvento">Evento</a></li>
                 <li class="tab col s3"><a href="#tabIscritti">Iscritti</a></li>
+                <li class="tab col s3"><a href="#tabDaConfermare">DaConfermare</a></li>
+                @if (Model.Schedule.WaitListDisponibile)
+                {
+                    <li class="tab col s3"><a href="#tabWaitList">InAttesa</a></li>
+                }
             </ul>
         </div>
     }
     <!-- TAB EVENTO -->
     <!-- Nota che se l'utente non è un admin non sarà un tab  -->
-    <!-- Per default questo tab viene sempre caricato, l'altro degli iscritti verrà caricato on demand quando cliccato (si può fare?)  -->
-    <div id="tabEvento" class="col s10">
+    <div id="tabEvento" class="col s10 offset-s1 m8 offset-m2 l6 offset-l3" >
         <!-- Riempire con i dati dell'evento -->
+        <partial name="_TabEvento" model="Model.Schedule" />
     </div>
     <!-- Per ora gli iscritti li possono vedere solo i gestori -->
     @if (((UserType)ViewBag.UserType).IsAtLeastAdmin())
     {
         <div id="tabIscritti">
-            <!-- Contenuto letto dinamicamente -->
+            <partial name="_TabIscritti" model="Model.Appuntamenti" />
         </div>
-    }
-    </div>
+        if (Model.AppuntamentiDaConfermare?.Any() ?? false)
+        {
+            <div id="tabDaConfermare"><partial name="_TabDaConfermare" model="Model.AppuntamentiDaConfermare" /></div>
+        }
+        @if (Model.Schedule.WaitListDisponibile)
+        {
+            <div id="tabWaitList"><partial name="_TabWaitList" model="Model.WaitListRegistrations" /></div>
+        }
+    }    
+</div>
 
 @section Scripts{
 

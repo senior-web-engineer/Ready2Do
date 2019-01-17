@@ -21,7 +21,7 @@ namespace Web.ViewComponents
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(IList<AppuntamentoUtenteViewModel> appuntamenti, string userId, int idCliente)
+        public IViewComponentResult Invoke(IList<AppuntamentoUtenteViewModel> appuntamenti, string userId, int idCliente)
         {
             UtenteViewAppuntamentiViewModel vm = new UtenteViewAppuntamentiViewModel()
             {

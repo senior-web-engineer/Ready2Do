@@ -44,7 +44,7 @@ namespace Web.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null, bool asUser = true)
         {
-            if (string.IsNullOrWhiteSpace(returnUrl))
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
             {
                 returnUrl = Url.Action("Index", "Home");
             }
@@ -68,7 +68,7 @@ namespace Web.Controllers
         [Route("/logout", Name ="logout")]
         public async Task Logout(string returnUrl = null)
         {
-            if (string.IsNullOrWhiteSpace(returnUrl))
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
             {
                 returnUrl = this.Url.Action("Index", "Home");
             }
@@ -87,7 +87,10 @@ namespace Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterCliente(string returnUrl = null)
         {
-            //ViewData["ReturnUrl"] = returnUrl;
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = null;
+            }
             var vm = await _account.BuildRegisterClienteViewModelAsync(returnUrl);
             return View(vm);
         }
@@ -99,6 +102,10 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterCliente(ClientRegistrationInputModel model, string returnUrl = null)
         {
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = null;
+            }
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -160,6 +167,10 @@ namespace Web.Controllers
         [AllowAnonymous]
         public IActionResult RegisterUtente([FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
         {
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = null;
+            }
             var vm = new UtenteRegistrationViewModel();
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["IdAffiliato"] = idStrutturaAffiliata;
@@ -173,6 +184,10 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterUtente([FromForm]UtenteRegistrationViewModel model, [FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
         {
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = null;
+            }
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {

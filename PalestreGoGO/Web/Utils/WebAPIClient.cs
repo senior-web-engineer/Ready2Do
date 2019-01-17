@@ -157,18 +157,14 @@ namespace Web.Utils
 
         #endregion
 
-        public async Task<bool> NuovoUtenteAsync(NuovoUtenteViewModel utente, int? idStrutturaAffiliata)
+        #region CLIENTI
+        public async Task<bool> CheckUrlRoute(string urlRoute, int? idCliente = null)
         {
-            //TODO: Rimuovere l'idStrutturaAffiliata dalla querystring e metterlo nel body
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti?idref={idStrutturaAffiliata}");
-            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/clienti");
-            var content = new StringContent(JsonConvert.SerializeObject(utente), Encoding.UTF8, "application/json");
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsync(uri, content);
-            return response.IsSuccessStatusCode;
+            string tmpqs = idCliente.HasValue ? $"&idCliente={idCliente}" : "";
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}{tmpqs}");
+            return await GetRequestAsync<bool>(uri, null);
         }
 
-        #region CLIENTI
         public async Task<bool> NuovoClienteAsync(NuovoClienteAPIModel cliente)
         {
             try
@@ -194,21 +190,7 @@ namespace Web.Utils
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}";
             return await GetRequestAsync<ClienteDM>(new Uri(uri), null);
         }
-
-        /*
-        public async Task<ClienteWithImagesViewModel> GetClienteFromTokenAsync(string securityToken)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_appConfig.WebAPI.BaseAddress}api/clienti/token/{securityToken}");
-            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ClienteWithImagesViewModel>(responseString, _serializerSettings);
-            return result;
-        }
-        */
-
+       
         public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloAPIModel profilo, string access_token)
         {
             await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo", profilo, access_token);
@@ -253,7 +235,6 @@ namespace Web.Utils
             return await GetRequestAsync<IEnumerable<ImmagineClienteDM>>(uri, access_token);
         }
 
-
         public async Task ClienteSalvaOrarioApertura(int idCliente, OrarioAperturaDM orario, string access_token)
         {
             await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario", orario, access_token);
@@ -270,6 +251,7 @@ namespace Web.Utils
         }
 
         #endregion
+
         #region TIPOLOGIE CLIENTE
 
         public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync()
@@ -414,76 +396,28 @@ namespace Web.Utils
         }
 
         #endregion
-
-
-
-        public async Task<bool> CheckEmail(string email)
+               
+        #region APPUNTAMENTI
+        //Utilizzabile sia dagli Owner (ritorna tutti gli appuntamenti) che dall'utente (ritorna solamente il suo)
+        public async Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiForEventoAsync(int idCliente, int idEvento, string access_token)
         {
-            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}"), null);
+            var uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}/appuntamenti");
+            return await GetRequestAsync< IEnumerable<AppuntamentoDM>>(uri, access_token);
         }
 
-        public async Task<bool> CheckUrlRoute(string urlRoute, int? idCliente = null)
+        public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConferamareForEventoAsync(int idCliente, int idEvento, string access_token)
         {
-            string tmpqs = idCliente.HasValue ? $"&idCliente={idCliente}" : "";
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/checkurl?url={urlRoute}{tmpqs}");
-            return await GetRequestAsync<bool>(uri, null);
+            var uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}/appuntamenti/unconfirmed");
+            return await GetRequestAsync<IEnumerable<AppuntamentoDaConfermareDM>>(uri, access_token);
         }
-
-        public async Task<UserConfirmationResultAPIModel> ConfermaAccount(string email, string code)
+        public async Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsForEventoAsync(int idCliente, int idEvento, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/confirmation?email={email}&code={code}");
-            using (var response = await SendRequestAsync<UserConfirmationResultAPIModel>(HttpMethod.Post, uri, null, null))
-            {
-                return JsonConvert.DeserializeObject<UserConfirmationResultAPIModel>(await response.Content.ReadAsStringAsync());
-            }
+            var uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}/appuntamenti/waitlist");
+            return await GetRequestAsync<IEnumerable<WaitListRegistration>>(uri, access_token);
         }
 
 
-        public async Task<Models.AppuntamentoViewModel> GetAppuntamentoForCurrentUserAsync(int idCliente, int idEvento, string access_token)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage();
-            request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti?idEvento={idEvento}");
-            if (!string.IsNullOrEmpty(access_token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            }
-            request.Method = HttpMethod.Get;
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            //Sfruttiamo l'uguaglianza a livello di serializzazione tra i due modelli
-            var result = JsonConvert.DeserializeObject<Models.AppuntamentoViewModel>(responseString, _serializerSettings);
-            return result;
-        }
-
-        public async Task<Models.AppuntamentoViewModel> GetAppuntamentiForClienteUserAsync(int idCliente, string userId, string access_token,
-                                                    DateTime? dtInizio = null, DateTime? dtFine = null, int pageNumber = 1, int pageSize = 25)
-        {
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage();
-            var sb = new StringBuilder($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti?page={pageNumber}&pageSize={pageSize}");
-            if (dtInizio.HasValue)
-            {
-                sb.Append($"&dtInizio={dtInizio.Value.ToString("yyyyMMddHHmmss")}");
-            }
-            if (dtFine.HasValue)
-            {
-                sb.Append($"&dtFine={dtFine.Value.ToString("yyyyMMddHHmmss")}");
-            }
-            request.RequestUri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti?page={pageNumber}&pageSize={pageSize}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            request.Method = HttpMethod.Get;
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            String responseString = await response.Content.ReadAsStringAsync();
-            //Sfruttiamo l'uguaglianza a livello di serializzazione tra i due modelli
-            //TODO: Verificare il tipo ritornato
-            var result = JsonConvert.DeserializeObject<Models.AppuntamentoViewModel>(responseString, _serializerSettings);
-            return result;
-        }
-
-        public async Task SalvaAppuntamentoForCurrentUser(int idCliente, NuovoAppuntamentoApiModel appuntamento, string access_token)
+        public async Task TakeAppuntamentoForCurrentUser(int idCliente, NuovoAppuntamentoApiModel appuntamento, string access_token)
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti";
             await SendPostRequestAsync(uri, appuntamento, access_token);
@@ -512,6 +446,7 @@ namespace Web.Utils
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti");
             return await GetRequestAsync<List<AppuntamentoUserApiModel>>(uri, access_token);
         }
+        #endregion 
 
         ///// <summary>
         ///// Ritorna la lista dei clienti followed dall'utente corrente
@@ -533,7 +468,6 @@ namespace Web.Utils
         //    return apiResult?.MapToEnumerableClienteFollowed().ToList();
         //}
 
-
         /// <summary>
         /// Verifica se un utente sia già un Follower di un determinato cliente
         /// </summary>
@@ -543,37 +477,20 @@ namespace Web.Utils
         public async Task<bool> ClienteIsFollowedByUserAsync(int idCliente, string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/follow/{idCliente}");
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-            var apiResult = JsonConvert.DeserializeObject<bool>(responseString, _serializerSettings);
-            return apiResult;
+            return await GetRequestAsync<bool>(uri, access_token);
         }
 
         public async Task ClienteFollowAsync(int idCliente, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/follow");
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/follow";
+            await SendPostRequestAsync(uri, "", access_token);
         }
 
         public async Task ClienteUnFollowAsync(int idCliente, string access_token)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/unfollow");
-            HttpClient client = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-            HttpResponseMessage response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/unfollow";
+            await SendPostRequestAsync(uri, "", access_token);
         }
-
-
 
         public async Task<List<ClienteUtenteViewModel>> GetUtentiCliente(int idCliente, string access_token, bool includeStatus, int page = 1, int pageSize = 2000, string sortBy = "Cognome", bool asc = true)
         {
@@ -670,6 +587,31 @@ namespace Web.Utils
         #endregion
 
         #region UTENTI
+        public async Task<bool> CheckEmail(string email)
+        {
+            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}"), null);
+        }
+
+        public async Task<bool> NuovoUtenteAsync(NuovoUtenteViewModel utente, int? idStrutturaAffiliata)
+        {
+            //TODO: Rimuovere l'idStrutturaAffiliata dalla querystring e metterlo nel body
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti?idref={idStrutturaAffiliata}");
+            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/clienti");
+            var content = new StringContent(JsonConvert.SerializeObject(utente), Encoding.UTF8, "application/json");
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.PostAsync(uri, content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<UserConfirmationResultAPIModel> ConfermaAccount(string email, string code)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/confirmation?email={email}&code={code}");
+            using (var response = await SendRequestAsync<UserConfirmationResultAPIModel>(HttpMethod.Post, uri, null, null))
+            {
+                return JsonConvert.DeserializeObject<UserConfirmationResultAPIModel>(await response.Content.ReadAsStringAsync());
+            }
+        }
+
         public async Task<UtenteDM> GetProfiloUtente(string access_token)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/profilo");

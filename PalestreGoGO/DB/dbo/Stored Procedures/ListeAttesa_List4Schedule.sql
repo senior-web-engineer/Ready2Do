@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[ListeAttesa_List4Schedule]
 	@pIdCliente			INT,
 	@pIdSchedule		INT,
+	@pUserId			VARCHAR(100) = NULL,
 	@pIncludeConverted	BIT = 0,
 	@pIncludeDeleted	BIT = 0
 AS
@@ -29,6 +30,7 @@ BEGIN
 		INNER JOIN ClientiUtenti cu ON cu.IdCliente = l.IdCliente AND cu.UserId = l.UserId
 	WHERE l.IdCliente = @pIdCliente
 	AND l.IdSchedule = @pIdSchedule
+	AND ((@pUserId IS NULL) OR (l.UserId = @pUserId)) 
 	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (l.DataCancellazione IS NULL))
 	AND ((COALESCE(@pIncludeConverted, 0) = 1) OR (l.DataConversione IS NULL))
 END

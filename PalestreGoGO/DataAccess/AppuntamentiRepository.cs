@@ -294,7 +294,7 @@ namespace PalestreGoGo.DataAccess
             return await InternalGetAppuntamentiDaConfermareUtenteAsync(idCliente, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending);
         }
 
-        public async Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsAsync(int idCliente, int idSchedule, bool includeConverted = false, bool includeDeleted = false)
+        public async Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsAsync(int idCliente, int idSchedule, string userId = null, bool includeConverted = false, bool includeDeleted = false)
         {
             List<WaitListRegistration> result = new List<WaitListRegistration>();
             using (var cn = GetConnection())
@@ -304,6 +304,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pIdSchedule", SqlDbType.Int).Value = idSchedule;
+                cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 100).Value = userId;
                 cmd.Parameters.Add("@pIncludeConverted", SqlDbType.Bit).Value = includeConverted;
                 cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
                 await cn.OpenAsync();

@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions;
+@model ScheduleDM
+
+<style>
+    .r2d-label {
+        width: 30%
+    }
+
+    .r2d-value {
+        margin-left: 20px;
+        width: 70%;
+    }
+</style>
+
+<div class="row">
+    <div class="col s10">
+        <h3>@Model.Title</h3>
+    </div>
+    <br />
+    <div class="col s10">
+        <h5>@Model.TipologiaLezione.Nome</h5>
+    </div>
+</div>
+@if (!string.IsNullOrWhiteSpace(Model.Istruttore))
+{
+    <div class="row">
+        <div class="col s10">
+            <span class="r2d-label">Istruttore:</span>
+            <span class="r2d-value">@Model.Istruttore</span>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col s10">
+        <span class="r2d-label">Data ed Ora inizio:</span>
+        <span class="r2d-value">@Model.DataOraInizio.ToString("dd MMMMM yyyy alle HH:mm")</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col s10">
+        <span class="r2d-label">Location:</span>
+        <span class="r2d-value">@Model.Location.Nome</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col s10">
+        <span class="r2d-label">Posti disponibili:</span>
+        <span class="r2d-value">@Model.PostiResidui su @Model.PostiDisponibili</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col s10">
+        <span class="r2d-label">Cancellazione consentita:</span>
+        <span class="r2d-value">@(Model.CancellazioneConsentita ? $"SI, fino al {(Model.CancellabileFinoAl ?? Model.DataOraInizio).ToString("dd MMMMM yyyy alle HH:mm")}" : "NO") </span>
+    </div>
+</div>
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col s10 center">
+            <a class="btn waves-effect waves-light" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Accedi per Iscriverti</a>
+        </div>
+    </div>
+
+}

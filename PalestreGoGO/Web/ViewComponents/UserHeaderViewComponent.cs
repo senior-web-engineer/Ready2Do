@@ -22,7 +22,7 @@ namespace Web.ViewComponents
             _logger = logger;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(UserHeaderViewModel model)
+        public IViewComponentResult Invoke(UserHeaderViewModel model)
         {
             return View(model);
         }
