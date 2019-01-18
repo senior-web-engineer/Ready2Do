@@ -31,11 +31,20 @@ namespace PalestreGoGo.WebAPI
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        /// <summary>
+        /// Metodo per la creazione dell IWebHostBuilder.
+        /// Deve essere definito in questo modo perché referenziato dalla classe WebApplicationFactory utilizzata nei tests di integrazione
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(GetConfiguration(args))
-                .UseSerilog((ctx, cfg) => cfg.ReadFrom.ConfigurationSection(ctx.Configuration.GetSection("Serilog")).Enrich.FromLogContext(),false)
-                .UseStartup<Startup>()
-                .Build();
+                .UseSerilog((ctx, cfg) => cfg.ReadFrom.ConfigurationSection(ctx.Configuration.GetSection("Serilog")).Enrich.FromLogContext(), false)
+                .UseStartup<Startup>();
+        }
+
+        public static IWebHost BuildWebHost(string[] args) => CreateWebHostBuilder(args).Build();
     }
 }
