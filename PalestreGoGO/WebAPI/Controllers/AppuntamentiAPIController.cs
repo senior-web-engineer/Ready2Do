@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +10,12 @@ using PalestreGoGo.WebAPI.Controllers;
 using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPI.Controllers
 {
@@ -52,12 +53,12 @@ namespace PalestreGoGo.WebAPI.Controllers
                                  ISchedulesRepository repositorySchedule,
                                  LogicAppsClient clientLogicApp)
         {
-            this._config = config;
-            this._logger = logger;
-            this._repositoryAppuntamenti = repositoryAppuntamenti;
-            this._repositorySchedule = repositorySchedule;
-            this._clientiRepository = clientiRepository;
-            this._clientLogicApp = clientLogicApp;
+            _config = config;
+            _logger = logger;
+            _repositoryAppuntamenti = repositoryAppuntamenti;
+            _repositorySchedule = repositorySchedule;
+            _clientiRepository = clientiRepository;
+            _clientLogicApp = clientLogicApp;
         }
 
 
@@ -124,7 +125,8 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<ActionResult<IEnumerable<WaitListRegistration>>> GetWaitListForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
             //Solo il gestore può invocare questa API
-            if (!GetCurrentUser().CanManageStructure(idCliente)) {
+            if (!GetCurrentUser().CanManageStructure(idCliente))
+            {
                 return Ok(await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, GetCurrentUser().UserId(), false, false));
             }
 
@@ -206,18 +208,56 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(appuntamento);
         }
 
-        [HttpDelete("{idAppuntamento}")]
-        public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromRoute(Name = "idAppuntamento")] int idAppuntamento)
+        /// <summary>
+        /// Questa API cancella, se esiste, altrimenti ritorna un 404, l'appuntamento per l'utente chiamante
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <returns></returns>
+        [HttpDelete()]
+        public async Task<IActionResult> DeleteAppuntamento([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
-            var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoAsync(idCliente, idSchedule, idAppuntamento);
-            if (appuntamento == null) return NotFound();
-            bool authorized = false;
-            if (User.CanManageStructure(idCliente)) { authorized = true; }
-            if (!authorized && (!string.IsNullOrWhiteSpace(appuntamento.UserId)) && (appuntamento.UserId.Equals(User.UserId()))) { authorized = true; }
-            if (!authorized) { return Forbid(); }
-            await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntamento);
+            var userId = GetCurrentUser().UserId();
+            var appuntamento = await _repositoryAppuntamenti.GetAppuntamentoForUserAsync(idCliente, idSchedule, userId);
+            if (appuntamento == null)
+            {
+                var appuntamentoDaConfermare = (await _repositoryAppuntamenti.GetAppuntamentoDaConfermareForUserAsync(idCliente, idSchedule, userId)).SingleOrDefault();
+                if (appuntamentoDaConfermare == null) { return NotFound(); }
+                else
+                {
+                    var timoutMgrPayload = await _repositoryAppuntamenti.CancelAppuntamentoDaConfermareAsync(idCliente, appuntamentoDaConfermare.Id.Value);
+                    //TODO: Terminare il TimeoutManager (chiamata REST per interrompere la logic app)
+                    //Al momento la LogiApp non viene interrotta per cui cercherà inutilmante di invocare il timeout. 
+                    //L'operazione non produrrà effetti essendo già stata cancellata
+                }
+            }
+            else
+            {
+                await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, appuntamento.Id.Value);
+            }
             return Ok();
         }
 
+        /// <summary>
+        /// Questa operazione è invocabile solo dal gestore per cancellare l'appuntamento di un altro utente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idSchedule"></param>
+        /// <param name="idAppuntamento"></param>
+        /// <returns></returns>
+        [HttpDelete("{idAppuntamento}")]
+        public async Task<IActionResult> DeleteAppuntamentoAdmin([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule, [FromRoute(Name = "idAppuntamento")] int idAppuntamento)
+        {
+            if (!User.CanManageStructure(idCliente))
+            {
+                Log.Warning("Tentativo NON AUTORIZZATO di cancellare l'appountamento [{idAppuntamento}] per l'evento [{idEvento}]. Caller Id: {userId}",
+                    idAppuntamento, idSchedule, GetCurrentUser().UserId());
+                return Forbid();
+            }
+            await _repositoryAppuntamenti.CancelAppuntamentoAsync(idCliente, idAppuntamento);
+            Log.Information("Cancellato l'appountamento [{idAppuntamento}] per l'evento [{idEvento}]. Caller Id: {userId}",
+                    idAppuntamento, idSchedule, GetCurrentUser().UserId());
+            return Ok();
+        }
     }
 }

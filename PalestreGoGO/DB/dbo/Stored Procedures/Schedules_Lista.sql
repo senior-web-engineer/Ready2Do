@@ -22,9 +22,9 @@ DECLARE @sql NVARCHAR(MAX);
 		RAISERROR('Invalid @pidCliente', 16, 0);
 		RETURN -2;		
 	END
-	SET @pSortColumn = COALESCE(@pSortColumn, 'DataOraInizio');
+	SET @pSortColumn = COALESCE(@pSortColumn, 'dataorainizioschedules');
 	-- Check colonna di ordinamento (avoid injection)
-	IF LOWER(@pSortColumn) NOT IN (N'dataorainizio', N'dataaperturaiscrizioni', N'postidisponibili', N'postiresidui', N'numprenotazioni')
+	IF LOWER(@pSortColumn) NOT IN (N'dataorainizioschedules', N'dataaperturaiscrizionischedules', N'postidisponibilischedules', N'postiresiduischedules', N'numprenotazionischedules')
 	BEGIN
 		RAISERROR('Invalid parameter for @pSortColumn: %s', 11, 1, @pSortColumn);
 		RETURN -1;
@@ -36,75 +36,37 @@ DECLARE @sql NVARCHAR(MAX);
 	SET @pPageNumber = COALESCE(@pPageNumber, 1);
 
 	-- Costruiamo la query dinamicamente
-	SET @sql = N'	SELECT	s.Id,
-							s.IdCliente,
-							s.Title,
-							s.IdTipoLezione,
-							s.IdLocation,
-							s.DataOraInizio,
-							s.Istruttore,
-							s.PostiDisponibili,
-							s.PostiResidui,
-							(s.PostiDisponibili - s.PostiResidui) AS NumPrenotazioni,
-							s.CancellazioneConsentita,
-							s.CancellabileFinoAl,
-							s.DataAperturaIscrizioni,
-							s.DataChiusuraIscrizioni,
-							s.DataCancellazione,
-							s.UserIdOwner,
-							s.Note,
-							s.WaitListDisponibile,
-							s.VisibileDal,
-							s.VisibileFinoAl,
-							COALESCE(s.Recurrency, sp.Recurrency) AS Recurrency,
-							s.IdParent,
-							l.Nome AS NomeLocation,
-							l.CapienzaMax AS CapienzaMaxLocation,
-							l.Descrizione AS DescrizioneLocation,
-							l.Colore AS ColoreLocation,
-							l.ImageUrl AS ImageUrlLocation,
-							l.IconUrl AS IconUrlLocation,
-							tl.Nome AS NomeTipoLezione,
-							tl.Descrizione AS DescrizioneTipoLezione,
-							tl.Durata AS DurataTipoLezione,
-							tl.LimiteCancellazioneMinuti AS LimiteCancellazioneMinutiTipoLezione,
-							tl.Livello AS LivelloTipoLezione,
-							tl.MaxPartecipanti AS MaxPartecipantiTipoLezione,
-							tl.DataCreazione AS TipoLezioneDataCreazione,
-							tl.DataCancellazione AS TipoLezioneDataCancellazione,
-							tl.Prezzo AS PrezzoTipologiaLezione
-					FROM [Schedules] s
-						LEFT JOIN [Schedules] sp ON s.IdParent = sp.Id
-					INNER JOIN [Locations] l ON s.IdLocation = l.Id
-					INNER JOIN [TipologieLezioni] tl ON s.IdTipoLezione = tl.Id
-					WHERE s.IdCliente = @pIdCliente'
+	SET @sql = N'	SELECT	s.*,
+							(s.PostiDisponibiliSchedules - s.PostiResiduiSchedules) AS NumPrenotazioniSchedules
+					FROM [vSchedulesFull] s						
+					WHERE s.IdClienteSchedules = @pIdCliente'
 	IF @pStartDate IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.DataOraInizio >= @pStartDate '		
+		SET @sql = @sql + @newLine + 'AND s.DataOraInizioSchedules >= @pStartDate '		
 	END
 	IF @pEndDate IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.DataOraInizio <= @pEndDate '		
+		SET @sql = @sql + @newLine + 'AND s.DataOraInizioSchedules <= @pEndDate '		
 	END
 	IF @pIdLocation IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.IdLocation = @pIdLocation '		
+		SET @sql = @sql + @newLine + 'AND s.IdLocationSchedules = @pIdLocation '		
 	END
 	IF @pTipoLezione IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.IdTipoLezione = @pTipoLezione '		
+		SET @sql = @sql + @newLine + 'AND s.IdTipoLezioneSchedules = @pTipoLezione '		
 	END
 	IF @pSoloPostiDispon IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.PostiResidui > 0 '		
+		SET @sql = @sql + @newLine + 'AND s.PostiResiduiSchedules > 0 '		
 	END
 	IF @pSoloIscrizAperte IS NOT NULL
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND GETDATE() BETWEEN COALESCE(s.DataAperturaIscrizioni,''1900-01-01'') AND COALESCE(s.DataChiusuraIscrizioni,s.DataOraInizio)  '
+		SET @sql = @sql + @newLine + 'AND GETDATE() BETWEEN COALESCE(s.DataAperturaIscrizioniSchedules,''1900-01-01'') AND COALESCE(s.DataChiusuraIscrizioniSchedules,s.DataOraInizioSchedules)  '
 	END
 	IF COALESCE(@pIncludeDeleted, 0) <> 1
 	BEGIN
-		SET @sql = @sql + @newLine + 'AND s.DataCancellazione IS NULL '		
+		SET @sql = @sql + @newLine + 'AND s.DataCancellazioneSchedules IS NULL '		
 	END
 
 	SET @sql = @sql + '		ORDER BY ' + @pSortColumn  + ' ' + @sortDirection + '

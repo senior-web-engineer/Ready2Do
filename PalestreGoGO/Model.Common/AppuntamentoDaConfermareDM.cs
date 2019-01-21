@@ -8,5 +8,7 @@ namespace ready2do.model.common
         public int? IdAppuntamentoConfermato { get; set; }
         public string MotivoRifiuto { get; set; }
         public DateTime? DataExpiration { get; set; }
+
+        public UtenteClienteDM User { get; set; }
     }
 }

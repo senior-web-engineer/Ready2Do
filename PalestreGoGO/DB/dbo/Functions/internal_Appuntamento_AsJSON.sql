@@ -12,8 +12,12 @@ BEGIN
 				DataPrenotazione,
 				DataCancellazione,
 				Note,
-				Nominativo
-		FROM Appuntamenti
+				Nominativo,
+			   (SELECT * FROM ClientiUtenti cu 
+					WHERE cu.UserId = app.UserId AND cu.IdCliente = app.IdCliente 
+					AND cu.DataCancellazione IS NULL
+					FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) 
+		FROM Appuntamenti app
 		WHERE Id = @pIdAppuntamento
 		FOR JSON AUTO
 	)

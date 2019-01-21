@@ -17,23 +17,26 @@ namespace PalestreGoGo.DataAccess
         }
 
         #region PRIVATE STUFF
-        private Dictionary<string, int> ResolveColumns(SqlDataReader dr)
+        internal static Dictionary<string, int> GetLocationColumnsOrdinals(SqlDataReader dr, Dictionary<string, string> aliases = null)
         {
+            if ((dr == null) || (!dr.HasRows)) return null;
+            Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
+
             var result = new Dictionary<string, int>();
-            result.Add("Id", dr.GetOrdinal("Id"));
-            result.Add("IdCliente", dr.GetOrdinal("IdCliente"));
-            result.Add("Nome", dr.GetOrdinal("Nome"));
-            result.Add("Descrizione", dr.GetOrdinal("Descrizione"));
-            result.Add("CapienzaMax", dr.GetOrdinal("CapienzaMax"));
-            result.Add("DataCreazione", dr.GetOrdinal("DataCreazione"));
-            result.Add("DataCancellazione", dr.GetOrdinal("DataCancellazione"));
-            result.Add("Colore", dr.GetOrdinal("Colore"));
-            result.Add("ImageUrl", dr.GetOrdinal("ImageUrl"));
-            result.Add("IconUrl", dr.GetOrdinal("IconUrl"));
+            result.Add("Id", dr.GetOrdinal(getColumnName("Id")));
+            result.Add("IdCliente", dr.GetOrdinal(getColumnName("IdCliente")));
+            result.Add("Nome", dr.GetOrdinal(getColumnName("Nome")));
+            result.Add("Descrizione", dr.GetOrdinal(getColumnName("Descrizione")));
+            result.Add("CapienzaMax", dr.GetOrdinal(getColumnName("CapienzaMax")));
+            result.Add("DataCreazione", dr.GetOrdinal(getColumnName("DataCreazione")));
+            result.Add("DataCancellazione", dr.GetOrdinal(getColumnName("DataCancellazione")));
+            result.Add("Colore", dr.GetOrdinal(getColumnName("Colore")));
+            result.Add("ImageUrl", dr.GetOrdinal(getColumnName("ImageUrl")));
+            result.Add("IconUrl", dr.GetOrdinal(getColumnName("IconUrl")));
             return result;
         }
 
-        private async Task<LocationDM> InternalReadLocationAsync(SqlDataReader dr, Dictionary<string, int> columns)
+        internal static async Task<LocationDM> InternalReadLocationAsync(SqlDataReader dr, Dictionary<string, int> columns)
         {
             LocationDM result = new LocationDM();
             result.Id = dr.GetInt32(columns["Id"]);
@@ -61,7 +64,7 @@ namespace PalestreGoGo.DataAccess
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
-                    var columns = ResolveColumns(dr);
+                    var columns = GetLocationColumnsOrdinals(dr);
                     while (await dr.ReadAsync())
                     {
                         result.Add(await InternalReadLocationAsync(dr, columns));
@@ -86,7 +89,7 @@ namespace PalestreGoGo.DataAccess
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
-                    var columns = ResolveColumns(dr);
+                    var columns = GetLocationColumnsOrdinals(dr);
                     if (await dr.ReadAsync())
                     {
                         result = await InternalReadLocationAsync(dr, columns);

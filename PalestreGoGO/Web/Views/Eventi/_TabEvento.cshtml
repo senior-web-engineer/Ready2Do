@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http.Extensions;
+@using Web.Utils;
+
 @model ScheduleDM
 
 <style>
@@ -54,12 +56,47 @@
         <span class="r2d-value">@(Model.CancellazioneConsentita ? $"SI, fino al {(Model.CancellabileFinoAl ?? Model.DataOraInizio).ToString("dd MMMMM yyyy alle HH:mm")}" : "NO") </span>
     </div>
 </div>
-@if (!User.Identity.IsAuthenticated)
-{
-    <div class="row">
-        <div class="col s10 center">
+<div class="row">
+    <div class="col s10 center">
+        @if (!User.Identity.IsAuthenticated)
+        {
             <a class="btn waves-effect waves-light" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Accedi per Iscriverti</a>
-        </div>
-    </div>
+        }
+        else
+        {
+            //Normal user
+            if (((UserType)ViewData["UserType"]) == UserType.NormalUser)
+            {
+                //Se già Iscritto ==> Annulla Iscrizione
+                if ((bool)ViewData["UserHasAppointment"])
+                {
+                    <form asp-action="AnnullaAppuntamento" asp-controller="Eventi" asp-route-cliente="@ViewData["ClienteRoute"]"
+                          asp-route-idEvento="@(Model.Id.Value)" method="post">
+                        <input type="submit" class="btn waves-effect waves-light" value="Annulla Appuntamento" />
+                    </form>
+                }
+                //Se in WaitList ==> Annulla WaitList
+                else if ((bool)ViewData["UserInWaitList"])
+                {
+                    <form asp-action="AnnullaWaitList" asp-controller="Eventi" asp-route-cliente="@ViewData["ClienteRoute"]"
+                          asp-route-idEvento="@(Model.Id.Value)" method="post">
+                        <input type="submit" class="btn waves-effect waves-light" value="Rimuovi da Lista di Attesa" />
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="TakeAppuntamento" asp-controller="Eventi" asp-route-cliente="@ViewData["ClienteRoute"]"
+                          asp-route-idEvento="@(Model.Id.Value)" method="post">
+                        <input type="submit" class="btn waves-effect waves-light" value="Rimuovi da Lista di Attesa" />
+                    </form>
+                }
 
-}
+            }
+            else if (((UserType)ViewData["UserType"]).IsAtLeastAdmin())
+            {
+                <a class="btn waves-effect waves-light" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Accedi per Iscriverti</a>
+
+            }
+        }
+    </div>
+</div>

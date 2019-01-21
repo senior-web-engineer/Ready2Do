@@ -12,7 +12,46 @@ namespace PalestreGoGo.DataAccess
 {
     public class TipologieLezioniRepository : BaseRepository, ITipologieLezioniRepository
     {
-        public TipologieLezioniRepository(IConfiguration configuration):base(configuration)
+        #region STATIC STAFF
+        internal static Dictionary<string, int> GetTipologieLezioniColumnsOrdinals(SqlDataReader dr, Dictionary<string, string> aliases = null)
+        {
+            if ((dr == null) || (!dr.HasRows)) return null;
+            Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
+
+            var result = new Dictionary<string, int>();
+            result.Add("Id", dr.GetOrdinal(getColumnName("Id")));
+            result.Add("IdCliente", dr.GetOrdinal(getColumnName("IdCliente")));
+            result.Add("DataCancellazione", dr.GetOrdinal(getColumnName("DataCancellazione")));
+            result.Add("DataCreazione", dr.GetOrdinal(getColumnName("DataCreazione")));
+            result.Add("Descrizione", dr.GetOrdinal(getColumnName("Descrizione")));
+            result.Add("Durata", dr.GetOrdinal(getColumnName("Durata")));
+            result.Add("LimiteCancellazioneMinuti", dr.GetOrdinal(getColumnName("LimiteCancellazioneMinuti")));
+            result.Add("Livello", dr.GetOrdinal(getColumnName("Livello")));
+            result.Add("MaxPartecipanti", dr.GetOrdinal(getColumnName("MaxPartecipanti")));
+            result.Add("Nome", dr.GetOrdinal(getColumnName("Nome")));
+            result.Add("Prezzo", dr.GetOrdinal(getColumnName("Prezzo")));
+            return result;
+        }
+
+        internal static async Task<TipologiaLezioneDM> ReadTipologiaLezioneAsync(SqlDataReader dr, Dictionary<string, int> columns)
+        {
+            TipologiaLezioneDM result = new TipologiaLezioneDM();
+            result.Id = dr.GetInt32(columns["Id"]);
+            result.IdCliente = dr.GetInt32(columns["IdCliente"]);
+            result.Descrizione = await dr.IsDBNullAsync(columns["Descrizione"]) ? null : dr.GetString(columns["Descrizione"]);
+            result.Durata = dr.GetInt32(columns["Durata"]);
+            result.MaxPartecipanti = await dr.IsDBNullAsync(columns["MaxPartecipanti"]) ? default(int?) : dr.GetInt32(columns["MaxPartecipanti"]);
+            result.LimiteCancellazioneMinuti = await dr.IsDBNullAsync(columns["LimiteCancellazioneMinuti"]) ? default(short?) : dr.GetInt16(columns["LimiteCancellazioneMinuti"]);
+            result.Livello = dr.GetInt16(columns["Livello"]);
+            result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
+            result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
+            result.Prezzo = await dr.IsDBNullAsync(columns["Prezzo"]) ? default(decimal?) : dr.GetDecimal(columns["Prezzo"]);
+            result.Nome = dr.GetString(columns["Nome"]);
+            return result;
+        }
+        #endregion
+
+        public TipologieLezioniRepository(IConfiguration configuration) : base(configuration)
         {
 
         }

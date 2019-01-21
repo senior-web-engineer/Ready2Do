@@ -13,8 +13,12 @@ BEGIN
 				DataCancellazione,
 				DataScadenza,
 				DataConversione,
-				DataCancellazione
-		FROM [ListeAttesa]
+				DataCancellazione,
+				(SELECT * FROM ClientiUtenti cu 
+					WHERE cu.UserId = wl.UserId AND cu.IdCliente = wl.IdCliente 
+					AND cu.DataCancellazione is null
+					FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) 
+		FROM [ListeAttesa] wl
 		WHERE Id = @pIdListaAttesa
 		FOR JSON AUTO
 	)

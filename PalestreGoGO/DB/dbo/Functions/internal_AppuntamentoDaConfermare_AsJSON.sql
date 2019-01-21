@@ -13,8 +13,12 @@ BEGIN
 			   DataEsito,
 			   IdAppuntamento,
 			   MotivoRifiuto,
-			   DataCancellazione
-		FROM AppuntamentiDaConfermare
+			   DataCancellazione,
+			   (SELECT * FROM ClientiUtenti cu 
+					WHERE cu.UserId = adc.UserId AND cu.IdCliente = adc.IdCliente 
+				AND cu.DataCancellazione is null
+				FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) 
+		FROM AppuntamentiDaConfermare adc
 		WHERE Id = @pIdAppuntamentoDaConfermare
 		FOR JSON AUTO
 	)

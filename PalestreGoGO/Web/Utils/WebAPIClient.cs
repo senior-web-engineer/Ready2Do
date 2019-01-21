@@ -519,11 +519,18 @@ namespace Web.Utils
             return await GetRequestAsync<ClienteUtenteDetailsApiModel>(uri, access_token);
         }
 
-        public async Task DeleteAppuntamentoAsync(int idCliente, int idAppuntamento, string access_token)
+        public async Task DeleteAppuntamentoUserAsync(int idCliente, int idSchedule, string access_token)
         {
-            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti/{idAppuntamento}";
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti";
             await DeleteRequestAsync(uri, access_token);
         }
+
+        public async Task DeleteAppuntamentoAdminAsync(int idCliente, int idSchedule, int idAppuntamento, string access_token)
+        {
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti/{idAppuntamento}";
+            await DeleteRequestAsync(uri, access_token);
+        }
+
 
         #region NOTIFICHE
         public async Task<List<NotificaViewModel>> GetNotificheForUserAsync(string access_token, int? idCliente = null)

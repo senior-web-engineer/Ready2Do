@@ -15,5 +15,7 @@ namespace ready2do.model.common
 
         [StringLength(200)]
         public string Nominativo { get; set; }
+
+        public UtenteClienteDM User { get; set; }
     }
 }

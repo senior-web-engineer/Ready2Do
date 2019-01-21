@@ -1,4 +1,29 @@
-﻿@model  IEnumerable<AppuntamentoDM>
-<div class="r2d-medium-rectangle">
+﻿@model IEnumerable<AppuntamentoDM>
 
-</div>
+@if (Model?.Any() ?? false)
+{
+    <div class="row">
+        <div class="col s4 offset-s4">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center"><strong>Ancora nessun iscritto pr l'evento</strong></span>
+                    <br />
+                    <p>Al momento non risultano iscritti all'evento.</p>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col s5 offset-s2 center">
+            <strong>@(Model.First(). Nome Sala</strong>
+        </div>
+        <div class="col s3 center">
+            <strong>Azioni</strong>
+        </div>
+    </div>
+
+}

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
+using Serilog;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -90,7 +91,7 @@ namespace Web.Controllers
 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             await _apiClient.SaveSchedule(idCliente, evento.ToApiModel(idCliente), accessToken);
-            return RedirectToAction("Index", "Scheduler", new { cliente=urlRoute, lid=evento.IdLocation});
+            return RedirectToAction("Index", "Scheduler", new { cliente = urlRoute, lid = evento.IdLocation });
         }
 
 
@@ -100,6 +101,7 @@ namespace Web.Controllers
                                                     [FromRoute(Name = "id")] int idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            ViewData["ClienteRoute"] = urlRoute;
             ViewData["IdCliente"] = idCliente;
             ViewData["UserType"] = User.GetUserTypeForCliente(idCliente);
             var vm = new DettaglioEventoViewModel();
@@ -110,6 +112,8 @@ namespace Web.Controllers
                 vm.Appuntamenti = await _apiClient.GetAppuntamentiForEventoAsync(idCliente, idEvento, accessToken);
                 vm.AppuntamentiDaConfermare = await _apiClient.GetAppuntamentiDaConferamareForEventoAsync(idCliente, idEvento, accessToken);
                 vm.WaitListRegistrations = await _apiClient.GetWaitListRegistrationsForEventoAsync(idCliente, idEvento, accessToken);
+                ViewData["UserHasAppointment"] = (vm.Appuntamenti?.Any() ?? false) || (vm.AppuntamentiDaConfermare?.Any() ?? false);
+                ViewData["UserInWaitList"] = vm.WaitListRegistrations?.Any() ?? false;
             }
             return View("DettaglioEvento", vm);
         }
@@ -168,8 +172,9 @@ namespace Web.Controllers
         //    */
         //}
 
+        #region APPUNTAMENTI PER EVENTO
         [HttpPost("{cliente}/eventi/{idEvento}/appuntamento")]
-        public async Task<IActionResult> AddAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
+        public async Task<IActionResult> TakeAppuntamento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             var access_token = await HttpContext.GetTokenAsync("access_token");
@@ -183,21 +188,29 @@ namespace Web.Controllers
         }
 
 
-        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/delete")]
+        /// <summary>
+        /// Questa Action è destinata agli utenti ordinari che vogliono cancellare il proprio Appuntamento per l'evento.
+        /// Non viene specificato l'idAppuntamento perché ce ne può essere solo uno per l'utente corrente
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <param name="idEvento"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/delete")]
         public async Task<IActionResult> DeleteAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
-                                                            [FromRoute(Name = "idEvento")]int idEvento,
-                                                            [FromRoute(Name = "idAppuntamento")]int idAppuntamento,
-                                                            [FromQuery(Name = "returnUrl")] string returnUrl)
+                                                            [FromRoute(Name = "idEvento")]int idEvento)
+                                                            //,[FromQuery(Name = "returnUrl")] string returnUrl)
         {
-            //NOTA: idEvento non utilizzato
-            if (string.IsNullOrWhiteSpace(returnUrl)) { return BadRequest(); }
-
+            //if (string.IsNullOrWhiteSpace(returnUrl) || (!Url.IsLocalUrl(returnUrl)))
+            //{
+            //    Log.Warning("OpenRedirect attempt to url: {returnUrl}. We will return BadRequest", returnUrl);
+            //    return BadRequest();
+            //}
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             var access_token = await HttpContext.GetTokenAsync("access_token");
 
-            await _apiClient.DeleteAppuntamentoAsync(idCliente, idAppuntamento, access_token);
-            return Redirect(returnUrl);
-            //return RedirectToAction("GetAppuntamentoEvento", new { cliente = idCliente, idEvento = idEvento });
+            await _apiClient.DeleteAppuntamentoUserAsync(idCliente, idEvento, access_token);
+            return RedirectToAction("DettaglioEvento", new { cliente=urlRoute, idEvento });
         }
 
 

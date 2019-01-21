@@ -95,7 +95,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="includeCertificati">Flag indicante se includere nella risposta anche i Certificati per l'utente</param>
         /// <returns>Ritorna i dettagli dell'utente</returns>
         [HttpGet("{userId}")]
-        public async Task<ActionResult<AssociazioneUtenteClienteDM>> GetDetagliAssociazioneUtente([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId,
+        public async Task<ActionResult<AssociazioneUtenteClienteDM>> GetDettagliAssociazioneUtente([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId,
                                                                                                 [FromQuery(Name = "incAbb")] int? numAbbonamentiToIncl = 0,
                                                                                                 [FromQuery(Name = "apFrom")] string includeAppuntamentiFrom = null,
                                                                                                 [FromQuery(Name = "apTo")] string includeAppuntamentiTo = null,
