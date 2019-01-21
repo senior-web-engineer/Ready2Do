@@ -20,7 +20,7 @@ namespace Tests.WebAPI.Tipologiche
 
         [TestMethod]
         public void Test1 (){
-            var result = _client.GetAsync("/checkurl?url=prova&idCliente=10").Result;
+            var result = _client.GetAsync("api/clienti/checkurl?url=prova&idCliente=10").Result;
             result.EnsureSuccessStatusCode();
         }
     }
