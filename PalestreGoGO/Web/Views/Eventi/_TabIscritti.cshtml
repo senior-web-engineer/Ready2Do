@@ -18,12 +18,23 @@
 else
 {
     <div class="row">
-        <div class="col s5 offset-s2 center">
-            <strong>@(Model.First(). Nome Sala</strong>
+        <div class="col s5 offset-s1 center">
+            <strong>Utente</strong>
+        </div>
+        <div class="col s3 center">
+            <strong>Data Iscrizione</strong>
         </div>
         <div class="col s3 center">
             <strong>Azioni</strong>
         </div>
     </div>
+    @foreach (var a in Model)
+    {
+        <div class="row">
+            <div class="col s5 offset-s1">@(a.User.DisplayName)</div>
+            <div class="col s3">@(a.DataCreazione)</div>
+            <div class="col s3"><!--AZIONI--></div>
+        </div>
+    }
 
 }

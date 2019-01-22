@@ -27,9 +27,9 @@ BEGIN
 
   SET @sql = N'SELECT  *
 				FROM vTipologieLezioni t
-				WHERE t.IdCliente = @pIdCliente
-				' + CASE WHEN @pId IS NULL THEN ' ' ELSE ' AND t.Id = ' + CAST(@pId AS VARCHAR(50)) END  +'
-				ORDER BY ' + COALESCE(@pSortColumn, 'DataCreazione') + ' ' + @sortDirection + ' 
+				WHERE t.IdClienteTipologieLezioni = @pIdCliente
+				' + CASE WHEN @pId IS NULL THEN ' ' ELSE ' AND t.IdTipologieLezioni = ' + CAST(@pId AS VARCHAR(50)) END  +'
+				ORDER BY ' + COALESCE(@pSortColumn, 'DataCreazioneTipologieLezioni') + ' ' + @sortDirection + ' 
 			    OFFSET @pPageSize * (@pPageNumber - 1) ROWS
 				FETCH NEXT @pPageSize ROWS ONLY';
 				

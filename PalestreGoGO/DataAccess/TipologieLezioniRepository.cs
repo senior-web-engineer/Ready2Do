@@ -58,18 +58,30 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000)
         {
+            List<TipologiaLezioneDM> result = new List<TipologiaLezioneDM>();
             using (var cn = GetConnection())
             {
-                return await cn.QueryAsync<TipologiaLezioneDM>("[dbo].[TipologieLezioni_Lista]",
-                                                                new
-                                                                {
-                                                                    pIdCliente = idTenant,
-                                                                    pPageSize = pageSize,
-                                                                    pPageNumber = pageNumber,
-                                                                    pSortColumn = sortColumn,
-                                                                    pOrderAscending = sortAsc
-                                                                },
-                                                                commandType: CommandType.StoredProcedure);
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieLezioni_Lista]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idTenant;
+                cmd.Parameters.Add("@pPageSize", SqlDbType.Int).Value = pageSize;
+                cmd.Parameters.Add("@pPageNumber", SqlDbType.Int).Value = pageNumber;
+                cmd.Parameters.Add("@pSortColumn", SqlDbType.VarChar, 50).Value = sortColumn;
+                cmd.Parameters.Add("@pOrderAscending", SqlDbType.Bit).Value = sortAsc;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var columns = GetTipologieLezioniColumnsOrdinals(dr);
+                        while (await dr.ReadAsync())
+                        {
+                            result.Add(await ReadTipologiaLezioneAsync(dr, columns));
+                        }
+                    }
+                }
+                return result;
             }
         }
 
@@ -86,20 +98,23 @@ namespace PalestreGoGo.DataAccess
             TipologiaLezioneDM result = null;
             using (var cn = GetConnection())
             {
-                var list = await cn.QueryAsync<TipologiaLezioneDM>("[dbo].[TipologieLezioni_Lista]",
-                                                            new
-                                                            {
-                                                                pIdCliente = idTenant,
-                                                                pId = itemKey
-                                                            },
-                                                            commandType: CommandType.StoredProcedure);
-
-                if (list != null)
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[TipologieLezioni_Lista]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idTenant;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = itemKey;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
                 {
-                    result = list.FirstOrDefault();
+                    if (dr.HasRows)
+                    {
+                        var columns = GetTipologieLezioniColumnsOrdinals(dr);
+                        await dr.ReadAsync();
+                        result = await ReadTipologiaLezioneAsync(dr, columns);
+                    }
                 }
-            }
-            return result;
+                return result;
+            }            
         }
 
 

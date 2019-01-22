@@ -7,16 +7,20 @@ namespace ready2do.model.common
     public class ScheduleRecurrencyDM
     {
         [JsonProperty(PropertyName = "Recurrency")]
-        public string Recurrency { get; private set; }
+        public string Recurrency { get; set; }
 
         [JsonProperty(PropertyName = "DaysOfWeek", NullValueHandling = NullValueHandling.Ignore)]
-        public List<string> DaysOfWeek { get; private set; }
+        public List<string> DaysOfWeek { get; set; }
 
         [JsonProperty(PropertyName = "RepeatUntil", NullValueHandling = NullValueHandling.Ignore)]
-        public string RepeatUntil { get; private set; }
+        public string RepeatUntil { get; set; }
 
-        [JsonProperty(PropertyName = "RepeatFot", NullValueHandling = NullValueHandling.Ignore)]
-        public int? RepeatFor { get; private set; }
+        [JsonProperty(PropertyName = "RepeatFor", NullValueHandling = NullValueHandling.Ignore)]
+        public int? RepeatFor { get; set; }
+
+        public ScheduleRecurrencyDM()
+        {            
+        }
 
         public ScheduleRecurrencyDM(RepeatScheduleEveryDM recurrency, DateTime repeatUntil)
         {
