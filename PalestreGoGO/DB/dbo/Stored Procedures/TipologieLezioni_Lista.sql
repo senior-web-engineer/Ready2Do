@@ -25,18 +25,8 @@ BEGIN
   SET @pPageSize = COALESCE(@pPageSize, 25);
   SET @pPageNumber = COALESCE(@pPageNumber, 1);
 
-  SET @sql = N'SELECT t.Id, 
-					   t.IdCliente,
-					   t.DataCancellazione,
-					   t.DataCreazione,
-					   t.Descrizione,
-					   t.Durata,
-					   t.LimiteCancellazioneMinuti,
-					   t.Livello,
-					   t.MaxPartecipanti,
-					   t.Nome,
-					   t.Prezzo
-				FROM TipologieLezioni t
+  SET @sql = N'SELECT  *
+				FROM vTipologieLezioni t
 				WHERE t.IdCliente = @pIdCliente
 				' + CASE WHEN @pId IS NULL THEN ' ' ELSE ' AND t.Id = ' + CAST(@pId AS VARCHAR(50)) END  +'
 				ORDER BY ' + COALESCE(@pSortColumn, 'DataCreazione') + ' ' + @sortDirection + ' 

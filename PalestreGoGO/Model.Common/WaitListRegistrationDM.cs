@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ready2do.model.common
 {
-    public class WaitListRegistration
+    public class WaitListRegistrationDM
     {
         public int Id { get; set; }
         public int IdCliente { get; set; }

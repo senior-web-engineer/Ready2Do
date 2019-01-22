@@ -19,17 +19,17 @@ namespace PalestreGoGo.DataAccess
             Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
 
             var result = new Dictionary<string, int>();
-            result.Add("Id", dr.GetOrdinal(getColumnName("Id")));
-            result.Add("IdCliente", dr.GetOrdinal(getColumnName("IdCliente")));
-            result.Add("DataCancellazione", dr.GetOrdinal(getColumnName("DataCancellazione")));
-            result.Add("DataCreazione", dr.GetOrdinal(getColumnName("DataCreazione")));
-            result.Add("Descrizione", dr.GetOrdinal(getColumnName("Descrizione")));
-            result.Add("Durata", dr.GetOrdinal(getColumnName("Durata")));
-            result.Add("LimiteCancellazioneMinuti", dr.GetOrdinal(getColumnName("LimiteCancellazioneMinuti")));
-            result.Add("Livello", dr.GetOrdinal(getColumnName("Livello")));
-            result.Add("MaxPartecipanti", dr.GetOrdinal(getColumnName("MaxPartecipanti")));
-            result.Add("Nome", dr.GetOrdinal(getColumnName("Nome")));
-            result.Add("Prezzo", dr.GetOrdinal(getColumnName("Prezzo")));
+            result.Add("Id", dr.GetOrdinal(getColumnName("IdTipologieLezioni")));
+            result.Add("IdCliente", dr.GetOrdinal(getColumnName("IdClienteTipologieLezioni")));
+            result.Add("DataCancellazione", dr.GetOrdinal(getColumnName("DataCancellazioneTipologieLezioni")));
+            result.Add("DataCreazione", dr.GetOrdinal(getColumnName("DataCreazioneTipologieLezioni")));
+            result.Add("Descrizione", dr.GetOrdinal(getColumnName("DescrizioneTipologieLezioni")));
+            result.Add("Durata", dr.GetOrdinal(getColumnName("DurataTipologieLezioni")));
+            result.Add("LimiteCancellazioneMinuti", dr.GetOrdinal(getColumnName("LimiteCancellazioneMinutiTipologieLezioni")));
+            result.Add("Livello", dr.GetOrdinal(getColumnName("LivelloTipologieLezioni")));
+            result.Add("MaxPartecipanti", dr.GetOrdinal(getColumnName("MaxPartecipantiTipologieLezioni")));
+            result.Add("Nome", dr.GetOrdinal(getColumnName("NomeTipologieLezioni")));
+            result.Add("Prezzo", dr.GetOrdinal(getColumnName("PrezzoTipologieLezioni")));
             return result;
         }
 

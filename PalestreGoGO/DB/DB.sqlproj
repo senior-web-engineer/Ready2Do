@@ -220,6 +220,9 @@
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Lista4Schedule.sql" />
     <Build Include="dbo\Stored Procedures\ListeAttesa_List4User.sql" />
     <Build Include="dbo\Views\vSchedulesFull.sql" />
+    <Build Include="dbo\Views\vClientiUtenti.sql" />
+    <Build Include="dbo\Views\vAppuntamentiDaConfermare.sql" />
+    <Build Include="dbo\Views\vListeAttesa.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

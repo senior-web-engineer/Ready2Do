@@ -23,16 +23,16 @@ namespace PalestreGoGo.DataAccess
             Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
 
             var result = new Dictionary<string, int>();
-            result.Add("Id", dr.GetOrdinal(getColumnName("Id")));
-            result.Add("IdCliente", dr.GetOrdinal(getColumnName("IdCliente")));
-            result.Add("Nome", dr.GetOrdinal(getColumnName("Nome")));
-            result.Add("Descrizione", dr.GetOrdinal(getColumnName("Descrizione")));
-            result.Add("CapienzaMax", dr.GetOrdinal(getColumnName("CapienzaMax")));
-            result.Add("DataCreazione", dr.GetOrdinal(getColumnName("DataCreazione")));
-            result.Add("DataCancellazione", dr.GetOrdinal(getColumnName("DataCancellazione")));
-            result.Add("Colore", dr.GetOrdinal(getColumnName("Colore")));
-            result.Add("ImageUrl", dr.GetOrdinal(getColumnName("ImageUrl")));
-            result.Add("IconUrl", dr.GetOrdinal(getColumnName("IconUrl")));
+            result.Add("Id", dr.GetOrdinal(getColumnName("IdLocations")));
+            result.Add("IdCliente", dr.GetOrdinal(getColumnName("IdClienteLocations")));
+            result.Add("Nome", dr.GetOrdinal(getColumnName("NomeLocations")));
+            result.Add("Descrizione", dr.GetOrdinal(getColumnName("DescrizioneLocations")));
+            result.Add("CapienzaMax", dr.GetOrdinal(getColumnName("CapienzaMaxLocations")));
+            result.Add("DataCreazione", dr.GetOrdinal(getColumnName("DataCreazioneLocations")));
+            result.Add("DataCancellazione", dr.GetOrdinal(getColumnName("DataCancellazioneLocations")));
+            result.Add("Colore", dr.GetOrdinal(getColumnName("ColoreLocations")));
+            result.Add("ImageUrl", dr.GetOrdinal(getColumnName("ImageUrlLocations")));
+            result.Add("IconUrl", dr.GetOrdinal(getColumnName("IconUrlLocations")));
             return result;
         }
 

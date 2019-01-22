@@ -11,6 +11,6 @@ namespace Web.Models
         public ScheduleDM Schedule { get; set; }
         public IEnumerable<AppuntamentoDM> Appuntamenti { get; set; }
         public IEnumerable<AppuntamentoDaConfermareDM> AppuntamentiDaConfermare { get; set; }
-        public IEnumerable<WaitListRegistration> WaitListRegistrations { get; set; }
+        public IEnumerable<WaitListRegistrationDM> WaitListRegistrations { get; set; }
     }
 }

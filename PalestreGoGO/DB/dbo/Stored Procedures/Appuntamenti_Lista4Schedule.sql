@@ -4,16 +4,11 @@
 	@pIncludeDeleted		BIT = 0
 AS
 BEGIN
-	SELECT   a.*,
-			cu.Cognome,
-			cu.Nome,
-			cu.UserDisplayName,
-			cu.DataAggiornamento,
-			cu.DataCancellazione AS DataCancellazioneUtente,
-			cu.DataCreazione AS DataCreazioneUtente
-	FROM vAppuntamentiFull a
-		LEFT JOIN ClientiUtenti cu ON cu.IdCliente = a.IdCliente AND cu.UserId = a.UserId AND cu.DataCancellazione is null
-	WHERE a.IdCliente = @pIdCliente
-		AND a.ScheduleId = @pIdSchedule
-		AND ((COALESCE(@pIncludeDeleted,0) = 1) OR (a.DataCancellazione IS NULL))
+	SELECT    a.*,
+			 cu.*
+	FROM vAppuntamenti a
+		LEFT JOIN vClientiUtenti cu ON cu.IdClienteClientiUtenti = a.IdClienteAppuntamenti AND cu.UserIdClientiUtenti = a.UserIdAppuntamenti AND cu.DataCancellazioneClientiUtenti is null
+	WHERE a.IdClienteAppuntamenti = @pIdCliente
+		AND a.ScheduleIdAppuntamenti = @pIdSchedule
+		AND ((COALESCE(@pIncludeDeleted,0) = 1) OR (a.DataCancellazioneAppuntamenti IS NULL))
 END

@@ -18,14 +18,14 @@ namespace PalestreGoGo.DataAccess
             Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
 
             Dictionary<string, int> result = new Dictionary<string, int>();
-            result["UserId"] = dr.GetOrdinal(getColumnName("UserId"));
-            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdCliente"));
-            result["Nome"] = dr.GetOrdinal(getColumnName("Nome"));
-            result["Cognome"] = dr.GetOrdinal(getColumnName("Cognome"));
-            result["UserDisplayName"] = dr.GetOrdinal(getColumnName("UserDisplayName"));
-            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazione"));
-            result["DataAggiornamento"] = dr.GetOrdinal(getColumnName("DataAggiornamento"));
-            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazione"));
+            result["UserId"] = dr.GetOrdinal(getColumnName("UserIdClientiUtenti"));
+            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdClienteClientiUtenti"));
+            result["Nome"] = dr.GetOrdinal(getColumnName("NomeClientiUtenti"));
+            result["Cognome"] = dr.GetOrdinal(getColumnName("CognomeClientiUtenti"));
+            result["UserDisplayName"] = dr.GetOrdinal(getColumnName("UserDisplayNameClientiUtenti"));
+            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazioneClientiUtenti"));
+            result["DataAggiornamento"] = dr.GetOrdinal(getColumnName("DataAggiornamentoClientiUtenti"));
+            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazioneClientiUtenti"));
             return result;
         }
 
@@ -99,7 +99,6 @@ namespace PalestreGoGo.DataAccess
         public async Task<UtenteClienteDM> GetUtenteCliente(int idCliente, string userId, bool includeStato)
         {
             UtenteClienteDM result = null;
-            int idColIdUser, idColNome, idColCognome, idColDisplpayName, idColDataCreaz, idColDataMod, idColDataDel;
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();

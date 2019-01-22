@@ -4,27 +4,14 @@
 	@pIncludeDeleted		bit = 0
 AS
 BEGIN
-	SELECT	adc.Id,
-			adc.IdCliente,
-			adc.ScheduleId,
-			adc.IdAppuntamento,
-			adc.DataCreazione,
-			adc.DataCancellazione,
-			adc.DataCreazione,
-			adc.DataEsito,
-			adc.DataExpiration,
-			adc.MotivoRifiuto,
-			adc.UserId,
-			cu.Cognome,
-			cu.Nome,
-			cu.UserDisplayName,
-			cu.DataAggiornamento,
-			cu.DataCancellazione AS DataCancellazioneUtente,
-			cu.DataCreazione AS DataCreazioneUtente
-	FROM AppuntamentiDaConfermare adc
+	SELECT	adc.*,
+			cu.*
+	FROM vAppuntamentiDaConfermare adc
 		-- escludiamo gli utenti cancellati 
-		left join ClientiUtenti cu ON cu.UserId = adc.UserId AND cu.IdCliente = adc.IdCliente AND cu.DataCancellazione IS NULL 
-	WHERE adc.IdCliente = @pIdCliente
-		AND adc.ScheduleId = @pIdSchedule
-		AND ((COALESCE(@pIncludeDeleted,0) = 1) OR (adc.DataCancellazione IS NULL))
+		left join vClientiUtenti cu ON cu.UserIdClientiUtenti = adc.UserIdAppuntamentiDaConfermare 
+									AND cu.IdClienteClientiUtenti = adc.IdClienteAppuntamentiDaConfermare 
+									AND cu.DataCancellazioneClientiUtenti IS NULL 
+	WHERE adc.IdClienteAppuntamentiDaConfermare = @pIdCliente
+		AND adc.ScheduleIdAppuntamentiDaConfermare = @pIdSchedule
+		AND ((COALESCE(@pIncludeDeleted,0) = 1) OR (adc.DataCancellazioneAppuntamentiDaConfermare IS NULL))
 END

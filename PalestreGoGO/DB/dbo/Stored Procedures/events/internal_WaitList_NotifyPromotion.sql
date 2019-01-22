@@ -17,6 +17,7 @@ BEGIN
 					@pIdAppuntamento AS IdAppuntamento,
 					@pIdAbbonamento AS IdAbbonamento,
 					SYSDATETIME() AS ChangeDate
+		FOR JSON PATH
 		)
 
 	INSERT INTO [SystemEvents] ([EventType], [EventSubType], [EventPayload])

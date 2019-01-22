@@ -36,8 +36,7 @@ DECLARE @sql NVARCHAR(MAX);
 	SET @pPageNumber = COALESCE(@pPageNumber, 1);
 
 	-- Costruiamo la query dinamicamente
-	SET @sql = N'	SELECT	s.*,
-							(s.PostiDisponibiliSchedules - s.PostiResiduiSchedules) AS NumPrenotazioniSchedules
+	SET @sql = N'	SELECT	s.*
 					FROM [vSchedulesFull] s						
 					WHERE s.IdClienteSchedules = @pIdCliente'
 	IF @pStartDate IS NOT NULL

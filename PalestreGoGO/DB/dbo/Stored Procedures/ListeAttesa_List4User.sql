@@ -9,27 +9,12 @@ BEGIN
 			@pIncludeConverted = COALESCE(@pIncludeConverted, 0);
 
 
-	SELECT	l.Id,
-			l.IdSchedule,
-			l.IdCliente,
-			l.IdAbbonamento,
-			l.DataCreazione,
-			l.DataScadenza,
-			l.DataConversione,
-			l.DataCancellazione,
-			l.CausaleCancellazione,
-			cu.UserId,
-			cu.Nome,
-			cu.Cognome,
-			cu.UserDisplayName,
-			cu.DataCreazione AS DataCreazioneUtente,
-			cu.DataCancellazione AS DataCancellazioneUtete,
-			cu.DataAggiornamento			
-	FROM ListeAttesa l
-		INNER JOIN vSchedules
-		INNER JOIN ClientiUtenti cu ON cu.IdCliente = l.IdCliente AND cu.UserId = l.UserId		
+	SELECT	l.*,
+			s.*	
+	FROM vListeAttesa l
+		INNER JOIN vSchedules s ON l.IdScheduleListeAttesa = s.IdSchedules
 	WHERE @pUserId = @pUserId
-	AND ((@pIdCliente IS NULL) OR (l.IdCliente = @pIdCliente))
-	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (l.DataCancellazione IS NULL))
-	AND ((COALESCE(@pIncludeConverted, 0) = 1) OR (l.DataConversione IS NULL))
+	AND ((@pIdCliente IS NULL) OR (l.IdClienteListeAttesa = @pIdCliente))
+	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (l.DataCancellazioneListeAttesa IS NULL))
+	AND ((COALESCE(@pIncludeConverted, 0) = 1) OR (l.DataConversioneListeAttesa IS NULL))
 END

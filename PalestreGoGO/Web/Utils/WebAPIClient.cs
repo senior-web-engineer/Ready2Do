@@ -410,10 +410,10 @@ namespace Web.Utils
             var uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}/appuntamenti/unconfirmed");
             return await GetRequestAsync<IEnumerable<AppuntamentoDaConfermareDM>>(uri, access_token);
         }
-        public async Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsForEventoAsync(int idCliente, int idEvento, string access_token)
+        public async Task<IEnumerable<WaitListRegistrationDM>> GetWaitListRegistrationsForEventoAsync(int idCliente, int idEvento, string access_token)
         {
             var uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}/appuntamenti/waitlist");
-            return await GetRequestAsync<IEnumerable<WaitListRegistration>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<WaitListRegistrationDM>>(uri, access_token);
         }
 
 

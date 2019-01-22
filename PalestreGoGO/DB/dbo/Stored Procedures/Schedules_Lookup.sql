@@ -3,8 +3,8 @@
 	@pIncludeDeleted	BIT = 0
 AS
 BEGIN
-	SELECT	s.*,
-			(s.PostiDisponibiliSchedules - s.PostiResiduiSchedules) AS NumPrenotazioni
+	SELECT	s.*
 	FROM [vSchedulesFull] s
+		INNER JOIN @pIdSchedules ids ON s.IdSchedules = ids.Id
 	WHERE ((COALESCE(@pIncludeDeleted, 0) = 1) OR (s.DataCancellazioneSchedules IS NULL))
 END

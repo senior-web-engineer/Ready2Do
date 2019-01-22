@@ -85,7 +85,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             else
             {
                 //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo
-                var result = await _repositoryAppuntamenti.GetAllAppuntamenti(idCliente, idSchedule, true, false, false);
+                var result = await _repositoryAppuntamenti.GetAppuntamentiScheduleAsync(idCliente, idSchedule, false);
                 return Ok(result);
             }
         }
@@ -110,7 +110,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             else
             {
                 //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo)
-                var result = await _repositoryAppuntamenti.GetAllAppuntamenti(idCliente, idSchedule, false, true, false);
+                var result = await _repositoryAppuntamenti.GetAppuntamentiDaConfermareScheduleAsync(idCliente, idSchedule, false);
                 return Ok(result);
             }
         }
@@ -122,16 +122,16 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="idSchedule"></param>
         /// <returns></returns>
         [HttpGet("waitlist")]
-        public async Task<ActionResult<IEnumerable<WaitListRegistration>>> GetWaitListForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
+        public async Task<ActionResult<IEnumerable<WaitListRegistrationDM>>> GetWaitListForSchedule([FromRoute]int idCliente, [FromRoute(Name = "idSchedule")]int idSchedule)
         {
             //Solo il gestore può invocare questa API
             if (!GetCurrentUser().CanManageStructure(idCliente))
             {
-                return Ok(await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, GetCurrentUser().UserId(), false, false));
+                return Ok(await _repositoryAppuntamenti.GetWaitListRegistrationsScheduleAsync(idCliente, idSchedule, GetCurrentUser().UserId(), false, false));
             }
 
             //Se è il gestore ritorno tutti gli appuntamenti (per ora non paginiamo)
-            var result = await _repositoryAppuntamenti.GetWaitListRegistrationsAsync(idCliente, idSchedule, null, false, false);
+            var result = await _repositoryAppuntamenti.GetWaitListRegistrationsScheduleAsync(idCliente, idSchedule, null, false, false);
             return Ok(result);
         }
 

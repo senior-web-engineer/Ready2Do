@@ -9,6 +9,7 @@ AS
 		,MaxPartecipanti			AS MaxPartecipantiTipologieLezioni
 		,LimiteCancellazioneMinuti	AS LimiteCancellazioneMinutiTipologieLezioni
 		,Livello					AS LivelloTipologieLezioni
+		,Prezzo						AS PrezzoTipologieLezioni
 		,DataCancellazione			AS DataCancellazioneTipologieLezioni
 		,DataCreazione				AS DataCreazioneTipologieLezioni
 	FROM TipologieLezioni

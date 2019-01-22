@@ -155,16 +155,41 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        private Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiSchedule(int idCliente, int idSchedule, bool includeDeleted = false);
-        private Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareSchedule(int idCliente, int idSchedule, bool includeDeleted = false);
 
 
-        public async Task<IEnumerable<AppuntamentoBaseDM>> GetAppuntamentiSchedule(int idCliente, int idSchedule, bool includeDeleted = false)
+        public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false)
+        {
+            List<AppuntamentoDaConfermareDM> result = new List<AppuntamentoDaConfermareDM>();
+            using (var cn = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[AppuntamentiDaConfermare_Lista4Schedule]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdSchedule", SqlDbType.Int).Value = idSchedule;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                await cn.OpenAsync();
+                using (var dr = await cmd.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var columnsAppuntamento = GetAppuntamentoDaConfermareColumns(dr);
+                        var columnsUser = ClientiUtentiRepository.GetColumnsOrdinals(dr);
+                        while (await dr.ReadAsync())
+                        {
+                            result.Add(await ReadAppuntamentoDaConfermareAsync(dr, columnsAppuntamento, columnsUser));
+                        }
+                    }
+                }
+                return result;
+            }
+        }
+
+
+        public async Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiScheduleAsync(int idCliente, int idSchedule, bool includeDeleted = false)
         {
             List<AppuntamentoDM> result = new List<AppuntamentoDM>();
             Dictionary<string, int> columnsAppuntamento = null;
-            Dictionary<string, int> columnsLocation = null;
-            Dictionary<string, int> columnsTipoLez = null;
             Dictionary<string, int> columnsUser = null;
             AppuntamentoDM item;
             using (var cn = GetConnection())
@@ -181,36 +206,11 @@ namespace PalestreGoGo.DataAccess
                     if (dr.HasRows)
                     {
                         columnsAppuntamento = GetAppuntamentoColumns(dr);
-                        columnsLocation = LocationsRepository.GetLocationColumnsOrdinals(dr, new Dictionary<string, string> { });
-                        columnsTipoLez = TipologieLezioniRepository.GetTipologieLezioniColumnsOrdinals(dr, new Dictionary<string, string> { });
-                        columnsUser = ClientiUtentiRepository.GetColumnsOrdinals(dr, new Dictionary<string, string>() { });
-                    }
-                    while (await dr.ReadAsync())
-                    {
-                        item = ReadAppuntamentoAsync(dr, columnsAppuntamento, columnsLocation, columnsTipoLez, columnsUser);
-                    }
-                    else if (dr.HasRows && includiNonConfermati)
-                    {
-                        columnsAppDaConfermare = GetAppuntamentoDaConfermareColumns(dr);
-                    }
-                    while (await dr.ReadAsync())
-                    {
-                        if (includiConfermati)
-                        {
-                            result.Add(await ReadAppuntamentoAsync(dr, columnsAppuntamento));
-                        }
-                        else
-                        {
-                            result.Add(await ReadAppuntamentoDaConfermareAsync(dr, columnsAppDaConfermare));
-                        }
-                    }
-                    if (includiConfermati && includiNonConfermati)
-                    {
-                        await dr.NextResultAsync();
-                        columnsAppDaConfermare = GetAppuntamentoDaConfermareColumns(dr);
+                        columnsUser = ClientiUtentiRepository.GetColumnsOrdinals(dr);
                         while (await dr.ReadAsync())
                         {
-                            result.Add(await ReadAppuntamentoDaConfermareAsync(dr, columnsAppDaConfermare));
+                            item = await ReadAppuntamentoAsync(dr, columnsAppuntamento, null, null, null, columnsUser);
+                            result.Add(item);
                         }
                     }
                 }
@@ -222,6 +222,9 @@ namespace PalestreGoGo.DataAccess
         {
             AppuntamentoDM result = null;
             Dictionary<string, int> columnsAppuntamento = null;
+            Dictionary<string, int> columnsSchedule = null;
+            Dictionary<string, int> columnsTipoLezione = null;
+            Dictionary<string, int> columnsLocation = null;
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -235,10 +238,16 @@ namespace PalestreGoGo.DataAccess
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
-                    columnsAppuntamento = GetAppuntamentoColumns(dr);
-                    if (await dr.ReadAsync())
+                    if (dr.HasRows)
                     {
-                        result = await ReadAppuntamentoAsync(dr, columnsAppuntamento);
+                        columnsAppuntamento = GetAppuntamentoColumns(dr);
+                        columnsSchedule = SchedulesRepository.GetSchedulesColumns(dr);
+                        columnsTipoLezione = TipologieLezioniRepository.GetTipologieLezioniColumnsOrdinals(dr);
+                        columnsLocation = LocationsRepository.GetLocationColumnsOrdinals(dr);
+                        if (await dr.ReadAsync())
+                        {
+                            result = await ReadAppuntamentoAsync(dr, columnsAppuntamento, columnsSchedule, columnsLocation, columnsTipoLezione, null);
+                        }
                     }
                 }
             }
@@ -309,10 +318,10 @@ namespace PalestreGoGo.DataAccess
             return await InternalGetAppuntamentiDaConfermareUtenteAsync(idCliente, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending);
         }
 
-        public async Task<IEnumerable<WaitListRegistration>> GetWaitListRegistrationsScheduleAsync(int idCliente, int idSchedule, string userId = null, bool 
+        public async Task<IEnumerable<WaitListRegistrationDM>> GetWaitListRegistrationsScheduleAsync(int idCliente, int idSchedule, string userId = null, bool
                                                                                                    includeConverted = false, bool includeDeleted = false)
         {
-            List<WaitListRegistration> result = new List<WaitListRegistration>();
+            List<WaitListRegistrationDM> result = new List<WaitListRegistrationDM>();
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -344,8 +353,9 @@ namespace PalestreGoGo.DataAccess
 
 
         #region STATIC STUFF (DATASET READ)
-        internal static async Task<AppuntamentoDM> ReadAppuntamentoAsync(SqlDataReader dr, Dictionary<string, int> columns, Dictionary<string, int> columnsLocation,
-                                                                         Dictionary<string, int> columnsTipoLez, Dictionary<string, int> columnsUser)
+        internal static async Task<AppuntamentoDM> ReadAppuntamentoAsync(SqlDataReader dr, Dictionary<string, int> columns, Dictionary<string, int> columnsSchedule = null,
+                                                                         Dictionary<string, int> columnsLocation = null,
+                                                                         Dictionary<string, int> columnsTipoLez = null, Dictionary<string, int> columnsUser = null)
         {
             var result = new AppuntamentoDM();
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
@@ -357,32 +367,50 @@ namespace PalestreGoGo.DataAccess
             result.IdAbbonamento = await dr.IsDBNullAsync(columns["IdAbbonamento"]) ? default(int?) : dr.GetInt32(columns["IdAbbonamento"]);
             result.Nominativo = await dr.IsDBNullAsync(columns["Nominativo"]) ? null : dr.GetString(columns["Nominativo"]);
             result.Note = await dr.IsDBNullAsync(columns["Note"]) ? null : dr.GetString(columns["Note"]);
-            result
-            result.User = columnsUser != null ? await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser) : null;
+            if (columnsSchedule != null && columnsLocation != null && columnsTipoLez != null)
+            {
+                result.Schedule = await SchedulesRepository.InternalReadScheduleAsync(dr, columnsSchedule, columnsTipoLez, columnsLocation);
+            }
+            if (columnsUser != null)
+            {
+                result.User = columnsUser != null ? await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser) : null;
+            }
             return result;
         }
 
-        internal static async Task<AppuntamentoDaConfermareDM> ReadAppuntamentoDaConfermareAsync(SqlDataReader dr, Dictionary<string, int> columns, Dictionary<string, int> columnsUser = null)
+        internal static async Task<AppuntamentoDaConfermareDM> ReadAppuntamentoDaConfermareAsync(SqlDataReader dr, Dictionary<string, int> columns,
+                                                                                                 Dictionary<string, int> columnsUser = null,
+                                                                                                 Dictionary<string, int> columnsSchedules = null,
+                                                                                                 Dictionary<string, int> columnsTipoLez = null,
+                                                                                                 Dictionary<string, int> columnsLocation = null)
         {
-            return new AppuntamentoDaConfermareDM()
+            var result = new AppuntamentoDaConfermareDM();
+            result.Id = dr.GetInt32(columns["Id"]);
+            result.IdCliente = dr.GetInt32(columns["IdCliente"]);
+            result.ScheduleId = dr.GetInt32(columns["ScheduleId"]);
+            result.UserId = await dr.IsDBNullAsync(columns["UserId"]) ? null : dr.GetString(columns["UserId"]);
+            result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
+            result.DataExpiration = dr.GetDateTime(columns["DataExpiration"]);
+            result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
+            result.DataEsito = await dr.IsDBNullAsync(columns["DataEsito"]) ? default(DateTime?) : dr.GetDateTime(columns["DataEsito"]);
+            result.IdAppuntamentoConfermato = await dr.IsDBNullAsync(columns["IdAppuntamento"]) ? default(int?) : dr.GetInt32(columns["IdAppuntamento"]);
+            result.MotivoRifiuto = await dr.IsDBNullAsync(columns["MotivoRifiuto"]) ? null : dr.GetString(columns["MotivoRifiuto"]);
+            if ((columnsUser?.Count ?? 0) > 0)
             {
-                Id = dr.GetInt32(columns["Id"]),
-                IdCliente = dr.GetInt32(columns["IdCliente"]),
-                ScheduleId = dr.GetInt32(columns["ScheduleId"]),
-                UserId = await dr.IsDBNullAsync(columns["UserId"]) ? null : dr.GetString(columns["UserId"]),
-                DataCreazione = dr.GetDateTime(columns["DataCreazione"]),
-                DataExpiration = dr.GetDateTime(columns["DataExpiration"]),
-                DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]),
-                DataEsito = await dr.IsDBNullAsync(columns["DataEsito"]) ? default(DateTime?) : dr.GetDateTime(columns["DataEsito"]),
-                IdAppuntamentoConfermato = await dr.IsDBNullAsync(columns["IdAppuntamento"]) ? default(int?) : dr.GetInt32(columns["IdAppuntamento"]),
-                MotivoRifiuto = await dr.IsDBNullAsync(columns["MotivoRifiuto"]) ? null : dr.GetString(columns["MotivoRifiuto"]),
-                User = columnsUser != null ? await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser) : null
-            };
+                result.User = await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser);
+            }
+            if (((columnsSchedules?.Count ?? 0) > 0) && ((columnsTipoLez?.Count ?? 0) > 0) && ((columnsLocation?.Count ?? 0) > 0))
+            {
+                result.Schedule = await SchedulesRepository.InternalReadScheduleAsync(dr, columnsSchedules, columnsTipoLez, columnsLocation);
+            }
+            return result;
         }
 
-        internal static async Task<WaitListRegistration> ReadListaAttesaAsync(SqlDataReader dr, Dictionary<string, int> columns, Dictionary<string, int> userColumns)
+        internal static async Task<WaitListRegistrationDM> ReadListaAttesaAsync(SqlDataReader dr, Dictionary<string, int> columns, Dictionary<string, int> columnsUser,
+                                                                                Dictionary<string, int> columnsSchedules = null, Dictionary<string, int> columnsTipoLez = null,
+                                                                                Dictionary<string, int> columnsLocation = null)
         {
-            WaitListRegistration result = new WaitListRegistration();
+            WaitListRegistrationDM result = new WaitListRegistrationDM();
             result.Id = dr.GetInt32(columns["Id"]);
             result.IdCliente = dr.GetInt32(columns["IdCliente"]);
             result.IdSchedule = dr.GetInt32(columns["ScheduleId"]);
@@ -393,7 +421,14 @@ namespace PalestreGoGo.DataAccess
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
             result.CausaleCancellazione = await dr.IsDBNullAsync(columns["CausaleCancellazione"]) ? default(byte?) : dr.GetByte(columns["CausaleCancellazione"]);
             result.IdSchedule = dr.GetInt32(columns["ScheduleId"]);
-            result.User = await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, userColumns);
+            if ((columnsUser?.Count ?? 0) > 0)
+            {
+                result.User = await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser);
+            }
+            if (((columnsSchedules?.Count ?? 0) > 0) && ((columnsTipoLez?.Count ?? 0) > 0) && ((columnsLocation?.Count ?? 0) > 0))
+            {
+                result.Schedule = await SchedulesRepository.InternalReadScheduleAsync(dr, columnsSchedules, columnsTipoLez, columnsLocation);
+            }
             return result;
         }
 
@@ -402,15 +437,15 @@ namespace PalestreGoGo.DataAccess
             Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
 
             Dictionary<string, int> result = new Dictionary<string, int>();
-            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazione"));
-            result["DataPrenotazione"] = dr.GetOrdinal(getColumnName("DataPrenotazione"));
-            result["Id"] = dr.GetOrdinal(getColumnName("Id"));
-            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdCliente"));
-            result["ScheduleId"] = dr.GetOrdinal(getColumnName("ScheduleId"));
-            result["UserId"] = dr.GetOrdinal(getColumnName("UserId"));
-            result["IdAbbonamento"] = dr.GetOrdinal(getColumnName("IdAbbonamento"));
-            result["Nominativo"] = dr.GetOrdinal(getColumnName("Nominativo"));
-            result["Note"] = dr.GetOrdinal(getColumnName("Note"));
+            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazioneAppuntamenti"));
+            result["DataPrenotazione"] = dr.GetOrdinal(getColumnName("DataPrenotazioneAppuntamenti"));
+            result["Id"] = dr.GetOrdinal(getColumnName("IdAppuntamenti"));
+            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdClienteAppuntamenti"));
+            result["ScheduleId"] = dr.GetOrdinal(getColumnName("ScheduleIdAppuntamenti"));
+            result["UserId"] = dr.GetOrdinal(getColumnName("UserIdAppuntamenti"));
+            result["IdAbbonamento"] = dr.GetOrdinal(getColumnName("IdAbbonamentoAppuntamenti"));
+            result["Nominativo"] = dr.GetOrdinal(getColumnName("NominativoAppuntamenti"));
+            result["Note"] = dr.GetOrdinal(getColumnName("NoteAppuntamenti"));
             return result;
         }
 
@@ -419,18 +454,18 @@ namespace PalestreGoGo.DataAccess
             Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
 
             Dictionary<string, int> result = new Dictionary<string, int>();
-            result["Id"] = dr.GetOrdinal(getColumnName("Id"));
-            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdCliente"));
-            result["ScheduleId"] = dr.GetOrdinal(getColumnName("ScheduleId"));
-            result["UserId"] = dr.GetOrdinal(getColumnName("UserId"));
-            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazione"));
+            result["Id"] = dr.GetOrdinal(getColumnName("IdAppuntamentiDaConfermare"));
+            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdClienteAppuntamentiDaConfermare"));
+            result["ScheduleId"] = dr.GetOrdinal(getColumnName("ScheduleIdAppuntamentiDaConfermare"));
+            result["UserId"] = dr.GetOrdinal(getColumnName("UserIdAppuntamentiDaConfermare"));
+            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazioneAppuntamentiDaConfermare"));
 
-            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazione"));
-            result["DataExpiration"] = dr.GetOrdinal(getColumnName("DataExpiration"));
-            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazione"));
-            result["DataEsito"] = dr.GetOrdinal(getColumnName("DataEsito"));
-            result["IdAppuntamento"] = dr.GetOrdinal(getColumnName("IdAppuntamento"));
-            result["MotivoRifiuto"] = dr.GetOrdinal(getColumnName("MotivoRifiuto"));
+            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazioneAppuntamentiDaConfermare"));
+            result["DataExpiration"] = dr.GetOrdinal(getColumnName("DataExpirationAppuntamentiDaConfermare"));
+            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazioneAppuntamentiDaConfermare"));
+            result["DataEsito"] = dr.GetOrdinal(getColumnName("DataEsitoAppuntamentiDaConfermare"));
+            result["IdAppuntamento"] = dr.GetOrdinal(getColumnName("IdAppuntamentoAppuntamentiDaConfermare"));
+            result["MotivoRifiuto"] = dr.GetOrdinal(getColumnName("MotivoRifiutoAppuntamentiDaConfermare"));
             return result;
         }
 
@@ -439,16 +474,16 @@ namespace PalestreGoGo.DataAccess
             Func<string, string> getColumnName = (s) => { if ((aliases != null) && aliases.ContainsKey(s)) return aliases[s]; else return s; };
 
             Dictionary<string, int> result = new Dictionary<string, int>();
-            result["Id"] = dr.GetOrdinal(getColumnName("Id"));
-            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdCliente"));
-            result["ScheduleId"] = dr.GetOrdinal(getColumnName("ScheduleId"));
-            result["UserId"] = dr.GetOrdinal(getColumnName("UserId"));
-            result["IdAbbonamento"] = dr.GetOrdinal(getColumnName("IdAbbonamento"));
-            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazione"));
-            result["DataScadenza"] = dr.GetOrdinal(getColumnName("DataScadenza"));
-            result["DataConversione"] = dr.GetOrdinal(getColumnName("DataConversione"));
-            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazione"));
-            result["CausaleCancellazione"] = dr.GetOrdinal(getColumnName("CausaleCancellazione"));
+            result["Id"] = dr.GetOrdinal(getColumnName("IdListeAttesa"));
+            result["IdCliente"] = dr.GetOrdinal(getColumnName("IdClienteListeAttesa"));
+            result["ScheduleId"] = dr.GetOrdinal(getColumnName("ScheduleIdListeAttesa"));
+            result["UserId"] = dr.GetOrdinal(getColumnName("UserIdListeAttesa"));
+            result["IdAbbonamento"] = dr.GetOrdinal(getColumnName("IdAbbonamentoListeAttesa"));
+            result["DataCreazione"] = dr.GetOrdinal(getColumnName("DataCreazioneListeAttesa"));
+            result["DataScadenza"] = dr.GetOrdinal(getColumnName("DataScadenzaListeAttesa"));
+            result["DataConversione"] = dr.GetOrdinal(getColumnName("DataConversioneListeAttesa"));
+            result["DataCancellazione"] = dr.GetOrdinal(getColumnName("DataCancellazioneListeAttesa"));
+            result["CausaleCancellazione"] = dr.GetOrdinal(getColumnName("CausaleCancellazioneListeAttesa"));
             return result;
         }
 
