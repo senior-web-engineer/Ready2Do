@@ -1,5 +1,39 @@
 ﻿@model IEnumerable<AppuntamentoDaConfermareDM>
 
-<div>
-
-</div>
+@if (Model?.Any() ?? false)
+{
+    <div class="row">
+        <div class="col s4 offset-s4">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center"><strong>Nessun appuntamento da confermare.</strong></span>
+                    <br />
+                    <p>Al momento non risultano appuntamenti da confermare per questo evento.</p>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col s5 offset-s1 center">
+            <strong>Utente</strong>
+        </div>
+        <div class="col s3 center">
+            <strong>Data Iscrizione</strong>
+        </div>
+        <div class="col s3 center">
+            <strong>Azioni</strong>
+        </div>
+    </div>
+    @foreach (var a in Model)
+    {
+        <div class="row">
+            <div class="col s5 offset-s1">@(a.User.DisplayName)</div>
+            <div class="col s3">@(a.DataCreazione)</div>
+            <div class="col s3"><!--AZIONI--></div>
+        </div>
+    }
+}
