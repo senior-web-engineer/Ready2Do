@@ -240,7 +240,6 @@ BEGIN
 					FROM [utils].[Giorni] AS gi
 						INNER JOIN @tblWeekDays tdw ON tdw.WeekDayNum = gi.DayOfWeekNum
 					WHERE gi.Data > @pDataOraInizio
-					AND gi.Data <= @endData
 					) T
 					WHERE T.RowNumeber <= @numRipetizioni
 			END
