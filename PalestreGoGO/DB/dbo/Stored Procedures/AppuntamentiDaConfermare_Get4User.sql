@@ -6,9 +6,9 @@
 AS
 BEGIN
 	SELECT *
-	FROM AppuntamentiDaConfermare
-	WHERE IdCliente = @pIdCliente
-	AND ScheduleId = @pIdSchedule
-	AND UserId =  @pUserId
-	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (DataCancellazione IS NULL))
+	FROM vAppuntamentiDaConfermare
+	WHERE IdClienteAppuntamentiDaConfermare = @pIdCliente
+	AND ScheduleIdAppuntamentiDaConfermare = @pIdSchedule
+	AND UserIdAppuntamentiDaConfermare =  @pUserId
+	AND ((COALESCE(@pIncludeDeleted, 0) = 1) OR (DataCancellazioneAppuntamentiDaConfermare IS NULL))
 END

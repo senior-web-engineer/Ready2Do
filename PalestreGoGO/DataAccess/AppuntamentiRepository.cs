@@ -271,7 +271,7 @@ namespace PalestreGoGo.DataAccess
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
                     columnsAppuntamentoDaConf = GetAppuntamentoDaConfermareColumns(dr);
-                    while (await dr.ReadAsync())
+                    if (await dr.ReadAsync())
                     {
                         result.Add(await ReadAppuntamentoDaConfermareAsync(dr, columnsAppuntamentoDaConf));
                     }
