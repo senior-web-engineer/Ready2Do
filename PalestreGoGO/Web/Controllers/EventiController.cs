@@ -74,6 +74,23 @@ namespace Web.Controllers
             return View("EditEvento", vm);
         }
 
+        [HttpGet("{cliente}/eventi/edit/{id}")]
+        public async Task<IActionResult> ModificaEvento([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")] int idEvento)
+        {
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
+            var evento = await _apiClient.GetScheduleAsync(idCliente, idEvento);
+            var tipoLezioni = await _apiClient.GetTipologieLezioniClienteAsync(idCliente);
+            var locations = await _apiClient.GetLocationsAsync(idCliente);
+            ViewData["TipologieLezioni"] = new SelectList(tipoLezioni, "Id", "Nome");
+            ViewData["Locations"] = new SelectList(locations, "Id", "Nome");
+            ViewData["IdCliente"] = idCliente;
+            ViewData["IdEvento"] = idEvento;
+            return View("EditEvento", new ScheduleEditViewModel(evento));
+
+        }
+
+
         [HttpPost("{cliente}/eventi/new")]
         [HttpPost("{cliente}/eventi/edit/{id}")]
         public async Task<IActionResult> SaveEvento([FromRoute(Name = "cliente")]string urlRoute, [FromForm] ScheduleInputViewModel evento, [FromRoute(Name = "id")] int? idEvento)
@@ -103,6 +120,7 @@ namespace Web.Controllers
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             ViewData["ClienteRoute"] = urlRoute;
             ViewData["IdCliente"] = idCliente;
+            ViewData["IdEvento"] = idEvento;
             ViewData["UserType"] = User.GetUserTypeForCliente(idCliente);
             var vm = new DettaglioEventoViewModel();
             var accessToken = await HttpContext.GetTokenAsync("access_token");

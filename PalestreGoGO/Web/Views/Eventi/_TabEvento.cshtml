@@ -94,8 +94,7 @@
             }
             else if (((UserType)ViewData["UserType"]).IsAtLeastAdmin())
             {
-                <a class="btn waves-effect waves-light" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Context.Request.GetEncodedUrl()">Accedi per Iscriverti</a>
-
+                <a class="btn waves-effect waves-light" asp-action="ModificaEvento" asp-controller="Eventi" asp-route-cliente="@ViewBag.ClienteRoute" asp-route-id="@ViewBag.IdEvento">Modifica Evento</a>
             }
         }
     </div>
