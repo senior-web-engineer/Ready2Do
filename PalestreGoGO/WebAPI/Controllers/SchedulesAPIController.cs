@@ -87,7 +87,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                                                         [FromQuery(Name = "lid")]int? idLocation = null, [FromQuery(Name = "tlid")]int? idTipoLezione = null,
                                                         [FromQuery(Name = "onlyavailable")]bool? soloPostiDisp = false, [FromQuery(Name = "onlyopen")]bool? soloIscrizAperte = true,
                                                         [FromQuery(Name = "psize")]int? pageSize = 25, [FromQuery(Name = "pnum")]int? pageNumber = 1,
-                                                        [FromQuery(Name = "sortcol")]string sortColumn = "dataorainizio", [FromQuery(Name = "asc")]bool? ascending = true,
+                                                        [FromQuery(Name = "sortcol")]string sortColumn = "dataorainizioschedules", [FromQuery(Name = "asc")]bool? ascending = true,
                                                         [FromQuery(Name = "deleted")]bool? includeDeleted = false)
         {
             //Gli item cancellati sono visibili solo dal gestore della struttura

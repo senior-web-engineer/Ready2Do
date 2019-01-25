@@ -39,7 +39,7 @@ CREATE PROCEDURE [dbo].[Schedules_Add]
 AS
 BEGIN
 SET XACT_ABORT ON;
-	
+	DECLARE @logMsg	NVARCHAR(2000)
 	IF @pId IS NOT NULL AND @pId > 0
 	BEGIN
 		RAISERROR(N'Questa procedura non può modificare Schedule esistenti', 16, 1);
@@ -49,6 +49,8 @@ SET XACT_ABORT ON;
 	-- EVENTO RICORRENTE
 	IF @pRecurrency IS NOT NULL
 	BEGIN 
+		SET @logMsg = CONCAT('Inserimento nuovo evento ricorrente. Title:', @pTitle, ' - IdTipoLezione:', @pIdTipoLezione, ', IdLocation:', @pRecurrency,', Recurrency:', @pRecurrency)
+		exec internal_LogMessage @pIdCliente, NULL, 'V', @logMsg
 		IF ISJSON(@pRecurrency) = 0
 		BEGIN
 			RAISERROR(N'Il paramentro @pRecurrency non contiente un JSON valido', 16, 1);
@@ -60,6 +62,10 @@ SET XACT_ABORT ON;
 		INSERT INTO Schedules(IdCliente, Title, IdTipoLezione, IdLocation, DataOraInizio, Istruttore, PostiDisponibili, PostiResidui, CancellazioneConsentita, CancellabileFinoAl, DataAperturaIscrizioni, DataChiusuraIscrizioni, VisibileDal, VisibileFinoAl, Note, UserIdOwner, [Recurrency], WaitListDisponibile)
 			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellazionePossib, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pVisibileFinoAl, @pNote, @pUserIdOwner, @pRecurrency, @pWaitListDisponibile)
 		SET @pId = SCOPE_IDENTITY();
+
+		SET @logMsg = CONCAT('Inserito evento Parent con Id:', @pId)
+		exec internal_LogMessage @pIdCliente, NULL, 'V', @logMsg
+
 
 		EXEC [internal_Schedules_AddRicorrenti] @pId, @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pCancellazionePossib, 
 														@pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pNote, @pUserIdOwner,
@@ -74,6 +80,8 @@ SET XACT_ABORT ON;
 			VALUES( @pIdCliente, @pTitle, @pIdTipoLezione, @pIdLocation, @pDataOraInizio, @pIstruttore, @pPosti, @pPosti, @pCancellazionePossib, @pCancellabileFinoAl, @pDataAperturaIscriz, @pDataChiusuraIscriz, @pVisibileDal, @pVisibileFinoAl, @pNote, @pUserIdOwner, @pWaitListDisponibile)
 
 		SET @pId = SCOPE_IDENTITY();
+		SET @logMsg = CONCAT('Inserito evento Singolo con Id:', @pId)
+		exec internal_LogMessage @pIdCliente, NULL, 'V', @logMsg
 	END
 	RETURN 1;
 END

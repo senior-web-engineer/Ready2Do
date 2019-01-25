@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,34 @@ namespace Web.Models
             this.VisibileDalTime = schedIn.VisibileDalTime;
             this.VisibileFinoAlDate = schedIn.VisibileFinoAlDate;
             this.VisibileFinoAlTime = schedIn.VisibileFinoAlTime;
+            this.WaitListDisponibile = schedIn.WaitListDisponibile;
+        }
+
+        public ScheduleEditViewModel(ScheduleDM schedIn)
+        {
+            this.CancellazioneConsentita = schedIn.CancellazioneConsentita;
+            this.Data = schedIn.DataOraInizio.Date;
+            this.DataAperturaIscrizioni = schedIn.DataAperturaIscrizione?.Date;
+            this.DataCancellazioneMax = schedIn.CancellabileFinoAl?.Date;
+            this.DataChiusuraIscrizioni = schedIn.DataChiusuraIscrizione?.Date;
+            this.Id = schedIn.Id;
+            this.IdLocation = schedIn.IdLocation;
+            this.IdTipoLezione = schedIn.IdTipoLezione;
+            this.Istruttore = schedIn.Istruttore;
+            this.Note = schedIn.Note;
+            this.OraAperturaIscrizioni = schedIn.DataAperturaIscrizione?.TimeOfDay;
+            this.OraCancellazioneMax = schedIn.CancellabileFinoAl?.TimeOfDay;
+            this.OraChiusuraIscrizioni = schedIn.CancellabileFinoAl?.TimeOfDay;
+            this.OraInizio = schedIn.DataOraInizio.TimeOfDay;
+            this.PostiDisponibili = schedIn.PostiDisponibili;
+            this.PostiResidui = schedIn.PostiResidui.Value;
+            this.Recurrency = schedIn.Recurrency;
+            this.TipoSchedule = schedIn.TipoSchedule;
+            this.Title = schedIn.Title;
+            this.VisibileDalDate = schedIn.VisibileDal?.Date;
+            this.VisibileDalTime = schedIn.VisibileDal?.TimeOfDay;
+            this.VisibileFinoAlDate = schedIn.VisibileFinoAl?.Date;
+            this.VisibileFinoAlTime = schedIn.VisibileFinoAl?.TimeOfDay;
             this.WaitListDisponibile = schedIn.WaitListDisponibile;
         }
     }

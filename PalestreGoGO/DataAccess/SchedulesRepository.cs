@@ -89,7 +89,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<ScheduleDM>> GetScheduleListAsync(int idCliente, DateTime? startDate = null, DateTime? endDate = null, int? idLocation = null,
                                                                         int? idTipoLezione = null, bool soloPostiDisp = false, bool soloIscrizAperte = false,
-                                                                        int pageSize = 25, int pageNumber = 1, string sortColumn = "dataorainizio",
+                                                                        int pageSize = 25, int pageNumber = 1, string sortColumn = "dataorainizioschedules",
                                                                         bool ascending = true, bool includeDeleted = false)
         {
             List<ScheduleDM> result = new List<ScheduleDM>();
