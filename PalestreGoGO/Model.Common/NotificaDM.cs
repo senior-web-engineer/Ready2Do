@@ -13,6 +13,8 @@ namespace ready2do.model.common
         public string Titolo { get; set; }
         [MaxLength(250)]
         public string Testo { get; set; }
+        [MaxLength(5000)]
+        public string ActionUrl { get; set; }
         public DateTime DataCreazione { get; set; }
         public DateTime? DataDismissione { get; set; }
         public DateTime? DataInizioVisibilita { get; set; }

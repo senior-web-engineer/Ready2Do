@@ -28,8 +28,14 @@ namespace PalestreGoGo.WebAPI.Controllers
             this._notificheRepo = notificheRepo;
         }
 
-        [HttpGet("{filtro?}")]
-        public async Task<ActionResult<IEnumerable<NotificaConTipoDM>>> GetNotificheAsync([FromRoute(Name = "filtro")] FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive, [FromQuery]int? idCliente = null)
+        /// <summary>
+        /// Ritorna le notifiche per l'utente chiamante per tutti i clienti a meno che non sia specificato un idCliente
+        /// </summary>
+        /// <param name="filtro">Indica il tipo di notifiche desiderata (Attive, Tutte, ecc...)</param>
+        /// <param name="idCliente">Se specificato l'API ritorna solo le notifiche relative a quel Cliente</param>
+        /// <returns></returns>
+        [HttpGet("{filtro}")]
+        public async Task<ActionResult<IEnumerable<NotificaConTipoDM>>> GetNotificheForCurrentUserAsync([FromRoute(Name = "filtro")] FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive, [FromQuery]int? idCliente = null)
         {
             string userId = User.UserId()?.ToString();
             var result = await _notificheRepo.GetNotificheAsync(userId, idCliente, filtro);
@@ -38,34 +44,38 @@ namespace PalestreGoGo.WebAPI.Controllers
 
         /// <summary>
         /// Questa è un'operazioni amministrativa per cui lo userId non è quello dell'utente chiamante.
-        /// L'utente chiamante deve però avere i permessi per ivnocare l'action
+        /// L'utente chiamante deve però avere i permessi per invocare l'action
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="notifica"></param>
+        /// <param name="userId">Utente destinatario della notifica</param>
+        /// <param name="notifica">Notifica vera e propria </param>
         /// <returns></returns>
         [HttpPost()]
-        public async Task<IActionResult> AddNotificaAsync([FromRoute(Name = "userId")] string userId, NotificaDM notifica)
+        public async Task<IActionResult> AddNotificaForUserAsync([FromRoute(Name = "userId")] string userId, NotificaDM notifica)
         {
-            throw new NotImplementedException("Verificare la gestione della secuirty!");
             if (notifica == null) { return BadRequest(); }
             if (string.IsNullOrEmpty(userId)) { return BadRequest(); }
-            if (string.IsNullOrWhiteSpace(notifica.UserId))
-            {
-                notifica.UserId = userId;
-            }
+            if (string.IsNullOrWhiteSpace(notifica.UserId)){notifica.UserId = userId;}
             if (!userId.Equals(notifica.UserId)) { return BadRequest(); }
+            //
             long idNotifica = await _notificheRepo.AddNotificaAsync(notifica);
             return Ok(idNotifica);
         }
 
+        /// <summary>
+        /// Aggiorna lo stato di una notifica dell'utente chiamante
+        /// </summary>
+        /// <param name="idNotifica"></param>
+        /// <param name="dataVisualizzazione"></param>
+        /// <param name="dataDismiss"></param>
+        /// <returns></returns>
         [HttpPut("{idNotifica:int}")]
-        public async Task<IActionResult> UpdateNotificaAsync([FromRoute(Name = "idNotifica")] long idNotifica, NotificaApiModel notifica)
+        public async Task<IActionResult> UpdateNotificaAsync([FromRoute(Name = "idNotifica")] long idNotifica, [FromQuery(Name ="v")] DateTime? dataVisualizzazione = null,
+                                                             [FromQuery(Name ="d")] DateTime? dataDismiss = null)
         {
             string userId = User.UserId()?.ToString();
             if (string.IsNullOrWhiteSpace(userId)) { return Unauthorized(); }
-            if (notifica == null) { return BadRequest(); }
-            if(!userId.Equals(notifica.UserId)) { return BadRequest(); }
-            await _notificheRepo.UpdateNotifica(idNotifica, notifica.DataPrimaVisualizzazione, notifica.DataDismissione);
+            if (!dataDismiss.HasValue && !dataVisualizzazione.HasValue) { return BadRequest(); }
+            await _notificheRepo.UpdateNotifica(userId, idNotifica,dataVisualizzazione, dataDismiss);
             return Ok();
         }
     }

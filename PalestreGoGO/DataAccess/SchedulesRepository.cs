@@ -233,7 +233,7 @@ namespace PalestreGoGo.DataAccess
         }
 
 
-        #region Private Stuff
+        #region Static Stuff
         internal static Dictionary<string, int> GetSchedulesColumns(SqlDataReader reader, Dictionary<string, string> aliases = null)
         {
             if ((reader == null) || (!reader.HasRows)) return null;

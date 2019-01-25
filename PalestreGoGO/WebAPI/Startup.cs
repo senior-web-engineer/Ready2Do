@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PalestreGoGo.DataAccess;
@@ -82,7 +83,13 @@ namespace PalestreGoGo.WebAPI
                     };
                 });
 
-            services.AddMvc()
+            services.AddMvc(
+                options =>
+                {
+                    //20190125#Aggiunto filtro per richiedere l'uso di HTTPS
+                    options.Filters.Add(new RequireHttpsAttribute());
+                }
+                )
                 // Abilitiamo i comportamenti introdotti con ASP.NET Core 2.2 (più recenti)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
                 // Abilitiamo la FLUENTVALIDATION 
@@ -119,7 +126,7 @@ namespace PalestreGoGo.WebAPI
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
             //app.SetupUsersAndRoles();

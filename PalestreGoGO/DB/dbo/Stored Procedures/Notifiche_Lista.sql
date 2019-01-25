@@ -6,34 +6,25 @@ Il parametro @pStatoNotifica indica quali notifiche si volgiono in output e può
 - 2 = SoloNonLette (DataDismissione NULL + DataPrimaVisualizzazione NULL)
 */
 CREATE PROCEDURE [dbo].[Notifiche_Lista]
-	@pUserId		VARCHAR(100) = NULL,
-	@pIdCliente		INT = NULL,
-	@pStatoNotifica	TINYINT = 1
+	@pUserId			VARCHAR(100),
+	@pIdCliente			INT = NULL,
+	@pStatoNotifica		TINYINT = 1,
+	@pPageNumber		INT = 1,
+	@pPageSize			INT = 10
 AS
 BEGIN
-	SELECT	n.Id, 
-			n.IdCliente,
-			n.Titolo,
-			n.Testo,
-			n.DataCreazione,
-			n.DataDismissione,
-			n.DataPrimaVisualizzazione,
-			n.DataInizioVisibilita,
-			n.DataFineVisibilita,
-			n.UserId,
-			tn.Id AS IdTipo,
-			tn.Code	AS Code,
-			tn.UserDismissable,
-			tn.AutoDismissAfter,
-			tn.Priority
-	FROM Notifiche n
-		INNER JOIN TipologieNotifiche tn ON n.IdTipo = tn.Id
-	WHERE (@pIdCliente IS NULL OR @pIdCliente = n.IdCliente) AND
-		(((COALESCE(@pStatoNotifica, 1) =1) AND (n.DataDismissione IS NULL) AND
-				(COALESCE(n.DataFineVisibilita, SYSDATETIME()) >= SYSDATETIME())) 
+	SELECT	n.*
+	FROM vNotifiche n
+	WHERE (@pUserId = n.UserIdNotifiche) AND
+		(@pIdCliente IS NULL OR @pIdCliente = n.IdClienteNotifiche) AND
+		(((COALESCE(@pStatoNotifica, 1) =1) AND (n.DataDismissioneNotifiche IS NULL) AND
+				(COALESCE(n.DataFineVisibilitaNotifiche, SYSDATETIME()) >= SYSDATETIME())) 
 		   OR ((@pStatoNotifica = 2) AND  
-				(n.DataDismissione IS NULL) AND (n.DataPrimaVisualizzazione IS NULL) AND
-				(COALESCE(n.DataFineVisibilita, SYSDATETIME()) >= SYSDATETIME())
+				(n.DataDismissioneNotifiche IS NULL) AND (n.DataPrimaVisualizzazioneNotifiche IS NULL) AND
+				(COALESCE(n.DataFineVisibilitaNotifiche, SYSDATETIME()) >= SYSDATETIME())
 		   ) 
 		   OR (@pStatoNotifica = 0))
+	ORDER BY COALESCE(DataInizioVisibilitaNotifiche, DataCreazioneNotifiche) DESC
+	OFFSET @pPageSize * (@pPageNumber - 1) ROWS
+    FETCH NEXT @pPageSize ROWS ONLY OPTION (RECOMPILE);
 END

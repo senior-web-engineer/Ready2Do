@@ -4,6 +4,7 @@
 	@pIdCliente				INT = NULL,
 	@pTitolo				NVARCHAR(50),
 	@pTesto					NVARCHAR(250),
+	@pActionUrl				VARCHAR(5000),
 	@pDataInizioVisibilita	DATETIME2 = NULL,
 	@pDataFineVisibilita	DATETIME2 = NULL,
 	@pIdNotitifica			BIGINT OUTPUT

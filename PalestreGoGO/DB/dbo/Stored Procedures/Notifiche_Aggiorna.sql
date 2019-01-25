@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Notifiche_Aggiorna]
+	@pUserId		VARCHAR(100),
 	@pIdNotifica	bigint,
 	@pDataView		datetime2(2) = NULL,
 	@pDataDismiss	datetime2(2) = NULL
