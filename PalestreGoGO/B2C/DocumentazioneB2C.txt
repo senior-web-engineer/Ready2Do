@@ -1,0 +1,72 @@
+Utiliziamo delle custom policy per avere il massimo della flessibilità àsu B2C. 
+Le policy di default sono limitative per i nostri scopi.
+Per il Signup usiamo policy seperata tra Utente e Cliente perchè dobbiamo gestire le seguenti differenza:
+# CLIENTE:
+	- dobbiamo gestire un claim "Provisioned"
+	
+	
+	
+*** LISTA CUSTOM CLAIMS ***
+
++-------------------+-----------------------+-------------------+-----------------------------------------------+
++	APPLYS TO		|     CLAIM NAME		| CLAIM VALUE TYPE  |              DESCRIZIONE						|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+| All				| mail_confirmed	    | datetime		   	| se valorizzato indica che l'email dell'account|
+|					|						|					| è stata confermata in quella data ed ora (2)  |
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+|Cliente			| pending_registration	| datetime			| indica se il cliente ha in sospeso la registr-|
+|					|						|					| azione della struttura (1)					|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+|Cliente			| strutture_owned		| datetime			| concatenazione degli Id delle strutture di    |
+|					|						|					| proprietà (owner) dell'utente					|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+
+
+
+(1) Lo utilizziamo in alternativa al claim "IsNew" di B2C per rendere più stabile il processo. Il claim IsNew viene
+    inviato SOLO LA PRIMA VOLTA che l'utente si registra, se per qualche motivo fallisce la gestione lato WEB 
+	rischiamo di skippare lo step di registrazione della struttura con la possibile conseguenza che un potenziale
+	cliente viene registrato come Utente ordinario.
+	Questo claim viene inserito in output SOLO se la registrazione non è stata completata. Quando la registrazione
+	è completa l'applicazione volorizzerà l'attributo corrispondente su B2C tramite Graph API e la custom policy
+	non lo inserirà più in output.
+	NOTA: Come valiriziamo questo attributo? Chi lo 
+	
+(2) La conferma dell'email la gestiamo applicativamente senza farla gestire da Azure B2C così da poter personalizzare
+	il formato dell'email inviata.
+	!!DA APPROFONDIRE: per gli utenti registrati con i Social per cui abbiamo l'email fornita dal social stesso,
+	ha senso inviare l'email di conferma email o basta quella di benvenuto?
+	
+	
+** FLUSSO REGISTRAZIONE CLIENTE	
+L'utente anonimo clicca in home (landing) sul pulsante [Registra Struttura] che, tramite redirect interno (challenge asp.net)
+avvia il Flow di registrazione su B2C (POLICY: Client_Registration).
+La prima pagina presentata è quella di selezione del Provider, sarà presente la possibilità di registrarsi con un 
+LOCAL ACCOUNT oppure l'utilizzo di un Account Social.
+
+
+NOTE ACCOUNT LINKING
+Una volta che un utente ha creato un account (social o locale) è possibile collegarci ulteriori account Social
+Es: l'utente si registra con Facebook ed aggiunge anche l'account Instagram.
+Es2: l'utente si registra con un utente locale e successivamente aggiunge l'account Facebook e/o Instagram
+L'aggiunta di questi account può avvenire sia manualmente tramite Graph Api (fondamentalmente si tratta di 
+aggiungere una userIdentitie alla collection delle userIdentities) che "live" tramite custom policy di B2C.
+Il caso manuale, credo che ad oggi sia l'unico modo per creare un LOCAL ACCOUNT quando l'utente si è registrato
+tramite social. Per il lining di account Social invece il modo corretto è quello di usare le policy Custom (credo 
+sia l'unico modo per non far richiedere il consent, a meno di condivisione della key)
+
+Vedi: https://github.com/Azure-Samples/active-directory-b2c-advanced-policies/tree/master/account-linking
+
+NOTE UPDATE TRANSAZIONALI:
+Azure AD Graph Api (https://docs.microsoft.com/en-us/previous-versions/azure/ad/graph/api/users-operations) NON SUPPORTA
+le transazioni per cui non c'è modo di fare degli aggiornamenti safe.
+Il problema si pone ad esempio quando si associa una struttura ad un cliente; in questo caso è necessario aggiornare 
+il claim [strutture_owned] concatenando l'ID della nuova struttura creata e si corre il rischio, in caso di aggiornamenti 
+concorrenti di sovrascrivere eventuali modifiche altrui. 
+Per minimizzare il rischio qualsiasi operazione di UPDATE deve essere preceduta da un'operazione di GET per assicurarsi 
+che il valore di partenza è invariato:
+1. leggi valore di partenza (A)
+2. modifica A aggiungendo il nuovo id ottenendo il nuovo valore (B)
+3. rileggi il valore da B2C (A2) e assicurati che sia uguale ad (A)
+4. se (A2) == (A) aggiorna B2C con (B)
+5. altrimenti ripeti da 1.
