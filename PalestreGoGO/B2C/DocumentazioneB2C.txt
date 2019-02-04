@@ -11,14 +11,29 @@ Per il Signup usiamo policy seperata tra Utente e Cliente perchè dobbiamo gesti
 +-------------------+-----------------------+-------------------+-----------------------------------------------+
 +	APPLYS TO		|     CLAIM NAME		| CLAIM VALUE TYPE  |              DESCRIZIONE						|
 +-------------------+-----------------------+-------------------+-----------------------------------------------+
+| All				| givenName		    	| string		   	| 												|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+| All				| surname		    	| string		   	| 												|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+| All				| displayName	    	| string		   	| 												|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+| All				| phoneNumber	    	| string		   	| 												|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
 | All				| mail_confirmed	    | datetime		   	| se valorizzato indica che l'email dell'account|
 |					|						|					| è stata confermata in quella data ed ora (2)  |
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+| All				| phone_confirmed	    | datetime		   	| se valorizzato indica che il telefono 		|
+|					|						|					| è stata confermato in quella data ed ora (3)  |
 +-------------------+-----------------------+-------------------+-----------------------------------------------+
 |Cliente			| pending_registration	| datetime			| indica se il cliente ha in sospeso la registr-|
 |					|						|					| azione della struttura (1)					|
 +-------------------+-----------------------+-------------------+-----------------------------------------------+
-|Cliente			| strutture_owned		| datetime			| concatenazione degli Id delle strutture di    |
+|Cliente			| strutture_owned		| stirng			| concatenazione degli Id delle strutture di    |
 |					|						|					| proprietà (owner) dell'utente					|
++-------------------+-----------------------+-------------------+-----------------------------------------------+
+|Utente				| referer				| string			| identificativo della struttura da cui proviene|
+|					|						|					| l'utente (la prima struttura a cui si è 		|
+|					|						|					| associato										|
 +-------------------+-----------------------+-------------------+-----------------------------------------------+
 
 
@@ -37,6 +52,8 @@ Per il Signup usiamo policy seperata tra Utente e Cliente perchè dobbiamo gesti
 	!!DA APPROFONDIRE: per gli utenti registrati con i Social per cui abbiamo l'email fornita dal social stesso,
 	ha senso inviare l'email di conferma email o basta quella di benvenuto?
 	
+(3) per ora non gestiamo la conferma del telefono, lo faremo in un secondo momento, applicativamente, quando 
+	integreremo l'invio degli SMS
 	
 ** FLUSSO REGISTRAZIONE CLIENTE	
 L'utente anonimo clicca in home (landing) sul pulsante [Registra Struttura] che, tramite redirect interno (challenge asp.net)
