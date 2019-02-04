@@ -38,7 +38,7 @@ namespace Web.Services
             };
             return vm;
         }
-        public async Task<ClientRegistrationViewModel> BuildRegisterClienteViewModelAsync(ClientRegistrationInputModel model)
+        public async Task<ClientRegistrationViewModel> BuildRegisterClienteViewModelAsync(ClientRegistrationStrutturaInputModel model)
         {
             var result = await BuildRegisterClienteViewModelAsync(model.ReturnUrl);
             result.Cognome = model.Cognome;

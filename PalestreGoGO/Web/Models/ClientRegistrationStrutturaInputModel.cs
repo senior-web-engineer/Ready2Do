@@ -8,7 +8,7 @@ using Web.Utils;
 
 namespace Web.Models
 {
-    public class ClientRegistrationInputModel
+    public class ClientRegistrationStrutturaInputModel
     {
         /* DATI UTENTE*/
         [Required]
@@ -17,7 +17,7 @@ namespace Web.Models
         [Required]
         [MaxLength(100)]
         public string Cognome { get; set; }
-
+        public string DisplayName { get; set; }
         [Required]
         [EmailAddress]
         [MaxLength(256)]

@@ -74,11 +74,13 @@ namespace Web
                 {
                     policy = AzureAdB2COptions.DefaultPolicy;
                 }
+
+                context.ProtocolMessage.State = BuildProtocolState(context);
+
                 context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
                 context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
                 context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace(AzureAdB2COptions.DefaultPolicy.ToLower(), policy.ToLower());
                 context.Properties.Items.Remove(AzureAdB2COptions.PolicyAuthenticationProperty);
-                
                 if (!string.IsNullOrEmpty(AzureAdB2COptions.ApiUrl) && (
                     policy.Equals(AzureAdB2COptions.StrutturaSignInPolicyId, StringComparison.InvariantCultureIgnoreCase) ||
                     policy.Equals(AzureAdB2COptions.UserSignUpSignInPolicyId, StringComparison.InvariantCultureIgnoreCase)))
@@ -147,6 +149,25 @@ namespace Web
                 //{
                 //    context.Response.Redirect()
                 //}
+            }
+
+            /// <summary>
+            /// Ritorna il valore del parametro state da passare a B2C
+            /// </summary>
+            /// <param name="context"></param>
+            /// <returns></returns>
+            private string BuildProtocolState(RedirectContext context)
+            {
+                string state;
+                if(context.Properties.Items.TryGetValue("IsClientRegistration", out var _))
+                {
+                    state = "IsClientRegistration";
+                }
+                else
+                {
+                    state =  Guid.NewGuid().ToString();
+                }
+                return state;
             }
         }
     }

@@ -32,9 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Model.Common\Model.Common.csproj" />
-    <ProjectReference Include="..\WebAPIModel\WebAPIModel.csproj" />
-    <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
+    <ProjectReference Include="..\..\Model.Common\Model.Common.csproj" />
+    <ProjectReference Include="..\..\WebAPIModel\WebAPIModel.csproj" />
+    <ProjectReference Include="..\..\WebAPI\WebAPI.csproj" />
   </ItemGroup>
 
 </Project>

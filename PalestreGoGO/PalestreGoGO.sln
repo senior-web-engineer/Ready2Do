@@ -34,9 +34,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Func.WaitingListExpir
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Utils", "Common.Utils\Common.Utils.csproj", "{3B474975-6889-4FBE-B78C-3EB38C82D735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI.Tests", "WebAPI.Tests\WebAPI.Tests.csproj", "{3C307101-F14D-49D4-B52A-F48ABC55EA37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI.Tests", "Tests\WebAPI.Tests\WebAPI.Tests.csproj", "{3C307101-F14D-49D4-B52A-F48ABC55EA37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Tests", "Tests\Web.Tests\Web.Tests.csproj", "{184FAF5F-6966-4A98-A5B4-590B207189F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Tests", "Tests\Web.Tests\Web.Tests.csproj", "{184FAF5F-6966-4A98-A5B4-590B207189F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "B2C", "B2C", "{CE751FE9-471C-406C-876E-8BD1DC12490D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Policies", "Policies", "{3CE5E5A0-2615-4DBB-8A9E-F240570D6564}"
+	ProjectSection(SolutionItems) = preProject
+		B2C\Policies\ClientSignUp.xml = B2C\Policies\ClientSignUp.xml
+		B2C\Policies\PasswordReset.xml = B2C\Policies\PasswordReset.xml
+		B2C\Policies\ProfileEdit.xml = B2C\Policies\ProfileEdit.xml
+		B2C\Policies\SignUpOrSignin.xml = B2C\Policies\SignUpOrSignin.xml
+		B2C\Policies\TrustFrameworkBase.xml = B2C\Policies\TrustFrameworkBase.xml
+		B2C\Policies\TrustFrameworkExtensions.xml = B2C\Policies\TrustFrameworkExtensions.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +123,7 @@ Global
 		{6AB54057-004B-45B8-9199-CAD46B1F7440} = {ACDF3030-0899-497A-8480-68F63A40E1AF}
 		{3C307101-F14D-49D4-B52A-F48ABC55EA37} = {09F8146A-8D4E-489B-B244-53A73A5979DD}
 		{184FAF5F-6966-4A98-A5B4-590B207189F3} = {09F8146A-8D4E-489B-B244-53A73A5979DD}
+		{3CE5E5A0-2615-4DBB-8A9E-F240570D6564} = {CE751FE9-471C-406C-876E-8BD1DC12490D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A8513D0-18D0-4389-8361-A77E68BFE9C2}
