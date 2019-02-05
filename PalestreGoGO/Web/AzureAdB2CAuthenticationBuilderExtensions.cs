@@ -12,6 +12,12 @@ using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Web.Models;
+using Newtonsoft.Json;
+using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
+using Common.Utils;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Web
 {
@@ -121,13 +127,7 @@ namespace Web
                 string signedInUserID = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 //GT#20181007#Recuperiamo il claim
-                string claimValue = context.Principal.FindFirstValue("extension_accountConfirmedOn");
-                //if (string.IsNullOrEmpty(claimValue))
-                //{
-                //    context.HandleResponse();
-                //    context.Response.Redirect("/Account/MailToConfirm");
-                //    return;
-                //}
+                string claimValue = context.Principal.FindFirstValue("extension_accountConfirmedOn");                
                 string currentPolicy = context.Principal.FindFirstValue(Constants.ClaimPolicy);
                 TokenCache userTokenCache = new MSALSessionCache(signedInUserID, context.HttpContext).GetMsalCacheInstance();
                 ConfidentialClientApplication cca = new ConfidentialClientApplication(AzureAdB2COptions.ClientId, AzureAdB2COptions.Authority(currentPolicy), AzureAdB2COptions.RedirectUri, new ClientCredential(AzureAdB2COptions.ClientSecret), userTokenCache, null);
@@ -143,12 +143,13 @@ namespace Web
                     //TODO: Handle
                     throw;
                 }
-
+                this.HandleStateOnReturn(context);
                 //TODO: Gestire il redirect alla struttura gestita se il redirect è alla Home del sito (solo per i gestori ?)
-                //if(!string.IsNullOrEmpty(context.Properties.RedirectUri) && (!IsRedirectToHome(context.Properties.RedirectUri)))
-                //{
-                //    context.Response.Redirect()
-                //}
+                if(!string.IsNullOrEmpty(context.Properties.RedirectUri)) //&& (!IsRedirectToHome(context.Properties.RedirectUri)))
+                {
+                    //TODO: Verificare se sia corretta questa gestione e se espone a vulerabilità (open redirect)
+                    context.Response.Redirect(context.Properties.RedirectUri);
+                }
             }
 
             /// <summary>
@@ -158,17 +159,38 @@ namespace Web
             /// <returns></returns>
             private string BuildProtocolState(RedirectContext context)
             {
-                string state;
-                if(context.Properties.Items.TryGetValue("IsClientRegistration", out var _))
+                OpenIdStateInfo state = new OpenIdStateInfo();
+                if (context.Properties.Items.TryGetValue("SignupType", out var signupType))
                 {
-                    state = "IsClientRegistration";
+                    state.SignupType = signupType;
                 }
                 else
                 {
-                    state =  Guid.NewGuid().ToString();
+                    state.Id =  Guid.NewGuid();
                 }
-                return state;
+                return state.ToBase64Json();
             }
+
+            private void HandleStateOnReturn(AuthorizationCodeReceivedContext context)
+            {
+                var state = context.ProtocolMessage.State;
+                var stateInfo = state.FromBase64Json<OpenIdStateInfo>();
+                if (!string.IsNullOrWhiteSpace(stateInfo.SignupType) && stateInfo.SignupType.Equals("Cliente"))
+                {
+                    context.Response.Redirect("register");
+                    return;
+                }
+                }
+
         }
+    }
+
+    internal class OpenIdStateInfo
+    {
+        [JsonProperty(PropertyName = "id", NullValueHandling = NullValueHandling.Ignore)]
+        public Guid? Id { get; set; }
+
+        [JsonProperty(PropertyName ="st", NullValueHandling =NullValueHandling.Ignore)]
+        public string SignupType { get; set; }
     }
 }

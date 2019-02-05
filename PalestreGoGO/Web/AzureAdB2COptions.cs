@@ -9,10 +9,12 @@ namespace Web
     public class AzureAdB2COptions
     {
         public const string PolicyAuthenticationProperty = "Policy";
+        
 
         public AzureAdB2COptions()
         {
-            AzureAdB2CInstance = "https://login.microsoftonline.com/tfp";
+            //AzureAdB2CInstance = "https://login.microsoftonline.com/tfp";
+            AzureAdB2CInstance = "https://ready2do.b2clogin.com";
         }
 
         public string ClientId { get; set; }

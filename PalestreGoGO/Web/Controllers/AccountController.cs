@@ -61,12 +61,33 @@ namespace Web.Controllers
                 authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.StrutturaSignInPolicyId);
             }
             //ONLY FOR TEST
-            authProps.Items.Add("IsClientRegistration",true.ToString());
+            authProps.Items.Add("IsClientRegistration", true.ToString());
             return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
+        [HttpGet("/register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SignupCliente()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                var authProps = new AuthenticationProperties()
+                {
+                    RedirectUri = Url.Action("Account", "RegisterCliente")
+                };
+                authProps.Items.Add("SignupType", "Cliente");
+                authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, "B2C_1_SigninSignup");
+                return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
+            }
+            else {
+                var vm = await _account.BuildRegisterClienteViewModelAsync("");
+                return View("RegisterCliente",vm);
+            }
+        }
+
+
         [HttpGet]
-        [Route("/logout", Name ="logout")]
+        [Route("/logout", Name = "logout")]
         public async Task Logout(string returnUrl = null)
         {
             if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
@@ -79,7 +100,7 @@ namespace Web.Controllers
                 RedirectUri = returnUrl,
             };
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme, props);
-            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);            
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);
         }
 
         //
