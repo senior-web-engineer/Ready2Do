@@ -42,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "B2C", "B2C", "{CE751FE9-471
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Policies", "Policies", "{3CE5E5A0-2615-4DBB-8A9E-F240570D6564}"
 	ProjectSection(SolutionItems) = preProject
-		B2C\Policies\ClientSignUp.xml = B2C\Policies\ClientSignUp.xml
+		B2C\Policies\ClienteSignUp.xml = B2C\Policies\ClienteSignUp.xml
 		B2C\Policies\PasswordReset.xml = B2C\Policies\PasswordReset.xml
 		B2C\Policies\ProfileEdit.xml = B2C\Policies\ProfileEdit.xml
 		B2C\Policies\SignUpOrSignin.xml = B2C\Policies\SignUpOrSignin.xml
