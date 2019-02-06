@@ -1,0 +1,148 @@
+﻿@model ClienteRegistrazioneInputModel
+
+@{
+    Layout = "_LayoutLanding";
+}
+
+<style>
+    .select-wrapper + label {
+        top: -26px;
+    }
+</style>
+<section class="section">
+    <h2>Registra la tua struttura</h2>
+    <form asp-action="Registrazione" asp-controller="Clienti" method="post">
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <input type="text" asp-for="NomeStruttura" class="validate">
+                <label>Nome Struttura </label>
+                <span asp-validation-for="NomeStruttura"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <input type="text" asp-for="URL" class="validate">
+                <label>Url struttura</label>
+                <span asp-validation-for="URL"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <select asp-for="IdTipologia" asp-items="@ViewBag.TipologieClienti" class="active">
+                    <option disabled selected>Selezionare un categoria</option>
+                </select>
+                <label style="left:1em">Tipologia di Struttura</label>
+                <span asp-validation-for="IdTipologia"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <input type="text" asp-for="RagioneSociale" class="validate">
+                <label>Ragione Sociale</label>
+                <span asp-validation-for="RagioneSociale"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <input type="email" asp-for="EmailStruttura" class="validate">
+                <label>Indirizzo e-mail della struttura</label>
+                <span asp-validation-for="EmailStruttura"></span>
+            </div>
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <input type="tel" asp-for="Telefono" class="validate">
+                <label>Numero di Telefono</label>
+                <span asp-validation-for="Telefono"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1">
+                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" class="autocomplete validate" placeholder="Indirizzo completo"
+                       data-val="true" data-val-addressAutocomplete="E' necessario selezionare un indirizzo tra quelli proposti"
+                       data-val-googleaddress-esitolookupField="EsitoLookup">
+                <label>Indirizzo</label>
+                <span asp-validation-for="Indirizzo"></span>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Registrati</button>
+        </div>
+        <input id="esitoLookup" type="hidden" asp-for="EsitoLookup" />
+        <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
+        <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
+        <input id="inputCoordinate" type="hidden" asp-for="Coordinate" />
+        <input id="inputCitta" type="hidden" asp-for="Citta" />
+        <input id="inputCountry" type="hidden" asp-for="Country" />
+        <input id="inputCAP" type="hidden" asp-for="CAP" />
+    </form>
+</section>
+
+@section Scripts{
+    <!-- Google MAPS API -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@(ViewBag.GoogleMapsAPIKey)&libraries=places&language=it"></script>
+
+    <!-- Google Map Customization  -->
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            $('select').formSelect();
+
+            /// GOOGLE AUTOCOMPLETE ///
+            var input = document.getElementById('addressAutocomplete');
+            input.addEventListener('focus', function () {
+                document.getElementById('esitoLookup').value = 0;
+            });
+
+            var options = {
+                types: ['(address)']
+            };
+
+            autocomplete = new google.maps.places.Autocomplete(input, options);
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace();
+                //NOTA: se non è stata selezionato uno degli indirizzi proposti da google, perché l'utente ha scritto l'inidirizzo e
+                //      poi ha spostato il focus oppureperché c'è stato un problema nel lookup, l'oggetto place ha la sola proprietà
+                //      Name valorizzta con l'input inserito dall'utente
+
+                if (place.geometry) {
+                    document.getElementById('esitoLookup').value = 1;
+                    document.getElementById('inputLatitudine').value = place.geometry.location.lat();
+                    document.getElementById('inputLongitudine').value = place.geometry.location.lng();
+                    var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
+                    if (tmp) {
+                        document.getElementById('inputCAP').value = tmp.long_name;
+                    }
+                    tmp = place.address_components.find(function (c) { return c.types[0] === "locality"; });
+                    if (tmp) {
+                        document.getElementById('inputCountry').value = tmp.long_name;
+                    }
+                    tmp = place.address_components.find(function (c) { return c.types[0] === "administrative_area_level_1"; });
+                    if (tmp) {
+                        document.getElementById('inputCitta').value = tmp.long_name;
+                    }
+                    //Dobbiamo rieseguire la validazione perché quando arriva qui è già stata eseguita con i valori "errati"
+                    $("#formRegistration").validate().element("#addressAutocomplete");
+                } else {
+                    document.getElementById('esitoLookup').value = 0;
+                }
+            });
+
+        });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        $(function () {
+            $.validator.addMethod('googleaddress', function (value, element, params) {
+                $.validator.messages.googleaddress = "E' necessario selezionare un indirizzo tra quelli proposti";
+                return $(params).val() == 1;
+            });
+
+            $.validator.unobtrusive.adapters.add('googleaddress', ['esitolookupField'], function (options) {
+                options.rules['googleaddress'] = '#esitoLookup';// + options.params.esitolookupField;
+                options.messages['googleaddress'] = options.message;
+            });
+        }(jQuery));
+    </script>
+
+}

@@ -111,7 +111,7 @@ function _r2dEditEvento() {
             this._getElemById('oraCancellazione').disabled = true;
             this._checkWaitListAvailable.disabled = true;
         }
-    }
+    };
 
     this._handleTipoRicorrenzaChange = function (event) {
         let value = this._tipoRicorrenza.value;
@@ -120,7 +120,7 @@ function _r2dEditEvento() {
             case "none":
                 console.log("handling value: " + value);
                 this._manageSelectStatus(this._getElemById('weekDaysRecurrency'), false);
-                this._getElemById('dataFineRecurrency').enabled = false;                
+                this._getElemById('dataFineRecurrency').enabled = false;
                 this._getElemById('numRipetizioni').enabled = false;
                 this._getElemById('rbFineRicorrenzaNum').enabled = false;
                 this._getElemById('rbFineRicorrenzaDate').enabled = false;
@@ -163,7 +163,7 @@ function _r2dEditEvento() {
         //    this._getElemById('oraCancellazione').disabled = true;
         //    this._checkWaitListAvailable.disabled = true;
         //}
-    }
+    };
 
 
     this._manageSelectStatus = function (elem, enabled) {
@@ -181,7 +181,7 @@ function _r2dEditEvento() {
             console.log("Removed disabled attribute to element");
         }
         M.FormSelect.init(elem);
-    }
+    };
 
     this._handleTipoFineRicorrenzaChange = function (event, elemId) {
         if (this._getElemById(elemId).checked) {
@@ -192,9 +192,9 @@ function _r2dEditEvento() {
                 document.getElementById('numRipetizioni').enabled = false;
                 document.getElementById('dataFineRecurrency').enabled = true;
             }
-        } 
-    }
+        }
+    };
 }
 
 
-export const r2dEditEvento = new _r2dEditEvento()
+export const r2dEditEvento = new _r2dEditEvento();

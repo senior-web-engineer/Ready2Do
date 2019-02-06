@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
-using PalestreGoGo.WebAPIModel;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Web.Utils;
+using PalestreGoGo.WebAPIModel;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Web.Configuration;
 using Web.Models;
 using Web.Services;
-using Web.Configuration;
-using System.Globalization;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Net;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Web.Utils;
 
 namespace Web.Controllers
 {
@@ -27,15 +27,13 @@ namespace Web.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
         private readonly AzureAdB2COptions _b2cOptions;
-        private readonly AccountServices _account;
 
         private readonly WebAPIClient _apiClient;
 
-        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, AccountServices account, WebAPIClient apiClient, IOptions<AzureAdB2COptions> b2cOptions)
+        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, WebAPIClient apiClient, IOptions<AzureAdB2COptions> b2cOptions)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _account = account;
             _apiClient = apiClient;
             _b2cOptions = b2cOptions.Value;
         }
@@ -65,26 +63,18 @@ namespace Web.Controllers
             return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
-        [HttpGet("/register")]
         [AllowAnonymous]
-        public async Task<IActionResult> SignupCliente()
+        public IActionResult SignupCliente()
         {
-            if (!User.Identity.IsAuthenticated)
+            var authProps = new AuthenticationProperties()
             {
-                var authProps = new AuthenticationProperties()
-                {
-                    RedirectUri = Url.Action("Account", "RegisterCliente")
-                };
-                authProps.Items.Add("SignupType", "Cliente");
-                authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, "B2C_1_SigninSignup");
-                return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
-            }
-            else {
-                var vm = await _account.BuildRegisterClienteViewModelAsync("");
-                return View("RegisterCliente",vm);
-            }
+                RedirectUri = Url.Action("Registrazione", "Clienti")
+            };
+            authProps.Items.Add("SignupType", "Cliente");
+            authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, "B2C_1_SigninSignup");
+            return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
         }
-
+    
 
         [HttpGet]
         [Route("/logout", Name = "logout")]
@@ -92,7 +82,7 @@ namespace Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
             {
-                returnUrl = this.Url.Action("Index", "Home");
+                returnUrl = Url.Action("Index", "Home");
             }
             //NOTA: Aggiungere le properties?
             AuthenticationProperties props = new AuthenticationProperties()
@@ -103,85 +93,73 @@ namespace Web.Controllers
             await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);
         }
 
-        //
-        // GET: /Account/Register
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> RegisterCliente(string returnUrl = null)
-        {
-            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-            {
-                returnUrl = null;
-            }
-            var vm = await _account.BuildRegisterClienteViewModelAsync(returnUrl);
-            return View(vm);
-        }
+        
 
         //
-        // POST: /Account/Register
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterClienteStep1(ClientRegistrationAccountInputModel model, string returnUrl = null)
-        {
-            //if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-            //{
-            //    returnUrl = null;
-            //}
-            //ViewData["ReturnUrl"] = returnUrl;
-            //if (ModelState.IsValid)
-            //{
+        //// POST: /Account/Register
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> RegisterClienteStep1(ClientRegistrationAccountInputModel model, string returnUrl = null)
+        //{
+        //    //if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+        //    //{
+        //    //    returnUrl = null;
+        //    //}
+        //    //ViewData["ReturnUrl"] = returnUrl;
+        //    //if (ModelState.IsValid)
+        //    //{
 
-            //    /* Creiamo il l'utenza*/
-            //    var apiModel = new NuovoClienteAPIModel()
-            //    {
-            //        Citta = model.Citta,
-            //        ZipOrPostalCode = model.CAP,
-            //        Country = model.Country,
-            //        Email = model.Email,
-            //        IdTipologia = model.IdTipologia,
-            //        Indirizzo = model.Indirizzo,
-            //        Nome = model.Nome,
-            //        Cognome = model.Cognome,
-            //        NumTelefono = model.Telefono,
-            //        RagioneSociale = model.RagioneSociale,
-            //        UrlRoute = model.URL,
-            //        NuovoUtente = new NuovoUtenteViewModel()
-            //        {
-            //            Cognome = model.Cognome,
-            //            Email = model.Email,
-            //            Nome = model.Nome,
-            //            Password = model.Password,
-            //            Telefono = model.Telefono
-            //        }
-            //    };
-            //    //Parsing coordinate
-            //    //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
-            //    if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
-            //        float.TryParse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
-            //    {
-            //        apiModel.Coordinate = new CoordinateAPIModel(latitudine, longitudine);
-            //        var result = await _apiClient.NuovoClienteAsync(apiModel);
-            //        if (result)
-            //        {
-            //            return RedirectToAction("MailToConfirm");
-            //        }
-            //        else
-            //        {
-            //            //Dobbiamo gestire meglio gli errori lato API!
-            //            ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
-            //    }
-            //}
+        //    //    /* Creiamo il l'utenza*/
+        //    //    var apiModel = new NuovoClienteAPIModel()
+        //    //    {
+        //    //        Citta = model.Citta,
+        //    //        ZipOrPostalCode = model.CAP,
+        //    //        Country = model.Country,
+        //    //        Email = model.Email,
+        //    //        IdTipologia = model.IdTipologia,
+        //    //        Indirizzo = model.Indirizzo,
+        //    //        Nome = model.Nome,
+        //    //        Cognome = model.Cognome,
+        //    //        NumTelefono = model.Telefono,
+        //    //        RagioneSociale = model.RagioneSociale,
+        //    //        UrlRoute = model.URL,
+        //    //        NuovoUtente = new NuovoUtenteViewModel()
+        //    //        {
+        //    //            Cognome = model.Cognome,
+        //    //            Email = model.Email,
+        //    //            Nome = model.Nome,
+        //    //            Password = model.Password,
+        //    //            Telefono = model.Telefono
+        //    //        }
+        //    //    };
+        //    //    //Parsing coordinate
+        //    //    //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
+        //    //    if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
+        //    //        float.TryParse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
+        //    //    {
+        //    //        apiModel.Coordinate = new CoordinateAPIModel(latitudine, longitudine);
+        //    //        var result = await _apiClient.NuovoClienteAsync(apiModel);
+        //    //        if (result)
+        //    //        {
+        //    //            return RedirectToAction("MailToConfirm");
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            //Dobbiamo gestire meglio gli errori lato API!
+        //    //            ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
+        //    //        }
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
+        //    //    }
+        //    //}
 
-            // If we got this far, something failed, redisplay form
-            //return View(await _account.BuildRegisterClienteViewModelAsync(model));
-            throw new NotImplementedException();
-        }
+        //    // If we got this far, something failed, redisplay form
+        //    //return View(await _account.BuildRegisterClienteViewModelAsync(model));
+        //    throw new NotImplementedException();
+        //}
 
 
         //
@@ -263,22 +241,22 @@ namespace Web.Controllers
             return View();
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        [Produces("application/json")]
-        public async Task<IActionResult> CheckEmail(string email)
-        {
-            //ViewData["ReturnUrl"] = returnUrl;
-            bool emailIsValid = await _account.CheckEmailAsync(email);
-            if (!emailIsValid)
-            {
-                return Json(data: $"L'email specificata risulta già registrata.");
-            }
-            else
-            {
-                return Json(data: emailIsValid);
-            }
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //[Produces("application/json")]
+        //public async Task<IActionResult> CheckEmail(string email)
+        //{
+        //    //ViewData["ReturnUrl"] = returnUrl;
+        //    bool emailIsValid = await _account.CheckEmailAsync(email);
+        //    if (!emailIsValid)
+        //    {
+        //        return Json(data: $"L'email specificata risulta già registrata.");
+        //    }
+        //    else
+        //    {
+        //        return Json(data: emailIsValid);
+        //    }
+        //}
 
 
         [HttpGet]

@@ -44,7 +44,6 @@ namespace Web
             services.Configure<GraphAPIOptions>(Configuration.GetSection("Authentication:GraphAPI"));
 
             // Add application services.
-            services.AddTransient<AccountServices, AccountServices>();
             services.AddTransient<WebAPIClient, WebAPIClient>();
             services.AddTransient<ClienteResolverServices, ClienteResolverServices>();
 

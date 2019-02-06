@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ready2do.model.common;
@@ -37,10 +38,57 @@ namespace Web.Controllers
             _clientiResolver = clientiResolver;
         }
 
+        /// <summary>
+        /// L'action è configurata come AllowAnonymous (anche se in realtà è accessibile soloa gli utenti autenticati) per gestire
+        /// esplicitamente il redirect all'action di Signup
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("/register")]
+        public async Task<IActionResult> GetRegistrazione()
+        {
+            //Se l'utente non è Autenticato ==> lo facciamo autenticare usando l'action specifica che valorizza lo State opportunamente
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("SignupCliente", "Account");
+            }
+
+            var allTipologie = await _apiClient.GetTipologieClientiAsync();
+            ViewBag.TipologieClienti = allTipologie
+                .Select(i => new SelectListItem()
+                        {
+                            Value = i.Id.ToString(),
+                            Text = i.Nome
+                        });
+            var vm = new ClienteRegistrazioneInputModel();
+            return View("Registrazione",vm);
+        }
+
+        [HttpPost("/register")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostRegistrazione(ClienteRegistrazioneInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var allTipologie = await _apiClient.GetTipologieClientiAsync();
+                ViewBag.TipologieClienti = allTipologie
+                    .Select(i => new SelectListItem()
+                    {
+                        Value = i.Id.ToString(),
+                        Text = i.Nome
+                    });
+                return View("Registrazione", model);
+            }
+            //TODO: Salvare il cliente e fare tutti gli step di provisioning
+
+            return Ok();
+        }
+
+
         [HttpGet]
         [AllowAnonymous]
         [Produces("application/json")]
-        public async Task<IActionResult> CheckUrl([FromQuery(Name ="UrlRoute")]string url,[FromQuery(Name="IdCliente")] int? idCliente)
+        public async Task<IActionResult> CheckUrl([FromQuery(Name = "UrlRoute")]string url, [FromQuery(Name = "IdCliente")] int? idCliente)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -68,7 +116,7 @@ namespace Web.Controllers
             {
                 urlIsValid = await _apiClient.CheckUrlRoute(url, idCliente);
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 _logger.LogError(exc, $"Errore durante la validazione del Url {url}");
                 urlIsValid = false;
@@ -82,6 +130,7 @@ namespace Web.Controllers
                 return Json(data: urlIsValid);
             }
         }
+
         [HttpGet]
         [Route("/{idCliente:int}")]
         [AllowAnonymous]
@@ -253,8 +302,8 @@ namespace Web.Controllers
         //    return RedirectToAction("ProfileEdit", new { cliente = urlRoute });
         //}
 
-        
-  
+
+
         #region Gestione Utenti del Cliente
         //[HttpGet("{cliente}/users")]
         //public async Task<IActionResult> GetUtentiCliente([FromRoute(Name = "cliente")]string urlRoute)
