@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ready2do.model.common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Configuration;
@@ -53,13 +54,8 @@ namespace Web.Controllers
                 return RedirectToAction("SignupCliente", "Account");
             }
 
-            var allTipologie = await _apiClient.GetTipologieClientiAsync();
-            ViewBag.TipologieClienti = allTipologie
-                .Select(i => new SelectListItem()
-                        {
-                            Value = i.Id.ToString(),
-                            Text = i.Nome
-                        });
+            ViewBag.TipologieClienti = await this.GetTipologieClientiAsync();
+            ViewBag.GoogleMapsAPIKey = _appConfig?.GoogleAPI?.GoogleMapsAPIKey;
             var vm = new ClienteRegistrazioneInputModel();
             return View("Registrazione",vm);
         }
@@ -70,13 +66,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var allTipologie = await _apiClient.GetTipologieClientiAsync();
-                ViewBag.TipologieClienti = allTipologie
-                    .Select(i => new SelectListItem()
-                    {
-                        Value = i.Id.ToString(),
-                        Text = i.Nome
-                    });
+                ViewBag.TipologieClienti = await this.GetTipologieClientiAsync();
                 return View("Registrazione", model);
             }
             //TODO: Salvare il cliente e fare tutti gli step di provisioning
@@ -362,5 +352,18 @@ namespace Web.Controllers
         //    return result;
         //}
         //#endregion
-    }
+
+        #region PRIVATE STAFF
+        private async Task<IEnumerable<SelectListItem>> GetTipologieClientiAsync()
+        {
+            var allTipologie = await _apiClient.GetTipologieClientiAsync();
+            return allTipologie
+                .Select(i => new SelectListItem()
+                {
+                    Value = i.Id.ToString(),
+                    Text = i.Nome
+                });
+        }
+        #endregion
+}
 }

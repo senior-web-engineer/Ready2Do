@@ -68,7 +68,7 @@ namespace Web.Controllers
         {
             var authProps = new AuthenticationProperties()
             {
-                RedirectUri = Url.Action("Registrazione", "Clienti")
+                RedirectUri = Url.Action("GetRegistrazione", "Clienti")
             };
             authProps.Items.Add("SignupType", "Cliente");
             authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, "B2C_1_SigninSignup");

@@ -18,39 +18,25 @@
     <link rel="apple-touch-icon-precomposed" href="~/img/ico/apple-touch-icon-57-precomposed.png">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <!-- MaterializeCSS CDN-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="~/dist/styles.css" rel="stylesheet" />
+    <!-- JQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 
-    <!-- Style CSS -->
-    <link href="~/css/style.css" rel="stylesheet">
-    <!-- Custom Style CSS -->
-    <link href="~/css/custom-styles.css" rel="stylesheet">
 
     @RenderSection("head", required: false)
 </head>
-<body id="top" data-spy="scroll" data-target="#materialize-menu" data-offset="100">
-    <header id="header" class="tt-nav">
-        <partial name="_NavBar" />
-    </header>
+<body>
+    <partial name="_NavBar" />
 
-        @RenderBody()
+    @RenderBody()
 
+ 
+    <!-- Materializecss Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- ASP.NET CORE CLIENT VALIDATION -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 
-        <!-- Preloader -->
-        <!--
-         <div id="preloader">
-             <div class="preloader-position">
-                 <img src="/img/logo-colored.png" alt="logo">
-                 <div class="progress">
-                     <div class="indeterminate"></div>
-                 </div>
-             </div>
-         </div>
-         -->
-        <!-- End Preloader -->
-        <!-- Materializecss Compiled and minified JavaScript -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-        @RenderSection("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -1,43 +1,55 @@
-﻿@using Microsoft.Extensions.Options;
-@using Web.Configuration;
-
-@inject IOptions<AppConfig> OptionsApplicationConfiguration
-<nav>
-<div class="top-nav">
-    <div class="container">
-        <div id="materialize-menu" class="menuzord menuzord-responsive">
+﻿<nav>
+    <div class="nav-wrapper">
+        <a href="/" class="brand-logo" style="margin-left:30px">
             <img srcset="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H56.png 144w,
                    https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H64.png 164w"
                  sizes="(max-width: 600px) 144px,
             164px"
                  src="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H64.png">
-        </div>        
-        <!--logo end-->
-        <!-- onepage menu start-->
-        <ul id="nav-mobile" class="right">
-            <li class="active">
-                <a href="#home" data-scroll>Home</a>
-            </li>
-            <li>
-                <a href="#weDo" data-scroll>Chi Siamo</a>
-            </li>
-            <li>
-                <a href="#features" data-scroll>Funzionalità</a>
-            </li>
-            <li>
-                <a href="#contact" data-scroll>Contatti</a>
-            </li>
-            @if (!User.Identity.IsAuthenticated)
-            {
-                <li class="btn white-bg pin">
-                    <a id="navLinkRegistration" 
-                        asp-action="Login" asp-controller="Account" asp-route-asUser="false">Entra</a>
-                </li>
-            }
-        </ul>
-        <!-- onepage menu end-->
+        </a>
+        @*<ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="sass.html">Sass</a></li>
+            <li><a href="badges.html">Components</a></li>
+            <li><a href="collapsible.html">JavaScript</a></li>
+        </ul>*@
+    </div>
+</nav>
 
+@*<nav>
+    <div class="top-nav">
+        <div class="container">
+            <div id="materialize-menu" class="menuzord menuzord-responsive">
+                <img srcset="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H56.png 144w,
+                   https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H64.png 164w"
+                     sizes="(max-width: 600px) 144px,
+            164px"
+                     src="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H64.png">
+            </div>
+            <!--logo end-->
+            <!-- onepage menu start-->
+            <ul id="nav-mobile" class="right">
+                <li class="active">
+                    <a href="#home" data-scroll>Home</a>
+                </li>
+                <li>
+                    <a href="#weDo" data-scroll>Chi Siamo</a>
+                </li>
+                <li>
+                    <a href="#features" data-scroll>Funzionalità</a>
+                </li>
+                <li>
+                    <a href="#contact" data-scroll>Contatti</a>
+                </li>
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <li class="btn white-bg pin">
+                        <a id="navLinkRegistration"
+                           asp-action="Login" asp-controller="Account" asp-route-asUser="false">Entra</a>
+                    </li>
+                }
+            </ul>
+            <!-- onepage menu end-->
+
+        </div>
     </div>
-    </div>
-</div>
-    </nav>
+</nav>*@
