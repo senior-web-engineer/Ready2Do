@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>PalestreGoGo.DataAccess</AssemblyName>
     <RootNamespace>PalestreGoGo.DataAccess</RootNamespace>
+    <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

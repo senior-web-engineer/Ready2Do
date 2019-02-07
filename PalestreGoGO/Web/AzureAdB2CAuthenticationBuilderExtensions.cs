@@ -18,6 +18,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Common.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using System.Web;
+using Serilog;
 
 namespace Web
 {
@@ -49,7 +51,7 @@ namespace Web
             public void Configure(string name, OpenIdConnectOptions options)
             {
                 options.ClientId = AzureAdB2COptions.ClientId;
-                options.Authority = AzureAdB2COptions.Authority(AzureAdB2COptions.DefaultPolicy);
+                options.Authority = AzureAdB2COptions.GetAuthorityB2C(AzureAdB2COptions.DefaultPolicy);
                 options.SaveTokens = true;
                 options.UseTokenLifetime = true;
                 options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "name" };
@@ -70,7 +72,8 @@ namespace Web
 
             public Task OnAuthenticationFailed(AuthenticationFailedContext context)
             {
-                context.Response.Redirect("/Home/Error?message=" + context.Exception.Message);
+                Log.Error(context.Exception, "Authentication Failed {context}", context);
+                context.Response.Redirect("/Home/Error?message=" + HttpUtility.UrlEncode(context.Exception.Message));
                 return Task.FromResult(0);
             }
 
@@ -83,23 +86,27 @@ namespace Web
 
                 context.ProtocolMessage.State = BuildProtocolState(context);
 
-                context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
-                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
+                context.ProtocolMessage.Scope = $"{OpenIdConnectScope.OpenId} offline_access {AzureAdB2COptions.ApiScopes}";
+                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
                 context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace(AzureAdB2COptions.DefaultPolicy.ToLower(), policy.ToLower());
                 context.Properties.Items.Remove(AzureAdB2COptions.PolicyAuthenticationProperty);
-                if (!string.IsNullOrEmpty(AzureAdB2COptions.ApiUrl) && (
-                    policy.Equals(AzureAdB2COptions.StrutturaSignInPolicyId, StringComparison.InvariantCultureIgnoreCase) ||
-                    policy.Equals(AzureAdB2COptions.UserSignUpSignInPolicyId, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    context.ProtocolMessage.Scope += $" offline_access {AzureAdB2COptions.ApiScopes}";
-                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-                }
+                //#GT#20190207#Modifica con nuova policy unica di signup/signip per clienti ed utenti
+                //context.ProtocolMessage.Scope += $" offline_access {AzureAdB2COptions.ApiScopes}";
+                //context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                //if (!string.IsNullOrEmpty(AzureAdB2COptions.ApiUrl) && (
+                //    policy.Equals(AzureAdB2COptions.StrutturaSignInPolicyId, StringComparison.InvariantCultureIgnoreCase) ||
+                //    policy.Equals(AzureAdB2COptions.UserSignUpSignInPolicyId, StringComparison.InvariantCultureIgnoreCase)))
+                //{
+                //    context.ProtocolMessage.Scope += $" offline_access {AzureAdB2COptions.ApiScopes}";
+                //    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                //}
                 return Task.FromResult(0);
             }
 
             public Task OnRemoteFailure(RemoteFailureContext context)
             {
                 context.HandleResponse();
+                Log.Error("Remote Authentication Error {context}", context);
                 // Handle the error code that Azure AD B2C throws when trying to reset a password from the login page 
                 // because password reset is not supported by a "sign-up or sign-in policy"
                 if (context.Failure is OpenIdConnectProtocolException && context.Failure.Message.Contains("AADB2C90118"))
@@ -113,7 +120,7 @@ namespace Web
                 }
                 else
                 {
-                    context.Response.Redirect("/Home/Error?message=" + context.Failure.Message);
+                    context.Response.Redirect("/Home/Error?message=" + HttpUtility.UrlEncode(context.Failure.Message));
                 }
                 return Task.FromResult(0);
             }
@@ -130,16 +137,22 @@ namespace Web
                 string claimValue = context.Principal.FindFirstValue("extension_accountConfirmedOn");                
                 string currentPolicy = context.Principal.FindFirstValue(Constants.ClaimPolicy);
                 TokenCache userTokenCache = new MSALSessionCache(signedInUserID, context.HttpContext).GetMsalCacheInstance();
-                ConfidentialClientApplication cca = new ConfidentialClientApplication(AzureAdB2COptions.ClientId, AzureAdB2COptions.Authority(currentPolicy), AzureAdB2COptions.RedirectUri, new ClientCredential(AzureAdB2COptions.ClientSecret), userTokenCache, null);
+                //La versione 2.7.0 di MSAL ha dei problemi con il nuovo
+                string authorityMSLogin = AzureAdB2COptions.GetAuthorityB2C(currentPolicy);
+                ConfidentialClientApplication cca = new ConfidentialClientApplication(AzureAdB2COptions.ClientId, authorityMSLogin, AzureAdB2COptions.RedirectUri, new ClientCredential(AzureAdB2COptions.ClientSecret), userTokenCache, null);
+                cca.ValidateAuthority = false;
                 try
                 {
+                    //IEnumerable<string> scopes = new string[] { "https://ready2do.onmicrosoft.com/api/api_all" };
+                    
                     AuthenticationResult result = await cca.AcquireTokenByAuthorizationCodeAsync(code, AzureAdB2COptions.ApiScopes.Split(' '));
 
 
                     context.HandleCodeRedemption(result.AccessToken, result.IdToken);
                 }
-                catch (Exception)
+                catch (Exception exc)
                 {
+                    Log.Error(exc, "Errore durante la richiesta del authorization_code");
                     //TODO: Handle
                     throw;
                 }

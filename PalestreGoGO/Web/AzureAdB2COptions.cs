@@ -9,17 +9,18 @@ namespace Web
     public class AzureAdB2COptions
     {
         public const string PolicyAuthenticationProperty = "Policy";
-        
+        public const string DefaultPolicy = "B2C_1_SigninSignup";
 
         public AzureAdB2COptions()
         {
-            //AzureAdB2CInstance = "https://login.microsoftonline.com/tfp";
-            AzureAdB2CInstance = "https://ready2do.b2clogin.com";
+//            AzureAdB2CMSOnlineInstance = "https://login.microsoftonline.com/tfp";
+  //          AzureAdB2CInstance = "https://ready2do.b2clogin.com";
         }
 
         public string ClientId { get; set; }
         public string AzureAdB2CInstance { get; set; }
         public string Tenant { get; set; }
+        public string Authority { get; set; }
         /* POLICY STRUTTURE */
         public string StrutturaSignInPolicyId { get; set; }
         public string StrutturaResetPasswordPolicyId { get; set; }
@@ -34,9 +35,9 @@ namespace Web
         /* FINE POLOCY UTENTI */
         public string RedirectUri { get; set; }
 
-        public string DefaultPolicy => StrutturaSignInPolicyId;
-        public string Authority(string policyName) => $"{AzureAdB2CInstance}/{Tenant}/{policyName}/v2.0";
-
+        //public string DefaultPolicy => StrutturaSignInPolicyId;
+        public string GetAuthorityB2C(string policyName) => Authority.Replace("{PolicyId}", policyName.ToLower());
+        public string GetAuthorityMSLogin(string policyName) => $"{AzureAdB2CInstance}/{Tenant}/{policyName}/v2.0";
         public string ClientSecret { get; set; }
         public string ApiUrl { get; set; }
         public string ApiScopes { get; set; }

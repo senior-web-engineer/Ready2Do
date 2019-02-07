@@ -41,6 +41,21 @@ namespace Web.Utils
         }
 
         #region PRIVATE STUFF
+
+        private void DEBUG_CheckTokenExpiration(string accessToken)
+        {
+            try
+            {
+                System.IdentityModel.Tokens.Jwt.JwtSecurityToken token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
+                Log.Debug("Token for User {user} is valid until: {validTo}", token.Subject, token.ValidTo);
+            }
+            catch (ArgumentException)
+            {
+                Log.Error("L'access token specificato non è un token JWT valido. [{token}]", accessToken);
+                //Non ci interessa risollevare l'eccezione
+            }
+        }
+
         private async Task SendPostRequestAsync<T>(string uri, T model, string accessToken)
         {
             var response = await SendRequestAsync<T>(HttpMethod.Post, new Uri(uri), model, accessToken);
@@ -190,7 +205,7 @@ namespace Web.Utils
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}";
             return await GetRequestAsync<ClienteDM>(new Uri(uri), null);
         }
-       
+
         public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloAPIModel profilo, string access_token)
         {
             await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo", profilo, access_token);
@@ -254,8 +269,9 @@ namespace Web.Utils
 
         #region TIPOLOGIE CLIENTE
 
-        public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync()
+        public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync(string accessToken)
         {
+            DEBUG_CheckTokenExpiration(accessToken);
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/tipologie");
             return await GetRequestAsync<IEnumerable<TipologiaClienteDM>>(uri, null);
         }
@@ -396,13 +412,13 @@ namespace Web.Utils
         }
 
         #endregion
-               
+
         #region APPUNTAMENTI
         //Utilizzabile sia dagli Owner (ritorna tutti gli appuntamenti) che dall'utente (ritorna solamente il suo)
         public async Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiForEventoAsync(int idCliente, int idEvento, string access_token)
         {
             var uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}/appuntamenti");
-            return await GetRequestAsync< IEnumerable<AppuntamentoDM>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<AppuntamentoDM>>(uri, access_token);
         }
 
         public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConferamareForEventoAsync(int idCliente, int idEvento, string access_token)
@@ -625,7 +641,7 @@ namespace Web.Utils
             return await GetRequestAsync<UtenteDM>(uri, access_token);
         }
 
-        public async Task SalvaProfiloUtente(UtenteInputDM profilo,  string access_token)
+        public async Task SalvaProfiloUtente(UtenteInputDM profilo, string access_token)
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/utenti/profilo";
             await SendPutRequestAsync(uri, profilo, access_token);

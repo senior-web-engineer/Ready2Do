@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>PalestreGoGo.WebAPIModel</AssemblyName>
     <RootNamespace>PalestreGoGo.WebAPIModel</RootNamespace>
+    <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
