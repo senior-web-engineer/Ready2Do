@@ -20,9 +20,6 @@ namespace Web.Models
 
         public string EmailStruttura { get; set; }
 
-        //[Required]
-        //[MaxLength(255)]
-        //[GoogleAdrressValidation("EsitoLookup","E' necessario selezionare un indirizzo tra quelli proposti nella lista")]
         public string Indirizzo { get; set; }
 
         public string Telefono { get; set; }

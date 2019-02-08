@@ -22,7 +22,10 @@ namespace Web.Models.FluentValidators
             RuleFor(c => c.NomeStruttura).NotEmpty().MaximumLength(100);
             RuleFor(c => c.RagioneSociale).NotEmpty().MaximumLength(100);
             RuleFor(c => c.EmailStruttura).NotEmpty().MaximumLength(256).EmailAddress();
-            RuleFor(c => c.Indirizzo).NotEmpty().MaximumLength(255);
+            RuleFor(c => c.Indirizzo).NotEmpty().MaximumLength(255)
+                    .Must((c, indirizzo) => { return c.EsitoLookup == 1; })
+                        .WithMessage("E' necessario selezionare un indirizzo tra quelli proposti");
+
 
         }
     }

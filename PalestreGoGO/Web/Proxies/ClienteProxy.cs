@@ -1,18 +1,28 @@
-﻿using PalestreGoGo.WebAPIModel;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using PalestreGoGo.WebAPIModel;
+using ready2do.model.common;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Serilog;
-using ready2do.model.common;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
+using Web.Authentication;
+using Web.Configuration;
 
 namespace Web.Proxies
 {
-    public class ClienteProxy: BaseAPIProxy
+    public class ClienteProxy : BaseAPIProxy
     {
+        public ClienteProxy(IOptions<AppConfig> options, IHttpContextAccessor httpContextAccessor,
+                    IDistributedCache distributedCache, IOptions<B2CAuthenticationOptions> authOptions) :
+                base(options, httpContextAccessor, distributedCache, authOptions)
+        { }
+
         #region CLIENTI
         public async Task<bool> CheckUrlRoute(string urlRoute, int? idCliente = null)
         {

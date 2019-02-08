@@ -1,10 +1,15 @@
 ﻿using Common.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Authentication;
+using Web.Configuration;
 
 namespace Web.Proxies
 {
@@ -13,6 +18,12 @@ namespace Web.Proxies
     /// </summary>
     public class SchedulesProxy: BaseAPIProxy
     {
+        public SchedulesProxy(IOptions<AppConfig> options, IHttpContextAccessor httpContextAccessor,
+            IDistributedCache distributedCache, IOptions<B2CAuthenticationOptions> authOptions) :
+        base(options, httpContextAccessor, distributedCache, authOptions)
+        { }
+
+
         #region SCHEDULES
         public async Task<IEnumerable<ScheduleDM>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {

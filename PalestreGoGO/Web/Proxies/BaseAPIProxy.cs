@@ -26,15 +26,11 @@ namespace Web.Proxies
         protected readonly AppConfig _appConfig;
         protected readonly B2CAuthenticationOptions _authOptions;
 
-        public BaseAPIProxy()
-        {
-
-        }
-
+ 
         public BaseAPIProxy(IOptions<AppConfig> options, IHttpContextAccessor httpContextAccessor,
                             IDistributedCache distributedCache, IOptions<B2CAuthenticationOptions> authOptions)
         {
-            _appConfig = options?.Value;
+            _appConfig = options.Value;
             _httpContextAccessor = httpContextAccessor;
             _distributedCache = distributedCache;
             _authOptions = authOptions.Value;

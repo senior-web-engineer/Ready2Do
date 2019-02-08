@@ -1,13 +1,23 @@
-﻿using ready2do.model.common;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Authentication;
+using Web.Configuration;
 
 namespace Web.Proxies
 {
-    public class TipologicheProxy: BaseAPIProxy
+    public class TipologicheProxy : BaseAPIProxy
     {
+        public TipologicheProxy(IOptions<AppConfig> options, IHttpContextAccessor httpContextAccessor,
+                                IDistributedCache distributedCache, IOptions<B2CAuthenticationOptions> authOptions) :
+                            base(options, httpContextAccessor, distributedCache, authOptions)
+        { }
+
         #region TIPOLOGIE CLIENTE
 
         public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync()

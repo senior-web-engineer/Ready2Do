@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
 using System;
@@ -6,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Web.Authentication;
+using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
 
@@ -14,8 +19,13 @@ namespace Web.Proxies
     /// <summary>
     /// Proxy per le API relative agli Utenti ed alla loro gestione
     /// </summary>
-    public class UtentiProxy: BaseAPIProxy
+    public class UtentiProxy : BaseAPIProxy
     {
+        public UtentiProxy(IOptions<AppConfig> options, IHttpContextAccessor httpContextAccessor,
+                        IDistributedCache distributedCache, IOptions<B2CAuthenticationOptions> authOptions) :
+                    base(options, httpContextAccessor, distributedCache, authOptions)
+        { }
+
         #region CERTIFICATI UTENTI-CLIENTI
 
         public async Task AddCertificatoUtenteClienteAsync(int idCliente, string userId, ClienteUtenteCertificatoApiModel certificato)
