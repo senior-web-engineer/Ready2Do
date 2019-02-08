@@ -32,6 +32,7 @@ namespace Web
             .UseConfiguration(GetConfiguration(args))
             .UseSerilog((ctx, cfg) => cfg.ReadFrom.ConfigurationSection(ctx.Configuration.GetSection("Serilog")).Enrich.FromLogContext())
             .UseStartup<Startup>()
+            .UseApplicationInsights() // Enable Application Insights
             .Build();
     }
 }

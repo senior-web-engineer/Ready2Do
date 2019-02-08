@@ -46,7 +46,8 @@ namespace PalestreGoGo.WebAPI
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(GetConfiguration(args))
                 .UseSerilog((ctx, cfg) =>cfg.ReadFrom.ConfigurationSection(ctx.Configuration.GetSection("Serilog")).Enrich.FromLogContext(), false)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseApplicationInsights();
         }
 
         public static IWebHost BuildWebHost(string[] args) => CreateWebHostBuilder(args).Build();
