@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models.Mappers;
+using Web.Proxies;
 using Web.Services;
 using Web.Utils;
 
@@ -21,12 +22,12 @@ namespace Web.Controllers.Clienti
     {
         private readonly ILogger<TipologieLezioniController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly TipologicheProxy _apiClient;
         private readonly ClienteResolverServices _clientiResolver;
 
         public TipologieLezioniController(ILogger<TipologieLezioniController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 TipologicheProxy apiClient,
                                  ClienteResolverServices clientiResolver)
         {
             _logger = logger;
@@ -130,8 +131,7 @@ namespace Web.Controllers.Clienti
         {
             _logger.LogDebug($"Begin CheckNome({urlRoute},{nome},{IdCliente},{id}) - Path: {ControllerContext.HttpContext.Request.Path}?{ControllerContext.HttpContext.Request.QueryString}");
             //int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            bool isValid = await _apiClient.CheckNameTipologiaLezioneAsync(IdCliente.Value, nome, accessToken, id);
+            bool isValid = await _apiClient.CheckNameTipologiaLezioneAsync(IdCliente.Value, nome, id);
             if (isValid)
             {
                 return Json(data: true);

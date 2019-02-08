@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
+using Web.Proxies;
 using Web.Services;
 using Web.Utils;
 
@@ -24,19 +25,22 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly ClienteProxy _clienteProxy;
+        private readonly TipologicheProxy _tipologicheProxy;
         private readonly ClienteResolverServices _clientiResolver;
 
         public ClientiController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 ClienteProxy clienteProxy,
+                                 TipologicheProxy tipologicheProxy,
                                  ClienteResolverServices clientiResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _clienteProxy = clienteProxy;
             _clientiResolver = clientiResolver;
+            _tipologicheProxy = tipologicheProxy;
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace Web.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpGet("/register")]
-        public async Task<IActionResult> GetRegistrazione()
+        public async Task<IActionResult> Registrazione()
         {
             //Se l'utente non è Autenticato ==> lo facciamo autenticare usando l'action specifica che valorizza lo State opportunamente
             if (!User.Identity.IsAuthenticated)
@@ -62,14 +66,14 @@ namespace Web.Controllers
 
         [HttpPost("/register")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostRegistrazione(ClienteRegistrazioneInputModel model)
+        public async Task<IActionResult> SalvaRegistrazione(ClienteRegistrazioneInputModel model)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.TipologieClienti = await this.GetTipologieClientiAsync();
                 return View("Registrazione", model);
             }
-            //TODO: Salvare il cliente e fare tutti gli step di provisioning
+           //TODO: Implementare
 
             return Ok();
         }
@@ -104,7 +108,7 @@ namespace Web.Controllers
             bool urlIsValid = false;
             try
             {
-                urlIsValid = await _apiClient.CheckUrlRoute(url, idCliente);
+                urlIsValid = await _clienteProxy.CheckUrlRoute(url, idCliente);
             }
             catch (Exception exc)
             {
@@ -126,14 +130,14 @@ namespace Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index([FromRoute(Name = "idCliente")]int idCliente)
         {
-            var cliente = await _apiClient.GetClienteAsync(idCliente);
+            var cliente = await _clienteProxy.GetClienteAsync(idCliente);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return Redirect("/"); }
             //Leggiamo le immagini per il cliente
-            var imgHome = (await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Sfondo, false)).FirstOrDefault();
-            var imgsGallery = await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Gallery, false);
+            var imgHome = (await _clienteProxy.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Sfondo, false)).FirstOrDefault();
+            var imgsGallery = await _clienteProxy.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Gallery, false);
             var vm = cliente.MapToHomeViewModel(imgHome, imgsGallery);
-            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.Id.Value))?.ToList();
+            vm.Locations = (await _tipologicheProxy.GetLocationsAsync(cliente.Id.Value))?.ToList();
             vm.EventsBaseUrl = string.Format("/{0}/eventi/", cliente.UrlRoute);
             if (cliente.Latitudine.HasValue && cliente.Longitudine.HasValue)
             {
@@ -160,14 +164,14 @@ namespace Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index([FromRoute(Name = "cliente")]string urlRoute)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var cliente = await _clienteProxy.GetClienteAsync(urlRoute);
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return Redirect("/"); }
             //Leggiamo le immagini per il cliente
-            var imgHome = (await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Sfondo, null)).FirstOrDefault();
-            var imgsGallery = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery, null);
+            var imgHome = (await _clienteProxy.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Sfondo, false)).FirstOrDefault();
+            var imgsGallery = await _clienteProxy.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery, false);
             var vm = cliente.MapToHomeViewModel(imgHome, imgsGallery);
-            vm.Locations = (await _apiClient.GetLocationsAsync(cliente.Id.Value))?.ToList();
+            vm.Locations = (await _tipologicheProxy.GetLocationsAsync(cliente.Id.Value))?.ToList();
             vm.EventsBaseUrl = string.Format("/{0}/eventi/", urlRoute);
             if (cliente.Latitudine.HasValue && cliente.Longitudine.HasValue)
             {
@@ -190,7 +194,7 @@ namespace Web.Controllers
         [HttpGet("{cliente}/gallery")]
         public async Task<IActionResult> GalleryEdit([FromRoute(Name = "cliente")]string urlRoute)
         {
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var cliente = await _clienteProxy.GetClienteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
             if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin()) { return Forbid(); }
             ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.Id.Value, cliente.StorageContainer, _appConfig.EncryptKey);
@@ -199,7 +203,7 @@ namespace Web.Controllers
             vm.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                                 _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                                 cliente.StorageContainer);
-            var immagini = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
+            var immagini = await _clienteProxy.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
             if (immagini != null)
             {
                 foreach (var img in immagini)
@@ -220,8 +224,7 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var imgDeleted = await _apiClient.DeleteImmagineGalleryAsync(idCliente, imageId, accessToken);
+            var imgDeleted = await _clienteProxy.DeleteImmagineGalleryAsync(idCliente, imageId);
             //Cancelliamo i files da Azure
             if (imgDeleted != null)
             {
@@ -356,7 +359,7 @@ namespace Web.Controllers
         #region PRIVATE STAFF
         private async Task<IEnumerable<SelectListItem>> GetTipologieClientiAsync()
         {
-            var allTipologie = await _apiClient.GetTipologieClientiAsync();
+            var allTipologie = await _tipologicheProxy.GetTipologieClientiAsync();
             return allTipologie
                 .Select(i => new SelectListItem()
                 {

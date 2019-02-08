@@ -12,6 +12,7 @@ using ready2do.model.common;
 using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
+using Web.Proxies;
 using Web.Services;
 using Web.Utils;
 
@@ -23,17 +24,17 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly UtentiProxy _utentiProxy;
         private readonly ClienteResolverServices _clientiResolver;
 
         public UsersController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 UtentiProxy utentiProxy,
                                  ClienteResolverServices clientiResolver)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _utentiProxy = utentiProxy;
             _clientiResolver = clientiResolver;
         }
 
@@ -44,7 +45,7 @@ namespace Web.Controllers
             var userId = User.UserId();
             if (string.IsNullOrWhiteSpace(userId) ) { return Forbid(); }
 
-            var utenteDM  = await _apiClient.GetProfiloUtente();
+            var utenteDM  = await _utentiProxy.GetProfiloUtente();
             var vm = UserProfileViewModel.FromUtenteDM(utenteDM);
             vm.Email = User.Email();
             vm.EMailConfirmed = User.EmailConfirmedOn().HasValue;
@@ -65,7 +66,7 @@ namespace Web.Controllers
                 model.TelephoneConfirmed = User.TelephoneConfirmedOn().HasValue;
                 return View("Profilo", model);
             }
-            await _apiClient.SalvaProfiloUtente(profilo);
+            await _utentiProxy.SalvaProfiloUtente(profilo);
             return RedirectToAction("GetProfilo");
         }
 
@@ -80,10 +81,7 @@ namespace Web.Controllers
         [HttpPost("associa/{idCliente:int}")]
         public async Task<IActionResult> AssociaToCliente([FromRoute]int idCliente, [FromQuery(Name = "returnUrl")]string returnUrl)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-            //            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            await _apiClient.ClienteFollowAsync(idCliente, accessToken);
+            await _utentiProxy.ClienteFollowAsync(idCliente);
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
                 //Possibile problema di sicurezza? (Open Redirect?)
@@ -103,10 +101,7 @@ namespace Web.Controllers
         [HttpPost("disassocia/{idCliente:int}")]
         public async Task<IActionResult> RemoveAssociazioneToCliente([FromRoute]int idCliente, [FromQuery(Name = "returnUrl")]string returnUrl)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrEmpty(accessToken)) { return Forbid(); }
-            //          int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            await _apiClient.ClienteUnFollowAsync(idCliente, accessToken);
+            await _utentiProxy.ClienteUnFollowAsync(idCliente);
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
                 //Possibile problema di sicurezza? (Open Redirect?)

@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Web.Authentication;
 using Web.Configuration;
 using Web.Models;
+using Web.Proxies;
 using Web.Services;
 using Web.Utils;
 
@@ -28,14 +29,16 @@ namespace Web.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
         private readonly B2CPolicies _policies;
-        private readonly WebAPIClient _apiClient;
+        private readonly UtentiProxy _utentiProxy;
+        private readonly ClienteProxy _clientiProxy;
 
-        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, 
-                                WebAPIClient apiClient, IOptions<B2CPolicies> policies)
+        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions,
+                                UtentiProxy utentiProxy, ClienteProxy clientiProxy, IOptions<B2CPolicies> policies)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _utentiProxy = utentiProxy;
+            _clientiProxy = clientiProxy;
             _policies = policies.Value;
         }
 
@@ -71,7 +74,7 @@ namespace Web.Controllers
             {
                 var authProps = new AuthenticationProperties()
                 {
-                    RedirectUri = Url.Action("GetRegistrazione", "Clienti")
+                    RedirectUri = Url.Action("Registrazione", "Clienti")
                 };
                 authProps.Items.Add("SignupType", "Cliente");
                 authProps.Items.Add(Constants.B2CPolicy, _policies.SignInOrSignUpPolicy);
@@ -187,48 +190,48 @@ namespace Web.Controllers
         }
 
         //
-        // POST: /Account/Register
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterUtente([FromForm]UtenteRegistrationViewModel model, [FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
-        {
-            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-            {
-                returnUrl = null;
-            }
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                if (model.Password.Equals(model.PasswordConfirm))
-                {
-                    /* Creiamo il l'utenza*/
-                    var nuovoUtente = new NuovoUtenteViewModel()
-                    {
-                        Cognome = model.Cognome,
-                        Email = model.Email,
-                        Nome = model.Nome,
-                        Password = model.Password
-                    };
+        //// POST: /Account/Register
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> RegisterUtente([FromForm]UtenteRegistrationViewModel model, [FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
+        //{
+        //    if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+        //    {
+        //        returnUrl = null;
+        //    }
+        //    ViewData["ReturnUrl"] = returnUrl;
+        //    if (ModelState.IsValid)
+        //    {
+        //        if (model.Password.Equals(model.PasswordConfirm))
+        //        {
+        //            /* Creiamo il l'utenza*/
+        //            var nuovoUtente = new NuovoUtenteViewModel()
+        //            {
+        //                Cognome = model.Cognome,
+        //                Email = model.Email,
+        //                Nome = model.Nome,
+        //                Password = model.Password
+        //            };
 
-                    var result = await _apiClient.NuovoUtenteAsync(nuovoUtente, idStrutturaAffiliata);
-                    if (result)
-                    {
-                        return RedirectToAction("MailToConfirm");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("Password", "Le password inserite non coincidono.");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Coordinate non valide");
-            }
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
+        //            var result = await _utentiProxy.NuovoUtenteAsync(nuovoUtente, idStrutturaAffiliata);
+        //            if (result)
+        //            {
+        //                return RedirectToAction("MailToConfirm");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            ModelState.AddModelError("Password", "Le password inserite non coincidono.");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
+        //    }
+        //    // If we got this far, something failed, redisplay form
+        //    return View(model);
+        //}
 
         //[HttpGet]
         //public IActionResult UtenteEditProfile(string redirectUrl)
@@ -273,7 +276,7 @@ namespace Web.Controllers
         {
             try
             {
-                var confirmationResult = await _apiClient.ConfermaAccount(email, WebUtility.UrlEncode(code));
+                var confirmationResult = await _utentiProxy.ConfermaAccount(email, WebUtility.UrlEncode(code));
                 //TODO: Se si tratta di un cliente, il redirect, deve essere fatto alla home del cliente
                 //      In caso di utente invece, il redirect andrebbe fatto alla struttura a cui è affiliato se presente, altrimenti alla home del sito
                 if (!confirmationResult.Esito)
@@ -283,7 +286,7 @@ namespace Web.Controllers
                 var idCliente = confirmationResult.IdCliente ?? confirmationResult.IdStrutturaAffiliate;
                 if (idCliente.HasValue)
                 {
-                    var cliente = await _apiClient.GetClienteAsync(idCliente.Value);
+                    var cliente = await _clientiProxy.GetClienteAsync(idCliente.Value);
                     var url = Url.RouteUrl("HomeCliente", new { cliente = cliente.UrlRoute });
                     return Redirect(url);
                     //                    return RedirectToAction("HomeCliente", "Clienti", );

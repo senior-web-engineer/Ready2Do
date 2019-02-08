@@ -28,6 +28,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
+using Web.Proxies;
 
 
 //using 
@@ -54,8 +55,8 @@ namespace Web
             services.Configure<B2CAuthenticationOptions>(_configuration.GetSection("Authentication:AzureAdB2C"));
             services.Configure<B2CPolicies>(_configuration.GetSection("Authentication:AzureAdB2C:Policies"));
 
+            ConfigureProxies(services);
             // Add application services.
-            services.AddTransient<WebAPIClient, WebAPIClient>();
             services.AddTransient<ClienteResolverServices, ClienteResolverServices>();
 
             //Aggiungiamo la cache in memory
@@ -154,7 +155,14 @@ namespace Web
             });
         }
 
-
+        private void ConfigureProxies(IServiceCollection services)
+        {
+            services.AddTransient<TipologicheProxy, TipologicheProxy>();
+            services.AddTransient<ClienteProxy, ClienteProxy>();
+            services.AddTransient<NotificheProxy, NotificheProxy>();
+            services.AddTransient<SchedulesProxy, SchedulesProxy>();
+            services.AddTransient<UtentiProxy, UtentiProxy>();
+        }
 
         private static void ConfigureAuthentication(IServiceCollection services)
         {

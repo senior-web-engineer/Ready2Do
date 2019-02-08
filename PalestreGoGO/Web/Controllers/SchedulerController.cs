@@ -17,6 +17,7 @@ using System.Text;
 using Web.Models.Utils;
 using Web.Models.Mappers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Web.Proxies;
 
 namespace Web.Controllers
 {
@@ -26,19 +27,25 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly SchedulesProxy _schedulesProxy;
+        private readonly ClienteProxy _clientiProxy;
         private readonly ClienteResolverServices _clientiResolver;
+        private readonly TipologicheProxy _tipologicheProxy;
 
         public SchedulerController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 SchedulesProxy schedulesProxy,
+                                 ClienteProxy clientiProxy,
+                                 TipologicheProxy tipologicheProxy,
                                  ClienteResolverServices clientiResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _schedulesProxy = schedulesProxy;
+            _clientiProxy = clientiProxy;
             _clientiResolver = clientiResolver;
+            _tipologicheProxy = tipologicheProxy;
         }
 
         [HttpGet]
@@ -49,11 +56,11 @@ namespace Web.Controllers
             {
                 return RedirectToAction("Index", "Clienti", new { cliente = urlRoute });
             }
-            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            var cliente = await _clientiProxy.GetClienteAsync(urlRoute);
             ViewData["IdCliente"] = idCliente;
             ViewData["AuthToken"] = GenerateAuthenticationToken(urlRoute, idCliente);
             var vm = new SchedulerViewModel();
-            vm.Sale = await _apiClient.GetLocationsAsync(idCliente);
+            vm.Sale = await _tipologicheProxy.GetLocationsAsync(idCliente);
             vm.IdActiveLocation = idActiveLocation ?? vm.Sale.FirstOrDefault()?.Id;
 
             cliente.OrarioApertura.MapOrarioApertura().GetMinMax(out TimeSpan? min, out TimeSpan? max);

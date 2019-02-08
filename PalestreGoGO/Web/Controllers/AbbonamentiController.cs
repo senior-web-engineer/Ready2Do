@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Web.Models.Utils;
 using Web.Models.Mappers;
 using System.Threading;
+using Web.Proxies;
 
 namespace Web.Controllers
 {
@@ -27,18 +28,18 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly TipologicheProxy _tipologicheProxy;
         private readonly ClienteResolverServices _clientiResolver;
 
         public AbbonamentiController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 TipologicheProxy tipologicheProxy,
                                  ClienteResolverServices clientiResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _tipologicheProxy = tipologicheProxy;
             _clientiResolver = clientiResolver;
         }
 
@@ -54,7 +55,7 @@ namespace Web.Controllers
                 return Forbid();
             }
             //TODO:Modificare implementazione aggiungendo una API apposita invece di farsi ritornare tutti gli abbonamenti per il Cliente
-            bool nomeIsValid = await _apiClient.CheckNomeTipologiaAbbonamentoAsync(idCliente, nomeAbbonamento, id);
+            bool nomeIsValid = await _tipologicheProxy.CheckNomeTipologiaAbbonamentoAsync(idCliente, nomeAbbonamento, id);
             if (!nomeIsValid)
             {
                 return Json(data: $"Esiste già una tipologia di abbonamento con lo stesso nome.");
@@ -76,7 +77,7 @@ namespace Web.Controllers
             }
 
             ViewData["IdCliente"] = idCliente;
-            var abbonamenti = (await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente)).MapToWebViewModel();
+            var abbonamenti = (await _tipologicheProxy.GetTipologieAbbonamentiClienteAsync(idCliente)).MapToWebViewModel();
             return View("ListaTipologieAbbonamenti", abbonamenti.ToList());
         }
 
@@ -106,7 +107,7 @@ namespace Web.Controllers
             }
             if (idTipoAbbonamento > 0)
             {
-                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento))
+                tipologiaAbbonamento = (await _tipologicheProxy.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento))
                                         .MapToWebViewModel();
             }
             if (tipologiaAbbonamento == null)
@@ -131,7 +132,7 @@ namespace Web.Controllers
             Models.TipologiaAbbonamentoViewModel tipologiaAbbonamento = null;
             if (idTipoAbbonamento > 0)
             {
-                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento))
+                tipologiaAbbonamento = (await _tipologicheProxy.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento))
                                         .MapToWebViewModel();
             }
             if (tipologiaAbbonamento == null)
@@ -158,7 +159,7 @@ namespace Web.Controllers
                 return View("TipologiaAbbonamentoEdit", tipoAbbonamento);
             }
             //if (tipoAbbonamento.Id.HasValue && (tipoAbbonamento.Id.Value <= 0)) { tipoAbbonamento.Id = null; }
-            await _apiClient.SaveTipologiaAbbonamentoAsync(idCliente, tipoAbbonamento.MapToAPIModel());
+            await _tipologicheProxy.SaveTipologiaAbbonamentoAsync(idCliente, tipoAbbonamento.MapToAPIModel());
             return RedirectToAction("TipoAbbonamenti");
         }
 
@@ -172,7 +173,7 @@ namespace Web.Controllers
                 return Forbid();
             }
             ViewData["IdCliente"] = idCliente;
-            await _apiClient.DeleteOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento);
+            await _tipologicheProxy.DeleteOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento);
             return RedirectToAction("TipoAbbonamenti");
         }
 

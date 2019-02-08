@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.Views.UtentiCliente
@@ -12,18 +13,17 @@ namespace Web.Views.UtentiCliente
     public class UtenteAddAbbonamentoViewComponent : ViewComponent
     {
 
-        private readonly WebAPIClient _apiClient;
+        private readonly TipologicheProxy _tipologicheProxy;
 
-        public UtenteAddAbbonamentoViewComponent(WebAPIClient apiClient)
+        public UtenteAddAbbonamentoViewComponent(TipologicheProxy tipologicheProxy)
         {
-            _apiClient = apiClient;
+            _tipologicheProxy = tipologicheProxy;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(int idCliente, string userId, int idTipoAbbonamento, string htmlContainerId)
         {
             
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var tipoAbbonanemto = await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
+            var tipoAbbonanemto = await _tipologicheProxy.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento);
             var vm = new AbbonamentoUtenteViewModel()
             {
                 DataInizioValidita = DateTime.Now,

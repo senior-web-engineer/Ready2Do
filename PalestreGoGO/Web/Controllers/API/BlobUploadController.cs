@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Web.Configuration;
 using Web.Models;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.Controllers.API
@@ -27,11 +28,11 @@ namespace Web.Controllers.API
     {
         private readonly AppConfig _appConfig;
         private readonly ILogger<BlobUploadController> _logger;
-        private WebAPIClient _apiClient;
+        private readonly ClienteProxy _apiClient;
 
         public BlobUploadController(ILogger<BlobUploadController> logger,
                                     IOptions<AppConfig> apiOptions,
-                                    WebAPIClient apiClient)
+                                    ClienteProxy apiClient)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
@@ -91,8 +92,7 @@ namespace Web.Controllers.API
                 Ordinamento = fileOrder,
                 Url = url
             };
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.GallerySalvaImmagine(cliente.Id.Value, immagine, accessToken);
+            await _apiClient.GallerySalvaImmagine(cliente.Id.Value, immagine);
             return Ok(url);
         }
 

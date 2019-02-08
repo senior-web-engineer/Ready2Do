@@ -7,20 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
+using Web.Models.Mappers;
 using Web.Models.ViewComponents;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.ViewComponents
 {
     public class NavbarViewComponent : ViewComponent
     {
-        private readonly WebAPIClient _apiClient;
+        private readonly UtentiProxy _utentiProxy;
         private readonly ILogger<NavbarViewComponent> _logger;
 
-        public NavbarViewComponent(WebAPIClient apiClient,
-                                       ILogger<NavbarViewComponent> logger)
+        public NavbarViewComponent(UtentiProxy utentiProxy,
+                                   ILogger<NavbarViewComponent> logger)
         {
-            _apiClient = apiClient;
+            _utentiProxy = utentiProxy;
             _logger = logger;
         }
 
@@ -35,9 +37,8 @@ namespace Web.ViewComponents
             UserType userType4Cliente = UserType.Anonymous;
             if (vm.UserIsAuthenticated)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
                 string userId = UserClaimsPrincipal.UserId();
-                vm.Notifiche = await _apiClient.GetNotificheForUserAsync(accessToken);
+                vm.Notifiche = (await _utentiProxy.GetNotificheForUserAsync()).MapToViewModel();
                 if (idClienteCorrente.HasValue)
                 {
                     userType4Cliente = UserClaimsPrincipal.GetUserTypeForCliente(idClienteCorrente.Value);
@@ -52,7 +53,7 @@ namespace Web.ViewComponents
                             vm.UserCanFollow = true;
                             break;
                     }
-                    vm.UserIsFollowingCliente = await _apiClient.ClienteIsFollowedByUserAsync(idClienteCorrente.Value, accessToken);
+                    vm.UserIsFollowingCliente = await _utentiProxy.ClienteIsFollowedByUserAsync(idClienteCorrente.Value);
                 }
             }
             return View(vm);

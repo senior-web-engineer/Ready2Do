@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.ViewComponents
 {
     public class UtenteViewCertificatiViewComponent : ViewComponent
     {
-        WebAPIClient _apiClient;
+        private readonly UtentiProxy _apiClient;
         ILogger<UtenteViewCertificatiViewComponent> _logger;
 
-        public UtenteViewCertificatiViewComponent(WebAPIClient apiClient,
+        public UtenteViewCertificatiViewComponent(UtentiProxy apiClient,
                                        ILogger<UtenteViewCertificatiViewComponent> logger)
         {
             _apiClient = apiClient;

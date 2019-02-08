@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Configuration;
+using Web.Proxies;
 using Web.Services;
 using Web.Utils;
 
@@ -21,18 +22,18 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly TipologicheProxy _tipologicheProxy;
         private readonly ClienteResolverServices _clientiResolver;
 
         public SaleController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 TipologicheProxy tipologicheProxy,
                                  ClienteResolverServices clientiResolver
                             )
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _tipologicheProxy = tipologicheProxy;
             _clientiResolver = clientiResolver;
         }
 
@@ -43,7 +44,7 @@ namespace Web.Controllers
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             ViewData["IdCliente"] = idCliente;
-            var locations = await _apiClient.GetLocationsAsync(idCliente);
+            var locations = await _tipologicheProxy.GetLocationsAsync(idCliente);
             return View("ListaSale", locations.ToList());
         }
 
@@ -55,7 +56,7 @@ namespace Web.Controllers
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Modifica Sala";
-            var location = await _apiClient.GetOneLocationAsync(idCliente, idSala);
+            var location = await _tipologicheProxy.GetOneLocationAsync(idCliente, idSala);
             return View("SalaEdit", location);
         }
 
@@ -70,7 +71,6 @@ namespace Web.Controllers
             }
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Nuova Sala";
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             return View("SalaEdit", new LocationDM());
         }
 
@@ -89,7 +89,7 @@ namespace Web.Controllers
                     return View("SalaEdit", location);
                 }
             }
-            await _apiClient.SaveLocationAsync(idCliente, location);
+            await _tipologicheProxy.SaveLocationAsync(idCliente, location);
             return RedirectToAction("ListaSale");
         }
 
@@ -101,7 +101,7 @@ namespace Web.Controllers
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
-            await _apiClient.DeleteOneLocationAsync(idCliente, idSala);
+            await _tipologicheProxy.DeleteOneLocationAsync(idCliente, idSala);
             return RedirectToAction("ListaSale");
         }
 

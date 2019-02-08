@@ -14,6 +14,7 @@ using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
 using Web.Models.Utils;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.Controllers.API
@@ -23,15 +24,15 @@ namespace Web.Controllers.API
     {
         private readonly AppConfig _appConfig;
         private readonly ILogger<BlobUploadController> _logger;
-        private readonly WebAPIClient _apiClient;
+        private readonly SchedulesProxy _schedulesProxy;
 
         public EventFeedsController(ILogger<BlobUploadController> logger,
                                     IOptions<AppConfig> apiOptions,
-                                    WebAPIClient apiClient)
+                                    SchedulesProxy schedulesProxy)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
-            _apiClient = apiClient;
+            _schedulesProxy = schedulesProxy;
         }
 
 
@@ -96,7 +97,7 @@ namespace Web.Controllers.API
                 return Unauthorized();
             }
             //var cliente = await WebAPIClient.GetClienteAsync(clientRoute, _appConfig.WebAPI.BaseAddress);
-            var schedules = await _apiClient.GetSchedulesAsync(token.IdCliente, startDate.Value, endDate.Value, idLocationNullable);
+            var schedules = await _schedulesProxy.GetSchedulesAsync(token.IdCliente, startDate.Value, endDate.Value, idLocationNullable);
             var result = schedules.MapToSchedulerEventViewModel();
 
             return Ok(result);

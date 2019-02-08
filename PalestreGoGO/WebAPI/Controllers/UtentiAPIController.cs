@@ -65,31 +65,31 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(user == null);
         }
 
-        /// <summary>
-        /// Registrazione di un Nuovo Utente
-        /// </summary>
-        /// <param name="newCliente"></param>
-        /// <returns></returns>
-        [HttpPost()]
-        [AllowAnonymous]
-        public async Task<IActionResult> NuovoUtente([FromBody]NuovoUtenteViewModel newUser, [FromQuery(Name = "idref")]int? idStrutturaAffiliata)
-        {
-            if (newUser == null) { return new BadRequestResult(); }
-            if (!ModelState.IsValid) { return new BadRequestResult(); }
-            var token = Guid.NewGuid().ToString("N");
-            var appUser = new AzureUser(newUser.Email, newUser.Password)
-            {
-                Cognome = newUser.Cognome,
-                Nome = newUser.Nome,
-                TelephoneNumber = newUser.Telefono,
-                Refereer = idStrutturaAffiliata?.ToString()
-            };
+        ///// <summary>
+        ///// Registrazione di un Nuovo Utente
+        ///// </summary>
+        ///// <param name="newCliente"></param>
+        ///// <returns></returns>
+        //[HttpPost()]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> NuovoUtente([FromBody]NuovoUtenteViewModel newUser, [FromQuery(Name = "idref")]int? idStrutturaAffiliata)
+        //{
+        //    if (newUser == null) { return new BadRequestResult(); }
+        //    if (!ModelState.IsValid) { return new BadRequestResult(); }
+        //    var token = Guid.NewGuid().ToString("N");
+        //    var appUser = new AzureUser(newUser.Email, newUser.Password)
+        //    {
+        //        Cognome = newUser.Cognome,
+        //        Nome = newUser.Nome,
+        //        TelephoneNumber = newUser.Telefono,
+        //        Refereer = idStrutturaAffiliata?.ToString()
+        //    };
 
-            //await _userManagementService.RegisterUserAsync(appUser);
-            //TODO: RIvedere il meecanismo di registrazione degli utenti ordinari!
-            throw new NotImplementedException();
-            return Ok();
-        }
+        //    //await _userManagementService.RegisterUserAsync(appUser);
+        //    //TODO: RIvedere il meecanismo di registrazione degli utenti ordinari!
+        //    throw new NotImplementedException();
+        //    return Ok();
+        //}
 
 
         /// <summary>

@@ -25,6 +25,7 @@ using Web.Services;
 using System.Net;
 using Web.Models.Mappers;
 using ready2do.model.common;
+using Web.Proxies;
 
 namespace Web.Controllers
 {
@@ -34,12 +35,12 @@ namespace Web.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly ClienteProxy _apiClient;
         private readonly ClienteResolverServices _clientiResolver;
 
         public ProfiloClienteController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
-                                 WebAPIClient apiClient,
+                                 ClienteProxy apiClient,
                                  ClienteResolverServices clientiResolver
                             )
         {
@@ -79,8 +80,6 @@ namespace Web.Controllers
         [Route("banner")]
         public async Task<IActionResult> SaveBanner([FromRoute(Name = "cliente")]string urlRoute, ClienteHeaderInputViewModel model)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrWhiteSpace(accessToken)) return Forbid();
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -92,7 +91,7 @@ namespace Web.Controllers
                 Url = model.UrlImmagineHome,
                 Nome = "Image Header"
             };
-            await _apiClient.ClienteSalvaBanner(idCliente, image, accessToken);
+            await _apiClient.ClienteSalvaBanner(idCliente, image);
             return RedirectToAction("GetBanner");
         }
         #endregion
@@ -122,9 +121,6 @@ namespace Web.Controllers
         public async Task<IActionResult> SaveAnagrafica([FromRoute(Name = "cliente")]string urlRoute, AnagraficaClienteEditViewModel model)
         {
             float latitudine, longitudine;
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
-            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
             var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -146,7 +142,7 @@ namespace Web.Controllers
             }
 
             var apiModel = model.ToApiModel();
-            await _apiClient.ClienteSalvaAnagrafica(idCliente, apiModel, accessToken);
+            await _apiClient.ClienteSalvaAnagrafica(idCliente, apiModel);
             return RedirectToAction("GetAnagrafica", new { cliente = urlRoute });
         }
         #endregion
@@ -173,8 +169,6 @@ namespace Web.Controllers
         [Route("orario")]
         public async Task<IActionResult> SaveOrarioApertura([FromRoute(Name = "cliente")]string urlRoute, Models.OrarioAperturaViewModel model)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
             var idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
             {
@@ -186,7 +180,7 @@ namespace Web.Controllers
             if (!ModelState.IsValid) { return View("GetOrarioApertura", model); }
 
             var apiModel = model.MapToApiModel();
-            await _apiClient.ClienteSalvaOrarioApertura(idCliente, apiModel, accessToken);
+            await _apiClient.ClienteSalvaOrarioApertura(idCliente, apiModel);
             return RedirectToAction("GetOrarioApertura", new { cliente = urlRoute });
         }
         #endregion

@@ -14,6 +14,7 @@ using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
 using Web.Models.Utils;
+using Web.Proxies;
 using Web.Services;
 using Web.Utils;
 using Web.Views.UtentiCliente;
@@ -25,18 +26,19 @@ namespace Web.Controllers.Clienti
     public class UtentiClienteController : Controller
     {
         private readonly ILogger<UtentiClienteController> _logger;
-        //private readonly AppConfig _appConfig;
-        private readonly WebAPIClient _apiClient;
+        private readonly UtentiProxy _utentiProxy;
+        private readonly TipologicheProxy _tipologicheProxy;
         private readonly ClienteResolverServices _clientiResolver;
 
         public UtentiClienteController(ILogger<UtentiClienteController> logger,
-                                         //IOptions<AppConfig> apiOptions,
-                                         WebAPIClient apiClient,
+                                         UtentiProxy utentiProxy,
+                                         TipologicheProxy tipologicheProxy,
                                          ClienteResolverServices clientiResolver)
         {
             _logger = logger;
-            _apiClient = apiClient;
+            _utentiProxy = utentiProxy;
             _clientiResolver = clientiResolver;
+            _tipologicheProxy = tipologicheProxy;
         }
 
         [HttpGet()]
@@ -50,7 +52,7 @@ namespace Web.Controllers.Clienti
             }
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             ViewData["IdCliente"] = idCliente;
-            var utenti = await _apiClient.GetUtentiCliente(idCliente, accessToken, includeStatus, page: 1, pageSize: 2000, sortBy: sortby, asc: asc);
+            var utenti = await _utentiProxy.GetUtentiCliente(idCliente, accessToken, includeStatus, page: 1, pageSize: 2000, sortBy: sortby, asc: asc);
             return View("ListaUtenti", utenti.ToList());
         }
 
@@ -65,12 +67,12 @@ namespace Web.Controllers.Clienti
             }
             ViewData["IdCliente"] = idCliente;
             ViewData["TabId"] = tabId;
-            var utente = await _apiClient.GetUtenteCliente(idCliente, userId);
+            var utente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             var vm = utente.MapToClienteUtenteViewModel();
-            var tAbb = _apiClient.GetAbbonamentiForUserAsync(idCliente, userId, true);
-            var tCert = _apiClient.GetCertificatiForUserAsync(idCliente, userId, true, false);
-            var tApp = _apiClient.GetAppuntamentiForUserAsync(idCliente, userId,);
+            var tAbb = _utentiProxy.GetAbbonamentiForUserAsync(idCliente, userId, true);
+            var tCert = _utentiProxy.GetCertificatiForUserAsync(idCliente, userId, true, false);
+            var tApp = _utentiProxy.GetAppuntamentiForUserAsync(idCliente, userId);
             Task.WaitAll(new Task[] { tAbb, tCert, tApp });
             vm.Abbonamenti = tAbb.Result?.MapToViewModel()?.ToList() ?? new List<AbbonamentoUtenteViewModel>();
             vm.Certificati = tCert.Result?.MapToViewModel()?.ToList() ?? new List<CertificatUtenteViewModel>();
@@ -122,11 +124,9 @@ namespace Web.Controllers.Clienti
                                                    [FromRoute(Name = "idAbbonamento")]int idAbbonamento,
                                                    [FromQuery(Name = "mode")] string mode)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            if (string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
             bool isEdit = (!string.IsNullOrWhiteSpace(mode) && mode.Trim().Equals("edit", StringComparison.CurrentCultureIgnoreCase));
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var abbonamento = await _apiClient.GetAbbonamentoAsync(idCliente, idAbbonamento, accessToken);
+            var abbonamento = await _utentiProxy.GetAbbonamentoAsync(idCliente, idAbbonamento);
             if (isEdit)
             {
                 return ViewComponent("UtenteEditAbbonamento");
@@ -147,11 +147,11 @@ namespace Web.Controllers.Clienti
             //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
             //      oppure se la scelta del tipo avviene nella view
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId);
+            ClienteUtenteDetailsApiModel utente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
-            var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente);
+            var tipologie = await _tipologicheProxy.GetTipologieAbbonamentiClienteAsync(idCliente);
             List<SelectListItem> items = new List<SelectListItem>();
             foreach (var t in tipologie)
             {
@@ -161,7 +161,7 @@ namespace Web.Controllers.Clienti
             AbbonamentoUtenteViewModel vm = null;
             if (id > 0)
             {
-                vm = (await _apiClient.GetAbbonamentoAsync(idCliente, id)).MapToViewModel();
+                vm = (await _utentiProxy.GetAbbonamentoAsync(idCliente, id)).MapToViewModel();
             }
             else
             {
@@ -183,7 +183,7 @@ namespace Web.Controllers.Clienti
                                                               [FromForm]AbbonamentoUtenteInputModel model)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId);
+            ClienteUtenteDetailsApiModel utente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
@@ -195,7 +195,7 @@ namespace Web.Controllers.Clienti
             }
             if (!modelValid)
             {
-                var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente);
+                var tipologie = await _tipologicheProxy.GetTipologieAbbonamentiClienteAsync(idCliente);
                 List<SelectListItem> items = new List<SelectListItem>();
                 foreach (var t in tipologie)
                 {
@@ -205,7 +205,7 @@ namespace Web.Controllers.Clienti
                 return View("EditAbbonamento", new AbbonamentoUtenteViewModel(model));
             }
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
-            await _apiClient.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel());
+            await _utentiProxy.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel());
             return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 0 });
         }
         #endregion
@@ -233,10 +233,9 @@ namespace Web.Controllers.Clienti
             {
                 return ViewComponent(typeof(UtenteAddAbbonamentoViewComponent), model);
             }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
-            await _apiClient.AddCertificatoUtenteClienteAsync(idCliente, userId, model.MapToApiModel(), accessToken);
+            await _utentiProxy.AddCertificatoUtenteClienteAsync(idCliente, userId, model.MapToApiModel());
             return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 1 });
         }
 

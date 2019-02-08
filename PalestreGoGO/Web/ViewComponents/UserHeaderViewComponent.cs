@@ -12,13 +12,10 @@ namespace Web.ViewComponents
     public class UserHeaderViewComponent : ViewComponent
     {
 
-        WebAPIClient _apiClient;
         ILogger<UserHeaderViewComponent> _logger;
 
-        public UserHeaderViewComponent(WebAPIClient apiClient,
-                                       ILogger<UserHeaderViewComponent> logger)
+        public UserHeaderViewComponent(ILogger<UserHeaderViewComponent> logger)
         {
-            _apiClient = apiClient;
             _logger = logger;
         }
 

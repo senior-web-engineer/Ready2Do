@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.ViewComponents
 {
     public class UtenteViewAbbonamentiViewComponent : ViewComponent
     {
-        WebAPIClient _apiClient;
+        private readonly UtentiProxy _apiClient;
         ILogger<UtenteViewAbbonamentiViewComponent> _logger;
 
-        public UtenteViewAbbonamentiViewComponent(WebAPIClient apiClient,
+        public UtenteViewAbbonamentiViewComponent(UtentiProxy apiClient,
                                        ILogger<UtenteViewAbbonamentiViewComponent> logger)
         {
             _apiClient = apiClient;

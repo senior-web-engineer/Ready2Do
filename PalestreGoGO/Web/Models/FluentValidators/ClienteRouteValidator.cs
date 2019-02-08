@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.Models.FluentValidators
@@ -14,9 +15,9 @@ namespace Web.Models.FluentValidators
     /// </summary>
     public class ClienteRouteValidator : PropertyValidator
     {
-        private readonly WebAPIClient _apiClient;
+        private readonly ClienteProxy _apiClient;
 
-        public ClienteRouteValidator(WebAPIClient apiClient) : base("L'indirizzo specificato risulta già utilizzato.")
+        public ClienteRouteValidator(ClienteProxy apiClient) : base("L'indirizzo specificato risulta già utilizzato.")
         {
             _apiClient = apiClient;
         }

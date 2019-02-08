@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.Models.FluentValidators
@@ -10,9 +11,9 @@ namespace Web.Models.FluentValidators
     public class ClienteRegistrazioneInputModelValidator: AbstractValidator<ClienteRegistrazioneInputModel>
     {
         const string URL_SEGMENT_CHARS = @"^[0-9a-zA-Z\-_]+$";
-        private readonly WebAPIClient _apiClient;
+        private readonly ClienteProxy _apiClient;
 
-        public ClienteRegistrazioneInputModelValidator(WebAPIClient apiClient)
+        public ClienteRegistrazioneInputModelValidator(ClienteProxy apiClient)
         {
             _apiClient = apiClient;
             RuleFor(c => c.URL).NotEmpty().MinimumLength(3).Matches(URL_SEGMENT_CHARS);
