@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("{cliente}/schedules")]
     public class SchedulerController : Controller
     {

@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Web.Authentication;
 using Web.Configuration;
 using Web.Models;
 using Web.Services;
@@ -21,21 +22,21 @@ using Web.Utils;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
-        private readonly AzureAdB2COptions _b2cOptions;
-
+        private readonly B2CPolicies _policies;
         private readonly WebAPIClient _apiClient;
 
-        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, WebAPIClient apiClient, IOptions<AzureAdB2COptions> b2cOptions)
+        public AccountController(ILogger<AccountController> logger, IOptions<AppConfig> apiOptions, 
+                                WebAPIClient apiClient, IOptions<B2CPolicies> policies)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _apiClient = apiClient;
-            _b2cOptions = b2cOptions.Value;
+            _policies = policies.Value;
         }
 
         [HttpGet]
@@ -50,29 +51,36 @@ namespace Web.Controllers
             {
                 RedirectUri = returnUrl
             };
-            if (asUser)
-            {
-                authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.UserSignUpSignInPolicyId);
-            }
-            else
-            {
-                authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.StrutturaSignInPolicyId);
-            }
+            //if (asUser)
+            //{
+            //    authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.UserSignUpSignInPolicyId);
+            //}
+            //else
+            //{
+            //    authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, _b2cOptions.StrutturaSignInPolicyId);
+            //}
             //ONLY FOR TEST
             authProps.Items.Add("IsClientRegistration", true.ToString());
-            return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
+            return Challenge(authProps, Constants.OpenIdConnectAuthenticationScheme);
         }
 
         [AllowAnonymous]
         public IActionResult SignupCliente()
         {
-            var authProps = new AuthenticationProperties()
+            if (!User.Identity.IsAuthenticated)
             {
-                RedirectUri = Url.Action("GetRegistrazione", "Clienti")
-            };
-            authProps.Items.Add("SignupType", "Cliente");
-            authProps.Items.Add(AzureAdB2COptions.PolicyAuthenticationProperty, "B2C_1_SigninSignup");
-            return Challenge(authProps, OpenIdConnectDefaults.AuthenticationScheme);
+                var authProps = new AuthenticationProperties()
+                {
+                    RedirectUri = Url.Action("GetRegistrazione", "Clienti")
+                };
+                authProps.Items.Add("SignupType", "Cliente");
+                authProps.Items.Add(Constants.B2CPolicy, _policies.SignInOrSignUpPolicy);
+                return Challenge(authProps, Constants.OpenIdConnectAuthenticationScheme);
+            }
+            else
+            {
+                return Redirect("/");
+            }
         }
     
 
@@ -90,7 +98,7 @@ namespace Web.Controllers
                 RedirectUri = returnUrl,
             };
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme, props);
-            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);
+            await HttpContext.SignOutAsync(Constants.OpenIdConnectAuthenticationScheme, props);
         }
 
         
@@ -231,7 +239,7 @@ namespace Web.Controllers
         //    }
         //    var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
         //    properties.Items[AzureAdB2COptions.PolicyAuthenticationProperty] = _b2cOptions. AzureAdB2COptions.EditProfilePolicyId;
-        //    return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+        //    return Challenge(properties, Constants.OpenIdConnectAuthenticationScheme);
         //}
 
 

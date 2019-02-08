@@ -20,7 +20,7 @@ using Web.Views.UtentiCliente;
 
 namespace Web.Controllers.Clienti
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("/{cliente}/users")]
     public class UtentiClienteController : Controller
     {
@@ -63,15 +63,14 @@ namespace Web.Controllers.Clienti
             {
                 return Forbid();
             }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             ViewData["IdCliente"] = idCliente;
             ViewData["TabId"] = tabId;
-            var utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            var utente = await _apiClient.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             var vm = utente.MapToClienteUtenteViewModel();
-            var tAbb = _apiClient.GetAbbonamentiForUserAsync(idCliente, userId, accessToken, true);
-            var tCert = _apiClient.GetCertificatiForUserAsync(idCliente, userId, accessToken, true, false);
-            var tApp = _apiClient.GetAppuntamentiForUserAsync(idCliente, userId, accessToken);
+            var tAbb = _apiClient.GetAbbonamentiForUserAsync(idCliente, userId, true);
+            var tCert = _apiClient.GetCertificatiForUserAsync(idCliente, userId, true, false);
+            var tApp = _apiClient.GetAppuntamentiForUserAsync(idCliente, userId,);
             Task.WaitAll(new Task[] { tAbb, tCert, tApp });
             vm.Abbonamenti = tAbb.Result?.MapToViewModel()?.ToList() ?? new List<AbbonamentoUtenteViewModel>();
             vm.Certificati = tCert.Result?.MapToViewModel()?.ToList() ?? new List<CertificatUtenteViewModel>();
@@ -148,12 +147,11 @@ namespace Web.Controllers.Clienti
             //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
             //      oppure se la scelta del tipo avviene nella view
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
-            var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+            var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente);
             List<SelectListItem> items = new List<SelectListItem>();
             foreach (var t in tipologie)
             {
@@ -163,7 +161,7 @@ namespace Web.Controllers.Clienti
             AbbonamentoUtenteViewModel vm = null;
             if (id > 0)
             {
-                vm = (await _apiClient.GetAbbonamentoAsync(idCliente, id, accessToken)).MapToViewModel();
+                vm = (await _apiClient.GetAbbonamentoAsync(idCliente, id)).MapToViewModel();
             }
             else
             {
@@ -185,8 +183,7 @@ namespace Web.Controllers.Clienti
                                                               [FromForm]AbbonamentoUtenteInputModel model)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId, accessToken);
+            ClienteUtenteDetailsApiModel utente = await _apiClient.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
@@ -198,7 +195,7 @@ namespace Web.Controllers.Clienti
             }
             if (!modelValid)
             {
-                var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken);
+                var tipologie = await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente);
                 List<SelectListItem> items = new List<SelectListItem>();
                 foreach (var t in tipologie)
                 {
@@ -208,7 +205,7 @@ namespace Web.Controllers.Clienti
                 return View("EditAbbonamento", new AbbonamentoUtenteViewModel(model));
             }
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
-            await _apiClient.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel(), accessToken);
+            await _apiClient.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel());
             return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 0 });
         }
         #endregion

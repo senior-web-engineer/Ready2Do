@@ -1,5 +1,8 @@
 ﻿using Common.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
@@ -14,6 +17,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Web.Authentication;
 using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
@@ -24,51 +28,70 @@ namespace Web.Utils
     public class WebAPIClient
     {
         private readonly static JsonSerializerSettings _serializerSettings;
+
+        private readonly AppConfig _appConfig;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDistributedCache _distributedCache;
+        private readonly B2CAuthenticationOptions _authOptions;
         /// <summary>
         /// Usiamo una unica istanza statica 
         /// </summary>
         private static HttpClient sClient = new HttpClient();
 
-        private AppConfig _appConfig;
         static WebAPIClient()
         {
             _serializerSettings = new JsonSerializerSettings();
         }
 
-        public WebAPIClient(IOptions<AppConfig> options)
+        public WebAPIClient(IOptions<AppConfig> options, IHttpContextAccessor httpContextAccessor,
+            IDistributedCache distributedCache, IOptions<B2CAuthenticationOptions> authOptions)
         {
             _appConfig = options?.Value;
+            _httpContextAccessor = httpContextAccessor;
+            _distributedCache = distributedCache;
+            _authOptions = authOptions.Value;
         }
 
         #region PRIVATE STUFF
-
-        private void DEBUG_CheckTokenExpiration(string accessToken)
+        private async Task<string> GetAccessTokenAsync()
         {
             try
             {
-                System.IdentityModel.Tokens.Jwt.JwtSecurityToken token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
-                Log.Debug("Token for User {user} is valid until: {validTo}", token.Subject, token.ValidTo);
+                var principal = _httpContextAccessor.HttpContext.User;
+
+                var tokenCache = new DistributedTokenCache(_distributedCache, principal.FindFirst(Constants.ObjectIdClaimType).Value).GetMSALCache();
+                var client = new ConfidentialClientApplication(_authOptions.ClientId,
+                                                          _authOptions.GetAuthority(principal.FindFirst(Constants.AcrClaimType).Value),
+                                                          "https://app", // it's not really needed
+                                                          new ClientCredential(_authOptions.ClientSecret),
+                                                          tokenCache,
+                                                          null);
+
+                var result = await client.AcquireTokenSilentAsync(new[] { _authOptions.ApiScopes },
+                                        (await client.GetAccountsAsync()).FirstOrDefault());
+
+                return result.AccessToken;
             }
-            catch (ArgumentException)
+            catch (MsalUiRequiredException)
             {
-                Log.Error("L'access token specificato non è un token JWT valido. [{token}]", accessToken);
-                //Non ci interessa risollevare l'eccezione
+                throw new ReauthenticationRequiredException();
             }
         }
-
-        private async Task SendPostRequestAsync<T>(string uri, T model, string accessToken)
+        private async Task SendPostRequestAsync<T>(string uri, T model, bool sendToken = true)
         {
-            var response = await SendRequestAsync<T>(HttpMethod.Post, new Uri(uri), model, accessToken);
+            var response = await SendRequestAsync<T>(HttpMethod.Post, new Uri(uri), model, sendToken);
             response.Dispose();
         }
-        private async Task SendPutRequestAsync<T>(string uri, T model, string accessToken)
+        private async Task SendPutRequestAsync<T>(string uri, T model, bool sendToken = true)
         {
-            var response = await SendRequestAsync<T>(HttpMethod.Put, new Uri(uri), model, accessToken);
+            var response = await SendRequestAsync<T>(HttpMethod.Put, new Uri(uri), model, sendToken);
             response.Dispose();
         }
 
-        private async Task<HttpResponseMessage> SendRequestAsync<T>(HttpMethod method, Uri uri, T model, string accessToken)
+        private async Task<HttpResponseMessage> SendRequestAsync<T>(HttpMethod method, Uri uri, T model, bool sendToken = true)
         {
+            string accessToken = null;
+            if (sendToken) { accessToken = await this.GetAccessTokenAsync(); }
             Log.Information("Invocazione API [{uri}], Method: {method}", uri, method);
             Log.Debug("AccessToken: {accessToken}", accessToken);
             Log.Debug("Model: {@model}", model);
@@ -115,8 +138,10 @@ namespace Web.Utils
             }
         }
 
-        private async Task<T> GetRequestAsync<T>(Uri uri, string accessToken)
+        private async Task<T> GetRequestAsync<T>(Uri uri, bool sendToken = true)
         {
+            string accessToken = null;
+            if (sendToken) { accessToken = await this.GetAccessTokenAsync(); }
             Log.Information("Invocazione API [{uri}]", uri);
             Log.Debug("AccessToken: {accessToken}", accessToken);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -151,8 +176,10 @@ namespace Web.Utils
             return result;
         }
 
-        private async Task DeleteRequestAsync(string uri, string accessToken)
+        private async Task DeleteRequestAsync(string uri, bool sendToken = true)
         {
+            string accessToken = null;
+            if (sendToken) { accessToken = await this.GetAccessTokenAsync(); }
             Log.Information("Invocazione API [{uri}]", uri);
             Log.Debug("AccessToken: {accessToken}", accessToken);
             try
@@ -206,33 +233,34 @@ namespace Web.Utils
             return await GetRequestAsync<ClienteDM>(new Uri(uri), null);
         }
 
-        public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloAPIModel profilo, string access_token)
+        public async Task ClienteSalvaProfilo(int idCliente, ClienteProfiloAPIModel profilo)
         {
-            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo", profilo, access_token);
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo", profilo, true);
         }
 
-        public async Task ClienteSalvaBanner(int idCliente, ImmagineClienteInputDM banner, string access_token)
+        public async Task ClienteSalvaBanner(int idCliente, ImmagineClienteInputDM banner)
         {
             if (banner.IdTipoImmagine != (int)TipoImmagineDM.Sfondo) { throw new ArgumentException(nameof(banner)); }
             if (!banner.Id.HasValue) { throw new ArgumentException(nameof(banner)); }
-            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti{idCliente:int}/images", banner, access_token);
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti{idCliente:int}/images", banner, true);
         }
 
-        public async Task GallerySalvaImmagine(int idCliente, ImmagineClienteInputDM image, string access_token)
+        public async Task GallerySalvaImmagine(int idCliente, ImmagineClienteInputDM image)
         {
             if (image.Id.HasValue && image.Id.Value > 0)
             {
-                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{image.Id}", image, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{image.Id}", image, true);
             }
             else
             {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images", image, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images", image, true);
             }
         }
 
-        public async Task<ImmagineClienteDM> DeleteImmagineGalleryAsync(int idCliente, int idImage, string access_token)
+        public async Task<ImmagineClienteDM> DeleteImmagineGalleryAsync(int idCliente, int idImage)
         {
             //Facciamo una DELETE custom perchè ci serve l'url ritornato (eccezionalmente) per poter cancellare il file dallo Storage
+            string access_token = await GetAccessTokenAsync();
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{idImage}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
@@ -244,15 +272,15 @@ namespace Web.Utils
             }
         }
 
-        public async Task<IEnumerable<ImmagineClienteDM>> GetImmaginiClienteAsync(int idCliente, TipoImmagineDM tipoImmagini, string access_token = null)
+        public async Task<IEnumerable<ImmagineClienteDM>> GetImmaginiClienteAsync(int idCliente, TipoImmagineDM tipoImmagini, bool sendAuthToken = true)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images?tipo={tipoImmagini}");
-            return await GetRequestAsync<IEnumerable<ImmagineClienteDM>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<ImmagineClienteDM>>(uri, sendAuthToken);
         }
 
-        public async Task ClienteSalvaOrarioApertura(int idCliente, OrarioAperturaDM orario, string access_token)
+        public async Task ClienteSalvaOrarioApertura(int idCliente, OrarioAperturaDM orario)
         {
-            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario", orario, access_token);
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario", orario);
         }
 
         public async Task ClienteSalvaAnagrafica(int idCliente, AnagraficaClienteApiModel anagrafica, string access_token)
@@ -269,11 +297,10 @@ namespace Web.Utils
 
         #region TIPOLOGIE CLIENTE
 
-        public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync(string accessToken)
+        public async Task<IEnumerable<TipologiaClienteDM>> GetTipologieClientiAsync()
         {
-            DEBUG_CheckTokenExpiration(accessToken);
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/tipologie");
-            return await GetRequestAsync<IEnumerable<TipologiaClienteDM>>(uri, null);
+            return await GetRequestAsync<IEnumerable<TipologiaClienteDM>>(uri, false);
         }
 
         #endregion
@@ -283,53 +310,53 @@ namespace Web.Utils
         public async Task<IEnumerable<LocationDM>> GetLocationsAsync(int idCliente)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations");
-            return await GetRequestAsync<IEnumerable<LocationDM>>(uri, null);
+            return await GetRequestAsync<IEnumerable<LocationDM>>(uri, false);
         }
 
-        public async Task SaveLocationAsync(int idCliente, LocationInputDM location, string access_token)
+        public async Task SaveLocationAsync(int idCliente, LocationInputDM location)
         {
             if (location.Id.HasValue && location.Id.Value > 0)
             {
-                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{location.Id}", location, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{location.Id}", location);
             }
             else
             {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations", location, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations", location);
             }
         }
 
-        public async Task<LocationInputDM> GetOneLocationAsync(int idCliente, int idLocation, string access_token)
+        public async Task<LocationInputDM> GetOneLocationAsync(int idCliente, int idLocation)
         {
-            return await GetRequestAsync<LocationInputDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}"), access_token);
+            return await GetRequestAsync<LocationInputDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}"));
         }
 
-        public async Task DeleteOneLocationAsync(int idCliente, int idLocation, string access_token)
+        public async Task DeleteOneLocationAsync(int idCliente, int idLocation)
         {
-            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}", access_token);
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}");
         }
         #endregion
 
         #region TIPOLOGIE LEZIONI
-        public async Task SaveTipologiaLezioneAsync(int idCliente, TipologiaLezioneDM tipoLezione, string access_token)
+        public async Task SaveTipologiaLezioneAsync(int idCliente, TipologiaLezioneDM tipoLezione)
         {
             if (tipoLezione.Id.HasValue && tipoLezione.Id.Value > 0)
             {
-                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{tipoLezione.Id}", tipoLezione, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{tipoLezione.Id}", tipoLezione);
             }
             else
             {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni", tipoLezione, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni", tipoLezione);
             }
         }
 
         public async Task<IEnumerable<TipologiaLezioneDM>> GetTipologieLezioniClienteAsync(int idCliente)
         {
-            return await GetRequestAsync<IEnumerable<TipologiaLezioneDM>>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni"), null);
+            return await GetRequestAsync<IEnumerable<TipologiaLezioneDM>>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni"), false);
         }
 
-        public async Task<TipologiaLezioneDM> GetOneTipologiaLezione(int idCliente, int idTipologia, string access_token)
+        public async Task<TipologiaLezioneDM> GetOneTipologiaLezione(int idCliente, int idTipologia)
         {
-            return await GetRequestAsync<TipologiaLezioneDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idTipologia}"), access_token);
+            return await GetRequestAsync<TipologiaLezioneDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idTipologia}"));
         }
 
         public async Task<bool> CheckNameTipologiaLezioneAsync(int idCliente, string nome, string access_token, int? id)
@@ -338,50 +365,50 @@ namespace Web.Utils
             return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/checkname/{nome}{queryString}"), access_token);
         }
 
-        public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idLocation, string access_token)
+        public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idLocation)
         {
-            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idLocation}", access_token);
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idLocation}");
         }
 
         #endregion
 
         #region TIPOLOGIE ABBONAMENTI
-        public async Task<IEnumerable<TipologiaAbbonamentoDM>> GetTipologieAbbonamentiClienteAsync(int idCliente, string access_token)
+        public async Task<IEnumerable<TipologiaAbbonamentoDM>> GetTipologieAbbonamentiClienteAsync(int idCliente)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti");
-            return await GetRequestAsync<IEnumerable<TipologiaAbbonamentoDM>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<TipologiaAbbonamentoDM>>(uri);
         }
 
-        public async Task<TipologiaAbbonamentoDM> GetOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
+        public async Task<TipologiaAbbonamentoDM> GetOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
-            return await GetRequestAsync<TipologiaAbbonamentoDM>(uri, access_token);
+            return await GetRequestAsync<TipologiaAbbonamentoDM>(uri);
         }
 
-        public async Task SaveTipologiaAbbonamentoAsync(int idCliente, TipologiaAbbonamentoInputDM tipoAbbonamento, string access_token)
+        public async Task SaveTipologiaAbbonamentoAsync(int idCliente, TipologiaAbbonamentoInputDM tipoAbbonamento)
         {
             HttpClient client = new HttpClient();
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti");
             if (tipoAbbonamento.Id.HasValue && tipoAbbonamento.Id.Value > 0)
             {
-                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{tipoAbbonamento.Id}", tipoAbbonamento, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{tipoAbbonamento.Id}", tipoAbbonamento);
             }
             else
             {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti", tipoAbbonamento, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti", tipoAbbonamento);
             }
         }
 
-        public async Task DeleteOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento, string access_token)
+        public async Task DeleteOneTipologiaAbbonamentoAsync(int idCliente, int idTipoAbbonamento)
         {
-            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}", access_token);
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/{idTipoAbbonamento}");
         }
 
-        public async Task<bool> CheckNomeTipologiaAbbonamentoAsync(int idCliente, string nome, int? id, string access_token)
+        public async Task<bool> CheckNomeTipologiaAbbonamentoAsync(int idCliente, string nome, int? id)
         {
             string qsOpz = id.HasValue ? $"&id={id}" : "";
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipoabbonamenti/checknome?nome={nome}{qsOpz}");
-            return await GetRequestAsync<bool>(uri, access_token);
+            return await GetRequestAsync<bool>(uri);
         }
 
         #endregion
@@ -390,24 +417,24 @@ namespace Web.Utils
         public async Task<IEnumerable<ScheduleDM>> GetSchedulesAsync(int idCliente, DateTime start, DateTime end, int? idLocation)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules?sd={start.ToISO8601(true)}&ed={end.ToISO8601(true)}&lid={idLocation}");
-            return await GetRequestAsync<IEnumerable<ScheduleDM>>(uri, null);
+            return await GetRequestAsync<IEnumerable<ScheduleDM>>(uri, false);
         }
 
         public async Task<ScheduleDM> GetScheduleAsync(int idCliente, int idEvento)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idEvento}");
-            return await GetRequestAsync<ScheduleDM>(uri, null);
+            return await GetRequestAsync<ScheduleDM>(uri, false);
         }
 
-        public async Task SaveSchedule(int idCliente, ScheduleInputDM schedule, string access_token)
+        public async Task SaveSchedule(int idCliente, ScheduleInputDM schedule)
         {
             if (schedule.Id.HasValue && schedule.Id.Value > 0)
             {
-                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{schedule.Id}", schedule, access_token);
+                await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{schedule.Id}", schedule);
             }
             else
             {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules", schedule, access_token);
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules", schedule);
             }
         }
 
@@ -529,22 +556,22 @@ namespace Web.Utils
             }
         }
 
-        public async Task<ClienteUtenteDetailsApiModel> GetUtenteCliente(int idCliente, string userId, string access_token)
+        public async Task<ClienteUtenteDetailsApiModel> GetUtenteCliente(int idCliente, string userId)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}");
-            return await GetRequestAsync<ClienteUtenteDetailsApiModel>(uri, access_token);
+            return await GetRequestAsync<ClienteUtenteDetailsApiModel>(uri);
         }
 
-        public async Task DeleteAppuntamentoUserAsync(int idCliente, int idSchedule, string access_token)
+        public async Task DeleteAppuntamentoUserAsync(int idCliente, int idSchedule)
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti";
-            await DeleteRequestAsync(uri, access_token);
+            await DeleteRequestAsync(uri);
         }
 
-        public async Task DeleteAppuntamentoAdminAsync(int idCliente, int idSchedule, int idAppuntamento, string access_token)
+        public async Task DeleteAppuntamentoAdminAsync(int idCliente, int idSchedule, int idAppuntamento)
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti/{idAppuntamento}";
-            await DeleteRequestAsync(uri, access_token);
+            await DeleteRequestAsync(uri);
         }
 
 
@@ -565,46 +592,46 @@ namespace Web.Utils
 
         #region ABBONAMENTI UTENTI-CLIENTI
 
-        public async Task EditAbbonamentoClienteAsync(int idCliente, string userId, AbbonamentoUtenteInputDM abbonamento, string access_token)
+        public async Task EditAbbonamentoClienteAsync(int idCliente, string userId, AbbonamentoUtenteInputDM abbonamento)
         {
-            await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti/{userId}", abbonamento, access_token);
+            await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti/{userId}", abbonamento);
         }
 
-        public async Task DeleteAbbonamentoClienteAsync(int idCliente, string userId, int idAbbonamento, string access_token)
+        public async Task DeleteAbbonamentoClienteAsync(int idCliente, string userId, int idAbbonamento)
         {
-            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/abbonamenti/{userId}/{idAbbonamento}", access_token);
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/abbonamenti/{userId}/{idAbbonamento}");
         }
 
-        public async Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
+        public async Task<IEnumerable<AbbonamentoUtenteDM>> GetAbbonamentiForUserAsync(int idCliente, string userId, bool includeExpired = false, bool includeDeleted = false)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti/{userId}?incExp={includeExpired}&incDel={includeDeleted}");
-            return await GetRequestAsync<IEnumerable<AbbonamentoUtenteDM>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<AbbonamentoUtenteDM>>(uri);
         }
 
-        public async Task<AbbonamentoUtenteDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento, string access_token)
+        public async Task<AbbonamentoUtenteDM> GetAbbonamentoAsync(int idCliente, int idAbbonamento)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/abbonamenti/{idAbbonamento}");
-            return await GetRequestAsync<AbbonamentoUtenteDM>(uri, access_token);
+            return await GetRequestAsync<AbbonamentoUtenteDM>(uri);
         }
 
         #endregion
 
         #region CERTIFICATI UTENTI-CLIENTI
 
-        public async Task AddCertificatoUtenteClienteAsync(int idCliente, string userId, ClienteUtenteCertificatoApiModel certificato, string access_token)
+        public async Task AddCertificatoUtenteClienteAsync(int idCliente, string userId, ClienteUtenteCertificatoApiModel certificato)
         {
-            await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati", certificato, access_token);
+            await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati", certificato);
         }
 
-        public async Task DeleteCertificatoUtenteClienteAsync(int idCliente, string userId, int idCertificato, string access_token)
+        public async Task DeleteCertificatoUtenteClienteAsync(int idCliente, string userId, int idCertificato)
         {
-            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/users/{userId}/certificati/{idCertificato}", access_token);
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/users/{userId}/certificati/{idCertificato}");
         }
 
-        public async Task<IEnumerable<ClienteUtenteCertificatoApiModel>> GetCertificatiForUserAsync(int idCliente, string userId, string access_token, bool includeExpired = false, bool includeDeleted = false)
+        public async Task<IEnumerable<ClienteUtenteCertificatoApiModel>> GetCertificatiForUserAsync(int idCliente, string userId, bool includeExpired = false, bool includeDeleted = false)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/certificati?incExp={includeExpired}&incDel={includeDeleted}");
-            return await GetRequestAsync<IEnumerable<ClienteUtenteCertificatoApiModel>>(uri, access_token);
+            return await GetRequestAsync<IEnumerable<ClienteUtenteCertificatoApiModel>>(uri);
         }
 
         #endregion
@@ -612,7 +639,7 @@ namespace Web.Utils
         #region UTENTI
         public async Task<bool> CheckEmail(string email)
         {
-            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}"), null);
+            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/checkemail?email={email}"), false);
         }
 
         public async Task<bool> NuovoUtenteAsync(NuovoUtenteViewModel utente, int? idStrutturaAffiliata)
@@ -629,22 +656,22 @@ namespace Web.Utils
         public async Task<UserConfirmationResultAPIModel> ConfermaAccount(string email, string code)
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/confirmation?email={email}&code={code}");
-            using (var response = await SendRequestAsync<UserConfirmationResultAPIModel>(HttpMethod.Post, uri, null, null))
+            using (var response = await SendRequestAsync<UserConfirmationResultAPIModel>(HttpMethod.Post, uri, null, false))
             {
                 return JsonConvert.DeserializeObject<UserConfirmationResultAPIModel>(await response.Content.ReadAsStringAsync());
             }
         }
 
-        public async Task<UtenteDM> GetProfiloUtente(string access_token)
+        public async Task<UtenteDM> GetProfiloUtente()
         {
             Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/profilo");
-            return await GetRequestAsync<UtenteDM>(uri, access_token);
+            return await GetRequestAsync<UtenteDM>(uri);
         }
 
-        public async Task SalvaProfiloUtente(UtenteInputDM profilo, string access_token)
+        public async Task SalvaProfiloUtente(UtenteInputDM profilo)
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/utenti/profilo";
-            await SendPutRequestAsync(uri, profilo, access_token);
+            await SendPutRequestAsync(uri, profilo);
         }
 
         #endregion

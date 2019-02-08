@@ -22,7 +22,7 @@ using System.Threading;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     public class AbbonamentiController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -53,9 +53,8 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             //TODO:Modificare implementazione aggiungendo una API apposita invece di farsi ritornare tutti gli abbonamenti per il Cliente
-            bool nomeIsValid = await _apiClient.CheckNomeTipologiaAbbonamentoAsync(idCliente, nomeAbbonamento, id, accessToken);
+            bool nomeIsValid = await _apiClient.CheckNomeTipologiaAbbonamentoAsync(idCliente, nomeAbbonamento, id);
             if (!nomeIsValid)
             {
                 return Json(data: $"Esiste già una tipologia di abbonamento con lo stesso nome.");
@@ -77,8 +76,7 @@ namespace Web.Controllers
             }
 
             ViewData["IdCliente"] = idCliente;
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var abbonamenti = (await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente, accessToken)).MapToWebViewModel();
+            var abbonamenti = (await _apiClient.GetTipologieAbbonamentiClienteAsync(idCliente)).MapToWebViewModel();
             return View("ListaTipologieAbbonamenti", abbonamenti.ToList());
         }
 
@@ -106,11 +104,9 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idTipoAbbonamento > 0)
             {
-                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken))
+                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento))
                                         .MapToWebViewModel();
             }
             if (tipologiaAbbonamento == null)
@@ -133,10 +129,9 @@ namespace Web.Controllers
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Modifica tipo abbonamento";
             Models.TipologiaAbbonamentoViewModel tipologiaAbbonamento = null;
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idTipoAbbonamento > 0)
             {
-                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken))
+                tipologiaAbbonamento = (await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento))
                                         .MapToWebViewModel();
             }
             if (tipologiaAbbonamento == null)
@@ -163,8 +158,7 @@ namespace Web.Controllers
                 return View("TipologiaAbbonamentoEdit", tipoAbbonamento);
             }
             //if (tipoAbbonamento.Id.HasValue && (tipoAbbonamento.Id.Value <= 0)) { tipoAbbonamento.Id = null; }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveTipologiaAbbonamentoAsync(idCliente, tipoAbbonamento.MapToAPIModel(), accessToken);
+            await _apiClient.SaveTipologiaAbbonamentoAsync(idCliente, tipoAbbonamento.MapToAPIModel());
             return RedirectToAction("TipoAbbonamenti");
         }
 
@@ -178,8 +172,7 @@ namespace Web.Controllers
                 return Forbid();
             }
             ViewData["IdCliente"] = idCliente;
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.DeleteOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
+            await _apiClient.DeleteOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento);
             return RedirectToAction("TipoAbbonamenti");
         }
 

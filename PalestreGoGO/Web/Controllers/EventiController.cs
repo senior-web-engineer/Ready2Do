@@ -20,7 +20,7 @@ using Web.Utils;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     public class EventiController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -106,8 +106,7 @@ namespace Web.Controllers
                 return View("EditEvento", new ScheduleEditViewModel(evento));
             }
 
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveSchedule(idCliente, evento.ToApiModel(idCliente), accessToken);
+            await _apiClient.SaveSchedule(idCliente, evento.ToApiModel(idCliente));
             return RedirectToAction("Index", "Scheduler", new { cliente = urlRoute, lid = evento.IdLocation });
         }
 

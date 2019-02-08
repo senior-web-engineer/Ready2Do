@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     public class NotificheController: Controller
     {
         [HttpGet]

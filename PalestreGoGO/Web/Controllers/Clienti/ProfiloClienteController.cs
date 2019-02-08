@@ -28,7 +28,7 @@ using ready2do.model.common;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("/{cliente}/profilo")]
     public class ProfiloClienteController : Controller
     {

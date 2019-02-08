@@ -17,7 +17,7 @@ using Web.Utils;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("me")]
     public class UsersController : Controller
     {
@@ -41,11 +41,10 @@ namespace Web.Controllers
         [HttpGet("profilo")]
         public async Task<IActionResult> GetProfilo()
         {
-            string accessToken = await HttpContext.GetTokenAsync("access_token");
             var userId = User.UserId();
-            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(accessToken)) { return Forbid(); }
+            if (string.IsNullOrWhiteSpace(userId) ) { return Forbid(); }
 
-            var utenteDM  = await _apiClient.GetProfiloUtente(accessToken);
+            var utenteDM  = await _apiClient.GetProfiloUtente();
             var vm = UserProfileViewModel.FromUtenteDM(utenteDM);
             vm.Email = User.Email();
             vm.EMailConfirmed = User.EmailConfirmedOn().HasValue;
@@ -66,8 +65,7 @@ namespace Web.Controllers
                 model.TelephoneConfirmed = User.TelephoneConfirmedOn().HasValue;
                 return View("Profilo", model);
             }
-            string accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SalvaProfiloUtente(profilo, accessToken);
+            await _apiClient.SalvaProfiloUtente(profilo);
             return RedirectToAction("GetProfilo");
         }
 

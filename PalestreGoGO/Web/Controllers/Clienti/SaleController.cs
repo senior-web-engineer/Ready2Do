@@ -15,7 +15,7 @@ using Web.Utils;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("/{cliente}/sale")]
     public class SaleController : Controller
     {
@@ -37,7 +37,7 @@ namespace Web.Controllers
         }
 
         #region Gestione Locations
-        [Authorize(Policy = "CanEditStruttura")]
+        [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme, Policy = "CanEditStruttura")]
         [HttpGet()]
         public async Task<IActionResult> ListaSale([FromRoute(Name = "cliente")]string urlRoute)
         {
@@ -55,8 +55,7 @@ namespace Web.Controllers
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Modifica Sala";
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var location = await _apiClient.GetOneLocationAsync(idCliente, idSala, accessToken);
+            var location = await _apiClient.GetOneLocationAsync(idCliente, idSala);
             return View("SalaEdit", location);
         }
 
@@ -90,8 +89,7 @@ namespace Web.Controllers
                     return View("SalaEdit", location);
                 }
             }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveLocationAsync(idCliente, location, accessToken);
+            await _apiClient.SaveLocationAsync(idCliente, location);
             return RedirectToAction("ListaSale");
         }
 
@@ -103,8 +101,7 @@ namespace Web.Controllers
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.DeleteOneLocationAsync(idCliente, idSala, accessToken);
+            await _apiClient.DeleteOneLocationAsync(idCliente, idSala);
             return RedirectToAction("ListaSale");
         }
 

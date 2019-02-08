@@ -15,7 +15,7 @@ using Web.Utils;
 
 namespace Web.Controllers.Clienti
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("/{cliente}/lezioni")]
     public class TipologieLezioniController: Controller
     {
@@ -63,10 +63,9 @@ namespace Web.Controllers.Clienti
             ViewData["IdCliente"] = idCliente;
 
             Models.TipologieLezioniViewModel tipoLezione = null;
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             if (idLezione > 0)
             {
-                tipoLezione = (await _apiClient.GetOneTipologiaLezione(idCliente, idLezione, accessToken)).ToVM();
+                tipoLezione = (await _apiClient.GetOneTipologiaLezione(idCliente, idLezione)).ToVM();
             }
             if (tipoLezione == null)
             {
@@ -87,7 +86,6 @@ namespace Web.Controllers.Clienti
             }
             ViewData["IdCliente"] = idCliente;
             Models.TipologieLezioniViewModel tipoLezione = new Models.TipologieLezioniViewModel();
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
             return View("LezioneEdit", tipoLezione);
         }
 
@@ -108,8 +106,7 @@ namespace Web.Controllers.Clienti
                 return View("LezioneEdit", tipoLezione);
             }
             if (tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione.ToDM(), accessToken);
+            await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione.ToDM());
             return RedirectToAction("ListaLezioni");
         }
 
@@ -123,8 +120,7 @@ namespace Web.Controllers.Clienti
             {
                 return Forbid();
             }
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-            await _apiClient.DeleteOneTipologiaLezioneAsync(idCliente, idLezione, accessToken);
+            await _apiClient.DeleteOneTipologiaLezioneAsync(idCliente, idLezione);
             return RedirectToAction("ListaLezioni");
         }
 

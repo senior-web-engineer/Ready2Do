@@ -19,7 +19,7 @@ using Web.Utils;
 
 namespace Web.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     public class ClientiController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -130,8 +130,8 @@ namespace Web.Controllers
             //Se non troviamo il cliente redirect alla home
             if (cliente == null) { return Redirect("/"); }
             //Leggiamo le immagini per il cliente
-            var imgHome = (await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Sfondo, null)).FirstOrDefault();
-            var imgsGallery = await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Gallery, null);
+            var imgHome = (await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Sfondo, false)).FirstOrDefault();
+            var imgsGallery = await _apiClient.GetImmaginiClienteAsync(idCliente, TipoImmagineDM.Gallery, false);
             var vm = cliente.MapToHomeViewModel(imgHome, imgsGallery);
             vm.Locations = (await _apiClient.GetLocationsAsync(cliente.Id.Value))?.ToList();
             vm.EventsBaseUrl = string.Format("/{0}/eventi/", cliente.UrlRoute);
