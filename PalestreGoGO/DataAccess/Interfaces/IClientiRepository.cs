@@ -10,6 +10,7 @@ namespace PalestreGoGo.DataAccess
     public interface IClientiRepository
     {
         Task<(int idCliente, Guid correlationId)> CreateClienteAsync(NuovoClienteInputDM cliente);
+        Task CompensateCreateClienteAsync(int idCliente, Guid correlationId);
         Task<string> RichiestaRegistrazioneCreaAsync(string userName, Guid? correlationId, DateTime? expiration);
         Task ConfermaProvisioningAsync(int idCliente);
         Task<ClienteDM> GetClienteByIdAsync(int idCliente);

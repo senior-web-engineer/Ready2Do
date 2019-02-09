@@ -14,11 +14,11 @@ namespace PalestreGoGo.WebAPI.Model
 
         }
 
-        public ConfirmationMailMessage(string email, string code, /*string token,*/ bool isCliente)
+        public ConfirmationMailMessage(string email, string code, string confirmatinUrl, bool isCliente)
         {
             this.Email = email;
             this.ConfirmationCode = code;
-            //this.CorrelationToken = token;
+            this.ConfirmationUrl= confirmatinUrl;
             this.IsCliente = isCliente;
         }
 
@@ -30,9 +30,6 @@ namespace PalestreGoGo.WebAPI.Model
 
         [JsonProperty("confirmationurl", Required = Required.Always)]
         public string ConfirmationUrl { get; set; }
-
-       /* [JsonProperty("token", Required = Required.Always)]
-        public string CorrelationToken { get; set; }*/
 
         [JsonProperty("isCliente", Required = Required.Always)]
         public bool IsCliente{ get; set; }

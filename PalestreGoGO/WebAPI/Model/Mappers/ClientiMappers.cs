@@ -18,7 +18,7 @@ namespace PalestreGoGo.WebAPI.Model.Mappers
                 Latitudine = nuovoCliente.Coordinate.Latitudine,
                 Longitudine = nuovoCliente.Coordinate.Longitudine,
                 NumTelefono = nuovoCliente.NumTelefono,
-                Nome = nuovoCliente.Nome,
+                Nome = nuovoCliente.NomeStruttura,
                 RagioneSociale = nuovoCliente.RagioneSociale,
                 UrlRoute = nuovoCliente.UrlRoute,
                 ZipOrPostalCode = nuovoCliente.ZipOrPostalCode,

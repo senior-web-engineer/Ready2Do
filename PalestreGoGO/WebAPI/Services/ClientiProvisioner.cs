@@ -53,7 +53,6 @@ namespace PalestreGoGo.WebAPI.Services
             await _repositoryImmagini.AddImageAsync(idCliente, defaultHeroImage );
             //TODO: Aggiungere eventuali steps per il provisioning
 
-            await _repositoryClienti.ConfermaProvisioningAsync(idCliente);
         }
     }
 }

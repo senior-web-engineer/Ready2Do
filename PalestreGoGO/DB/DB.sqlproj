@@ -234,6 +234,7 @@
     <Build Include="dbo\Views\vClientiUtenti.sql" />
     <Build Include="dbo\Views\vAppuntamentiDaConfermare.sql" />
     <Build Include="dbo\Views\vListeAttesa.sql" />
+    <Build Include="dbo\Stored Procedures\Clienti_Add_Undo.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

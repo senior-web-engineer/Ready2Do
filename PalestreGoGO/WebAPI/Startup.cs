@@ -64,9 +64,7 @@ namespace PalestreGoGo.WebAPI
             })
                     .AddJwtBearer(jwtOptions =>
                 {
-                    //#GT#20190207#Rimpiazzato endpoint https://login.microsoftonline.com con 
-                    //jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:StrutturaPolicy"]}/v2.0/";
-                    jwtOptions.Authority = Configuration["Authentication:AzureAdB2C:Authority"];
+                    jwtOptions.Authority = $"https://login.microsoftonline.com/tfp/{Configuration["Authentication:AzureAdB2C:Tenant"]}/{Configuration["Authentication:AzureAdB2C:StrutturaPolicy"]}/v2.0/";
                     jwtOptions.Audience = Configuration["Authentication:AzureAdB2C:ClientId"];
                     jwtOptions.Events = new JwtBearerEvents
                     {
@@ -118,17 +116,16 @@ namespace PalestreGoGo.WebAPI
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-            app.UseAuthentication();
             //app.SetupUsersAndRoles();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
-
-            //app.UseCors()
+            //app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            //});
+            app.UseAuthentication();
+            app.UseCors();
             app.UseMvc();
 
         }

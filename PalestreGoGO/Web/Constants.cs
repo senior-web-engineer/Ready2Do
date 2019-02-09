@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Web
@@ -33,6 +34,9 @@ namespace Web
         public const string ROLE_GLOBAL_ADMIN = "global_admin";
 
         public const string CUSTOM_HEADER_TOKEN_AUTH = "X-PalestreGoGO-AUTHToken";
+
+
+        public readonly static Regex COORDINATE_REGEX = new Regex(@"^\(([0-9]+\.[0-9]+)[, ]+([0-9]+\.[0-9]+)\)$");
 
     }
 }

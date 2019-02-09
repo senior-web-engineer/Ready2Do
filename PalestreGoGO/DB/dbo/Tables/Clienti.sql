@@ -27,7 +27,8 @@
 	CONSTRAINT PK_Clienti PRIMARY KEY ([Id]),
 	CONSTRAINT FK_Clienti_Tipologia FOREIGN KEY (IdTipologia) REFERENCES [dbo].[TipologieClienti](Id),
 	CONSTRAINT FK_Clienti_Stato FOREIGN KEY (IdStato) REFERENCES [dbo].[StatiCliente](IdStato),
-	CONSTRAINT [UQ_Clienti_Email] UNIQUE ([Email]),
+	--20190209-Non ' necessario che l'email di contatto della struttura sia univoca (a differenza di quella dell'utente)
+	--CONSTRAINT [UQ_Clienti_Email] UNIQUE ([Email]),
 	CONSTRAINT [UQ_Clienti_CorrelationId] UNIQUE ([CorrelationId]),
 	CONSTRAINT [UQ_Clienti_StorageContainer] UNIQUE ([StorageContainer]),
 

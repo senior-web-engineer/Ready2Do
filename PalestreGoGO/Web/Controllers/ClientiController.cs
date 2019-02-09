@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ready2do.model.common;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Authentication;
 using Web.Configuration;
 using Web.Models;
 using Web.Models.Mappers;
@@ -21,6 +23,7 @@ using Web.Utils;
 namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
+    [ServiceFilter(typeof(ReauthenticationRequiredFilter))]
     public class ClientiController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -60,21 +63,36 @@ namespace Web.Controllers
 
             ViewBag.TipologieClienti = await this.GetTipologieClientiAsync();
             ViewBag.GoogleMapsAPIKey = _appConfig?.GoogleAPI?.GoogleMapsAPIKey;
-            var vm = new ClienteRegistrazioneInputModel();
-            return View("Registrazione",vm);
+            var vm = new ClienteRegistrazioneViewModel();
+            return View("Registrazione", vm);
         }
 
         [HttpPost("/register")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SalvaRegistrazione(ClienteRegistrazioneInputModel model)
+        public async Task<IActionResult> SalvaRegistrazione(ClienteRegistrazioneViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.TipologieClienti = await this.GetTipologieClientiAsync();
+                ViewBag.GoogleMapsAPIKey = _appConfig?.GoogleAPI?.GoogleMapsAPIKey;
                 return View("Registrazione", model);
             }
-           //TODO: Implementare
+            try
+            {
+                await _clienteProxy.NuovoClienteAsync(model.MapToAPIModel());
+            }
+            catch (ReauthenticationRequiredException reaExc)
+            {
+                Log.Debug("ReauthenticationRequiredException detected");
+                throw;
+            }
+            catch (Exception)
+            {
+                Log.Error("Errore durante la registrazione del cliente {@cliente}", model);
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante la registrazione, si prega di riprovare più tardi");
+                return View("Registrazione", model);
 
+            }
             return Ok();
         }
 
@@ -368,5 +386,5 @@ namespace Web.Controllers
                 });
         }
         #endregion
-}
+    }
 }

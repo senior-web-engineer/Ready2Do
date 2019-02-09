@@ -68,13 +68,14 @@ namespace Web
             //    .PersistKeysToAzureBlobStorage(new Uri("<blob URI including SAS token>"));
               
             services.AddMvc(options =>{options.Filters.Add(typeof(ReauthenticationRequiredFilter));})
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_0)
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2)
                 .AddFluentValidation(fv =>
                 {
                     fv.RegisterValidatorsFromAssemblyContaining(this.GetType());
                     fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true; //Per ora lasciamo abilitata la validazione di default (DataAnnotations) fino alla migrazione completa
                 });
 
+            services.AddScoped<ReauthenticationRequiredFilter>();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CanEditStruttura", policy => policy.Requirements.Add(new CadEditStrutturaRequirement()));

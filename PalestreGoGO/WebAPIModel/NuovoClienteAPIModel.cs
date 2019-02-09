@@ -8,14 +8,10 @@ namespace PalestreGoGo.WebAPIModel
         public NuovoClienteAPIModel()
         {
             this.Coordinate = new CoordinateAPIModel();
-            this.NuovoUtente = new NuovoUtenteViewModel();
         }
 
         [JsonProperty("nome")]
-        public string Nome { get; set; }
-
-        [JsonProperty("cognome")]
-        public string Cognome { get; set; }
+        public string NomeStruttura{ get; set; }
 
         [JsonProperty("descrizione")]
         public string Descrizione { get; set; }
@@ -46,9 +42,6 @@ namespace PalestreGoGo.WebAPIModel
 
         [JsonProperty("coordinate")]
         public CoordinateAPIModel Coordinate { get; set; }
-
-        [JsonProperty("userInfo")]
-        public NuovoUtenteViewModel NuovoUtente { get; set; }
 
         [JsonProperty("urlRoute")]
         public string UrlRoute { get; set; }

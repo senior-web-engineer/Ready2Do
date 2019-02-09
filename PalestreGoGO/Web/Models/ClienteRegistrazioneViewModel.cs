@@ -8,7 +8,7 @@ using Web.Utils;
 
 namespace Web.Models
 {
-    public class ClienteRegistrazioneInputModel
+    public class ClienteRegistrazioneViewModel
     {
         public string URL { get; set; }
 
@@ -28,20 +28,18 @@ namespace Web.Models
 
         public short EsitoLookup { get; set; }
 
-        [Required(ErrorMessage ="Indirizzo non valido")]
-        public string Latitudine { get; set; }
-
-        [Required(ErrorMessage = "Indirizzo non valido")]
-        public string Longitudine { get; set; }
-
-        [Required(ErrorMessage = "Indirizzo non valido")]
         public string Citta { get; set; }
 
         public string Country { get; set; }
 
         public string CAP { get; set; }
 
-        // Aggiunto per testare il passaggio delle coordinate come stringa prodotta dierettamente dalla libreria Google invece di avere problemi con il separatori decimali
+        /// <summary>
+        /// Coordinate ritornate dal servizio di geocoding nel formato:
+        /// (lat, long) 
+        /// Dove:
+        ///   lat e long sono due float serializzati con il punto come separatore decimale (xx.xxx)
+        /// </summary>
         public string Coordinate { get; set; }
     }
 }

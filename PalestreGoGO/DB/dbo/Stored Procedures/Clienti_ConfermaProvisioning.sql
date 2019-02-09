@@ -4,11 +4,11 @@ AS
 BEGIN
 	DECLARE @dtOp DATETIME2 = SYSDATETIME(),
 			@STATO_PROVISIONED TINYINT = 3, --Valore fisso corrispondente al record in StatiCliente,
-			@STATO_NOTPROVISIONED TINYINT = 1 --Valore fisso corrispondente al record in StatiCliente
+			@STATO_NOTPROVISIONED TINYINT = 0 --Valore fisso corrispondente al record in StatiCliente
 	
 	UPDATE Clienti
 		SET DataProvisioning = @dtOp,
-			IdStato = @STATO_NOTPROVISIONED
+			IdStato = @STATO_PROVISIONED
 	WHERE Id = @pIdCliente
 	AND IdStato = @STATO_NOTPROVISIONED
 	AND DataProvisioning IS NULL

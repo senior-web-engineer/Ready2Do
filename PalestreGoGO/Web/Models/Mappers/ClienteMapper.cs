@@ -11,6 +11,35 @@ namespace Web.Models.Mappers
 {
     public static class ClienteMapper
     {
+        private static CoordinateAPIModel ParseCoordinate(this string coordinate)
+        {
+            var match = Constants.COORDINATE_REGEX.Match(coordinate);
+            return new CoordinateAPIModel()
+            {
+                Latitudine = float.Parse(match.Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture),
+                Longitudine = float.Parse(match.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture),
+            };
+        }
+
+        public static NuovoClienteAPIModel MapToAPIModel(this ClienteRegistrazioneViewModel newCliente)
+        {
+            if(newCliente == null) { throw new ArgumentNullException(nameof(newCliente)); }
+            return new NuovoClienteAPIModel()
+            {
+                Citta = newCliente.Citta,
+                Country = newCliente.Country,
+                Coordinate = newCliente.Coordinate.ParseCoordinate(),
+                Email = newCliente.EmailStruttura,
+                IdTipologia = newCliente.IdTipologia,
+                Indirizzo = newCliente.Indirizzo,
+                NumTelefono = newCliente.Telefono,
+                RagioneSociale = newCliente.RagioneSociale,
+                NomeStruttura = newCliente.NomeStruttura,
+                UrlRoute = newCliente.URL,
+                ZipOrPostalCode = newCliente.CAP
+            };
+        }
+
         public static ClienteHomeViewModel MapToHomeViewModel(this ClienteDM model, ImmagineClienteDM immagineHome, IEnumerable<ImmagineClienteDM> immaginiGallery)
         {
             if (model == null) { throw new ArgumentNullException(nameof(model)); }

@@ -145,6 +145,20 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
+
+        public async Task CompensateCreateClienteAsync(int idCliente, Guid correlationId)
+        {
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[Clienti_Add_Undo]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pCorrelationId", SqlDbType.UniqueIdentifier).Value = correlationId;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
         /// <summary>
         /// Inserisce una nuova richiesta di registrazione per l'utente e ritorna il codice per la validazione dell'email
         /// </summary>
@@ -164,7 +178,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pUsername", SqlDbType.VarChar, 500).Value = userName;
                 cmd.Parameters.Add("@pCorrelationId", SqlDbType.UniqueIdentifier).Value = correlationId;
-                cmd.Parameters.Add("@pExpiration", SqlDbType.UniqueIdentifier).Value = expiration;
+                cmd.Parameters.Add("@pExpiration", SqlDbType.DateTime2).Value = expiration;
                 cmd.Parameters.Add(parCode);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();

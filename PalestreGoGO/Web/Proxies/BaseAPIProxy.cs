@@ -56,7 +56,7 @@ namespace Web.Proxies
 
                 return result.AccessToken;
             }
-            catch (MsalUiRequiredException)
+            catch (MsalUiRequiredException exc)
             {
                 throw new ReauthenticationRequiredException();
             }

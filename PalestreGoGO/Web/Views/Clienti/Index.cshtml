@@ -59,11 +59,14 @@
         </div>
         <div class="col s4 l3">
             <div class="r2d-box-info-right" style="display:flex; flex-direction:column">
-                <div><h6>Orario Apertura</h6></div>
-                <div>Len-Ven: @Model.OrarioApertura.LunVen.ToString()</div>
-                <div>Sabato: @Model.OrarioApertura.Sabato.ToString()</div>
-                <div>Domenica: @Model.OrarioApertura.Domenica.ToString()</div>
+                @if (Model.OrarioApertura != null)
+                {
+                    <div><h6>Orario Apertura</h6></div>
+                <div>Len-Ven: @Model.OrarioApertura.LunVen?.ToString()</div>
+                <div>Sabato: @Model.OrarioApertura.Sabato?.ToString()</div>
+                <div>Domenica: @Model.OrarioApertura.Domenica?.ToString()</div>
                 <div class="divider"></div>
+                }
                 <div>Telefono: @Model.NumTelefono</div>
                 <div>Email: @Model.Email</div>
             </div>

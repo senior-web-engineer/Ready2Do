@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -11,8 +12,11 @@ using PalestreGoGo.WebAPI.Utils;
 using PalestreGoGo.WebAPI.ViewModel.B2CGraph;
 using PalestreGoGo.WebAPIModel;
 using ready2do.model.common;
+using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -32,7 +36,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IClientiProvisioner _clientiProvisioner;
         private readonly IUserConfirmationService _userConfirmationService;
         private readonly IImmaginiClientiRepository _immaginiRepository;
-
+        private readonly TelemetryClient _insightsClient;
         public ClientiAPIController(IConfiguration config,
                                  ILogger<ClientiAPIController> logger,
                                  IUsersManagementService userManagementService,
@@ -40,7 +44,8 @@ namespace PalestreGoGo.WebAPI.Controllers
                                  IClientiUtentiRepository repoClientiUtenti,
                                  IClientiProvisioner clientiProvisioner,
                                  IUserConfirmationService userConfirmationService,
-                                 IImmaginiClientiRepository immaginiRepository)
+                                 IImmaginiClientiRepository immaginiRepository,
+                                 TelemetryClient insightsClient)
         {
             _config = config;
             _logger = logger;
@@ -50,6 +55,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             _clientiProvisioner = clientiProvisioner;
             _userConfirmationService = userConfirmationService;
             _immaginiRepository = immaginiRepository;
+            _insightsClient = insightsClient;
         }
 
         [HttpGet("{id:int}")]
@@ -111,55 +117,79 @@ namespace PalestreGoGo.WebAPI.Controllers
 
 
         /// <summary>
-        /// Registrazione di un Nuovo Cliente DA CONFERMARE e senza creazione Utente associato
+        /// Registrazione di un Nuovo Cliente associato all'utente chiamante
         /// </summary>
         /// <param name="newCliente"></param>
         /// <returns></returns>
         [HttpPost()]
-        [AllowAnonymous]
         public async Task<IActionResult> NuovoCliente([FromBody]NuovoClienteAPIModel newCliente)
         {
             if (newCliente == null) { return new BadRequestResult(); }
             if (!ModelState.IsValid) { return new BadRequestResult(); }
-
-            //1. Creiamo l'utente su B2C (o recuperiamo l'utente già esistente)
+            (int idCliente, Guid correlationId) resultDB = default((int, Guid));
             //2. Creiamo il Cliente sul DB
             //3. Facciamo il Provisioning
             //4. Aggiorniamo l'utente B2C con l'Id del Cliente
             //5. Aggiorniamo lo stato del Cliente (Provisioned)
             //6. Generiamo la richiesta di registrazione
             //7. Inviamo l'email per la conferma
-
-            //Step1: Creazione o recupero utente B2C
-            var newUser = new AzureUser(newCliente.NuovoUtente.Email, newCliente.NuovoUtente.Password)
+            try
             {
-                Nome = newCliente.NuovoUtente.Nome,
-                Cognome = newCliente.NuovoUtente.Cognome,
-                TelephoneNumber = newCliente.NuovoUtente.Telefono,
-                DisplayName = newCliente.NuovoUtente.DisplayName ?? $"{newCliente.NuovoUtente.Cognome} {newCliente.NuovoUtente.Nome}"
-            };
-            var user = await _userManagementService.GetOrCreateUserAsync(newUser);
-            string userName = user.SignInNames.First(sn => sn.Type.Equals("emailAddress", StringComparison.InvariantCultureIgnoreCase)).Value;
+                // Creazione record Cliente sul DB
+                Log.Debug("Ricevuta richiesta di registrazione per un nuovo cliente {@newCliente} da perte dell'utente {@userId}", newCliente, GetCurrentUser());
+                var userId = GetCurrentUser().UserId();
+                var azUser = await _userManagementService.GetUserByIdAsync(userId);
+                var nuovoClienteDM = newCliente.ToDM(userId);
+                nuovoClienteDM.StorageContainer = Guid.NewGuid().ToString("N").ToLowerInvariant();
+                try
+                {
+                    resultDB = await _repository.CreateClienteAsync(nuovoClienteDM);
+                    //Step3: Provisioning Cliente
+                    await _clientiProvisioner.ProvisionClienteAsync(resultDB.idCliente, userId);
+                    //Step4: Update B2C con la struttura gestita
+                    await _userManagementService.AggiungiStrutturaGestitaAsync(azUser, resultDB.idCliente);
+                    //Step5: Aggiorniamo lo stato di provisioning del Cliente
+                    await _repository.ConfermaProvisioningAsync(resultDB.idCliente);
+                }
+                catch (Exception exc)
+                {
+                    Log.Error(exc, "Errore durante la creazione o il provisioning del Cliente. {newCliente}", newCliente);
+                    //Se il Cliente è stato creato sul DB lo eliminiamo (Compensation)
+                    if (resultDB.idCliente > 0)
+                    {
+                        try
+                        {
+                            await _repository.CompensateCreateClienteAsync(resultDB.idCliente, resultDB.correlationId);
+                        }
+                        catch (Exception compExc)
+                        {
+                            Log.Error(compExc, "Errore durante la compensazione della registrazione Cliente.");
+                            throw;
+                        }
+                    }
+                    throw; //Risolleviamo l'eccezione originale così da non eseguire le altre operazioni
+                }
+                //Step6: Generiamo la richiesta di registrazione
+                string code = await _repository.RichiestaRegistrazioneCreaAsync(
+                                azUser.Emails.First(),
+                                resultDB.correlationId,
+                                DateTime.Now.AddMinutes(_config.GetValue<int>("Provisioning:ValidationEmailValidityMinutes", DEFAULT_VALIDATION_VALIDITY)));
+                //Step7: Inviamo l'email per la conferma dell'utente
+                var email = new Model.ConfirmationMailMessage(azUser.Emails.First(), code, 
+                                                              _config.GetValue<string>("Provisioning:EmailConfirmationUrl"),
+                                                              true);
+                await _userConfirmationService.EnqueueConfirmationMailRequestAsync(email);
 
-            //Step2: Creazione record Cliente sul DB
-            var nuovoClienteDM = newCliente.ToDM(user.Id);
-            nuovoClienteDM.StorageContainer = Guid.NewGuid().ToString("N").ToLowerInvariant();
-            var resultDB = await _repository.CreateClienteAsync(nuovoClienteDM);
-            //Step3: Provisioning Cliente
-            await _clientiProvisioner.ProvisionClienteAsync(resultDB.idCliente, user.Id);
-            //Step4: Update B2C con la struttura gestita
-            await _userManagementService.AggiungiStrutturaGestitaAsync(user, resultDB.idCliente);
-            //Step5: Aggiorniamo lo stato di provisioning del Cliente
-            await _repository.ConfermaProvisioningAsync(resultDB.idCliente);
-            //Step6: Generiamo la richiesta di registrazione
-            string code = await _repository.RichiestaRegistrazioneCreaAsync(
-                            userName,
-                            resultDB.correlationId,
-                            DateTime.Now.AddMinutes(_config.GetValue<int>("Provisioning:ValidationEmailValidityMinutes", DEFAULT_VALIDATION_VALIDITY)));
-            //Step7: Inviamo l'email per la conferma dell'utente
-            var email = new Model.ConfirmationMailMessage(newCliente.NuovoUtente.Email, code, true);
-            await _userConfirmationService.EnqueueConfirmationMailRequestAsync(email);
-
+                Log.Information("Creato nuovo Cliente con Id: {idCliente} per l'utente {userId}", resultDB.idCliente, userId);
+                _insightsClient.TrackEvent("Registrazione_Cliente", new Dictionary<string, string>
+                                            {{"IdCliente",resultDB.idCliente.ToString()}, {"UserName",userId }});
+            }
+            catch (Exception exc)
+            {
+                Log.Error(exc, "Errore durante la creazione dell'utente {@newCliente}", newCliente);
+                _insightsClient.TrackException(exc);
+                return this.StatusCode((int)HttpStatusCode.InternalServerError);
+            }
             return Ok();
         }
 
@@ -220,7 +250,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             if (profilo == null) { return BadRequest(); }
             if (idCliente != profilo.Anagrafica.Id) { return BadRequest(); }
             if (!User.CanManageStructure(idCliente)) { return Unauthorized(); }
-            if (!ModelState.IsValid){return BadRequest();}
+            if (!ModelState.IsValid) { return BadRequest(); }
             //Salviamo le modifiche in transazione
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -228,7 +258,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 await _repository.AggiornaOrarioAperturaClienteAsync(idCliente, profilo.OrarioApertura);
                 await _immaginiRepository.UpdateImageAsync(idCliente, profilo.ImmagineHome);
                 transaction.Complete();
-            }         
+            }
             return NoContent();
         }
 

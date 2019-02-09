@@ -1,4 +1,4 @@
-﻿@model ClienteRegistrazioneInputModel
+﻿@model ClienteRegistrazioneViewModel
 
 @{
     Layout = "_LayoutLanding";
@@ -20,7 +20,7 @@
     <form id="formRegistration" asp-action="Registrazione" asp-controller="Clienti" method="post">
         <div class="row">
             <div class="input-field col s10 m8 l6 offset-s1 offset-m2 offset-l3">
-                <input type="text" asp-for="NomeStruttura" class="validate">
+                <input type="text" asp-for="NomeStruttura" class="validate" autofocus>
                 <label>Nome Struttura </label>
                 <span asp-validation-for="NomeStruttura"></span>
             </div>
@@ -65,19 +65,29 @@
         <div class="row">
             <div class="input-field col s10 m8 l6 offset-s1 offset-m2 offset-l3">
 
-                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" autocomplete="off" placeholder="">
+                <input id="addressAutocomplete" type="text" asp-for="Indirizzo" autocomplete="off" placeholder=""
+                       data-val="true" data-val-addressAutocomplete="E' necessario selezionare un indirizzo tra quelli proposti"
+                       data-val-googleaddress-esitolookupField="EsitoLookup">
                 <label>Indirizzo completo</label>
                 <span asp-validation-for="Indirizzo"></span>
             </div>
         </div>
+        @*<div class="row">
+            <div class="input-field col s10 m8 l6 offset-s1 offset-m2 offset-l3">
+                <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
+            </div>
+        </div>*@
         <div class="row">
+            <div class="input-field col s10 m8 l6 offset-s1 offset-m2 offset-l3">
+                <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
+            </div>
             <div class="input-field col s12 center">
                 <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Registrati</button>
             </div>
         </div>
         <input id="esitoLookup" type="hidden" asp-for="EsitoLookup" />
-        <input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
-        <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />
+        @*<input id="inputLatitudine" type="hidden" asp-for="Latitudine" />
+        <input id="inputLongitudine" type="hidden" asp-for="Longitudine" />*@
         <input id="inputCoordinate" type="hidden" asp-for="Coordinate" />
         <input id="inputCitta" type="hidden" asp-for="Citta" />
         <input id="inputCountry" type="hidden" asp-for="Country" />
@@ -113,8 +123,10 @@
 
                 if (place.geometry) {
                     document.getElementById('esitoLookup').value = 1;
-                    document.getElementById('inputLatitudine').value = place.geometry.location.lat();
-                    document.getElementById('inputLongitudine').value = place.geometry.location.lng();
+                    //document.getElementById('inputLatitudine').value = place.geometry.location.lat();
+                    //document.getElementById('inputLongitudine').value = place.geometry.location.lng();
+                    document.getElementById('inputCoordinate').value = place.geometry.location.toString()
+
                     var tmp = place.address_components.find(function (c) { return c.types[0] === "postal_code"; });
                     if (tmp) {
                         document.getElementById('inputCAP').value = tmp.long_name;

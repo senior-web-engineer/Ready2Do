@@ -31,18 +31,9 @@ namespace Web.Proxies
             return await GetRequestAsync<bool>(uri, false);
         }
 
-        public async Task<bool> NuovoClienteAsync(NuovoClienteAPIModel cliente)
+        public async Task NuovoClienteAsync(NuovoClienteAPIModel cliente)
         {
-            try
-            {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti", cliente, false);
-                return true;
-            }
-            catch (Exception exc)
-            {
-                Log.Error(exc, "Errore durante la creazione del cliente {cliente}.", cliente);
-                return false;
-            }
+                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti", cliente);
         }
 
         public async Task<ClienteDM> GetClienteAsync(int idCliente)

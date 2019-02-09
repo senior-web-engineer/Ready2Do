@@ -11,8 +11,8 @@ namespace PalestreGoGo.WebAPI.FluentValidators
     {
         public NuovoClienteAPIModelValidator()
         {
-            RuleFor(c => c.Nome).NotEmpty().MaximumLength(100);
-            RuleFor(c => c.IdTipologia).GreaterThan(0);
+            RuleFor(c => c.NomeStruttura).NotEmpty().MaximumLength(100);
+            RuleFor(c => c.IdTipologia).GreaterThanOrEqualTo(0);
             RuleFor(c => c.Indirizzo).NotEmpty().MaximumLength(250);
             RuleFor(c => c.Coordinate).NotNull();
             RuleFor(c => c.RagioneSociale).NotEmpty().MaximumLength(100);
@@ -22,7 +22,6 @@ namespace PalestreGoGo.WebAPI.FluentValidators
             RuleFor(c => c.Citta).NotEmpty().MaximumLength(100);
             RuleFor(c => c.ZipOrPostalCode).MaximumLength(10);
             RuleFor(c => c.Country).MaximumLength(100);
-            RuleFor(c => c.NuovoUtente).SetValidator(new UtenteValidator());
         }
     }
 }
