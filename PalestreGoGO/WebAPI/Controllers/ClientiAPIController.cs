@@ -160,6 +160,9 @@ namespace PalestreGoGo.WebAPI.Controllers
                         try
                         {
                             await _repository.CompensateCreateClienteAsync(resultDB.idCliente, resultDB.correlationId);
+                            //Step4: Proviamo a rimuovere da B2C la struttura se c'è stato un errore (ammesso che siamo riusciti a salvarla)
+                            await _userManagementService.TryDeleteStrutturaGestitaAsync(userId, resultDB.idCliente);
+
                         }
                         catch (Exception compExc)
                         {

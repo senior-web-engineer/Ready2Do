@@ -62,7 +62,7 @@ namespace PalestreGoGo.WebAPI.Services
             var user = await _b2cClient.GetUserByMailAsync(username);
             _logger.LogWarning($"ConfirmUserEmailAsync -> User [{username}]not founded");
             if (user == null) return new UserConfirmationResultAPIModel(false);
-            EsitoConfermaRegistrazioneDM esitoConferma= null;
+            EsitoConfermaRegistrazioneDM esitoConferma = null;
             try
             {
                 esitoConferma = await _utentiRepository.CompletaRichiestaRegistrazioneAsync(username, code);
@@ -110,7 +110,7 @@ namespace PalestreGoGo.WebAPI.Services
         /// <returns>Ritorna l'utente creato</returns>
         public async Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser)
         {
-            if((newUser == null) || (newUser.SignInNames == null) || (newUser.SignInNames.Count == 0))
+            if ((newUser == null) || (newUser.SignInNames == null) || (newUser.SignInNames.Count == 0))
             {
                 throw new ArgumentException(nameof(newUser));
             }
@@ -149,6 +149,24 @@ namespace PalestreGoGo.WebAPI.Services
                 user.StruttureOwned = idCliente.ToString();
             }
             await _b2cClient.UpdateUserStruttureOwnedAsync(user.Id, user.StruttureOwned);
+        }
+
+        public async Task TryDeleteStrutturaGestitaAsync(string userId, int idCliente)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException(nameof(userId));
+            var user = await GetUserByIdAsync(userId);
+            //Se non ha strutture associate ritorniamo
+            if (string.IsNullOrWhiteSpace(user.StruttureGestite))
+            {
+                Log.Warning("Nessuna StrutturaGestita per l'utente: [{userId}] - Impossibile rimuovere la StrutturaGestita [{idCliente}]", userId, idCliente);
+                return;
+            }
+            string[] struttureGestite = user.StruttureGestite
+                                                .Split(',')
+                                                .Where(s => !s.Trim().Equals(idCliente.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                                                .Select(s => s.Trim())
+                                                .ToArray();
+            await _b2cClient.UpdateUserStruttureOwnedAsync(userId, string.Join(',', struttureGestite));
         }
 
         public async Task SaveProfileChangesAsync(string userId, UtenteInputDM profilo)

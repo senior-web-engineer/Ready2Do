@@ -8,8 +8,37 @@
         .row {
             margin-bottom: 0px;
         }
+
+        .r2d-overlay {
+            background: #e9e9e9;
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.75;
+            z-index:999;
+        }
     </style>
 }
+    <div class="r2d-overlay" >
+        <div style="height: 100vh;display: flex;justify-content: center; align-items: center; flex-direction:column">
+            <h1 style="order: 1;">... CREAZIONE IN CORSO ...</h1>
+
+            <div class="preloader-wrapper big active" style="order:2;">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <section class="section">
     <div class="row">
@@ -82,7 +111,7 @@
                 <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
             </div>
             <div class="input-field col s12 center">
-                <button type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30">Registrati</button>
+                <button id="frmSubmit" type="submit" name="submit" class="waves-effect waves-light btn submit-button pink mt-30" >Registrati</button>
             </div>
         </div>
         <input id="esitoLookup" type="hidden" asp-for="EsitoLookup" />
@@ -116,11 +145,13 @@
 
             autocomplete = new google.maps.places.Autocomplete(input, options);
             autocomplete.addListener('place_changed', function () {
+                console.log("place_changed event fired!");
                 var place = autocomplete.getPlace();
                 //NOTA: se non è stata selezionato uno degli indirizzi proposti da google, perché l'utente ha scritto l'inidirizzo e
                 //      poi ha spostato il focus oppureperché c'è stato un problema nel lookup, l'oggetto place ha la sola proprietà
                 //      Name valorizzta con l'input inserito dall'utente
-
+                console.log("place:" + place.toString());
+                console.log("place.geometry:" + place.geometry.toString());
                 if (place.geometry) {
                     document.getElementById('esitoLookup').value = 1;
                     //document.getElementById('inputLatitudine').value = place.geometry.location.lat();
@@ -147,6 +178,19 @@
             });
             //rimuoviamo il placeholder
             $('#addressAutocomplete').removeAttr("placeholder");
+
+            /*Disabilitiamo il pulsante Submit dopo il click (per evitare submit multipli) 
+             SOLO SE LA FORM E' VALIDA ALTRIMENTI RESTA DISABILITATO!
+             */
+            $('#frmSubmit').on("click", function (event) {
+                var form = $('#formRegistration');
+                var validator = form.validate();
+                if (validator.form()) {
+                    $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+                    $(".r2d-overlay").show();
+                    form.submit();
+                }
+            });            
         });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
@@ -164,5 +208,4 @@
             });
         }(jQuery));
     </script>
-
 }
