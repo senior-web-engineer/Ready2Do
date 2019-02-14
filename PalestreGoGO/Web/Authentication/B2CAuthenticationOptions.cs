@@ -19,5 +19,6 @@ namespace Web.Authentication
         public string PostLogoutRedirectUri { get; set; }
         public string ApiIdentifier { get; set; }
         public string ApiScopes { get; set; }
+        public B2CPolicies Policies { get; set; }
     }
 }

@@ -78,7 +78,7 @@ namespace Web
             services.AddScoped<ReauthenticationRequiredFilter>();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CanEditStruttura", policy => policy.Requirements.Add(new CadEditStrutturaRequirement()));
+                options.AddPolicy("CanEditStruttura", policy => policy.Requirements.Add(new CadEditStrutturaRequirement()));                
             });
             services.AddSingleton<IAuthorizationHandler, CanEditStrutturaHandler>();
 
@@ -237,6 +237,7 @@ namespace Web
                             new[] { authOptions.ApiScopes });
 
                         context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+                        /*20190214#GT#Gestione nuovi utenti*/
                     }
                     catch (Exception ex)
                     {

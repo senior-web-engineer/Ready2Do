@@ -1,6 +1,20 @@
-﻿
+﻿@using Web.Utils;
+
 @{
     ViewData["Title"] = "MailToConfirm";
     Layout = "_LayoutClienti";
 }
-<h2>MailToConfirm</h2>
+<h3>Ancora un ultimo passaggio...</h3>
+<img src="~/img/email-check-outline.png"/>
+<p>
+    La registrazione è andata a buon fine però per completare il processo è necessario validare l'indirizzo email inserito.
+</p>
+<p>
+    Abbiamo inviato un email all'indirizzo @(User.Email()), utilizza il link contenuto al suo interno per confermare il tuo account
+</p>
+
+
+@*<!-- AL MOMENTO NON GESTIAMO LA CONFERMA TRAMITE CODICE -->
+    <form asp-action="ConfirmCode" asp-controller="Account">
+    <input type="text"
+</form>*@
