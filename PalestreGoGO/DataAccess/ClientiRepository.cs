@@ -192,7 +192,7 @@ namespace PalestreGoGo.DataAccess
         /// <param name="provisioningToken"></param>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task ConfermaProvisioningAsync(int idCliente)
+        public async Task ConfermaProvisioningAsync(int idCliente, bool accountConfirmed)
         {
             using (var cn = GetConnection())
             {
@@ -200,6 +200,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.CommandText = "[dbo].[Clienti_ConfermaProvisioning]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pAccountConfermato", SqlDbType.Bit).Value = accountConfirmed;
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }

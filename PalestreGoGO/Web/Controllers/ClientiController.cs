@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Web.Authentication;
 using Web.Configuration;
+using Web.Filters;
 using Web.Models;
 using Web.Models.Mappers;
 using Web.Proxies;
@@ -80,8 +81,13 @@ namespace Web.Controllers
             try
             {
                 await _clienteProxy.NuovoClienteAsync(model.MapToAPIModel());
+                //Se l'utente che ha registrato la nuova struttura non ha ancora confermato l'email lo rimandiamo alla pagina di conferma email
+                if (!User.EmailConfirmedOn().HasValue)
+                {
+                    return RedirectToAction("MailToConfirm", "Account");
+                }
             }
-            catch (ReauthenticationRequiredException reaExc)
+            catch (ReauthenticationRequiredException)
             {
                 Log.Debug("ReauthenticationRequiredException detected");
                 throw;

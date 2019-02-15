@@ -21,7 +21,7 @@ namespace Web.Authentication
         private static B2CAuthenticationOptions B2CAuthenticationOptions;
         private static IDistributedCache DistributedCache;
 
-        public static AddAzureAdB2Authentication(this IServiceCollection services)
+        public static void AddAzureAdB2Authentication(this IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
 
@@ -97,7 +97,6 @@ namespace Web.Authentication
             try
             {
                 var principal = context.Principal;
-
                 var userTokenCache = new DistributedTokenCache(DistributedCache, principal.FindFirst(Constants.ObjectIdClaimType).Value).GetMSALCache();
                 var client = new ConfidentialClientApplication(B2CAuthenticationOptions.ClientId,
                                                                B2CAuthenticationOptions.GetAuthority(principal.FindFirst(Constants.AcrClaimType).Value),
@@ -137,20 +136,17 @@ namespace Web.Authentication
             return Task.CompletedTask;
         }
 
-        private static Task OnRedirectToIdentityProviderHandler(RedirectContext context)
+        private static async Task OnRedirectToIdentityProviderHandler(RedirectContext context)
         {
-            var configuration = await GetOpenIdConnectConfigurationAsync(context, defaultPolicy);
+            var configuration = await GetOpenIdConnectConfigurationAsync(context, B2CAuthenticationOptions.Policies.SignInOrSignUpPolicy);
             context.ProtocolMessage.IssuerAddress = configuration.AuthorizationEndpoint;
-
-            return Task.CompletedTask;
         }
-        private static async Task OnRedirectToIdentityProviderForSignOutHandler(RedirectContext ctx)
+        private static async Task OnRedirectToIdentityProviderForSignOutHandler(RedirectContext context)
         {
-            var configuration = await GetOpenIdConnectConfigurationAsync(context, defaultPolicy);
+            var configuration = await GetOpenIdConnectConfigurationAsync(context, B2CAuthenticationOptions.Policies.SignInOrSignUpPolicy);
             context.ProtocolMessage.IssuerAddress = configuration.AuthorizationEndpoint;
-
-            return Task.CompletedTask;
         }
+
         private static Task OnRemoteFailureHandler(RemoteFailureContext ctx)
         {
             return Task.CompletedTask;
@@ -179,31 +175,7 @@ namespace Web.Authentication
         {
             return Task.CompletedTask;
         }
-
-
-        private static OpenIdConnectEvents CreateOpenIdConnectEventHandlers(B2CAuthenticationOptions authOptions, B2CPolicies policies, IDistributedCache distributedCache)
-        {
-            return new OpenIdConnectEvents
-            {
-                OnRedirectToIdentityProvider = context => SetIssuerAddressAsync(context, policies.SignInOrSignUpPolicy),
-                OnRedirectToIdentityProviderForSignOut = context => SetIssuerAddressForSignOutAsync(context, policies.SignInOrSignUpPolicy),
-                
-               
-               
-            };
-        }
-
-        private static async Task SetIssuerAddressAsync(RedirectContext context, string defaultPolicy)
-        {
-            var configuration = await GetOpenIdConnectConfigurationAsync(context, defaultPolicy);
-            context.ProtocolMessage.IssuerAddress = configuration.AuthorizationEndpoint;
-        }
-
-        private static async Task SetIssuerAddressForSignOutAsync(RedirectContext context, string defaultPolicy)
-        {
-            var configuration = await GetOpenIdConnectConfigurationAsync(context, defaultPolicy);
-            context.ProtocolMessage.IssuerAddress = configuration.EndSessionEndpoint;
-        }
+        #endregion
 
         private static Task<OpenIdConnectConfiguration> GetOpenIdConnectConfigurationAsync(RedirectContext context, string defaultPolicy)
         {
@@ -212,7 +184,5 @@ namespace Web.Authentication
 
             return manager.GetConfigurationByPolicyAsync(CancellationToken.None, policy);
         }
-
-
     }
 }

@@ -136,7 +136,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             try
             {
                 // Creazione record Cliente sul DB
-                Log.Debug("Ricevuta richiesta di registrazione per un nuovo cliente {@newCliente} da perte dell'utente {@userId}", newCliente, GetCurrentUser());
+                Log.Debug("Ricevuta richiesta di registrazione per un nuovo cliente {@newCliente} da parte dell'utente {@userId}", newCliente, GetCurrentUser());
                 var userId = GetCurrentUser().UserId();
                 var azUser = await _userManagementService.GetUserByIdAsync(userId);
                 var nuovoClienteDM = newCliente.ToDM(userId);
@@ -149,7 +149,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                     //Step4: Update B2C con la struttura gestita
                     await _userManagementService.AggiungiStrutturaGestitaAsync(azUser, resultDB.idCliente);
                     //Step5: Aggiorniamo lo stato di provisioning del Cliente
-                    await _repository.ConfermaProvisioningAsync(resultDB.idCliente);
+                    await _repository.ConfermaProvisioningAsync(resultDB.idCliente, !string.IsNullOrWhiteSpace(azUser.AccountConfirmedOn));
                 }
                 catch (Exception exc)
                 {

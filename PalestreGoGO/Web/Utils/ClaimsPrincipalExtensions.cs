@@ -1,6 +1,7 @@
 ﻿using Common.Utils;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Web.Models;
@@ -45,6 +46,39 @@ namespace Web.Utils
                 result = result | UserType.GlobalAdmin;
             }
             return result;
+        }
+
+        public static IEnumerable<int> StruttureGestite(this ClaimsPrincipal principal)
+        {
+            List<int> result = new List<int>();
+            var claim = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimStructureManaged));
+            if (claim == null) return result;
+            foreach (var c in claim.Value.Split(','))
+            {
+                result.Add(int.Parse(c));
+            }
+            return result;
+        }
+
+        public static IEnumerable<int> StruttureOwned(this ClaimsPrincipal principal)
+        {
+            List<int> result = new List<int>();
+            var claim = principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimStructureOwned));
+            if (claim == null) return result;
+            foreach (var c in claim.Value.Split(','))
+            {
+                result.Add(int.Parse(c));
+            }
+            return result;
+        }
+
+        public static bool IsGlobalAdmin(this ClaimsPrincipal principal)
+        {
+            if (principal.Claims.Any(c => c.Type.Equals(Constants.ClaimGlobalAdmin) && c.Value.Equals(true.ToString())))
+            {
+                return true;
+            }
+            return false;
         }
 
         public static bool IsAtLeastAdmin(this UserType userType)

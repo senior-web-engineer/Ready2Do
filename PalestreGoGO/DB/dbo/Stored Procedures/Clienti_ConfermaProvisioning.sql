@@ -1,14 +1,17 @@
 ﻿CREATE PROCEDURE [dbo].[Clienti_ConfermaProvisioning]
-	@pIdCliente			INT
+	@pIdCliente				INT,
+	@pAccountConfermato		BIT = 0
 AS
 BEGIN
 	DECLARE @dtOp DATETIME2 = SYSDATETIME(),
+			@STATO_PUBLISHED TINYINT = 10,
 			@STATO_PROVISIONED TINYINT = 3, --Valore fisso corrispondente al record in StatiCliente,
 			@STATO_NOTPROVISIONED TINYINT = 0 --Valore fisso corrispondente al record in StatiCliente
 	
 	UPDATE Clienti
 		SET DataProvisioning = @dtOp,
-			IdStato = @STATO_PROVISIONED
+			-- Lo stato lo impostiamo a seconda che l'utente abbia confermato la propria email o meno
+			IdStato = CASE WHEN COALESCE(@pAccountConfermato, 0) = 0 THEN @STATO_PROVISIONED ELSE @STATO_PUBLISHED END
 	WHERE Id = @pIdCliente
 	AND IdStato = @STATO_NOTPROVISIONED
 	AND DataProvisioning IS NULL

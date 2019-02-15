@@ -6,16 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Authentication;
 
-namespace Web.Authentication
+namespace Web.Filters
 {
     internal class ReauthenticationRequiredFilter : IExceptionFilter
     {
         private readonly B2CPolicies policies;
 
-        public ReauthenticationRequiredFilter(IOptions<B2CPolicies> policies)
+        public ReauthenticationRequiredFilter(IOptions<B2CAuthenticationOptions> b2cOptions)
         {
-            this.policies = policies.Value;
+            this.policies = b2cOptions.Value.Policies;
         }
 
         public void OnException(ExceptionContext context)

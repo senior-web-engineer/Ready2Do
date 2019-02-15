@@ -24,6 +24,7 @@ using Web.Utils;
 namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
+    [Route("/accounts")]
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -68,6 +69,7 @@ namespace Web.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("signup-cliente")]
         public IActionResult SignupCliente()
         {
             if (!User.Identity.IsAuthenticated)
@@ -175,19 +177,19 @@ namespace Web.Controllers
 
         //
         // GET: /Account/Register
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult RegisterUtente([FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
-        {
-            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-            {
-                returnUrl = null;
-            }
-            var vm = new UtenteRegistrationViewModel();
-            ViewData["ReturnUrl"] = returnUrl;
-            ViewData["IdAffiliato"] = idStrutturaAffiliata;
-            return View(vm);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult RegisterUtente([FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
+        //{
+        //    if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+        //    {
+        //        returnUrl = null;
+        //    }
+        //    var vm = new UtenteRegistrationViewModel();
+        //    ViewData["ReturnUrl"] = returnUrl;
+        //    ViewData["IdAffiliato"] = idStrutturaAffiliata;
+        //    return View(vm);
+        //}
 
         //
         //// POST: /Account/Register
@@ -246,33 +248,21 @@ namespace Web.Controllers
         //}
 
 
+        /// <summary>
+        /// Ritorna la pagina di conferma email
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult MailToConfirm([FromQuery]string email, [FromQuery]string code)
+        [Route("account-to-confirm", Name = "MailToConfirmRoute")]
+        [HttpGet()]
+        public IActionResult MailToConfirm([FromQuery] string error)
         {
-            return View();
+            return View("MailToConfirm", error);
         }
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //[Produces("application/json")]
-        //public async Task<IActionResult> CheckEmail(string email)
-        //{
-        //    //ViewData["ReturnUrl"] = returnUrl;
-        //    bool emailIsValid = await _account.CheckEmailAsync(email);
-        //    if (!emailIsValid)
-        //    {
-        //        return Json(data: $"L'email specificata risulta già registrata.");
-        //    }
-        //    else
-        //    {
-        //        return Json(data: emailIsValid);
-        //    }
-        //}
-
-
-        [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfermaAccount(string email, string code)
+        [HttpGet("confirm-account")]
+        public async Task<IActionResult> ConfermaAccount([FromQuery] string email, [FromQuery] string code)
         {
             try
             {
@@ -281,7 +271,7 @@ namespace Web.Controllers
                 //      In caso di utente invece, il redirect andrebbe fatto alla struttura a cui è affiliato se presente, altrimenti alla home del sito
                 if (!confirmationResult.Esito)
                 {
-                    return BadRequest();
+                    return RedirectToAction("MailToConfirm", "Impossibile validare l'account.");
                 }
                 var idCliente = confirmationResult.IdCliente ?? confirmationResult.IdStrutturaAffiliate;
                 if (idCliente.HasValue)
@@ -289,7 +279,6 @@ namespace Web.Controllers
                     var cliente = await _clientiProxy.GetClienteAsync(idCliente.Value);
                     var url = Url.RouteUrl("HomeCliente", new { cliente = cliente.UrlRoute });
                     return Redirect(url);
-                    //                    return RedirectToAction("HomeCliente", "Clienti", );
                 }
                 else
                 {

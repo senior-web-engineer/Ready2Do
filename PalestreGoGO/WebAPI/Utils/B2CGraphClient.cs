@@ -31,7 +31,7 @@ namespace PalestreGoGo.WebAPI.Utils
 
         const string StruttureOwned = "extension_827f6baba88543a9952b028ac0e17bf9_struttureOwned";
         const string StruttureGestite = "extension_827f6baba88543a9952b028ac0e17bf9_struttureGestite";
-        const string AccountConfirmedOn = "extension_827f6baba88543a9952b028ac0e17bf9_accountConfirmedOn";
+        const string AccountConfirmedOn = "extension_827f6baba88543a9952b028ac0e17bf9_emailConfirmationDate";
         const string Refereer = "extension_827f6baba88543a9952b028ac0e17bf9_refereer";
         #endregion
         string _clientId;
