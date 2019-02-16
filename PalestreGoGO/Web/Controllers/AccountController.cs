@@ -136,7 +136,7 @@ namespace Web.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("confirm-account")]
+        [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfermaAccount([FromQuery] string email, [FromQuery] string code)
         {
             try

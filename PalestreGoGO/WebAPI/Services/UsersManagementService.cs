@@ -55,14 +55,16 @@ namespace PalestreGoGo.WebAPI.Services
             _richiesteRegistrazioniRepository = richiesteRegistrazioniRepository;
         }
 
-        public async Task SendConfirmationEmailAsync(string userEmail, Guid? correlationId = null, DateTime? expirationDate = null)
+        public async Task SendConfirmationEmailAsync(string userEmail, Guid? correlationId = null, DateTime? expirationDate = null, string nome = null, string cognome = null)
         {
             DateTime expiration = DateTime.Now.AddMinutes(_config.GetValue<int>("Provisioning:ValidationEmailValidityMinutes", Constants.DEFAULT_VALIDATION_VALIDITY));
             var code = await _richiesteRegistrazioniRepository.NuovaRichiestaRegistrazioneAsync(userEmail, expirationDate, correlationId, null);
 
-            var email = new ConfirmationMailMessage(userEmail, code,
+            var email = new ConfirmationMailMessage(userEmail, code,                                                    
                                                     _config.GetValue<string>("Provisioning:EmailConfirmationUrl"),
-                                                    true);
+                                                    true,
+                                                    cognome:cognome,
+                                                    nome: nome);
             await _confirmUserService.EnqueueConfirmationMailRequestAsync(email);
         }
 

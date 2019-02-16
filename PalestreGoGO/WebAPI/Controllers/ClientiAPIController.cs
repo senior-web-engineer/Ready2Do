@@ -173,7 +173,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 //Step5: Aggiorniamo lo stato di provisioning del Cliente
                 await _repository.ConfermaProvisioningAsync(resultDB.idCliente, !string.IsNullOrWhiteSpace(azUser.AccountConfirmedOn));
                 //Step6: Inviamo email per la conferma dell'account
-                await _userManagementService.SendConfirmationEmailAsync(azUser.Emails.First());
+                await _userManagementService.SendConfirmationEmailAsync(azUser.Emails.First(), nome: azUser.Nome, cognome:azUser.Cognome);
                 Log.Information("Creato nuovo Cliente con Id: {idCliente} per l'utente {userId}", resultDB.idCliente, userId);
                 _insightsClient.TrackEvent("Registrazione_Cliente", new Dictionary<string, string>
                                             {{"IdCliente",resultDB.idCliente.ToString()}, {"UserName",userId }});

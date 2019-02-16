@@ -75,7 +75,8 @@ namespace PalestreGoGo.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            await _userManagementService.SendConfirmationEmailAsync(userEmail);
+            var azUser = await _userManagementService.GetUserByIdAsync(User.UserId());
+            await _userManagementService.SendConfirmationEmailAsync(userEmail, nome: azUser.Nome, cognome: azUser.Cognome);
             return Ok();
         }
 

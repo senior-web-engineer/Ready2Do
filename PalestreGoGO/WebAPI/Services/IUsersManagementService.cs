@@ -24,7 +24,7 @@ namespace PalestreGoGo.WebAPI.Services
 
         Task SaveProfileChangesAsync(string userId, UtenteInputDM profilo);
 
-        Task SendConfirmationEmailAsync(string userEmail, Guid? correlationId = null, DateTime? expirationDate = null);
+        Task SendConfirmationEmailAsync(string userEmail, Guid? correlationId = null, DateTime? expirationDate = null, string nome = null, string cognome = null);
 
         //        Task<string> RegisterUserAsync(AzureUser user);
 
