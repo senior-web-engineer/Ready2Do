@@ -108,133 +108,6 @@ namespace Web.Controllers
 
         
 
-        //
-        //// POST: /Account/Register
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> RegisterClienteStep1(ClientRegistrationAccountInputModel model, string returnUrl = null)
-        //{
-        //    //if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-        //    //{
-        //    //    returnUrl = null;
-        //    //}
-        //    //ViewData["ReturnUrl"] = returnUrl;
-        //    //if (ModelState.IsValid)
-        //    //{
-
-        //    //    /* Creiamo il l'utenza*/
-        //    //    var apiModel = new NuovoClienteAPIModel()
-        //    //    {
-        //    //        Citta = model.Citta,
-        //    //        ZipOrPostalCode = model.CAP,
-        //    //        Country = model.Country,
-        //    //        Email = model.Email,
-        //    //        IdTipologia = model.IdTipologia,
-        //    //        Indirizzo = model.Indirizzo,
-        //    //        Nome = model.Nome,
-        //    //        Cognome = model.Cognome,
-        //    //        NumTelefono = model.Telefono,
-        //    //        RagioneSociale = model.RagioneSociale,
-        //    //        UrlRoute = model.URL,
-        //    //        NuovoUtente = new NuovoUtenteViewModel()
-        //    //        {
-        //    //            Cognome = model.Cognome,
-        //    //            Email = model.Email,
-        //    //            Nome = model.Nome,
-        //    //            Password = model.Password,
-        //    //            Telefono = model.Telefono
-        //    //        }
-        //    //    };
-        //    //    //Parsing coordinate
-        //    //    //NOTA: dato che usando direttamente il tipo float nel ViewModel abbiamo problemi di Culture dobbiamo parsarla a mano
-        //    //    if (float.TryParse(model.Latitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudine) &&
-        //    //        float.TryParse(model.Longitudine, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudine))
-        //    //    {
-        //    //        apiModel.Coordinate = new CoordinateAPIModel(latitudine, longitudine);
-        //    //        var result = await _apiClient.NuovoClienteAsync(apiModel);
-        //    //        if (result)
-        //    //        {
-        //    //            return RedirectToAction("MailToConfirm");
-        //    //        }
-        //    //        else
-        //    //        {
-        //    //            //Dobbiamo gestire meglio gli errori lato API!
-        //    //            ModelState.AddModelError(string.Empty, "Errore durante la creazione del cliente");
-        //    //        }
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
-        //    //    }
-        //    //}
-
-        //    // If we got this far, something failed, redisplay form
-        //    //return View(await _account.BuildRegisterClienteViewModelAsync(model));
-        //    throw new NotImplementedException();
-        //}
-
-
-        //
-        // GET: /Account/Register
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult RegisterUtente([FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
-        //{
-        //    if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-        //    {
-        //        returnUrl = null;
-        //    }
-        //    var vm = new UtenteRegistrationViewModel();
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    ViewData["IdAffiliato"] = idStrutturaAffiliata;
-        //    return View(vm);
-        //}
-
-        //
-        //// POST: /Account/Register
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> RegisterUtente([FromForm]UtenteRegistrationViewModel model, [FromQuery] string returnUrl = null, [FromQuery(Name = "idref")] int? idStrutturaAffiliata = null)
-        //{
-        //    if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
-        //    {
-        //        returnUrl = null;
-        //    }
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (model.Password.Equals(model.PasswordConfirm))
-        //        {
-        //            /* Creiamo il l'utenza*/
-        //            var nuovoUtente = new NuovoUtenteViewModel()
-        //            {
-        //                Cognome = model.Cognome,
-        //                Email = model.Email,
-        //                Nome = model.Nome,
-        //                Password = model.Password
-        //            };
-
-        //            var result = await _utentiProxy.NuovoUtenteAsync(nuovoUtente, idStrutturaAffiliata);
-        //            if (result)
-        //            {
-        //                return RedirectToAction("MailToConfirm");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError("Password", "Le password inserite non coincidono.");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Coordinate non valide");
-        //    }
-        //    // If we got this far, something failed, redisplay form
-        //    return View(model);
-        //}
-
         //[HttpGet]
         //public IActionResult UtenteEditProfile(string redirectUrl)
         //{
@@ -253,11 +126,13 @@ namespace Web.Controllers
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
-        [Route("account-to-confirm", Name = "MailToConfirmRoute")]
+        [Route("account-to-confirm")]
         [HttpGet()]
-        public IActionResult MailToConfirm([FromQuery] string error)
+        public IActionResult MailToConfirm([FromQuery] string error = null, [FromQuery] bool? isResend = false)
         {
-            return View("MailToConfirm", error);
+            ViewBag.IsResend = isResend ?? false;
+            ViewBag.ErrorMessage = error;
+            return View("MailToConfirm");
         }
 
         [AllowAnonymous]
@@ -290,6 +165,13 @@ namespace Web.Controllers
                 _logger.LogError(exc, $"Errore durante la conferma dell'account. Email:{email}, Code:{code}");
                 return BadRequest();
             }
+        }
+
+        [HttpPost("send-confirm-email")]
+        public async Task<IActionResult> SendNewConfirmMail()
+        {
+            await _utentiProxy.SendNewConfirmEmail(User.Email());
+            return RedirectToAction("MailToConfirm","Account", new { isResend = true });
         }
     }
 }

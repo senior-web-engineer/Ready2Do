@@ -7,6 +7,7 @@ using ready2do.model.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Web.Authentication;
@@ -69,6 +70,12 @@ namespace Web.Proxies
             {
                 return JsonConvert.DeserializeObject<UserConfirmationResultAPIModel>(await response.Content.ReadAsStringAsync());
             }
+        }
+
+        public async Task SendNewConfirmEmail(string email)
+        {
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/utenti/send-confirm-email/{WebUtility.UrlEncode(email)}";
+            await SendPostRequestAsync<string>(uri, null, true);
         }
 
         public async Task<UtenteDM> GetProfiloUtente()

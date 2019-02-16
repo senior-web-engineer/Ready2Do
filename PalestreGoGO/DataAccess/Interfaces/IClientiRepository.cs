@@ -11,7 +11,7 @@ namespace PalestreGoGo.DataAccess
     {
         Task<(int idCliente, Guid correlationId)> CreateClienteAsync(NuovoClienteInputDM cliente);
         Task CompensateCreateClienteAsync(int idCliente, Guid correlationId);
-        Task<string> RichiestaRegistrazioneCreaAsync(string userName, Guid? correlationId, DateTime? expiration);
+        //Task<string> RichiestaRegistrazioneCreaAsync(string userName, Guid? correlationId, DateTime? expiration);
         Task ConfermaProvisioningAsync(int idCliente, bool accountConfirmed);
         Task<ClienteDM> GetClienteByIdAsync(int idCliente);
         Task<ClienteDM> GetClienteByUrlRouteAsync(string urlRoute);

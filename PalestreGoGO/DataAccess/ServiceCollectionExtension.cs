@@ -23,6 +23,7 @@ namespace PalestreGoGo.DataAccess
             services.AddTransient<INotificheRepository, NotificheRepository>();
             services.AddTransient<IClientiUtentiRepository, ClientiUtentiRepository>();
             services.AddTransient<IImmaginiClientiRepository, ImmaginiClientiRepository>();
+            services.AddTransient<IRichiesteRegistrazioneRepository, RichiesteRegistrazioneRepository>();
             return services;
         }
     }

@@ -24,7 +24,10 @@ namespace PalestreGoGo.WebAPI
 
         public const string ClaimMailConfirmed = "";
         public const string ClaimUserId = ClaimTypes.NameIdentifier; //"uid";
+        public const string ClaimUserEmail = "emails";
         #endregion
+
+        public const int DEFAULT_VALIDATION_VALIDITY = 2880; //48 Ore se non configurato diversamente
 
         #region SCOPES
         public const string ScopeTipologicheEdit = "tipologiche.edit";

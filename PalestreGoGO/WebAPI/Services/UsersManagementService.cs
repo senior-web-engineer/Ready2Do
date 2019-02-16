@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.DataModel;
@@ -26,27 +27,43 @@ namespace PalestreGoGo.WebAPI.Services
         private readonly IClientiRepository _repository;
         private readonly IClientiUtentiRepository _repositoryClientiUtenti;
         private readonly IUtentiRepository _utentiRepository;
+        private readonly IRichiesteRegistrazioneRepository _richiesteRegistrazioniRepository;
         private readonly B2CGraphClient _b2cClient;
+        private readonly IConfiguration _config;
 
         private static Random s_random = new Random(DateTime.Now.Millisecond);
 
         public UsersManagementService(/*UserManager<AppUser> userManager,*/
                                       B2CGraphClient b2cClient,
+                                      IConfiguration config,
                                       IUserConfirmationService confirmService,
                                       ILogger<UsersManagementService> logger,
                                       IClientiProvisioner clientiProvisioner,
                                       IClientiRepository repository,
                                       IUtentiRepository utentiRepository,
-                                      IClientiUtentiRepository repositoryClientiUtenti
-                                      )
+                                      IClientiUtentiRepository repositoryClientiUtenti,
+                                      IRichiesteRegistrazioneRepository richiesteRegistrazioniRepository)
         {
             _logger = logger;
+            _config = config;
             _b2cClient = b2cClient;
             _confirmUserService = confirmService;
             _clientiProvisioner = clientiProvisioner;
             _repository = repository;
             _utentiRepository = utentiRepository;
             _repositoryClientiUtenti = repositoryClientiUtenti;
+            _richiesteRegistrazioniRepository = richiesteRegistrazioniRepository;
+        }
+
+        public async Task SendConfirmationEmailAsync(string userEmail, Guid? correlationId = null, DateTime? expirationDate = null)
+        {
+            DateTime expiration = DateTime.Now.AddMinutes(_config.GetValue<int>("Provisioning:ValidationEmailValidityMinutes", Constants.DEFAULT_VALIDATION_VALIDITY));
+            var code = await _richiesteRegistrazioniRepository.NuovaRichiestaRegistrazioneAsync(userEmail, expirationDate, correlationId, null);
+
+            var email = new ConfirmationMailMessage(userEmail, code,
+                                                    _config.GetValue<string>("Provisioning:EmailConfirmationUrl"),
+                                                    true);
+            await _confirmUserService.EnqueueConfirmationMailRequestAsync(email);
         }
 
         /// <summary>
@@ -65,7 +82,7 @@ namespace PalestreGoGo.WebAPI.Services
             EsitoConfermaRegistrazioneDM esitoConferma = null;
             try
             {
-                esitoConferma = await _utentiRepository.CompletaRichiestaRegistrazioneAsync(username, code);
+                esitoConferma = await _richiesteRegistrazioniRepository.CompletaRichiestaRegistrazioneAsync(username, code);
                 var result = new UserConfirmationResultAPIModel(user.Id)
                 {
                     IdStrutturaAffiliate = esitoConferma.IdRefereer,
@@ -128,7 +145,7 @@ namespace PalestreGoGo.WebAPI.Services
         }
 
         //Aggiunge all'utente passato l'idCliente come struttura gestita
-        public async Task AggiungiStrutturaGestitaAsync(AzureUser user, int idCliente)
+        public async Task AggiungiStrutturaOwnedAsync(AzureUser user, int idCliente)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (!string.IsNullOrWhiteSpace(user.StruttureOwned))
@@ -151,22 +168,22 @@ namespace PalestreGoGo.WebAPI.Services
             await _b2cClient.UpdateUserStruttureOwnedAsync(user.Id, user.StruttureOwned);
         }
 
-        public async Task TryDeleteStrutturaGestitaAsync(string userId, int idCliente)
+        public async Task TryDeleteStrutturaOwnedAsync(string userId, int idCliente)
         {
             if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException(nameof(userId));
             var user = await GetUserByIdAsync(userId);
             //Se non ha strutture associate ritorniamo
-            if (string.IsNullOrWhiteSpace(user.StruttureGestite))
+            if (string.IsNullOrWhiteSpace(user.StruttureOwned))
             {
-                Log.Warning("Nessuna StrutturaGestita per l'utente: [{userId}] - Impossibile rimuovere la StrutturaGestita [{idCliente}]", userId, idCliente);
+                Log.Warning("Nessuna StrutturaOwned per l'utente: [{userId}] - Impossibile rimuovere la StrutturaGestita [{idCliente}]", userId, idCliente);
                 return;
             }
-            string[] struttureGestite = user.StruttureGestite
+            string[] struttureOwned = user.StruttureOwned
                                                 .Split(',')
                                                 .Where(s => !s.Trim().Equals(idCliente.ToString(), StringComparison.InvariantCultureIgnoreCase))
                                                 .Select(s => s.Trim())
                                                 .ToArray();
-            await _b2cClient.UpdateUserStruttureOwnedAsync(userId, string.Join(',', struttureGestite));
+            await _b2cClient.UpdateUserStruttureOwnedAsync(userId, string.Join(',', struttureOwned));
         }
 
         public async Task SaveProfileChangesAsync(string userId, UtenteInputDM profilo)
@@ -181,44 +198,5 @@ namespace PalestreGoGo.WebAPI.Services
             };
             await _b2cClient.UpdateUserProfile(userId, azUser);
         }
-
-        //public async Task<string> RegisterOwnerAsync(AzureUser user, string idCliente, Guid correlationId)
-        //{
-        //    if (user == null) throw new ArgumentNullException(nameof(user));
-        //    if (string.IsNullOrWhiteSpace(idCliente)) throw new ArgumentNullException(nameof(idCliente));
-        //    if (!string.IsNullOrWhiteSpace(user.StruttureOwned)) throw new ArgumentException("L'utente è già owner di una struttura");
-        //    // ATTENZIONE! Eventuali altre strutture vengono sovrascritte
-        //    user.StruttureOwned = idCliente.ToString(); 
-        //    //var createdUser = await _b2cClient.CreateUserAsync(user);
-        //    var createdUser = await internalCreateUserAsync(user, false);
-        //    _logger.LogInformation($"Created a new owner. UserId: {createdUser.Id}");
-        //    return createdUser.Id;
-        //}
-
-        //public async Task<string> RegisterUserAsync(AzureUser user)
-        //{
-        //    if (user == null) throw new ArgumentNullException(nameof(user));
-        //    //var createdUser = await _b2cClient.CreateUserAsync(user);
-        //    var createdUser = await internalCreateUserAsync(user, false);
-        //    _logger.LogInformation($"Created a new user (UserId: {createdUser.UserPrincipalName}) affiliated with referer: {createdUser.Refereer}");
-
-        //    return createdUser.Id;
-        //}
-
-        //protected async Task<AzureUser> internalCreateUserAsync(AzureUser user, bool isCliente, Guid? correlationId = null)
-        //{
-        //    var createdUser = await _b2cClient.CreateUserAsync(user);
-        //    _logger.LogDebug($"User with email: {user.Emails[0]} created");
-        //    string code = GenerateEmailConfirmationToken(createdUser);
-        //    string userName = user.SignInNames[0].Value;
-        //    var richiesta = await _utentiRepository.RichiestaRegistrazioneSalvaAsync(userName, code, correlationId);
-        //    _logger.LogTrace($"RegisterUser-> generated code [{code}]for user: {userName}");
-        //    await _confirmUserService.SendConfirmationMailRequestAsync(new ConfirmationMailMessage(userName, code, richiesta.CorrelationId.ToString("D"), isCliente));
-        //    _logger.LogInformation($"Created a new account with password and enqueued confirmation mail send. UserId: {createdUser.Id}");
-        //    return createdUser;
-        //}
-
-
-
     }
 }

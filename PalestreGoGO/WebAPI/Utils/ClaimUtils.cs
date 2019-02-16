@@ -23,6 +23,12 @@ namespace PalestreGoGo.WebAPI.Utils
             return userId;
         }
 
+        public static string Email(this ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            return principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimUserEmail))?.Value;
+        }
+
         /*Ritorna una lista di IdClienti per cui il principal è l'owner*/
         public static IEnumerable<int> StructureOwned(this ClaimsPrincipal principal)
         {

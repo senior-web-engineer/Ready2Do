@@ -14,8 +14,8 @@ namespace PalestreGoGo.WebAPI.Services
     {
         Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser);
 
-        Task AggiungiStrutturaGestitaAsync(AzureUser user, int idCliente);
-        Task TryDeleteStrutturaGestitaAsync(string userId, int idCliente);
+        Task AggiungiStrutturaOwnedAsync(AzureUser user, int idCliente);
+        Task TryDeleteStrutturaOwnedAsync(string userId, int idCliente);
         Task<AzureUser> GetUserByIdAsync(string id);
 
         Task<UserConfirmationResultAPIModel> ConfirmUserEmailAsync(string username, string code);
@@ -23,8 +23,9 @@ namespace PalestreGoGo.WebAPI.Services
         Task<AzureUser> GetUserByMailAsync(string email);
 
         Task SaveProfileChangesAsync(string userId, UtenteInputDM profilo);
-        
-        
+
+        Task SendConfirmationEmailAsync(string userEmail, Guid? correlationId = null, DateTime? expirationDate = null);
+
         //        Task<string> RegisterUserAsync(AzureUser user);
 
         //Task<LocalAccountUser> GetUserByUsernameAsync(string username);

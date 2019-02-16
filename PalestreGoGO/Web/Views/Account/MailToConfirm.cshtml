@@ -2,19 +2,40 @@
 
 @{
     ViewData["Title"] = "MailToConfirm";
-    Layout = "_LayoutClienti";
+    Layout = "_LayoutLanding";
 }
-<h3>Ancora un ultimo passaggio...</h3>
-<img src="~/img/email-check-outline.png"/>
-<p>
-    La registrazione è andata a buon fine però per completare il processo è necessario validare l'indirizzo email inserito.
-</p>
-<p>
-    Abbiamo inviato un email all'indirizzo @(User.Email()), utilizza il link contenuto al suo interno per confermare il tuo account
-</p>
-
-
-@*<!-- AL MOMENTO NON GESTIAMO LA CONFERMA TRAMITE CODICE -->
-    <form asp-action="ConfirmCode" asp-controller="Account">
-    <input type="text"
-</form>*@
+<div class="row">
+    <div class="col s8 offset-s2">
+        <div class="center">
+            <h3>Ancora un ultimo passaggio...</h3>
+            <img src="~/img/email-check-outline.png" />
+        </div>
+        @if (!ViewBag.IsResend)
+        {
+            <p>
+                La registrazione è andata a buon fine però per completare il processo è necessario validare l'indirizzo email inserito.
+            </p>
+            <p>
+                Abbiamo inviato un email all'indirizzo <strong>@(User.Email())</strong>, utilizza il link contenuto al suo interno per confermare il tuo account.
+            </p>
+        }
+        else
+        {
+            <p>
+                Abbiamo inviato un nuova email all'indirizzo <strong>@(User.Email())</strong>, utilizza il link contenuto al suo interno per confermare il tuo account.
+            </p>
+        }
+        <p>
+            Non trovi l'email di conferma? Hai verificato nella cartello dello spam? Se non è presente neanche li, prova a richiedere una nuova email.
+        </p>
+        <div class="center">
+            <form asp-action="SendNewConfirmMail" asp-controller="Account">
+                <input type="submit" class="btn" value="Invia Nuova Email" />
+            </form>
+        </div>
+        @*<!-- AL MOMENTO NON GESTIAMO LA CONFERMA TRAMITE CODICE -->
+            <form asp-action="ConfirmCode" asp-controller="Account">
+            <input type="text"
+        </form>*@
+    </div>
+</div>

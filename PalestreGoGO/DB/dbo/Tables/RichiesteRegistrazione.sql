@@ -11,7 +11,7 @@ CREATE TABLE [dbo].[RichiesteRegistrazione]
 	DataRichiesta		DATETIME2(2)		NOT NULL	CONSTRAINT DEF_DataRichiestaRegistrazione DEFAULT SYSDATETIME(),
 	CorrelationId		UNIQUEIDENTIFIER	NULL,
 	UserCode			VARCHAR(1000)		NOT NULL,
-	UserName			VARCHAR(500)		NOT NULL,
+	Username			VARCHAR(500)		NOT NULL,
 	Expiration			DATETIME2(2)		NOT NULL,
 	Refereer			INT					NULL,
 	DataConferma		DATETIME2(2)		NULL,

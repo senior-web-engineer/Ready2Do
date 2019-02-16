@@ -28,6 +28,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IUtentiRepository _repositoryUtenti;
         private readonly IAppuntamentiRepository _repositoryAppuntamenti;
         private readonly ISchedulesRepository _repositorySchedules;
+        private readonly IRichiesteRegistrazioneRepository _repositoryRichRegistraz;
         private readonly UtentiBusiness _utentiBusiness;
 
         public UtentiAPIController(ILogger<UtentiAPIController> logger,
@@ -36,6 +37,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                                  IAppuntamentiRepository repositoryAppuntamenti,
                                  ISchedulesRepository repositorySchedules,
                                  IUtentiRepository repositoryUtenti,
+                                 IRichiesteRegistrazioneRepository repositoryRichRegistraz,
                                  UtentiBusiness utentiBusiness
                                  )
         {
@@ -46,6 +48,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             _repositoryUtenti = repositoryUtenti;
             _repositorySchedules = repositorySchedules;
             _utentiBusiness = utentiBusiness;
+            _repositoryRichRegistraz = repositoryRichRegistraz;
         }
 
         /// <summary>
@@ -65,32 +68,16 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(user == null);
         }
 
-        ///// <summary>
-        ///// Registrazione di un Nuovo Utente
-        ///// </summary>
-        ///// <param name="newCliente"></param>
-        ///// <returns></returns>
-        //[HttpPost()]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> NuovoUtente([FromBody]NuovoUtenteViewModel newUser, [FromQuery(Name = "idref")]int? idStrutturaAffiliata)
-        //{
-        //    if (newUser == null) { return new BadRequestResult(); }
-        //    if (!ModelState.IsValid) { return new BadRequestResult(); }
-        //    var token = Guid.NewGuid().ToString("N");
-        //    var appUser = new AzureUser(newUser.Email, newUser.Password)
-        //    {
-        //        Cognome = newUser.Cognome,
-        //        Nome = newUser.Nome,
-        //        TelephoneNumber = newUser.Telefono,
-        //        Refereer = idStrutturaAffiliata?.ToString()
-        //    };
-
-        //    //await _userManagementService.RegisterUserAsync(appUser);
-        //    //TODO: RIvedere il meecanismo di registrazione degli utenti ordinari!
-        //    throw new NotImplementedException();
-        //    return Ok();
-        //}
-
+        [HttpPost("send-confirm-email/{userEmail}")]
+        public async Task<IActionResult> SendConfirmationEmail([FromRoute]string userEmail)
+        {
+            if(!User.Email().Equals(userEmail, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return BadRequest();
+            }
+            await _userManagementService.SendConfirmationEmailAsync(userEmail);
+            return Ok();
+        }
 
         /// <summary>
         /// Conferma l'email dell'utente.
@@ -136,7 +123,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<ActionResult<UtenteDM>> GetProfilo()
         {
             string userId = GetCurrentUser()?.UserId();
-            if (string.IsNullOrWhiteSpace(userId )) { return Forbid(); }
+            if (string.IsNullOrWhiteSpace(userId)) { return Forbid(); }
             AzureUser azUser = await _userManagementService.GetUserByIdAsync(userId);
             if (azUser == null)
             {

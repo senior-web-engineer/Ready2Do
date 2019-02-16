@@ -27,7 +27,6 @@ namespace PalestreGoGo.WebAPI.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClientiAPIController : APIControllerBase
     {
-        private const int DEFAULT_VALIDATION_VALIDITY = 2880; //48 Ore se non configurato diversamente
         private readonly ILogger<ClientiAPIController> _logger;
         private readonly IClientiRepository _repository;
         private readonly IUsersManagementService _userManagementService;
@@ -37,6 +36,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         private readonly IUserConfirmationService _userConfirmationService;
         private readonly IImmaginiClientiRepository _immaginiRepository;
         private readonly TelemetryClient _insightsClient;
+
         public ClientiAPIController(IConfiguration config,
                                  ILogger<ClientiAPIController> logger,
                                  IUsersManagementService userManagementService,
@@ -147,9 +147,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                     //Step3: Provisioning Cliente
                     await _clientiProvisioner.ProvisionClienteAsync(resultDB.idCliente, userId);
                     //Step4: Update B2C con la struttura gestita
-                    await _userManagementService.AggiungiStrutturaGestitaAsync(azUser, resultDB.idCliente);
-                    //Step5: Aggiorniamo lo stato di provisioning del Cliente
-                    await _repository.ConfermaProvisioningAsync(resultDB.idCliente, !string.IsNullOrWhiteSpace(azUser.AccountConfirmedOn));
+                    await _userManagementService.AggiungiStrutturaOwnedAsync(azUser, resultDB.idCliente);
                 }
                 catch (Exception exc)
                 {
@@ -161,7 +159,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                         {
                             await _repository.CompensateCreateClienteAsync(resultDB.idCliente, resultDB.correlationId);
                             //Step4: Proviamo a rimuovere da B2C la struttura se c'è stato un errore (ammesso che siamo riusciti a salvarla)
-                            await _userManagementService.TryDeleteStrutturaGestitaAsync(userId, resultDB.idCliente);
+                            await _userManagementService.TryDeleteStrutturaOwnedAsync(userId, resultDB.idCliente);
 
                         }
                         catch (Exception compExc)
@@ -172,17 +170,10 @@ namespace PalestreGoGo.WebAPI.Controllers
                     }
                     throw; //Risolleviamo l'eccezione originale così da non eseguire le altre operazioni
                 }
-                //Step6: Generiamo la richiesta di registrazione
-                string code = await _repository.RichiestaRegistrazioneCreaAsync(
-                                azUser.Emails.First(),
-                                resultDB.correlationId,
-                                DateTime.Now.AddMinutes(_config.GetValue<int>("Provisioning:ValidationEmailValidityMinutes", DEFAULT_VALIDATION_VALIDITY)));
-                //Step7: Inviamo l'email per la conferma dell'utente
-                var email = new Model.ConfirmationMailMessage(azUser.Emails.First(), code, 
-                                                              _config.GetValue<string>("Provisioning:EmailConfirmationUrl"),
-                                                              true);
-                await _userConfirmationService.EnqueueConfirmationMailRequestAsync(email);
-
+                //Step5: Aggiorniamo lo stato di provisioning del Cliente
+                await _repository.ConfermaProvisioningAsync(resultDB.idCliente, !string.IsNullOrWhiteSpace(azUser.AccountConfirmedOn));
+                //Step6: Inviamo email per la conferma dell'account
+                await _userManagementService.SendConfirmationEmailAsync(azUser.Emails.First());
                 Log.Information("Creato nuovo Cliente con Id: {idCliente} per l'utente {userId}", resultDB.idCliente, userId);
                 _insightsClient.TrackEvent("Registrazione_Cliente", new Dictionary<string, string>
                                             {{"IdCliente",resultDB.idCliente.ToString()}, {"UserName",userId }});
