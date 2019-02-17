@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ready2do.model.common;
 using Web.Configuration;
+using Web.Filters;
 using Web.Models;
 using Web.Models.Mappers;
 using Web.Proxies;
@@ -20,6 +21,8 @@ namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("me")]
+    [ServiceFilter(typeof(ReauthenticationRequiredFilter))]
+
     public class UsersController : Controller
     {
         private readonly ILogger<AccountController> _logger;

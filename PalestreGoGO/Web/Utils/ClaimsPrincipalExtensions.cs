@@ -127,7 +127,7 @@ namespace Web.Utils
             {
                 try
                 {
-                    return long.Parse(value).FromUnixTimeSeconds();
+                    return value.Replace("\"","").FromIS8601();
                 }
                 catch
                 {

@@ -90,6 +90,17 @@ namespace Web.Proxies
             await SendPutRequestAsync(uri, profilo);
         }
 
+        /// <summary>
+        /// Questo metodo viene chiamato nella validazione del Cookie, prima che il Principal corrente sia valorizzato con i Claim (che devono essere ancora letti dal cookie)
+        /// pertanto non possiamo usare il metodo della classe base per recuperare il Token, dobbiamo farci passare 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<AzureUser> GetMyIdPProfileAsync(string userId, string authnclassreference)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/me/ip");
+            var token = await GetAccessTokenAsync(userId, authnclassreference);
+            return await GetRequestAsync<AzureUser>(uri, token);
+        }
         #endregion
 
         #region ABBONAMENTI UTENTI-CLIENTI

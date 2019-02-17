@@ -14,6 +14,7 @@ using System.Linq;
 using System;
 using Serilog;
 using System.Web;
+using Common.Utils;
 
 namespace PalestreGoGo.WebAPI.Utils
 {
@@ -74,6 +75,13 @@ namespace PalestreGoGo.WebAPI.Utils
             await SendGraphPatchRequestAsync($"{API_USERS}/{userId}", json);
         }
 
+        public async Task SetMailConfirmedAsync(string userId)
+        {
+            string json = $"{{'{AccountConfirmedOn}':'{DateTime.Now.ToISO8601(false)}'}}";
+            await SendGraphPatchRequestAsync($"{API_USERS}/{userId}", json);
+        }
+
+
         public async Task<AzureUser> GetUserById(string userId)
         {
             var response = await SendGraphGetRequestAsync($"{API_USERS}/{userId}", null);
@@ -83,7 +91,7 @@ namespace PalestreGoGo.WebAPI.Utils
 
         public async Task<AzureUser> GetUserByMailAsync(string email)
         {
-            string query = $"$filter=(signInNames/any(x:x/value eq '{email}')) or (userPrincipalName eq '{email}')";
+            string query = $"$filter=(signInNames/any(x:x/value eq '{email}')) or (userPrincipalName eq '{email}') or (otherMails/any(x:x eq '{email}'))";
             var response = await SendGraphGetRequestAsync(API_USERS, query);
             var resp = JsonConvert.DeserializeObject<GraphResponse>(response);
             var result = _msGraphSerializer.DeserializeObject<List<AzureUser>>(resp.Value).FirstOrDefault();

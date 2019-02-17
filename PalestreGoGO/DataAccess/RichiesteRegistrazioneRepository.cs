@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using PalestreGoGo.DataModel.Exceptions;
 using ready2do.model.common;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -76,19 +77,25 @@ namespace PalestreGoGo.DataAccess
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@pUserCode", SqlDbType.VarChar, 1000).Value = code;
                     cmd.Parameters.Add("@pUserName", SqlDbType.VarChar, 500).Value = username;
-                    cmd.Parameters.Add(parEsito);
                     cmd.Parameters.Add(parIdCliente);
                     cmd.Parameters.Add(parIdRefereer);
+                    cmd.Parameters.Add(parEsito);
                     await cn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
-                    result.EsitoConferma = (bool)parEsito.Value;
-                    result.IdCliente = (int?)parIdCliente.Value;
-                    result.IdRefereer = (int?)parIdRefereer.Value;
+                    result.EsitoConferma = ((int)parEsito.Value) == 1;
+                    result.IdCliente = parIdCliente.Value != DBNull.Value ? (int?)parIdCliente.Value : default(int?);
+                    result.IdRefereer = parIdRefereer.Value != DBNull.Value ? (int?)parIdRefereer.Value : default(int?);
                 }
             }
             catch (SqlException exc)
             {
+                Log.Error(exc, "Errore duranta la conferma dell'utente [{username}]", username);
                 throw new UserConfirmationException($"Impossibile confermare la registrazione dell'utente [{username}] con il codice [{code}]", exc);
+            }
+            catch(Exception exc)
+            {
+                Log.Error(exc,"Errore durante la conferma dell'utente [{username}]", username);
+                throw;
             }
             return result;
         }

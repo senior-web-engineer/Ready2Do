@@ -16,6 +16,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Web.Authentication;
 using Web.Configuration;
+using Web.Filters;
 using Web.Models;
 using Web.Proxies;
 using Web.Services;
@@ -25,6 +26,7 @@ namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("/accounts")]
+    [ServiceFilter(typeof(ReauthenticationRequiredFilter))]
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
@@ -141,13 +143,16 @@ namespace Web.Controllers
         {
             try
             {
-                var confirmationResult = await _utentiProxy.ConfermaAccount(email, WebUtility.UrlEncode(code));
+                var confirmationResult = await _utentiProxy.ConfermaAccount(email, code);
                 //TODO: Se si tratta di un cliente, il redirect, deve essere fatto alla home del cliente
                 //      In caso di utente invece, il redirect andrebbe fatto alla struttura a cui è affiliato se presente, altrimenti alla home del sito
                 if (!confirmationResult.Esito)
                 {
                     return RedirectToAction("MailToConfirm", "Impossibile validare l'account.");
                 }
+                //Aggiungiamo il cookie per indicare che alla prossima request deve essere aggiornato il cookie di autenticazione con le nuove info da B2C
+                Response.Cookies.Append(Constants.COOKIE_USERCHANGES_KEY, DateTime.Now.ToString());
+
                 var idCliente = confirmationResult.IdCliente ?? confirmationResult.IdStrutturaAffiliate;
                 if (idCliente.HasValue)
                 {

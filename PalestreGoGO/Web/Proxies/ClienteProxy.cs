@@ -31,9 +31,9 @@ namespace Web.Proxies
             return await GetRequestAsync<bool>(uri, false);
         }
 
-        public async Task NuovoClienteAsync(NuovoClienteAPIModel cliente)
+        public async Task<string> NuovoClienteAsync(NuovoClienteAPIModel cliente)
         {
-                await SendPostRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti", cliente);
+            return await SendPostRequestAsync<NuovoClienteAPIModel, string>($"{_appConfig.WebAPI.BaseAddress}api/clienti", cliente);
         }
 
         public async Task<ClienteDM> GetClienteAsync(int idCliente)

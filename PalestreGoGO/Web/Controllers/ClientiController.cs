@@ -11,6 +11,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Web.Authentication;
 using Web.Configuration;
@@ -32,12 +33,13 @@ namespace Web.Controllers
         private readonly ClienteProxy _clienteProxy;
         private readonly TipologicheProxy _tipologicheProxy;
         private readonly ClienteResolverServices _clientiResolver;
-
+        private readonly UserIdTokensMonitorService _idTokensToRefreshMonitor;
         public ClientiController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
                                  ClienteProxy clienteProxy,
                                  TipologicheProxy tipologicheProxy,
-                                 ClienteResolverServices clientiResolver
+                                 ClienteResolverServices clientiResolver,
+                                 UserIdTokensMonitorService idTokensToRefreshMonitor
                             )
         {
             _logger = logger;
@@ -45,6 +47,7 @@ namespace Web.Controllers
             _clienteProxy = clienteProxy;
             _clientiResolver = clientiResolver;
             _tipologicheProxy = tipologicheProxy;
+            _idTokensToRefreshMonitor = idTokensToRefreshMonitor;
         }
 
         /// <summary>
@@ -80,7 +83,9 @@ namespace Web.Controllers
             }
             try
             {
-                await _clienteProxy.NuovoClienteAsync(model.MapToAPIModel());
+                string struttureOwned = await _clienteProxy.NuovoClienteAsync(model.MapToAPIModel());
+                //_idTokensToRefreshMonitor.AddClaimToUserToRefresh(User.UserId(), new Claim(Constants.ClaimStructureOwned, struttureOwned));
+                Response.Cookies.Append(Constants.COOKIE_USERCHANGES_KEY, DateTime.Now.ToString());
                 //Se l'utente che ha registrato la nuova struttura non ha ancora confermato l'email lo rimandiamo alla pagina di conferma email
                 if (!User.EmailConfirmedOn().HasValue)
                 {
@@ -92,9 +97,9 @@ namespace Web.Controllers
                 Log.Debug("ReauthenticationRequiredException detected");
                 throw;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
-                Log.Error("Errore durante la registrazione del cliente {@cliente}", model);
+                Log.Error(exc, "Errore durante la registrazione del cliente {@cliente}", model);
                 ModelState.AddModelError(string.Empty, "Si è verificato un errore durante la registrazione, si prega di riprovare più tardi");
                 return View("Registrazione", model);
 

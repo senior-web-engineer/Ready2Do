@@ -34,11 +34,17 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="filtro">Indica il tipo di notifiche desiderata (Attive, Tutte, ecc...)</param>
         /// <param name="idCliente">Se specificato l'API ritorna solo le notifiche relative a quel Cliente</param>
         /// <returns></returns>
-        [HttpGet("{filtro}")]
-        public async Task<ActionResult<IEnumerable<NotificaConTipoDM>>> GetNotificheForCurrentUserAsync([FromRoute(Name = "filtro")] FiltroListaNotificheDM filtro = FiltroListaNotificheDM.SoloAttive, [FromQuery]int? idCliente = null)
+        [HttpGet()]
+        public async Task<ActionResult<IEnumerable<NotificaConTipoDM>>> GetNotificheForCurrentUserAsync([FromQuery(Name = "filtro")] string filtro = "SoloAttive", [FromQuery]int? idCliente = null)
         {
+            FiltroListaNotificheDM filter;
+            if(!Enum.TryParse<FiltroListaNotificheDM>(filtro, out filter))
+            {
+                filter = FiltroListaNotificheDM.SoloAttive;
+            }
+
             string userId = User.UserId()?.ToString();
-            var result = await _notificheRepo.GetNotificheAsync(userId, idCliente, filtro);
+            var result = await _notificheRepo.GetNotificheAsync(userId, idCliente, filter);
             return Ok(result);
         }
 
@@ -54,7 +60,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         {
             if (notifica == null) { return BadRequest(); }
             if (string.IsNullOrEmpty(userId)) { return BadRequest(); }
-            if (string.IsNullOrWhiteSpace(notifica.UserId)){notifica.UserId = userId;}
+            if (string.IsNullOrWhiteSpace(notifica.UserId)) { notifica.UserId = userId; }
             if (!userId.Equals(notifica.UserId)) { return BadRequest(); }
             //
             long idNotifica = await _notificheRepo.AddNotificaAsync(notifica);
@@ -69,13 +75,13 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <param name="dataDismiss"></param>
         /// <returns></returns>
         [HttpPut("{idNotifica:int}")]
-        public async Task<IActionResult> UpdateNotificaAsync([FromRoute(Name = "idNotifica")] long idNotifica, [FromQuery(Name ="v")] DateTime? dataVisualizzazione = null,
-                                                             [FromQuery(Name ="d")] DateTime? dataDismiss = null)
+        public async Task<IActionResult> UpdateNotificaAsync([FromRoute(Name = "idNotifica")] long idNotifica, [FromQuery(Name = "v")] DateTime? dataVisualizzazione = null,
+                                                             [FromQuery(Name = "d")] DateTime? dataDismiss = null)
         {
             string userId = User.UserId()?.ToString();
             if (string.IsNullOrWhiteSpace(userId)) { return Unauthorized(); }
             if (!dataDismiss.HasValue && !dataVisualizzazione.HasValue) { return BadRequest(); }
-            await _notificheRepo.UpdateNotifica(userId, idNotifica,dataVisualizzazione, dataDismiss);
+            await _notificheRepo.UpdateNotifica(userId, idNotifica, dataVisualizzazione, dataDismiss);
             return Ok();
         }
     }

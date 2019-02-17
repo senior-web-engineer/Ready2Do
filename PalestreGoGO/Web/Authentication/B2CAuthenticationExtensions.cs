@@ -8,11 +8,16 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using PalestreGoGo.WebAPIModel;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Web.Proxies;
+using Web.Utils;
 
 namespace Web.Authentication
 {
@@ -20,12 +25,16 @@ namespace Web.Authentication
     {
         private static B2CAuthenticationOptions B2CAuthenticationOptions;
         private static IDistributedCache DistributedCache;
+        private static UserIdTokensMonitorService IdTokenRefreshMonitor;
+        private static UtentiProxy UserProxy;
 
         public static void AddAzureAdB2Authentication(this IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
 
             DistributedCache = serviceProvider.GetService<IDistributedCache>();
+            IdTokenRefreshMonitor = serviceProvider.GetService<UserIdTokensMonitorService>();
+            UserProxy = serviceProvider.GetService<UtentiProxy>();
             services.AddSingleton(DistributedCache);
 
             B2CAuthenticationOptions = serviceProvider.GetService<IOptions<B2CAuthenticationOptions>>().Value;
@@ -36,7 +45,13 @@ namespace Web.Authentication
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = Constants.OpenIdConnectAuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Events = new CookieAuthenticationEvents()
+                {
+                    OnValidatePrincipal = OnValidatePrincipalHandler
+                };
+            })
             .AddOpenIdConnect(Constants.OpenIdConnectAuthenticationScheme, options =>
             {
                 options.Authority = B2CAuthenticationOptions.Authority;
@@ -64,7 +79,7 @@ namespace Web.Authentication
                     OnTokenValidated = OnTokenValidatedHandler,
                     OnUserInformationReceived = OnUserInformationReceivedHandler
                 };
-                    //CreateOpenIdConnectEventHandlers(authOptions.Value, b2cPolicies.Value, distributedCache);
+                //CreateOpenIdConnectEventHandlers(authOptions.Value, b2cPolicies.Value, distributedCache);
 
                 options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -84,6 +99,61 @@ namespace Web.Authentication
                 //options.SaveTokens = true;
             });
 
+        }
+
+        /// <summary>
+        /// Personalizzazione della validazione del Cookie.
+        /// E' necessario invalidare e ricrere il cookie di autenticazione nei casi in cui cambi lo stato dell'utente dopo la creazione del cookie.
+        /// I casi da gestire sono:
+        /// - registrazione nuova struttura (il claim delle strutture owned nel cookie non è più allineato)
+        /// - conferma email (è necessario aggiungere il claim di mail validata)
+        /// Per gestire questa modifica utiliziamo un altro cookie valorizzato al momento della modifica che andiamo a cercare ad ogni richiesta.
+        /// Se il cookie delle modifiche è presente incorporiamo la modifica nel cookie di autenticazione e lo eliminiamo
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private static async Task OnValidatePrincipalHandler(CookieValidatePrincipalContext context)
+        {
+            if (!context.Principal.Identity.IsAuthenticated) { return; }
+            var changes = context.Request.Cookies[Constants.COOKIE_USERCHANGES_KEY];
+            if (string.IsNullOrWhiteSpace(changes)) { return; }
+            string userId = context.Principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ObjectIdClaimType))?.Value;
+            string authnclassreference = context.Principal.Claims.FirstOrDefault(c => c.Type.Equals(Constants.AcrClaimType))?.Value;
+            AzureUser azUser = default(AzureUser);
+            try
+            {
+                azUser = await UserProxy.GetMyIdPProfileAsync(userId, authnclassreference);
+            }
+            catch (ReauthenticationRequiredException exc)
+            {
+                Log.Warning(exc, "Necessaria riautenticazione per l'utente {userId}", userId);
+                context.RejectPrincipal();
+                context.ShouldRenew = true;
+                return;
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(context.Principal.Identity);
+            //Gestione claim Strutture gestite
+            var oldClaimStruttureOwned = identity.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimStructureOwned));
+            if (oldClaimStruttureOwned != null)
+            {
+                identity.RemoveClaim(oldClaimStruttureOwned);
+            }
+            if (!string.IsNullOrEmpty(azUser.StruttureOwned))
+            {
+                identity.AddClaim(new Claim(Constants.ClaimStructureOwned, azUser.StruttureOwned));
+            }
+            //Gestione claim MailConfirmed
+            var oldClaimMailConfirmed = identity.Claims.FirstOrDefault(c => c.Type.Equals(Constants.ClaimEmailConfirmedOn));
+            if (oldClaimMailConfirmed != null) { identity.RemoveClaim(oldClaimMailConfirmed); }
+            if (!string.IsNullOrWhiteSpace(azUser.EmailConfirmedOn)) { identity.AddClaim(new Claim(Constants.ClaimEmailConfirmedOn, azUser.EmailConfirmedOn)); }
+
+            //Rimpiaziamo il principal e marchiamo il Cookie da ricreare
+            ClaimsPrincipal newPrincipal = new ClaimsPrincipal(identity);
+            context.ReplacePrincipal(newPrincipal);
+            context.ShouldRenew = true;
+            //IdTokenRefreshMonitor.RemoveUserToRefresh(newPrincipal.UserId());
+            //Rimuoviamo il cookie
+            context.Response.Cookies.Delete(Constants.COOKIE_USERCHANGES_KEY);
         }
 
         #region HANDLERS EVENTI OPENID

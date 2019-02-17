@@ -30,6 +30,8 @@ using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Web.Proxies;
 using Web.Filters;
+using Microsoft.AspNetCore.Diagnostics;
+using Serilog;
 
 
 //using 
@@ -59,25 +61,25 @@ namespace Web
             ConfigureProxies(services);
             // Add application services.
             services.AddTransient<ClienteResolverServices, ClienteResolverServices>();
-
             //Aggiungiamo la cache in memory
             services.AddDistributedMemoryCache();
+            services.AddSingleton<UserIdTokensMonitorService>();
 
             //TODO: CONFIGURARE DPAPI PER USARE UN CERTIFICATO SU AZURE (STORAGE O VAULT)
             // vedi: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/implementation/key-storage-providers#azure-and-redis
             //services.AddDataProtection()
             //    .PersistKeysToAzureBlobStorage(new Uri("<blob URI including SAS token>"));
-              
+
 
             services.AddScoped<ReauthenticationRequiredFilter>();
             services.AddAzureAdB2Authentication();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CanEditStruttura", policy => policy.Requirements.Add(new CadEditStrutturaRequirement()));                
+                options.AddPolicy("CanEditStruttura", policy => policy.Requirements.Add(new CadEditStrutturaRequirement()));
             });
             services.AddSingleton<IAuthorizationHandler, CanEditStrutturaHandler>();
 
-            services.AddMvc(options => 
+            services.AddMvc(options =>
                 {
                     options.Filters.Add(typeof(ReauthenticationRequiredFilter));
                     options.Filters.Add(typeof(OwnersRedirectToConfirmFilter));
@@ -132,11 +134,52 @@ namespace Web
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            //else
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //}
 
+            //app.UseExceptionHandler(appError =>
+            //{
+            //    appError.Run(async context =>
+            //    {
+            //        var exFeat = context.Features.Get<IExceptionHandlerFeature>();
+            //        if ((exFeat != null) && (exFeat.Error is ReauthenticationRequiredException))
+            //        {
+            //            await context.ChallengeAsync(Constants.OpenIdConnectAuthenticationScheme,
+            //                                new AuthenticationProperties(new Dictionary<string, string> {
+            //                                    { Constants.B2CPolicy, _configuration.GetValue<string>("Authentication:AzureAdB2C:Policies:SignInOrSignUpPolicy")} })
+            //                                {
+            //                                    RedirectUri = context.Request.Path
+            //                                });
+            //        }
+            //        else
+            //        {
+            //            context.Response.Redirect("/Home/Error");
+            //        }
+            //    });
+            //});
+
+            app.UseExceptionHandler(new ExceptionHandlerOptions()
+            {
+                //Dobbiamo usare un handler globale per gestire la riautenticazione perché nei ViewComponents non vengono eseguiti i filtri
+                ExceptionHandler = (context) =>
+                {
+                    var exFeat = context.Features.Get<IExceptionHandlerFeature>();
+                    if ((exFeat != null) && (exFeat.Error is ReauthenticationRequiredException))
+                    {
+                        return context.ChallengeAsync(Constants.OpenIdConnectAuthenticationScheme,
+                                            new AuthenticationProperties(new Dictionary<string, string> {
+                                                { Constants.B2CPolicy, _configuration.GetValue<string>("Authentication:AzureAdB2C:Policies:SignInOrSignUpPolicy")} })
+                                            {
+                                                RedirectUri = context.Request.Path
+                                            });
+                    }
+                    //Se non è una ReAutetincazione non facciamo niente
+                    return Task.CompletedTask;
+                },
+                ExceptionHandlingPath = "/Home/Error"
+            });
             app.UseHttpsRedirection();
             app.UseSession();
             app.UseAuthentication();

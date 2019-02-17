@@ -124,6 +124,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpPost()]
         public async Task<IActionResult> NuovoCliente([FromBody]NuovoClienteAPIModel newCliente)
         {
+            string result;
             if (newCliente == null) { return new BadRequestResult(); }
             if (!ModelState.IsValid) { return new BadRequestResult(); }
             (int idCliente, Guid correlationId) resultDB = default((int, Guid));
@@ -147,7 +148,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                     //Step3: Provisioning Cliente
                     await _clientiProvisioner.ProvisionClienteAsync(resultDB.idCliente, userId);
                     //Step4: Update B2C con la struttura gestita
-                    await _userManagementService.AggiungiStrutturaOwnedAsync(azUser, resultDB.idCliente);
+                    result = await _userManagementService.AggiungiStrutturaOwnedAsync(azUser, resultDB.idCliente);
                 }
                 catch (Exception exc)
                 {
@@ -171,9 +172,9 @@ namespace PalestreGoGo.WebAPI.Controllers
                     throw; //Risolleviamo l'eccezione originale così da non eseguire le altre operazioni
                 }
                 //Step5: Aggiorniamo lo stato di provisioning del Cliente
-                await _repository.ConfermaProvisioningAsync(resultDB.idCliente, !string.IsNullOrWhiteSpace(azUser.AccountConfirmedOn));
+                await _repository.ConfermaProvisioningAsync(resultDB.idCliente, !string.IsNullOrWhiteSpace(azUser.EmailConfirmedOn));
                 //Step6: Inviamo email per la conferma dell'account
-                await _userManagementService.SendConfirmationEmailAsync(azUser.Emails.First(), nome: azUser.Nome, cognome:azUser.Cognome);
+                await _userManagementService.SendConfirmationEmailAsync(azUser.Emails.First(), correlationId: resultDB.correlationId, nome: azUser.Nome, cognome:azUser.Cognome);
                 Log.Information("Creato nuovo Cliente con Id: {idCliente} per l'utente {userId}", resultDB.idCliente, userId);
                 _insightsClient.TrackEvent("Registrazione_Cliente", new Dictionary<string, string>
                                             {{"IdCliente",resultDB.idCliente.ToString()}, {"UserName",userId }});
@@ -184,7 +185,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                 _insightsClient.TrackException(exc);
                 return this.StatusCode((int)HttpStatusCode.InternalServerError);
             }
-            return Ok();
+            return Ok(result);
         }
 
         //[HttpPut("{idCliente:int}/profilo/banner")]

@@ -18,11 +18,14 @@ using Web.Models.Utils;
 using Web.Models.Mappers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Web.Proxies;
+using Web.Filters;
 
 namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
     [Route("{cliente}/schedules")]
+    [ServiceFilter(typeof(ReauthenticationRequiredFilter))]
+
     public class SchedulerController : Controller
     {
         private readonly ILogger<AccountController> _logger;

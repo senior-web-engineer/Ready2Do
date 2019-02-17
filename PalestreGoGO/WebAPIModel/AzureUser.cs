@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
+namespace PalestreGoGo.WebAPIModel
 {
     public class AzureUser
     {
@@ -74,8 +74,8 @@ namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
         [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_refereer", NullValueHandling = NullValueHandling.Ignore)]
         public string Refereer { get; set; }
 
-        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_accountConfirmedOn", NullValueHandling = NullValueHandling.Ignore)]
-        public string AccountConfirmedOn { get; set; }
+        [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_emailConfirmationDate", NullValueHandling = NullValueHandling.Ignore)]
+        public string EmailConfirmedOn { get; set; }
 
 
         [JsonProperty("extension_827f6baba88543a9952b028ac0e17bf9_struttureOwned", NullValueHandling = NullValueHandling.Ignore)]

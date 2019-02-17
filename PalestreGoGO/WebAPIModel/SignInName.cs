@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PalestreGoGo.WebAPI.ViewModel.B2CGraph
+namespace PalestreGoGo.WebAPIModel
 {
     public enum SignInNameType
     {

@@ -25,8 +25,8 @@ BEGIN
 	BEGIN
 		SET @dtEndVis = @pDataFineVisibilita;
 	END
-	INSERT INTO Notifiche(IdTipo, UserId, IdCliente, Titolo, Testo, DataInizioVisibilita, DataFineVisibilita)
-		VALUES (@pIdTipo, @pUserId, @pIdCliente, @pTitolo, @pTesto, @pDataInizioVisibilita, @dtEndVis);
+	INSERT INTO Notifiche(IdTipo, UserId, IdCliente, Titolo, Testo, DataInizioVisibilita, DataFineVisibilita, ActionUrl)
+		VALUES (@pIdTipo, @pUserId, @pIdCliente, @pTitolo, @pTesto, @pDataInizioVisibilita, @dtEndVis, @pActionUrl);
 
 	SET @pIdNotitifica = SCOPE_IDENTITY();
 END

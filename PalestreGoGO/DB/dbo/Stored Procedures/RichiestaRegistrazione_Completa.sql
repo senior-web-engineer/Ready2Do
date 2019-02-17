@@ -17,6 +17,7 @@ BEGIN
 	DECLARE @dtOp DATETIME2 = SYSDATETIME()
 	DECLARE @dtExpiration DATETIME2;
 	DECLARE @dtConferma	DATETIME2;
+	DECLARE @idCliente			INT;
 	DECLARE @STATO_PROVISIONED TINYINT = 3;
 	DECLARE @STATO_CONFERMATO TINYINT = 10;
 	DECLARE @tblRichiesta TABLE (CorrelationId	UNIQUEIDENTIFIER,
@@ -35,18 +36,21 @@ BEGIN
 	IF @dtExpiration IS NULL
 	BEGIN
 		SET @pEsitoConferma = -1;
+		ROLLBACK;
 		RETURN 0;
 	END
 
 	IF @dtConferma IS NOT NULL
 	BEGIN
 		SET @pEsitoConferma = -2;
+		ROLLBACK;
 		RETURN 0;
 	END
 
 	IF @dtExpiration < @dtOp
 	BEGIN
 		SET @pEsitoConferma = -3
+		ROLLBACK;
 		RETURN 0;
 	END
 
@@ -60,11 +64,13 @@ BEGIN
 	AND R.Expiration > @dtOp
 	AND R.DataConferma IS NULL 
 	AND R.DataCancellazione IS NULL
-	AND C.IdStato = @STATO_PROVISIONED -- Lo stato del Cliente deve
+	-- Se esiste una correlation con un Cliente, lo stato del Cliente deve essere coerente (PROVISIONED)
+	AND ((R.CorrelationId IS NULL) OR (C.IdStato = @STATO_PROVISIONED))
 
 	IF @@ROWCOUNT <> 1
 	BEGIN
 		SET @pEsitoConferma = -1
+		ROLLBACK;
 		RAISERROR(N'Errore durante la conferma della richiesta', 16,0)
 		RETURN -1;
 	END
@@ -73,13 +79,13 @@ BEGIN
 	SELECT @pIdRefereer = Refereer,
 		   @pIdCliente = IdCliente
 		FROM @tblRichiesta
-	
+
 	-- Se la richiesta era associata ad un Cliente, cambiamo lo stato del Cliente a CONFERMATO
-	IF @pIdCliente IS NOT NULL
+	IF @idCliente IS NOT NULL
 	BEGIN
 		UPDATE [Clienti] 
 		SET IdStato = @STATO_CONFERMATO
-		WHERE Id = @pIdCliente
+		WHERE Id = @idCliente
 	END
 
 	COMMIT

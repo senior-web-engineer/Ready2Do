@@ -17,10 +17,12 @@ namespace Web
 
         public const string IdentityKey = "identity";
 
+        public const string COOKIE_USERCHANGES_KEY = "UserChanges";
+
 
         public const string ClaimStructureOwned = "extension_struttureOwned";
         public const string ClaimStructureManaged = "extension_struttureGestite";
-        public const string ClaimEmailConfirmedOn = "extension_accountConfirmedOn";
+        public const string ClaimEmailConfirmedOn = "extension_emailConfirmationDate";
         public const string ClaimTelephoneConfirmedOn = "extension_telephoneConfirmedOn";
         public const string ClaimGlobalAdmin = "extension_isGlobalAdmin";
         public const string ClaimRole = "role";

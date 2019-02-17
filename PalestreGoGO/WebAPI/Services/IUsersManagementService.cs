@@ -14,7 +14,7 @@ namespace PalestreGoGo.WebAPI.Services
     {
         Task<AzureUser> GetOrCreateUserAsync(AzureUser newUser);
 
-        Task AggiungiStrutturaOwnedAsync(AzureUser user, int idCliente);
+        Task<string> AggiungiStrutturaOwnedAsync(AzureUser user, int idCliente);
         Task TryDeleteStrutturaOwnedAsync(string userId, int idCliente);
         Task<AzureUser> GetUserByIdAsync(string id);
 

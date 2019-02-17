@@ -20,10 +20,13 @@ using Web.Models.Utils;
 using Web.Models.Mappers;
 using System.Threading;
 using Web.Proxies;
+using Web.Filters;
 
 namespace Web.Controllers
 {
     [Authorize(AuthenticationSchemes = Constants.OpenIdConnectAuthenticationScheme)]
+    [ServiceFilter(typeof(ReauthenticationRequiredFilter))]
+
     public class AbbonamentiController : Controller
     {
         private readonly ILogger<AccountController> _logger;

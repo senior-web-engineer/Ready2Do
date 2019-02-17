@@ -90,6 +90,7 @@ namespace PalestreGoGo.WebAPI.Services
                     IdStrutturaAffiliate = esitoConferma.IdRefereer,
                     IdCliente = esitoConferma.IdCliente
                 };
+                await _b2cClient.SetMailConfirmedAsync(user.Id);
                 return result;
             }
             catch (UserConfirmationException)
@@ -147,7 +148,7 @@ namespace PalestreGoGo.WebAPI.Services
         }
 
         //Aggiunge all'utente passato l'idCliente come struttura gestita
-        public async Task AggiungiStrutturaOwnedAsync(AzureUser user, int idCliente)
+        public async Task<string> AggiungiStrutturaOwnedAsync(AzureUser user, int idCliente)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (!string.IsNullOrWhiteSpace(user.StruttureOwned))
@@ -156,7 +157,7 @@ namespace PalestreGoGo.WebAPI.Services
                 if (strutture.Contains(idCliente.ToString()))
                 {
                     //Se già presente non facciamo niente
-                    return;
+                    return user.StruttureOwned;
                 }
                 else
                 {
@@ -168,6 +169,8 @@ namespace PalestreGoGo.WebAPI.Services
                 user.StruttureOwned = idCliente.ToString();
             }
             await _b2cClient.UpdateUserStruttureOwnedAsync(user.Id, user.StruttureOwned);
+            //Ritorniamo la lista delle strutture Owned
+            return user.StruttureOwned;
         }
 
         public async Task TryDeleteStrutturaOwnedAsync(string userId, int idCliente)

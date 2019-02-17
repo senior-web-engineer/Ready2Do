@@ -144,7 +144,6 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
 
         }
-
         [HttpPut("profilo")]
         public async Task<IActionResult> SalvaProfilo([FromBody]UtenteInputDM profilo)
         {
@@ -209,6 +208,19 @@ namespace PalestreGoGo.WebAPI.Controllers
                 });
             }
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Ritorna il profilo dell'utente così come salvato sull'Identity Provider (Azure B2C)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("me/ip")]
+        public async Task<ActionResult<AzureUser>> GetMyUserProfileFromIdP()
+        {
+            string userId = GetCurrentUser()?.UserId();
+            AzureUser azUser = await _userManagementService.GetUserByIdAsync(userId);
+            return Ok(azUser);
         }
 
         //[HttpGet("{userId}/clientifollowed")]

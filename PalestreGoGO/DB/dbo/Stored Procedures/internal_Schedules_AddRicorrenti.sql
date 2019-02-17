@@ -244,4 +244,5 @@ BEGIN
 					WHERE T.RowNumeber <= @numRipetizioni
 			END
 		END
+	RETURN 0;
 END

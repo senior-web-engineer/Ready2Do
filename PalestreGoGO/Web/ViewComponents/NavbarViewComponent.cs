@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Filters;
 using Web.Models;
 using Web.Models.Mappers;
 using Web.Models.ViewComponents;
@@ -14,6 +15,7 @@ using Web.Utils;
 
 namespace Web.ViewComponents
 {
+    [ServiceFilter(typeof(ReauthenticationRequiredFilter))]
     public class NavbarViewComponent : ViewComponent
     {
         private readonly UtentiProxy _utentiProxy;

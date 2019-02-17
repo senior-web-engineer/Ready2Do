@@ -14,13 +14,13 @@ namespace PalestreGoGo.WebAPI.Model
 
         }
 
-        public ConfirmationMailMessage(string email, string code, string baseConfirmationUrl, bool isCliente, string cognome = null, string nome = null)
+        public ConfirmationMailMessage(string email, string code, string confirmationUrl, bool isCliente, string cognome = null, string nome = null)
         {
             this.Email = email;
             this.Cognome = cognome;
             this.Nome = nome;
             this.ConfirmationCode = code;
-            this.ConfirmationUrl= $"confirmatinUrl?email={System.Net.WebUtility.UrlEncode(email)}&code={System.Net.WebUtility.UrlEncode(code)}";
+            this.ConfirmationUrl= $"{confirmationUrl}?email={System.Net.WebUtility.UrlEncode(email)}&code={System.Net.WebUtility.UrlEncode(code)}";
             this.IsCliente = isCliente;
             this.Timestamp = DateTime.Now;
         }

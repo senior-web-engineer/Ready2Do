@@ -34,7 +34,8 @@ namespace Web.Filters
                 //Escludiamo la pagina di conferma email ed il reinvio dal redirect
                 if(actDescriptor.ControllerName.Equals("Account", StringComparison.InvariantCultureIgnoreCase) &&
                     (actDescriptor.ActionName.Equals("MailToConfirm", StringComparison.InvariantCultureIgnoreCase) ||
-                     actDescriptor.ActionName.Equals("SendNewConfirmMail", StringComparison.InvariantCultureIgnoreCase)))
+                     actDescriptor.ActionName.Equals("SendNewConfirmMail", StringComparison.InvariantCultureIgnoreCase) ||
+                     actDescriptor.ActionName.Equals("ConfermaAccount", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     return;
                 }

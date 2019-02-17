@@ -1,27 +1,40 @@
 ﻿/*
 	Inserisce un nuovo record nella tabella RichiesteRegistrazione e genera il codice di conferma randomicamente.
-	Se per l'utente esiste già una richiesta pendente viene cancellata e ne viene creata una nuova (il vecchio codice non sarà più valido)
+	Se per l'utente esiste già una richiesta pendente valida, viene ritornato il codice di quella altrimenti ne viene creata una nuova.
+	NOTA:
+	Il parametro @pCorrelationId serve quando si tratta di Richieste relativi a Clienti, in questo caso dobbiamo correlare la richiesta con il Cliente
+	per poter cambiare lo stato del Cliente quando viene completata la richiesta.
 */
 CREATE PROCEDURE [dbo].[RichiestaRegistrazione_Add]
 	@pUsername			VARCHAR(500),
 	@pExpiration		DATETIME2(2) = NULL,
-	@pCorrelationId		UNIQUEIDENTIFIER = NULL,
+	@pCorrelationId		UNIQUEIDENTIFIER = NULL, -- ci serve se
 	@pRefereer			INT = NULL,
 	@pUserCode			VARCHAR(1000) OUTPUT
 AS
 BEGIN
 	DECLARE @id INT,
-			@dataOperazione DATETIME2 = SYSDATETIME(),
-			@dataConferma DATETIME2 = NULL,
+			@userCode			VARCHAR(1000),
+			@dataOperazione		DATETIME2 = SYSDATETIME(),
+			@dataConferma		DATETIME2 = NULL,
+			@dataExpirtation	DATETIME2,
+			@dataCancellazione	DATETIME2,
+			@oldCorrelation		UNIQUEIDENTIFIER,
 			@random	 VARBINARY(100);
 	
-	-- Se esiste una richiesta ancora valida ritorniamo il codice di quella
-	SELECT @pUserCode = UserCode,
-		   @dataConferma = DataConferma
+	-- Verifichiamo se esiste già una richiesta per lo username
+	SELECT TOP 1
+		   @userCode = UserCode,
+		   @dataConferma = DataConferma,
+		   @dataCancellazione = DataCancellazione,
+		   @dataExpirtation = Expiration,
+		   @oldCorrelation = CorrelationId
 	FROM RichiesteRegistrazione
 		WHERE Username = @pUsername
-		AND Expiration > SYSDATETIME()
-		AND DataCancellazione IS NULL
+	ORDER BY DataRichiesta DESC
+
+		--AND Expiration > SYSDATETIME()
+		--AND DataCancellazione IS NULL
 	
 	IF @dataConferma IS NOT NULL
 	BEGIN
@@ -29,11 +42,18 @@ BEGIN
 		RETURN -1;
 	END
 
-	-- Se non abbiamo trovato una richiesta valida, ne creiamo una nuova	
-	IF @pUserCode IS NULL
+	-- Se abbiamo trovato una richiesta ancora valida, ritorniamo il codice
+	IF @dataCancellazione IS NULL AND @dataExpirtation > SYSDATETIME()
+	BEGIN
+		SET @pUserCode = @userCode
+		RETURN 1;
+	END
+	-- Se non abbiamo trovato una richiesta valida, ne creiamo una nuova
+	-- se il correlationId è stato pasato usiamo quello, altrimenti usiamo quello della vecchia richiesta
+	ELSE
 	BEGIN
 		SELECT	@random = CRYPT_GEN_RANDOM(100),
-				@pCorrelationId = COALESCE(@pCorrelationId, NEWID()),
+				@pCorrelationId = COALESCE(@pCorrelationId, @oldCorrelation),
 				@pExpiration = COALESCE(@pExpiration, DATEADD(DAY, 1, SYSDATETIME()))
 		
 		-- Calcoliamo l'HASH SHA2-256 (32 Bytes) dei byte random generati precedentemente e li convertiamo in BASE64 usando OPENJSON
