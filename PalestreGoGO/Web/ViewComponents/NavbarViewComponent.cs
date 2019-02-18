@@ -35,7 +35,7 @@ namespace Web.ViewComponents
             vm.UserEmail = UserClaimsPrincipal.Email();
             vm.IdClienteCorrente = idClienteCorrente;
             vm.UserIsAuthenticated = User.Identity.IsAuthenticated;
-            vm.ReturnUrl = HttpContext.Request.GetDisplayUrl();
+            vm.ReturnUrl = HttpContext.Request.Path;
             UserType userType4Cliente = UserType.Anonymous;
             if (vm.UserIsAuthenticated)
             {
