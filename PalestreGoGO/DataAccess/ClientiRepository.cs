@@ -206,9 +206,17 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task AggiornaAnagraficaClienteAsync(int idCliente, ClienteAnagraficaDM anagrafica)
+        /// <summary>
+        /// Modifica l'anagrafica del Cliente.
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="anagrafica"></param>
+        /// <returns>Ritorna True se è stato modificato l'UrlRoute</returns>
+        public async Task<bool> AggiornaAnagraficaClienteAsync(int idCliente, ClienteAnagraficaDM anagrafica)
         {
             if (idCliente != anagrafica.Id) { throw new ArgumentException("Bad Tenant"); }
+            var parUrlRouteChanged = new SqlParameter("@pRouteIsChanged", SqlDbType.Bit);
+            parUrlRouteChanged.Direction = ParameterDirection.Output;
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
@@ -227,8 +235,10 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pLatitudine", SqlDbType.Float).Value = anagrafica.Latitudine;
                 cmd.Parameters.Add("@pLongitudine", SqlDbType.Float).Value = anagrafica.Longitudine;
                 cmd.Parameters.Add("@pUrlRoute", SqlDbType.VarChar, 205).Value = anagrafica.UrlRoute;
+                cmd.Parameters.Add(parUrlRouteChanged);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
+                return (bool)parUrlRouteChanged.Value;
             }
         }
 

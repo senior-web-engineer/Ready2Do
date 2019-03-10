@@ -56,7 +56,7 @@ namespace PalestreGoGo.DataAccess
 
         }
 
-        public async Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000)
+        public async Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000, bool includeDeleted = false)
         {
             List<TipologiaLezioneDM> result = new List<TipologiaLezioneDM>();
             using (var cn = GetConnection())
@@ -69,6 +69,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pPageNumber", SqlDbType.Int).Value = pageNumber;
                 cmd.Parameters.Add("@pSortColumn", SqlDbType.VarChar, 50).Value = sortColumn;
                 cmd.Parameters.Add("@pOrderAscending", SqlDbType.Bit).Value = sortAsc;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
@@ -173,10 +174,10 @@ namespace PalestreGoGo.DataAccess
             using (var cn = GetConnection())
             {
                 var cmd = cn.CreateCommand();
-                cmd.CommandText = "[dbo].[TipologieLezioni_Modifica]";
+                cmd.CommandText = "[dbo].[TipologieLezioni_Delete]";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = idTenant;
-                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = entityKey;
+                cmd.Parameters.Add("@pId", SqlDbType.Int).Value = entityKey;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idTenant;
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }

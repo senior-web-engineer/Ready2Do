@@ -2,7 +2,7 @@
 	@pIdCliente		INT,
 	@pNome			NVARCHAR(100),
 	@pDescrizione	NVARCHAR(MAX),
-	@pCapienzaMax	SMALLINT,
+	@pCapienzaMax	SMALLINT = NULL,
 	@pColore		VARCHAR(10) = NULL,
 	@pImageUrl		VARCHAR(1000) = NULL,
 	@pIconUrl		VARCHAR(1000) = NULL,

@@ -21,6 +21,7 @@
     "babel-loader": "^8.0.4",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^1.0.1",
+    "jquery-sortablejs": "^1.0.1",
     "mini-css-extract-plugin": "^0.4.4",
     "node-sass": "^4.9.4",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
@@ -37,6 +38,7 @@
     "es6-promise-promise": "^1.0.0",
     "jquery": "^3.3.1",
     "jquery-cropper": "^1.0.0",
-    "materialize-css": "^1.0.0-rc.2"
+    "materialize-css": "^1.0.0-rc.2",
+    "sortablejs": "^1.8.3"
   }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PalestreGoGo.DataAccess;
 using PalestreGoGo.WebAPI.Utils;
 using ready2do.model.common;
+using Serilog;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -26,7 +27,8 @@ namespace PalestreGoGo.WebAPI.Controllers
         public async Task<IActionResult> GetList([FromRoute]int idCliente, [FromQuery(Name = "page")] int pageNumber = 1,
                                                  [FromQuery(Name = "pageSize")] int pageSize = 100,
                                                  [FromQuery(Name = "sortby")] string sortColumn = null,
-                                                 [FromQuery(Name = "sortype")] string sortType = "asc")
+                                                 [FromQuery(Name = "sortype")] string sortType = "asc",
+                                                 [FromQuery(Name = "includeDel")] bool includeDeleted = false)
         {
             //TODO: Rivedere la gestione della security
             //bool authorized = GetCurrentUser().CanReadTipologiche(idCliente);
@@ -34,7 +36,7 @@ namespace PalestreGoGo.WebAPI.Controllers
             //{
             //    return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             //}
-            var tipoLezioni = await _repository.GetListAsync(idCliente, sortColumn, (sortType ?? "asc").ToLowerInvariant() == "asc", pageNumber, pageSize);
+            var tipoLezioni = await _repository.GetListAsync(idCliente, sortColumn, (sortType ?? "asc").ToLowerInvariant() == "asc", pageNumber, pageSize, includeDeleted);
             // var result = Mapper.Map<IEnumerable<TipologieLezioni>, IEnumerable<TipologieLezioniApiModel>>(tipoLezioni);
             return new OkObjectResult(tipoLezioni);
         }
@@ -63,11 +65,8 @@ namespace PalestreGoGo.WebAPI.Controllers
         {
             if (!GetCurrentUser().CanEditTipologiche(idCliente)) return Forbid();
             if (!ModelState.IsValid) return BadRequest();
-            if (!model.Id.HasValue || model.Id.Value != idCliente) return BadRequest();
-            //var m = Mapper.Map<TipologieLezioniApiModel, TipologieLezioni>(model);
-            //m.IdCliente = idCliente;
+            if (model.Id.HasValue) return BadRequest(); //solo nuovi record
             await _repository.AddAsync(idCliente, model);
-            //return CreatedAtAction("GetTipoLezione", new { idCliente, id = m.Id });
             return Ok();
         }
 
@@ -91,9 +90,10 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync([FromRoute]int idCliente, [FromQuery] int id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute]int idCliente, [FromRoute] int id)
         {
+            Log.Verbose($"Begin DeleteAsync(idCliente:{idCliente}, id:{id})");
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {
@@ -110,6 +110,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         [HttpGet("checkname/{nome}")]
         public async Task<IActionResult> CheckName([FromRoute]int idCliente, [FromRoute] string nome, [FromQuery] int? id = null)
         {
+            Log.Verbose($"Begin CheckName - idCliente: {idCliente}, nome: {nome}");
             bool authorized = GetCurrentUser().CanEditTipologiche(idCliente);
             if (!authorized)
             {

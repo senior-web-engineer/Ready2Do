@@ -3,9 +3,11 @@
     ViewData["Title"] = ViewBag.Title ?? "Edit Sala";
     Layout = "_LayoutClienti";
 }
-
+@section Header{
+    <link rel="stylesheet" href="~/css/bootstrap-colorpicker.min.css" />
+}
 <section id="editSala">
-    <form asp-action="SalaSave" method="post" id="formEditSala">
+    <form asp-action="SalaSave" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" method="post" id="formEditSala">
         <input type="hidden" asp-for="Id" />
         <div class="row">
             <div class="col s8 offset-s2 center-align">
@@ -21,14 +23,14 @@
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <input type="text" asp-for="Nome" data-length="500" id="inputNome"/>
+                <input type="text" asp-for="Nome" data-length="500" id="inputNome" />
                 <label>Nome della Sala</label>
                 <span asp-validation-for="Nome"></span>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s8 offset-s2">
-                <textarea type="text" asp-for="Descrizione"  class="materialize-textarea" data-length="500" id="textAreaDescrizione"></textarea>
+                <textarea type="text" asp-for="Descrizione" class="materialize-textarea" data-length="500" id="textAreaDescrizione"></textarea>
                 <label asp-for="Descrizione"></label>
                 <span asp-validation-for="Descrizione"></span>
             </div>
@@ -40,6 +42,18 @@
                     <span asp-validation-for="CapienzaMax"></span>
                 </div>
             </div>*@
+        <div class="row">
+            <div class="input-field col s2 offset-s2 m1 offset-m2" id="coloreSalaContainer">
+                @*<div id="idColoreSala" class="file-field">
+            <div class="btn"></div>
+        </div>*@
+                <div class="btn prefix"></div>
+                <input type="text" asp-for="Colore" id="idColoreSala" />
+                <label>Colore</label>
+                @*<div id="idColoreSala" class="inl-bl" data-container="true" data-color="rgba(38,166,154,1)" data-inline="true"></div>*@
+
+            </div>
+        </div>
         <div class="row">
             <div class="input-field col s10 offset-s1 center">
                 <button class="btn waves-effect waves-light" type="submit" name="action">
@@ -53,8 +67,14 @@
 
 @section Scripts
     {
+    <script src="~/js/bootstrap-colorpicker.min.js"></script>
     <script>
         $(document).ready(function () {
+            $('#coloreSalaContainer').colorpicker({
+                component: '.btn',
+                container: '#coloreSalaContainer',
+                horizontal: true,
+            });
             $('input#inputNome, textarea#textAreaDescrizione').characterCounter();
             /*Disabilitiamo il pulsante Submit dopo il click (per evitare submit multipli)*/
             $('#formEditSala').one('submit', function () {

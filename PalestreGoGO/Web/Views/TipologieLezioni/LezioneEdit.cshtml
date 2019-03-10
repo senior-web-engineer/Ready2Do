@@ -3,7 +3,7 @@
     Layout = "_LayoutClienti";
 }
 
-<form asp-action="LezioneSave" asp-controller="TipologieLezioni" method="post" id="formEditLezione">
+<form asp-action="LezioneSave" asp-controller="TipologieLezioni" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"  method="post" id="formEditLezione">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="IdCliente" />
     <div class="row">

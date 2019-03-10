@@ -8,7 +8,7 @@ BEGIN
 	SELECT   *
 	FROM vLocations
 	WHERE IdClienteLocations = @pIdCliente
-	AND ((@pIncludeDeleted = 0) OR (DataCancellazioneLocations IS NULL))
+	AND ((COALESCE(@pIncludeDeleted,0) = 1) OR (DataCancellazioneLocations IS NULL))
 
 	RETURN 0;
 END

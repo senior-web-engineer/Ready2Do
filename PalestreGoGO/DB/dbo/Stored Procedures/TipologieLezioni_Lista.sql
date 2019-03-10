@@ -4,7 +4,8 @@
 	@pPageSize			INT = 25,
 	@pPageNumber		INT = 1,
 	@pSortColumn		VARCHAR(50) = NULL,
-	@pOrderAscending	BIT = 1
+	@pOrderAscending	BIT = 1,
+	@pIncludeDeleted	BIT	= 0
 AS
 BEGIN
 	DECLARE @sql NVARCHAR(MAX);
@@ -28,8 +29,9 @@ BEGIN
   SET @sql = N'SELECT  *
 				FROM vTipologieLezioni t
 				WHERE t.IdClienteTipologieLezioni = @pIdCliente
-				' + CASE WHEN @pId IS NULL THEN ' ' ELSE ' AND t.IdTipologieLezioni = ' + CAST(@pId AS VARCHAR(50)) END  +'
-				ORDER BY ' + COALESCE(@pSortColumn, 'DataCreazioneTipologieLezioni') + ' ' + @sortDirection + ' 
+				' + CASE WHEN @pId IS NULL THEN ' ' ELSE ' AND t.IdTipologieLezioni = ' + CAST(@pId AS VARCHAR(50)) END  + '
+				' + CASE WHEN COALESCE(@pIncludeDeleted,0) = 0 THEN ' AND t.DataCancellazioneTipologieLezioni IS NULL ' ELSE ' ' END + '
+				 ORDER BY ' + COALESCE(@pSortColumn, 'DataCreazioneTipologieLezioni') + ' ' + @sortDirection + ' 
 			    OFFSET @pPageSize * (@pPageNumber - 1) ROWS
 				FETCH NEXT @pPageSize ROWS ONLY';
 				

@@ -71,7 +71,10 @@ namespace Web.Controllers
             }
             ViewData["IdCliente"] = idCliente;
             ViewData["Title"] = "Nuova Sala";
-            return View("SalaEdit", new LocationDM());
+            return View("SalaEdit", new LocationDM()
+            {
+                Colore = "#FFFFFF"
+            });
         }
 
 
@@ -89,8 +92,9 @@ namespace Web.Controllers
                     return View("SalaEdit", location);
                 }
             }
+            location.IdCliente = idCliente;
             await _tipologicheProxy.SaveLocationAsync(idCliente, location);
-            return RedirectToAction("ListaSale");
+            return RedirectToAction("ListaSale", new { cliente = urlRoute });
         }
 
 
@@ -102,7 +106,7 @@ namespace Web.Controllers
             //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Sale
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin()) { return Forbid(); }
             await _tipologicheProxy.DeleteOneLocationAsync(idCliente, idSala);
-            return RedirectToAction("ListaSale");
+            return RedirectToAction("ListaSale", new { cliente = urlRoute });
         }
 
         #endregion

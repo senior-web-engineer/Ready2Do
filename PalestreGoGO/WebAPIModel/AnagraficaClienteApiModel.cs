@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PalestreGoGo.WebAPIModel
 {
+    [Obsolete("Replaced by ClienteAnagraficaDM")]
     public class AnagraficaClienteApiModel
     {
         [JsonProperty("id")]

@@ -8,6 +8,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -44,6 +45,7 @@ namespace Web.Proxies
 
         public async Task<ClienteDM> GetClienteAsync(string urlRoute)
         {
+            Log.Verbose($"Inizio GetClienteAsync({urlRoute})");
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{urlRoute}";
             return await GetRequestAsync<ClienteDM>(new Uri(uri), false);
         }
@@ -97,10 +99,12 @@ namespace Web.Proxies
             await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/orario", orario);
         }
 
-        public async Task ClienteSalvaAnagrafica(int idCliente, AnagraficaClienteApiModel anagrafica)
+        public async Task<bool> ClienteSalvaAnagrafica(int idCliente, ClienteAnagraficaDM anagrafica)
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/profilo/anagrafica";
-            await SendPutRequestAsync(uri, anagrafica);
+            HttpStatusCode code =  await SendPutRequestAsync(uri, anagrafica);
+            if (code == HttpStatusCode.Redirect) return true;
+            else return false;
         }
 
         #endregion

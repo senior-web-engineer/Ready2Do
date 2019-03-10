@@ -48,9 +48,9 @@ namespace Web.Proxies
             }
         }
 
-        public async Task<LocationInputDM> GetOneLocationAsync(int idCliente, int idLocation)
+        public async Task<LocationDM> GetOneLocationAsync(int idCliente, int idLocation)
         {
-            return await GetRequestAsync<LocationInputDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}"));
+            return await GetRequestAsync<LocationDM>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/{idCliente}/tipologiche/locations/{idLocation}"));
         }
 
         public async Task DeleteOneLocationAsync(int idCliente, int idLocation)
@@ -88,9 +88,9 @@ namespace Web.Proxies
             return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/checkname/{nome}{queryString}"));
         }
 
-        public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idLocation)
+        public async Task DeleteOneTipologiaLezioneAsync(int idCliente, int idTipoLezione)
         {
-            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idLocation}");
+            await DeleteRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/tipologiche/tipolezioni/{idTipoLezione}");
         }
 
         #endregion

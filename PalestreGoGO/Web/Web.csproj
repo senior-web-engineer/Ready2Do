@@ -214,6 +214,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\dist\" />
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
   <ItemGroup>

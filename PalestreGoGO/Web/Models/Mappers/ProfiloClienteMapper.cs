@@ -20,7 +20,7 @@ namespace Web.Models.Mappers
                 Citta = cliente.Citta,
                 Country = cliente.Country,
                 Latitudine = cliente.Latitudine?.ToString(CultureInfo.InvariantCulture),
-                Longitudine = cliente.Indirizzo?.ToString(CultureInfo.InvariantCulture),
+                Longitudine = cliente.Longitudine?.ToString(CultureInfo.InvariantCulture),
                 Descrizione = cliente.Descrizione,
                 Email = cliente.Email,
                 EsitoLookup = (short)(cliente.Indirizzo != null ? 1 : 0),
@@ -32,29 +32,24 @@ namespace Web.Models.Mappers
             };
         }
 
-        public static AnagraficaClienteApiModel ToApiModel(this AnagraficaClienteEditViewModel model)
+        public static ClienteAnagraficaDM ToApiModel(this AnagraficaClienteEditViewModel model)
         {
             if(model == null) { return null; }
-            AnagraficaClienteApiModel result = new AnagraficaClienteApiModel()
+            ClienteAnagraficaDM result = new ClienteAnagraficaDM()
             {
                 Descrizione = model.Descrizione,
                 Email = model.Email,
-                IdCliente = model.IdCliente,
+                Id = model.IdCliente,
                 Nome = model.Nome,
                 RagioneSociale = model.RagioneSociale,
                 UrlRoute = model.UrlRoute,
                 NumTelefono = model.NumTelefono,
-                Indirizzo = new IndirizzoViewModel()
-                {
-                    Citta = model.Citta,
-                    Country = model.Country,
-                    PostalCode = model.CAP,
-                    Indirizzo = model.Indirizzo,
-                    Coordinate = new CoordinateAPIModel() {
-                        Latitudine = float.Parse(model.Latitudine,CultureInfo.InvariantCulture),
-                        Longitudine = float.Parse(model.Longitudine, CultureInfo.InvariantCulture)
-                    }
-                }
+                Citta = model.Citta,
+                Country = model.Country,
+                ZipOrPostalCode = model.CAP,
+                Indirizzo = model.Indirizzo,
+                Latitudine = double.Parse(model.Latitudine, CultureInfo.InvariantCulture),
+                Longitudine = double.Parse(model.Longitudine, CultureInfo.InvariantCulture)
             };
             return result;
         }

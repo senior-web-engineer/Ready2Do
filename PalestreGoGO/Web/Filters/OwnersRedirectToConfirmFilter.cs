@@ -6,17 +6,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Proxies;
 using Web.Utils;
 
 namespace Web.Filters
 {
     public class OwnersRedirectToConfirmFilter : IResourceFilter
     {
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
+        private readonly UtentiProxy _utentiProxy;
 
-        public OwnersRedirectToConfirmFilter(IConfiguration configuration)
+        public OwnersRedirectToConfirmFilter(IConfiguration configuration, UtentiProxy utentiProxy)
         {
             _configuration = configuration;
+            _utentiProxy = utentiProxy;
         }
 
         public void OnResourceExecuted(ResourceExecutedContext context)
@@ -43,7 +46,13 @@ namespace Web.Filters
                 if ((context.HttpContext.User.StruttureOwned().Count() > 0) &&
                 (!context.HttpContext.User.EmailConfirmedOn().HasValue))
                 {
-                    context.Result = new RedirectToActionResult("MailToConfirm", "Account", null);
+                    //RiVerifichiamo se l'utente ha confermato l'email interrogando B2C
+                    //Questo controllo ulteriore serve per gestire il caso in cui l'utente verifichi l'email in un'altra sessione (browser)
+                    //In questo scenario l'utente resta loggato nella sessione corrente ma non viene recepita la conferma dell'email fino al login successivo
+                    if (!_utentiProxy.IsAccountConfirmedAsync(context.HttpContext.User.Email()).Result)
+                    {
+                        context.Result = new RedirectToActionResult("MailToConfirm", "Account", null);
+                    }
                 }
             }
         }

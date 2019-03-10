@@ -215,6 +215,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
+        [ProducesResponseType(302)]
         public async Task<ActionResult<ClienteAnagraficaDM>> ClienteSalvaAnagrafica([FromRoute(Name = "idCliente")]int idCliente, [FromBody] ClienteAnagraficaDM anagrafica)
         {
             if (anagrafica == null) { return BadRequest(); }
@@ -224,8 +225,9 @@ namespace PalestreGoGo.WebAPI.Controllers
                 return BadRequest();
             }
             if (anagrafica.Id != idCliente) { return BadRequest(); }
-            await _repository.AggiornaAnagraficaClienteAsync(idCliente, anagrafica);
-            return NoContent();
+            bool routeChanged = await _repository.AggiornaAnagraficaClienteAsync(idCliente, anagrafica);
+            if (routeChanged) { return Ok(true); }
+            else { return Ok(false); }
         }
 
         [HttpPut("{idCliente:int}/profilo/orario")]

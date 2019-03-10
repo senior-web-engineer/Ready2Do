@@ -143,7 +143,8 @@ namespace Web.Controllers
 
             var apiModel = model.ToApiModel();
             await _apiClient.ClienteSalvaAnagrafica(idCliente, apiModel);
-            return RedirectToAction("GetAnagrafica", new { cliente = urlRoute });
+            //Redirect utilizzando il nuovo urlRoute
+            return RedirectToAction("GetAnagrafica", new { cliente = model.UrlRoute });
         }
         #endregion
 

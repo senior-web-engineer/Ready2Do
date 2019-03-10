@@ -15,7 +15,7 @@ namespace PalestreGoGo.DataAccess
         Task ConfermaProvisioningAsync(int idCliente, bool accountConfirmed);
         Task<ClienteDM> GetClienteByIdAsync(int idCliente);
         Task<ClienteDM> GetClienteByUrlRouteAsync(string urlRoute);
-        Task AggiornaAnagraficaClienteAsync(int idCliente, ClienteAnagraficaDM anagrafica);
+        Task<bool> AggiornaAnagraficaClienteAsync(int idCliente, ClienteAnagraficaDM anagrafica);
 
         Task AggiornaOrarioAperturaClienteAsync(int idCliente, OrarioAperturaDM orarioApertura);
 

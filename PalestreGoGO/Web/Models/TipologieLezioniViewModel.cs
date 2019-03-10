@@ -34,7 +34,7 @@ namespace Web.Models
 
         [Required]
         [StringLength(100)]
-        [Remote("CheckNome", "TipologieLezioni",AdditionalFields ="IdCliente, Id")]
+        [Remote("checknameTipologiaLezione", AdditionalFields ="IdCliente, Id")]
         public string Nome { get; set; }
 
         [StringLength(500)]

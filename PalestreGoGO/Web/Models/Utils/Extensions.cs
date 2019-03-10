@@ -16,16 +16,16 @@ namespace Web.Models.Utils
             {
                 case TipoOrarioAperturaDM.Continuato:
                 case TipoOrarioAperturaDM.Spezzato:
-                    min = giorno.Mattina.Inizio.Value;
-                    max = giorno.Pomeriggio.Fine.Value;
+                    min = giorno.Mattina?.Inizio;
+                    max = giorno.Pomeriggio.Fine;
                     break;
                 case TipoOrarioAperturaDM.Mattina:
-                    min = giorno.Mattina.Inizio;
-                    max = giorno.Mattina.Fine;
+                    min = giorno.Mattina?.Inizio;
+                    max = giorno.Mattina?.Fine;
                     break;
                 case TipoOrarioAperturaDM.Pomeriggio:
-                    min = giorno.Pomeriggio.Inizio;
-                    max = giorno.Pomeriggio.Fine;
+                    min = giorno.Pomeriggio?.Inizio;
+                    max = giorno.Pomeriggio?.Fine;
                     break;
             }
         }
@@ -33,15 +33,16 @@ namespace Web.Models.Utils
         public static void GetMinMax(this OrarioAperturaViewModel orario, out TimeSpan? min, out TimeSpan? max)
         {
             min = max = null;
-            TimeSpan? inizio, fine;
+            TimeSpan? inizio = default(TimeSpan?), 
+                      fine = default(TimeSpan?);
             if (orario == null) return;
-            orario.Domenica.GetMinMax(out inizio, out fine);
+            orario?.Domenica?.GetMinMax(out inizio, out fine);
             if (inizio.HasValue) { min = inizio; }
             if (fine.HasValue) { max = fine; }
-            orario.LunVen.GetMinMax(out inizio, out fine);
+            orario?.LunVen?.GetMinMax(out inizio, out fine);
             if ((inizio.HasValue) && (!min.HasValue || (min.Value > inizio.Value))){ min = inizio; }
             if ((fine.HasValue) && (!max.HasValue || (max.Value < fine.Value))) { max= fine; }
-            orario.Sabato.GetMinMax(out inizio, out fine);
+            orario?.Sabato?.GetMinMax(out inizio, out fine);
             if ((inizio.HasValue) && (!min.HasValue || (min.Value > inizio.Value))) { min = inizio; }
             if ((fine.HasValue) && (!max.HasValue || (max.Value < fine.Value))) { max = fine; }
         }

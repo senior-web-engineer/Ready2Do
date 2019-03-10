@@ -1,5 +1,7 @@
 ﻿/*
 Aggiorna l'anagrafica del Cliente
+*** History ***
+20190803 - Fix: l'urlRoute non veniva aggiornato
 */
 CREATE PROCEDURE [dbo].[Clienti_AnagraficaSave]
 	@pIdCliente			INT,
@@ -14,10 +16,13 @@ CREATE PROCEDURE [dbo].[Clienti_AnagraficaSave]
 	@pCountry			NVARCHAR(100) = NULL,
 	@pLatitudine		FLOAT,
 	@pLongitudine		FLOAT,
-	@pUrlRoute			VARCHAR(205)
+	@pUrlRoute			VARCHAR(205),
+	@pRouteIsChanged	BIT OUTPUT
 AS
 BEGIN
 	DECLARE @urlIsValid INT
+	DECLARE @tblChanges TABLE (OldUrlRoute VARCHAR(205), NewUrlRoute VARCHAR(205))
+
 	EXEC [dbo].[Clienti_RouteValidate] @pUrlRoute, @pIdCliente, @urlIsValid OUTPUT
 
 	IF @urlIsValid  = -1
@@ -47,7 +52,9 @@ BEGIN
 		ZipOrPostalCode = @pPostalCode,
 		Country = @pCountry,
 		Latitudine = @pLatitudine,
-		Longitudine = @pLongitudine
+		Longitudine = @pLongitudine,
+		UrlRoute = @pUrlRoute
+		OUTPUT deleted.UrlRoute, inserted.UrlRoute INTO @tblChanges(OldUrlRoute, NewUrlRoute)
 	WHERE Id = @pIdCliente
 	AND IdStato >= 3 -- Solo provisioned
 
@@ -56,6 +63,11 @@ BEGIN
 		RAISERROR(N'Impossibile trovare il Cliente [%i] da aggiornare',16,1,@pIdCliente);
 		RETURN -1
 	END
+
+	IF EXISTS(SELECT * FROM @tblChanges WHERE OldUrlRoute = NewUrlRoute)
+		SET @pRouteIsChanged = 0
+	ELSE
+		SET @pRouteIsChanged = 1
 
 	RETURN 0;
 END

@@ -3,7 +3,7 @@ Cancella logicamente una Tipologia Lezione.
 L'operazione è possibile solo se per gli eventuali scheudli esistenti (futuri) non ci sono prenotazioni.
 - Se risulta anche solo una prenotazione in essere per questa tipologia di lezione dovrà essere pima annullata la prenotazione 
 e solo dopo potrà essere cancellata la tipologia di lezione.
-- Gli Schedule associati alla Tipologia di lezione sono cancellati in cascata
+- Gli Schedule associati alla Tipologia di lezione sono "cancellati" in cascata
 */
 CREATE PROCEDURE [dbo].[TipologieLezioni_Delete]
 	@pId			INT,
@@ -33,6 +33,7 @@ BEGIN
 
 	IF @@ROWCOUNT = 0
 	BEGIN
+		ROLLBACK;
 		RAISERROR('Tipologia lezione non cancellabile o parametri non validi!', 16, 0);
 		RETURN -1;
 	END
@@ -44,6 +45,7 @@ BEGIN
 	AND IdCliente = @pIdCliente
 	AND DataCancellazione IS NULL
 	AND DataOraInizio >= @dtOperazione
-
+	
+	COMMIT
 	RETURN 0;
 END

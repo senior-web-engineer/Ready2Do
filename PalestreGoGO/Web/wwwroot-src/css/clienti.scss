@@ -148,3 +148,28 @@
     height: 100%;
     vertical-align: middle;
 }
+
+/*.r2d-overlay {
+    background: #e9e9e9;
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0.75;
+    z-index: 999;
+}*/
+.r2d-overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #e9e9e9;
+    opacity: 0.75;
+    z-index: 999;
+}

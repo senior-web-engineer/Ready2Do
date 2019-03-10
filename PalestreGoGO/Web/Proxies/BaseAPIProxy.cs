@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Web.Proxies
 {
@@ -98,10 +99,13 @@ namespace Web.Proxies
             return result;
         }
 
-        protected async Task SendPutRequestAsync<T>(string uri, T model, bool sendToken = true)
+        protected async Task<HttpStatusCode> SendPutRequestAsync<T>(string uri, T model, bool sendToken = true)
         {
+            HttpStatusCode result;
             var response = await SendRequestAsync<T>(HttpMethod.Put, new Uri(uri), model, sendToken);
+            result = response.StatusCode;
             response.Dispose();
+            return result;
         }
 
         protected async Task<HttpResponseMessage> SendRequestAsync<T>(HttpMethod method, Uri uri, T model, bool sendToken = true)

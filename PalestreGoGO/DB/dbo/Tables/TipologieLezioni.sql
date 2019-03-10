@@ -14,7 +14,11 @@
 
 	CONSTRAINT PK_TipologieLezioni PRIMARY KEY ([Id]),
 	CONSTRAINT FK_TipologieLezioni_Clienti FOREIGN KEY ([IdCliente]) REFERENCES [dbo].[Clienti]([Id]),
-
-	--20181109-Aggiunta univocità Nome per cliente
-	CONSTRAINT UQ_TipologieLezioni_ClienteNome UNIQUE(IdCliente, Nome)
 )
+GO
+
+--20181109-Aggiunta univocità Nome per cliente
+--20190310-Aggiunto Filter sui cancellati
+CREATE UNIQUE NONCLUSTERED INDEX UQ_TipologieLezioni_ClienteNome 
+		ON [dbo].[TipologieLezioni](IdCliente, Nome) WHERE (DataCancellazione IS NULL) -- Il nome deve essere univico solo tra quelle non cancellate
+

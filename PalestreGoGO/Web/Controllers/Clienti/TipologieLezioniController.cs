@@ -86,7 +86,10 @@ namespace Web.Controllers.Clienti
                 return Forbid();
             }
             ViewData["IdCliente"] = idCliente;
-            Models.TipologieLezioniViewModel tipoLezione = new Models.TipologieLezioniViewModel();
+            Models.TipologieLezioniViewModel tipoLezione = new Models.TipologieLezioniViewModel()
+            {
+                IdCliente = idCliente
+            };
             return View("LezioneEdit", tipoLezione);
         }
 
@@ -108,7 +111,7 @@ namespace Web.Controllers.Clienti
             }
             if (tipoLezione.Id.HasValue && (tipoLezione.Id.Value <= 0)) { tipoLezione.Id = null; }
             await _apiClient.SaveTipologiaLezioneAsync(idCliente, tipoLezione.ToDM());
-            return RedirectToAction("ListaLezioni");
+            return RedirectToAction("ListaLezioni", new { cliente = urlRoute });
         }
 
         [HttpGet("delete/{id}")]
@@ -122,14 +125,14 @@ namespace Web.Controllers.Clienti
                 return Forbid();
             }
             await _apiClient.DeleteOneTipologiaLezioneAsync(idCliente, idLezione);
-            return RedirectToAction("ListaLezioni");
+            return RedirectToAction("ListaLezioni", new { cliente = urlRoute });
         }
 
         [Produces("application/json")]
-        [HttpGet("checkname")]
-        public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nome, int? IdCliente, int? id)
+        [HttpGet("check-name", Name="checknameTipologiaLezione")]        
+        public async Task<IActionResult> CheckNome(/*[FromRoute(Name = "cliente")]string urlRoute, */[FromQuery(Name = "Nome")]string nome, int? IdCliente, int? id)
         {
-            _logger.LogDebug($"Begin CheckNome({urlRoute},{nome},{IdCliente},{id}) - Path: {ControllerContext.HttpContext.Request.Path}?{ControllerContext.HttpContext.Request.QueryString}");
+            _logger.LogDebug($"Begin CheckNome({nome},{IdCliente},{id}) - Path: {ControllerContext.HttpContext.Request.Path}?{ControllerContext.HttpContext.Request.QueryString}");
             //int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             bool isValid = await _apiClient.CheckNameTipologiaLezioneAsync(IdCliente.Value, nome, id);
             if (isValid)

@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataAccess
 {
     public interface ITipologieLezioniRepository 
     {
-        Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000);
+        Task<IEnumerable<TipologiaLezioneDM>> GetListAsync(int idTenant, string sortColumn = null, bool sortAsc = true, int pageNumber = 1, int pageSize = 1000, bool includeDeleted = false);
         Task<int> CountAsync(int idTenant);
         Task<TipologiaLezioneDM> GetAsync(int idTenant, int itemKey);
 

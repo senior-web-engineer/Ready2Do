@@ -8,7 +8,7 @@
         <br />
         <p>Inizia ad inserirne almeno una per poterci pianificare lo svolgimento delle lezioni.</p>
         <br />
-        <a asp-action="SalaNew" asp-controller="Sale" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+        <a asp-action="SalaNew" asp-controller="Sale" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
     </div>
     @*<div class="card-action">
         <a href="#">This is a link</a>
