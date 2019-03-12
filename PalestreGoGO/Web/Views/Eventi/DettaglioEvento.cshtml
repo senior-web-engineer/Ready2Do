@@ -16,7 +16,10 @@
             <ul class="tabs">
                 <li class="tab col s3"><a class="active" href="#tabEvento">Evento</a></li>
                 <li class="tab col s3"><a href="#tabIscritti">Iscritti</a></li>
-                <li class="tab col s3"><a href="#tabDaConfermare">DaConfermare</a></li>
+                @if (Model.AppuntamentiDaConfermare?.Any() ?? false)
+                {
+                    <li class="tab col s3"><a href="#tabDaConfermare">Appuntamenti Da Confermare</a></li>
+                }
                 @if (Model.Schedule.WaitListDisponibile)
                 {
                     <li class="tab col s3"><a href="#tabWaitList">InAttesa</a></li>
@@ -26,7 +29,7 @@
     }
     <!-- TAB EVENTO -->
     <!-- Nota che se l'utente non è un admin non sarà un tab  -->
-    <div id="tabEvento" class="col s10 offset-s1 m8 offset-m2 l6 offset-l3" >
+    <div id="tabEvento" class="col s10 offset-s1 m10 offset-m1 l8 offset-l2">
         <!-- Riempire con i dati dell'evento -->
         <partial name="_TabEvento" model="Model.Schedule" />
     </div>
@@ -44,15 +47,14 @@
         {
             <div id="tabWaitList"><partial name="_TabWaitList" model="Model.WaitListRegistrations" /></div>
         }
-    }    
+    }
 </div>
 
 @section Scripts{
 
     <script>
         $(document).ready(function () {
-            ////EntryPoint è il nome definito in WebPack
-            //EntryPoint.r2dEditEvento.init();
+            $('.tabs').tabs();
         });
     </script>
 

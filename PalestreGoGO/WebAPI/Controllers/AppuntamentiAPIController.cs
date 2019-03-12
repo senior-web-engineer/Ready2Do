@@ -156,20 +156,27 @@ namespace PalestreGoGo.WebAPI.Controllers
             //Se è un amministratore può inserire appuntamenti anche per conto di altri utenti, altrimenti può inserire appuntamenti solo per se stesso
             if (!User.CanManageStructure(idCliente) && (!User.UserId().Equals(model.IdUtente))) { return BadRequest(); }
             //Startiamo la Logic App che gestisce il Timeout se non è stato specificato un IdAbbonamento
-            string logiAccInfos = null;
-            if (!model.IdAbbonamento.HasValue)
+            try
             {
-                int timeoutMinutes = 0;
-                string minutes = await _clientiRepository.GetPreferenzaCliente(idCliente, "APPUNTAMENTIDACONFERMARE.EXPIRATION.WINDOW.MINUTES");
-                if (!string.IsNullOrWhiteSpace(minutes) && !int.TryParse(minutes, out timeoutMinutes))
+                string logiAccInfos = null;
+                if (!model.IdAbbonamento.HasValue)
                 {
-                    //Se non è configurata una preferenza sul DB, usiamo il default del file di configurazione
-                    timeoutMinutes = _config.GetValue<int>("Azure__LogicApps__AppuntamentiDaConfermareHandler__DefaultTimeoutMinutes");
+                    int timeoutMinutes = 0;
+                    string minutes = await _clientiRepository.GetPreferenzaCliente(idCliente, "APPUNTAMENTIDACONFERMARE.EXPIRATION.WINDOW.MINUTES");
+                    if (!string.IsNullOrWhiteSpace(minutes) && !int.TryParse(minutes, out timeoutMinutes))
+                    {
+                        //Se non è configurata una preferenza sul DB, usiamo il default del file di configurazione
+                        timeoutMinutes = _config.GetValue<int>("Azure__LogicApps__AppuntamentiDaConfermareHandler__DefaultTimeoutMinutes");
+                    }
+                    logiAccInfos = await _clientLogicApp.StartAppForAppuntamentoDaConfermare(idCliente, idSchedule, model.IdUtente, timeoutMinutes);
                 }
-                logiAccInfos = await _clientLogicApp.StartAppForAppuntamentoDaConfermare(idCliente, idSchedule, model.IdUtente, timeoutMinutes);
+                var appuntamento = await _repositoryAppuntamenti.TakeAppuntamentoAsync(idCliente, model.IdUtente, idSchedule, model.IdAbbonamento, model.Note, null, logiAccInfos);
+                return Ok(appuntamento);
+            }catch(Exception exc)
+            {
+                Log.Error(exc, "Errore durante il tentativo di Presa Appuntamento. idCliente: {IdCliente}, idSchedule: {IdSchedule}, appuntamento: {@Model}", idCliente, idSchedule, model);
+                throw;
             }
-            var appuntamento = await _repositoryAppuntamenti.TakeAppuntamentoAsync(idCliente, model.IdUtente, idSchedule, model.IdAbbonamento, model.Note, null, logiAccInfos);
-            return Ok(appuntamento.Id);
         }
 
         [HttpPut("expiration/{userId}")]
@@ -191,7 +198,7 @@ namespace PalestreGoGo.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost("conferma/{id:int}")]
         public async Task<IActionResult> ConfermaAppuntamento([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idSchedule")] int idSchedule,
-                                                              [FromRoute(Name = "idSchedule")] int idAppuntamentoDaConfermare)
+                                                              [FromRoute(Name = "id")] int idAppuntamentoDaConfermare)
         {
             //Recuperare l'id del Workflow Run per invocare la terminazione (come avviene l'autorizzazione?)
             throw new NotImplementedException();

@@ -5,14 +5,14 @@
 	@pNumIngressi					SMALLINT = NULL,
 	@pCosto							DECIMAL(10,2) = NULL,
 	@pMaxLivCorsi					SMALLINT = NULL,
-	@pValidoDal						DATETIME2(2),
+	@pValidoDal						DATETIME2(2) = NULL,
 	@pValidoFinoAl					DATETIME2(2) = NULL,
 	@pId							INT OUTPUT
 AS
 BEGIN
 
 	INSERT INTO TipologieAbbonamenti(IdCliente, Nome, DurataMesi, NumIngressi, Costo, MaxLivCorsi, ValidoDal, ValidoFinoAl)
-		VALUES (@pIdCliente, @pNome, @pDurataMesi, @pNumIngressi, @pCosto, @pMaxLivCorsi, @pValidoDal, @pValidoFinoAl)
+		VALUES (@pIdCliente, @pNome, @pDurataMesi, @pNumIngressi, @pCosto, @pMaxLivCorsi, COALESCE(@pValidoDal, SYSDATETIME()), @pValidoFinoAl)
 
 	SET @pId = SCOPE_IDENTITY()
 	

@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<AppuntamentoDaConfermareDM>
 
-@if (Model?.Any() ?? false)
+@if (!Model?.Any() ?? true)
 {
     <div class="row">
         <div class="col s4 offset-s4">
@@ -18,22 +18,71 @@
 else
 {
     <div class="row">
-        <div class="col s5 offset-s1 center">
+        <div class="col s3 offset-s2">
             <strong>Utente</strong>
         </div>
-        <div class="col s3 center">
+        <div class="col s3">
             <strong>Data Iscrizione</strong>
         </div>
-        <div class="col s3 center">
+        <div class="col s3">
             <strong>Azioni</strong>
         </div>
     </div>
     @foreach (var a in Model)
     {
         <div class="row">
-            <div class="col s5 offset-s1">@(a.User.DisplayName)</div>
+            <div class="col s3 offset-s2">@(a.User.DisplayName)</div>
             <div class="col s3">@(a.DataCreazione)</div>
-            <div class="col s3"><!--AZIONI--></div>
+            <div class="col s2 l1">
+                <div class="position:relative">
+                    <div class="fixed-action-btn" style="position:relative;display: inline-block; bottom: 0;">
+                        <a class="btn-floating btn-small blue">
+                            <i class="large material-icons">menu</i>
+                        </a>
+                        <ul style="right:38px">
+                            <li style="margin-top: 0; margin-right: 2px;">
+                                @*Se l'utente può essere confermato (perché gli è stato associato un abbonamento nel frattempo) mostriamo la relativa azione*@
+                                @if (a.CanBeConfirmed.HasValue && a.CanBeConfirmed.Value)
+                                {
+                                    <form asp-action="ConfermaAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-idEvento="@a.ScheduleId"
+                                          asp-route-idAppuntamento="@a.Id">
+                                        <button type="submit" class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
+                                            <i class="material-icons">add</i>
+                                        </button>
+                                    </form>
+                                }
+                                @*..altrimenti mostriamo l'azione per associare l'abbonamento*@
+                                else
+                                {
+                                    <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@a.UserId" asp-route-id="-1" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"
+                                       class="btn-floating btn-small blue tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
+                                        <i class="material-icons">add</i>
+                                    </a>
+                                }
+                            </li>
+
+                            <li style="margin-top: 0; margin-right: 2px;">
+                                <form asp-action="RifiutaAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-idEvento="@a.ScheduleId"
+                                      asp-route-idAppuntamento="@a.Id">
+                                    <button type="submit" class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Rifiuta Appuntamento">
+                                        <i class="material-icons">cancel</i>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
     }
 }
+
+<script>
+    $(document).ready(function () {
+        var floatActBtns = document.querySelectorAll('.fixed-action-btn');
+        var instances = M.FloatingActionButton.init(floatActBtns, {
+            direction: 'left'
+        });
+    });
+</script>

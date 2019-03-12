@@ -18,5 +18,7 @@ namespace Web.Models
         public decimal Importo { get; set; }
         public decimal ImportoPagato { get; set; }
 
+        public bool? ConfermaAppuntamenti { get; set; }
+
     }
 }

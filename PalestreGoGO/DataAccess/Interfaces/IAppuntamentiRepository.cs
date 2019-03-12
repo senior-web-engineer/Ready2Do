@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataAccess
 {
     public interface IAppuntamentiRepository
     {
-        Task<AppuntamentoBaseDM> TakeAppuntamentoAsync(int idCliente, string userId, int idSchedule, int? idAbbonamento, string note, string nominativo, string payloadTimeoutManager);
+        Task<TakeAppuntamentoResult> TakeAppuntamentoAsync(int idCliente, string userId, int idSchedule, int? idAbbonamento, string note, string nominativo, string payloadTimeoutManager);
 
         Task CancelAppuntamentoAsync(int idCliente, int idAppuntamento);
         Task<string> CancelAppuntamentoDaConfermareAsync(int idCliente, int idAppuntamentoDaConfermare);
@@ -57,7 +57,7 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
                                                                      DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                     string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                     string sortBy = "dataorainizioschedules", bool sortAscending = true,
                                                                      bool includiCancellati = false);
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                      DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                     string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                     string sortBy = "dataorainizioschedules", bool sortAscending = true,
                                                                      bool includiCancellati = false);
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
                                                                                  DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                 string sortBy = "DataOraInizio", bool sortAscending = true,
-                                                                                 bool includiCancellati = false);
+                                                                                 string sortBy = "DataOraInizioSchedules", bool sortAscending = true,
+                                                                                 bool includiCancellati = false, bool includeExpired = false);
 
         /// <summary>
         /// Ritorna tutti gli appuntamenti di un Utente presso uno specifico Cliente, invocabile dal gestore per vedere gli appuntamenti di utente presso la propria struttura.
@@ -110,8 +110,8 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                                  DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                 string sortBy = "DataOraInizio", bool sortAscending = true,
-                                                                                 bool includiCancellati = false);
+                                                                                 string sortBy = "DataOraInizioSchedules", bool sortAscending = true,
+                                                                                 bool includiCancellati = false, bool includeExpired = false);
 
         Task<IEnumerable<WaitListRegistrationDM>> GetWaitListRegistrationsScheduleAsync(int idCliente, int idSchedule, string userId = null, bool includeConverted = false, bool includeDeleted = false);        
     }

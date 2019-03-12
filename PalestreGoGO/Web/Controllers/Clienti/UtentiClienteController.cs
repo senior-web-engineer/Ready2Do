@@ -69,7 +69,7 @@ namespace Web.Controllers.Clienti
             ViewData["TabId"] = tabId;
             var utente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
             ViewData["Utente"] = utente.MapToUserHeaderViewModel();
-            var vm = utente.MapToClienteUtenteViewModel();
+            var vm = utente.UtenteCliente.MapToClienteUtenteViewModel();
             var tAbb = _utentiProxy.GetAbbonamentiForUserAsync(idCliente, userId, true);
             var tCert = _utentiProxy.GetCertificatiForUserAsync(idCliente, userId, true, false);
             var tApp = _utentiProxy.GetAppuntamentiForUserAsync(idCliente, userId);
@@ -147,10 +147,11 @@ namespace Web.Controllers.Clienti
             //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
             //      oppure se la scelta del tipo avviene nella view
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            ClienteUtenteDetailsApiModel utente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
-            ViewData["Utente"] = utente.MapToUserHeaderViewModel();
+            var associazioneUtente = await _utentiProxy.GetUtenteCliente(idCliente, userId, new DateTime(1900, 1, 1), new DateTime(9999, 12, 31), includeAppuntamentiDaConfermare: true);
+            ViewData["Utente"] = associazioneUtente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
+            ViewData["HasAppuntamentiDaConfermare"] = associazioneUtente.AppuntamentiDaConfermare?.Any() ?? false;
             var tipologie = await _tipologicheProxy.GetTipologieAbbonamentiClienteAsync(idCliente);
             List<SelectListItem> items = new List<SelectListItem>();
             foreach (var t in tipologie)
@@ -183,8 +184,8 @@ namespace Web.Controllers.Clienti
                                                               [FromForm]AbbonamentoUtenteInputModel model)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            ClienteUtenteDetailsApiModel utente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
-            ViewData["Utente"] = utente.MapToUserHeaderViewModel();
+            var associazioneUtente = await _utentiProxy.GetUtenteCliente(idCliente, userId);
+            ViewData["Utente"] = associazioneUtente.MapToUserHeaderViewModel();
             ViewData["IdCliente"] = idCliente;
             ViewData["UrlRoute"] = urlRoute;
             bool modelValid = ModelState.IsValid;

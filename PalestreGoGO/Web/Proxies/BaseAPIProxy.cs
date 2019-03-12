@@ -73,6 +73,12 @@ namespace Web.Proxies
                 throw new ReauthenticationRequiredException();
             }
         }
+        protected async Task SendPostRequestEmptyAsync(string uri, bool sendToken = true)
+        {
+            var response = await SendRequestAsync<string>(HttpMethod.Post, new Uri(uri), null, sendToken);
+            response.Dispose();
+        }
+
         protected async Task SendPostRequestAsync<T>(string uri, T model, bool sendToken = true)
         {
             var response = await SendRequestAsync<T>(HttpMethod.Post, new Uri(uri), model, sendToken);

@@ -15,11 +15,11 @@
 </style>
 
 <div class="row">
-    <div class="col s10">
+    <div class="col s12">
         <h3>@Model.Title</h3>
     </div>
     <br />
-    <div class="col s10">
+    <div class="col s12">
         <h5>@Model.TipologiaLezione.Nome</h5>
     </div>
 </div>
@@ -70,22 +70,22 @@
                 //Se già Iscritto ==> Annulla Iscrizione
                 if ((bool)ViewData["UserHasAppointment"])
                 {
-                    <form asp-action="AnnullaAppuntamento" asp-controller="Eventi" asp-route-cliente="@ViewData["ClienteRoute"]"
+                    <form asp-action="DeleteAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"
                           asp-route-idEvento="@(Model.Id.Value)" method="post">
-                        <input type="submit" class="btn waves-effect waves-light" value="Annulla Appuntamento" />
+                        <input type="submit" class="btn waves-effect waves-light" value="Cancella Appuntamento" />
                     </form>
                 }
                 //Se in WaitList ==> Annulla WaitList
                 else if ((bool)ViewData["UserInWaitList"])
                 {
-                    <form asp-action="AnnullaWaitList" asp-controller="Eventi" asp-route-cliente="@ViewData["ClienteRoute"]"
+                    <form asp-action="AnnullaWaitList" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"
                           asp-route-idEvento="@(Model.Id.Value)" method="post">
                         <input type="submit" class="btn waves-effect waves-light" value="Rimuovi da Lista di Attesa" />
                     </form>
                 }
                 else
                 {
-                    <form asp-action="TakeAppuntamento" asp-controller="Eventi" asp-route-cliente="@ViewData["ClienteRoute"]"
+                    <form asp-action="TakeAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"
                           asp-route-idEvento="@(Model.Id.Value)" method="post">
                         <input type="submit" class="btn waves-effect waves-light" value="Iscriviti" />
                     </form>
@@ -94,7 +94,7 @@
             }
             else if (((UserType)ViewData["UserType"]).IsAtLeastAdmin())
             {
-                <a class="btn waves-effect waves-light" asp-action="ModificaEvento" asp-controller="Eventi" asp-route-cliente="@ViewBag.ClienteRoute" asp-route-id="@ViewBag.IdEvento">Modifica Evento</a>
+                <a class="btn waves-effect waves-light" asp-action="ModificaEvento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-id="@ViewBag.IdEvento">Modifica Evento</a>
             }
         }
     </div>

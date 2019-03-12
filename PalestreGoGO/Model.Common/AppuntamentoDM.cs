@@ -20,8 +20,5 @@ namespace ready2do.model.common
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public ScheduleDM Schedule { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public UtenteClienteDM User { get; set; }
     }
 }

@@ -111,7 +111,7 @@ namespace PalestreGoGo.DataAccess
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     var columns = GetColumnsOrdinals(reader);
-                    if (reader.HasRows)
+                    if (await reader.ReadAsync())
                     {
                         if (includeStato)
                         {
@@ -154,6 +154,7 @@ namespace PalestreGoGo.DataAccess
                     case 2:
                         result |= ClienteUtenteStato.PagamentoDovuto;
                         break;
+                    case 0:
                     case 3:
                         result |= ClienteUtenteStato.NessunPagamentoDovuto;
                         break;

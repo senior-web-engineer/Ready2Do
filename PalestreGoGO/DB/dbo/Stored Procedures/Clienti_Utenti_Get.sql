@@ -7,68 +7,68 @@ BEGIN
 	IF COALESCE(@pIncludeStato, 0) = 1
 	BEGIN
 		;WITH cte_abbonamenti_att AS(
-			SELECT u.IdCliente, 
-					u.UserId,
+			SELECT u.IdClienteClientiUtenti, 
+					u.UserIdClientiUtenti,
 					CASE
-						WHEN auAtt.Id IS NOT NULL THEN CAST(1 AS tinyint)
+						WHEN auAtt.IdAbbonamentiUtenti IS NOT NULL THEN CAST(1 AS tinyint)
 						ELSE CAST (0 AS tinyint)
 					END AS HasAbbonamentoAttivo,
 					CASE 
-						WHEN auAtt.Id IS NOT NULL AND auAtt.ImportoPagato = auAtt.Importo THEN CAST(3 AS TINYINT) --Pagato
-						WHEN auAtt.Id IS NOT NULL AND auAtt.ImportoPagato = 0 AND auAtt.Importo > 0 THEN CAST(1 AS TINYINT) --Da Pagare
+						WHEN auAtt.IdAbbonamentiUtenti IS NOT NULL AND auAtt.ImportoPagatoAbbonamentiUtenti = auAtt.ImportoAbbonamentiUtenti THEN CAST(3 AS TINYINT) --Pagato
+						WHEN auAtt.IdAbbonamentiUtenti IS NOT NULL AND auAtt.ImportoPagatoAbbonamentiUtenti = 0 AND auAtt.ImportoAbbonamentiUtenti > 0 THEN CAST(1 AS TINYINT) --Da Pagare
 						ELSE CAST(2 AS TINYINT) -- Parzialmente pagato
 					END As StatoPagamentoAbbonamentoAttivo
-			FROM ClientiUtenti u 
-				LEFT JOIN AbbonamentiUtenti auAtt ON auAtt.IdCliente = u.IdCliente AND auAtt.UserId = u.UserId 
-													AND auAtt.DataInizioValidita <= SYSDATETIME() AND  auAtt.DataCancellazione IS NULL 
-													AND auAtt.Scadenza > SYSDATETIME() -- consideriamo attivi solo i NON Cancellati e NON Scaduti e validi ad oggi
-			WHERE u.IdCliente = @pIdCliente
-			AND u.UserId = @pUserId
+			FROM vClientiUtenti u 
+				LEFT JOIN vAbbonamentiUtenti auAtt ON auAtt.IdClienteAbbonamentiUtenti = u.IdClienteClientiUtenti AND auAtt.UserIdAbbonamentiUtenti = u.UserIdClientiUtenti 
+													AND auAtt.DataInizioValiditaAbbonamentiUtenti <= SYSDATETIME() AND  auAtt.DataCancellazioneAbbonamentiUtenti IS NULL 
+													AND auAtt.ScadenzaAbbonamentiUtenti > SYSDATETIME() -- consideriamo attivi solo i NON Cancellati e NON Scaduti e validi ad oggi
+			WHERE u.IdClienteClientiUtenti = @pIdCliente
+			AND u.UserIdClientiUtenti = @pUserId
 		),
 		cte_abbonamenti_old AS(
-				SELECT u.IdCliente, 
-					   u.UserId,
+				SELECT u.IdClienteClientiUtenti, 
+					   u.UserIdClientiUtenti,
 					   CASE
-							WHEN auOld.Id IS NOT NULL AND auOld.Scadenza < SYSDATETIME() THEN CAST(1 AS tinyint)
+							WHEN auOld.IdAbbonamentiUtenti IS NOT NULL AND auOld.ScadenzaAbbonamentiUtenti < SYSDATETIME() THEN CAST(1 AS tinyint)
 							ELSE CAST (0 AS tinyint)
 					   END AS HasAbbonamentoScaduto,
 					   CASE
-							WHEN auOld.Id IS NOT NULL AND auOld.DataCancellazione IS NOT NULL THEN CAST(1 AS tinyint)
+							WHEN auOld.IdAbbonamentiUtenti IS NOT NULL AND auOld.DataCancellazioneAbbonamentiUtenti IS NOT NULL THEN CAST(1 AS tinyint)
 							ELSE CAST (0 AS tinyint)
 					   END AS HasAbbonamentoCancellato
-				FROM ClientiUtenti u 
-					LEFT JOIN AbbonamentiUtenti auOld ON auOld.IdCliente = u.IdCliente AND auOld.UserId = u.UserId 
-														AND auOld.DataInizioValidita <= SYSDATETIME() AND 
-														((auOld.DataCancellazione IS NOT NULL) OR  (auOld.Scadenza < SYSDATETIME()))
-				WHERE u.IdCliente = @pIdCliente
-				AND u.UserId = @pUserId
+				FROM vClientiUtenti u 
+					LEFT JOIN vAbbonamentiUtenti auOld ON auOld.IdClienteAbbonamentiUtenti = u.IdClienteClientiUtenti AND auOld.UserIdAbbonamentiUtenti = u.UserIdClientiUtenti 
+														AND auOld.DataInizioValiditaAbbonamentiUtenti <= SYSDATETIME() AND 
+														((auOld.DataCancellazioneAbbonamentiUtenti IS NOT NULL) OR  (auOld.ScadenzaAbbonamentiUtenti < SYSDATETIME()))
+				WHERE u.IdClienteClientiUtenti = @pIdCliente
+				AND u.UserIdClientiUtenti = @pUserId
 
 		),
 		cte_certificato as(
-			SELECT u.IdCliente,
-				   u.UserId,
+			SELECT u.IdClienteClientiUtenti,
+				   u.UserIdClientiUtenti,
 				   CASE 
-						WHEN c.Id IS NOT NULL AND c.DataScadenza > SYSDATETIME() AND c.DataCancellazione IS NULL THEN CAST(1 AS tinyint)
+						WHEN c.IdClientiUtentiCertificati IS NOT NULL AND c.DataScadenzaClientiUtentiCertificati > SYSDATETIME() AND c.DataCancellazioneClientiUtentiCertificati IS NULL THEN CAST(1 AS tinyint)
 						ELSE CAST(0 AS tinyint)
 				   END AS HasCertificatoValido,
 				   CASE 
-						WHEN c.Id IS NOT NULL AND c.DataScadenza < SYSDATETIME() AND c.DataCancellazione IS NULL THEN CAST(1 AS tinyint)
+						WHEN c.IdClientiUtentiCertificati IS NOT NULL AND c.DataScadenzaClientiUtentiCertificati < SYSDATETIME() AND c.DataCancellazioneClientiUtentiCertificati IS NULL THEN CAST(1 AS tinyint)
 						ELSE CAST(0 AS tinyint)
 				   END AS HasCertificatoScaduto
-			FROM ClientiUtenti u 
-				LEFT JOIN ClientiUtentiCertificati c ON u.IdCliente = c.IdCliente AND u.UserId = c.UserId
-			WHERE u.IdCliente = @pIdCliente
-			AND u.UserId = @pUserId
+			FROM vClientiUtenti u 
+				LEFT JOIN vClientiUtentiCertificati c ON u.IdClienteClientiUtenti = c.IdClienteClientiUtentiCertificati AND u.UserIdClientiUtenti = c.UserIdClientiUtentiCertificati
+			WHERE u.IdClienteClientiUtenti = @pIdCliente
+			AND u.UserIdClientiUtenti = @pUserId
 		)
 		SELECT TOP 1 -- solo l'ultimo record ci interessa
-			   u.IdCliente,
-			   u.UserId,
-			   u.Cognome,
-			   u.Nome,
-			   u.UserDisplayName,
-			   u.DataCreazione,
-			   u.DataAggiornamento,
-			   u.DataCancellazione, -- sarà sempre NULL avendo escluso i cancellati nella query a monte
+			   u.IdClienteClientiUtenti,
+			   u.UserIdClientiUtenti,
+			   u.CognomeClientiUtenti,
+			   u.NomeClientiUtenti,
+			   u.UserDisplayNameClientiUtenti,
+			   u.DataCreazioneClientiUtenti,
+			   u.DataAggiornamentoClientiUtenti,
+			   u.DataCancellazioneClientiUtenti, -- sarà sempre NULL avendo escluso i cancellati nella query a monte
 
 			   abbAtt.HasAbbonamentoAttivo,
 			   abbAtt.StatoPagamentoAbbonamentoAttivo,
@@ -76,43 +76,43 @@ BEGIN
 			   abbOld.HasAbbonamentoScaduto,
 			   cer.HasCertificatoScaduto,
 			   cer.HasCertificatoValido
-		FROM ClientiUtenti u
-			inner join (SELECT IdCliente, UserId, 
+		FROM vClientiUtenti u
+			inner join (SELECT IdClienteClientiUtenti, UserIdClientiUtenti, 
 							MAX(HasAbbonamentoAttivo) AS HasAbbonamentoAttivo, 
 							MIN(StatoPagamentoAbbonamentoAttivo) AS StatoPagamentoAbbonamentoAttivo
 						FROM cte_abbonamenti_att 
-						GROUP BY IdCliente, UserId
-						) abbAtt ON u.IdCliente = abbAtt.IdCliente AND u.UserId = abbAtt.UserId
-			inner join (SELECT IdCliente, UserId,
+						GROUP BY IdClienteClientiUtenti, UserIdClientiUtenti
+						) abbAtt ON u.IdClienteClientiUtenti = abbAtt.IdClienteClientiUtenti AND u.UserIdClientiUtenti = abbAtt.UserIdClientiUtenti
+			inner join (SELECT IdClienteClientiUtenti, UserIdClientiUtenti,
 								MAX(HasAbbonamentoScaduto) AS HasAbbonamentoScaduto,
 								MAX(HasAbbonamentoCancellato) AS HasAbbonamentoCancellato
 						FROM cte_abbonamenti_old
-						GROUP BY IdCliente, UserId
-						)abbOld ON u.IdCliente = abbOld.IdCliente AND u.UserId = abbOld.UserId
-			inner join (SELECT IdCliente, UserId,
+						GROUP BY IdClienteClientiUtenti, UserIdClientiUtenti
+						)abbOld ON u.IdClienteClientiUtenti = abbOld.IdClienteClientiUtenti AND u.UserIdClientiUtenti = abbOld.UserIdClientiUtenti
+			inner join (SELECT IdClienteClientiUtenti, UserIdClientiUtenti,
 								MAX(HasCertificatoValido) AS HasCertificatoValido,
 								MAX(HasCertificatoScaduto) AS HasCertificatoScaduto
 						FROM cte_certificato
-						GROUP BY IdCliente, UserId
-						) cer ON u.IdCliente = cer.IdCliente AND u.UserId = cer.UserId
-		WHERE u.IdCliente = @pIdCliente
-		AND u.UserId = @pUserId
-		ORDER BY DataCreazione DESC -- Prendiamo solo l'ultimo record, quelli storici non ci interessano
+						GROUP BY IdClienteClientiUtenti, UserIdClientiUtenti
+						) cer ON u.IdClienteClientiUtenti = cer.IdClienteClientiUtenti AND u.UserIdClientiUtenti = cer.UserIdClientiUtenti
+		WHERE u.IdClienteClientiUtenti = @pIdCliente
+		AND u.UserIdClientiUtenti = @pUserId
+		ORDER BY u.DataCreazioneClientiUtenti DESC -- Prendiamo solo l'ultimo record, quelli storici non ci interessano
 	END
 	ELSE
 	BEGIN
 		SELECT TOP 1 -- solo l'ultimo record ci interessa
-				   u.IdCliente,
-				   u.UserId,
-				   u.Cognome,
-				   u.Nome,
-				   u.UserDisplayName,
-				   u.DataCreazione,
-				   u.DataAggiornamento,
-				   u.DataCancellazione -- sarà sempre NULL avendo escluso i cancellati nella query a monte
-			FROM ClientiUtenti u
-		WHERE u.IdCliente = @pIdCliente
-		AND u.UserId = @pUserId
-		ORDER BY DataCreazione DESC -- Prendiamo solo l'ultimo record, quelli storici non ci interessano
+				   u.IdClienteClientiUtenti,
+				   u.UserIdClientiUtenti,
+				   u.CognomeClientiUtenti,
+				   u.NomeClientiUtenti,
+				   u.UserDisplayNameClientiUtenti,
+				   u.DataCreazioneClientiUtenti,
+				   u.DataAggiornamentoClientiUtenti,
+				   u.DataCancellazioneClientiUtenti -- sarà sempre NULL avendo escluso i cancellati nella query a monte
+			FROM vClientiUtenti u
+		WHERE u.IdClienteClientiUtenti = @pIdCliente
+		AND u.UserIdClientiUtenti = @pUserId
+		ORDER BY u.DataCreazioneClientiUtenti DESC -- Prendiamo solo l'ultimo record, quelli storici non ci interessano
 	END
 END

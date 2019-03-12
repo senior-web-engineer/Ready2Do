@@ -4,6 +4,7 @@
 	@pScheduleStartDate		DATETIME2(2) = NULL,
 	@pScheduleEndDate		DATETIME2(2) = NULL,
 	@pIncludeDeleted		bit = 0,
+	@pIncludeExpired		bit = 0,
 	@pPageSize				INT = 25,
 	@pPageNumber			INT = 1,
 	@pSortColumn			VARCHAR(50) = NULL,
@@ -20,9 +21,9 @@ BEGIN
 		RETURN -2;		
 	END
 
-	SET @pSortColumn = COALESCE(@pSortColumn, 'DataOraInizio');
+	SET @pSortColumn = COALESCE(@pSortColumn, 'DataOraInizioSchedules');
 	-- Check colonna di ordinamento (avoid injection)
-	IF LOWER(@pSortColumn) NOT IN (N'dataorainizio', N'dataprenotazione', N'istruttore', N'title', N'nometipologialezione', N'livello', N'nomelocation')
+	IF LOWER(@pSortColumn) NOT IN (N'dataorainizioschedules')
 	BEGIN
 		RAISERROR('Invalid parameter for @pSortColumn: %s', 11, 1, @pSortColumn);
 		RETURN -1;
@@ -34,57 +35,35 @@ BEGIN
 	SET @pPageNumber = COALESCE(@pPageNumber, 1);
 
 	SET @sql = N'
-		SELECT Id,
-			   IdCliente,
-			   DataPrenotazione,
-			   DataCancellazione,
-			   IdAbbonamento,
-			   Nominativo,
-			   Note,
-			   ScheduleId,
-			   CancellabileFinoAl,
-			   DataCancellazioneSchedule,
-			   DataChiusuraIscrizioni,
-			   DataOraInizio,
-			   IdTipoLezione,
-			   Istruttore,
-			   Note AS NoteSchedule,
-			   PostiDisponibili,
-			   PostiResidui,
-			   Title,
-			   UserIdOwner,
-			   IdTipologiaLezione,
-			   NomeTipologiaLezione,
-			   DescrizioneTipologiaLezione,
-			   Durata,
-			   MaxPartecipanti,
-			   LimiteCancellazioneMinuti,
-			   Livello,
-			   DataCancellazioneTipologiaLezione,
-			   DataCreazioneTipologiaLezione,
-			   PrezzoTipologiaLezione,
-			   IdLocation,
-			   NomeLocation,
-			   DescrizioneLocation,
-			   CapienzaMax
-		FROM [dbo].[vAppuntamentiDaConfermareFull] ap
-		WHERE ap.UserId = @pUserId
+		SELECT adc.*,
+			   cu.*,
+			   T.HasAbbonamento AS CanBeconfirmedAppuntamentiDaConfermare
+		FROM [dbo].[vAppuntamentiDaConfermareFull] adc
+		    inner join [dbo].[vClientiUtenti] cu ON cu.UserIdClientiUtenti = adc.UserIdAppuntamentiDaConfermare 
+												AND cu.IdClienteClientiUtenti = adc.IdClienteAppuntamentiDaConfermare
+			inner join TipologieLezioni tl ON adc.IdTipoLezioneSchedules = tl.Id
+			outer apply [dbo].[ExistsAbbonamentoValido](@pIdCliente, adc.UserIdAppuntamentiDaConfermare, tl.Livello) AS T
+		WHERE adc.UserIdAppuntamentiDaConfermare = @pUserId
 	'
 	IF @pIdCliente IS NOT NULL
 	BEGIN
-		SET @sql = @sql + ' AND ap.IdCliente = @pIdCliente ' + @newLine
+		SET @sql = @sql + ' AND adc.IdClienteAppuntamentiDaConfermare = @pIdCliente ' + @newLine
 	END
 	IF @pScheduleStartDate IS NOT NULL
 	BEGIN
-		SET @sql = @sql + ' AND ap.DataOraInizio >= @pScheduleStartDate ' + @newLine
+		SET @sql = @sql + ' AND adc.DataOraInizioSchedules >= @pScheduleStartDate ' + @newLine
 	END
 	IF @pScheduleEndDate IS NOT NULL
 	BEGIN
-		SET @sql = @sql + ' AND ap.DataOraInizio <= @pScheduleEndDate ' + @newLine
+		SET @sql = @sql + ' AND adc.DataOraInizioSchedules <= @pScheduleEndDate ' + @newLine
 	END
 	IF COALESCE(@pIncludeDeleted, 0) <> 1
 	BEGIN
-		SET @sql = @sql + ' AND ap.DataCancellazione IS NULL ' + @newLine
+		SET @sql = @sql + ' AND adc.DataCancellazioneAppuntamentiDaConfermare IS NULL ' + @newLine
+	END
+	IF COALESCE(@pIncludeExpired, 0)<> 1
+	BEGIN
+		SET @sql = @sql + ' AND adc.DataExpirationAppuntamentiDaConfermare > SYSDATETIME()' + @newLine
 	END
 	
 	SET @sql = @sql + 'ORDER BY ' + @pSortColumn  + ' ' + @sortDirection + '

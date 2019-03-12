@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Common.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Web.Authentication;
 using Web.Configuration;
@@ -197,10 +199,51 @@ namespace Web.Proxies
             }
         }
 
-        public async Task<ClienteUtenteDetailsApiModel> GetUtenteCliente(int idCliente, string userId)
+        public async Task<AssociazioneUtenteClienteDM> GetUtenteCliente(int idCliente, string userId, DateTime? appuntamentiFrom = null, DateTime? appuntamentiTo = null, bool? includeAppuntamentiDaConfermare = false)
         {
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}");
-            return await GetRequestAsync<ClienteUtenteDetailsApiModel>(uri);
+            bool hasQS = false;
+            StringBuilder queryString = new StringBuilder();
+            if (appuntamentiFrom.HasValue)
+            {
+                if (!hasQS)
+                {
+                    queryString.Append($"?apFrom={appuntamentiFrom.Value.ToISO8601(true)}");
+                    hasQS = true;
+                }
+                else
+                {
+                    queryString.Append($"?apFrom={appuntamentiFrom.Value.ToISO8601(true)}");
+                }
+            }
+            if (appuntamentiTo.HasValue)
+            {
+                if (!hasQS)
+                {
+                    queryString.Append($"?apTo={appuntamentiTo.Value.ToISO8601(true)}");
+                    hasQS = true;
+                }
+                else
+                {
+                    queryString.Append($"&apTo={appuntamentiTo.Value.ToISO8601(true)}");
+                }
+            }
+            if (includeAppuntamentiDaConfermare.HasValue)
+            {
+                if (!hasQS)
+                {
+                    queryString.Append($"?incAppDaConf={includeAppuntamentiDaConfermare.Value}");
+                    hasQS = true;
+                }
+                else
+                {
+                    queryString.Append($"&incAppDaConf={includeAppuntamentiDaConfermare.Value}");
+                }
+            }
+
+            
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}{queryString.ToString()}");
+
+            return await GetRequestAsync<AssociazioneUtenteClienteDM>(uri);
         }
 
         /// <summary>

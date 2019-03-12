@@ -49,7 +49,11 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task<Tuple<IEnumerable<TipologiaAbbonamentoDM>, int>> GetListAsync(int idCliente, int pageSize = 25, int pageNumber = 1, int? id = null,
+        /*
+         20190310#GT#Modificato il tipo di ritorno. Eliminata la Tupla e rollback ad un Ennumerable perché se non ci sono risultati si verifica un problema
+         di deserializzazione lato client. Devo ragionare meglio su come gestire la paginazione, per ora la togliamo e ritorniamo sempre tutto
+        */
+        public async Task<IEnumerable<TipologiaAbbonamentoDM>> GetListAsync(int idCliente, int pageSize =500, int pageNumber = 1, int? id = null,
                                                                                          string sortColumn = "DataCreazione", bool sortAscending = false,
                                                                                          bool includiCancellati = false, bool includiNonAttivi = false,
                                                                                          DateTime? dataValutazione = null)
@@ -70,8 +74,8 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pPageNumber", SqlDbType.Int).Value = pageNumber;
                 cmd.Parameters.Add("@pSortColumn", SqlDbType.VarChar, 50).Value = sortColumn;
                 cmd.Parameters.Add("@pOrderAscending", SqlDbType.Bit).Value = sortAscending;
-                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = sortAscending;
-                cmd.Parameters.Add("@pIncludeNotActive", SqlDbType.Bit).Value = sortAscending;
+                cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includiCancellati;
+                cmd.Parameters.Add("@pIncludeNotActive", SqlDbType.Bit).Value = includiNonAttivi;
                 cmd.Parameters.Add(paramNumRecords);
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
@@ -81,15 +85,15 @@ namespace PalestreGoGo.DataAccess
                     {
                         result.Add(await InternalReadTipologiaAbbonamento(dr, columns));
                     }
-                    numRecords = (int)paramNumRecords.Value;
                 }
+                numRecords = (int)paramNumRecords.Value;
             }
-            return new Tuple<IEnumerable<TipologiaAbbonamentoDM>, int>(result, numRecords);
+            return result;
         }
 
         public async Task<TipologiaAbbonamentoDM> GetOneAsync(int idCliente, int id)
         {
-            return (await GetListAsync(idCliente, 25, 1, id)).Item1.SingleOrDefault();
+            return (await GetListAsync(idCliente, 25, 1, id)).SingleOrDefault();
         }
 
         public async Task<int> AddAsync(int idCliente, TipologiaAbbonamentoInputDM entity)
@@ -108,7 +112,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pMaxLivCorsi", SqlDbType.SmallInt).Value = entity.MaxLivCorsi;
                 cmd.Parameters.Add("@pCosto", SqlDbType.Decimal).Value = entity.Costo;
                 cmd.Parameters.Add("@pValidoDal", SqlDbType.DateTime2).Value = entity.ValidoDal;
-                cmd.Parameters.Add("@ValidoFinoAl", SqlDbType.DateTime2).Value = entity.ValidoFinoAl;
+                cmd.Parameters.Add("@pValidoFinoAl", SqlDbType.DateTime2).Value = entity.ValidoFinoAl;
                 cmd.Parameters.Add(parId);
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -131,7 +135,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pMaxLivCorsi", SqlDbType.SmallInt).Value = entity.MaxLivCorsi;
                 cmd.Parameters.Add("@pCosto", SqlDbType.Decimal).Value = entity.Costo;
                 cmd.Parameters.Add("@pValidoDal", SqlDbType.DateTime2).Value = entity.ValidoDal;
-                cmd.Parameters.Add("@ValidoFinoAl", SqlDbType.DateTime2).Value = entity.ValidoFinoAl;
+                cmd.Parameters.Add("@pValidoFinoAl", SqlDbType.DateTime2).Value = entity.ValidoFinoAl;
                 await cn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }

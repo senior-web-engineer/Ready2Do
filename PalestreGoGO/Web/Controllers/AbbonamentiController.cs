@@ -48,7 +48,7 @@ namespace Web.Controllers
 
         #region Gestione Tipologie Abbonamenti
 
-        [HttpGet("{cliente}/abbonamenti/tipologie/checkname")]
+        [HttpGet("{cliente}/abbonamenti/tipologie/checkname", Name = "CheckNomeAbbonamento")]
         [Produces("application/json")]
         public async Task<IActionResult> CheckNome([FromRoute(Name = "cliente")]string urlRoute, [FromQuery(Name = "Nome")]string nomeAbbonamento, int? id)
         {
@@ -163,7 +163,7 @@ namespace Web.Controllers
             }
             //if (tipoAbbonamento.Id.HasValue && (tipoAbbonamento.Id.Value <= 0)) { tipoAbbonamento.Id = null; }
             await _tipologicheProxy.SaveTipologiaAbbonamentoAsync(idCliente, tipoAbbonamento.MapToAPIModel());
-            return RedirectToAction("TipoAbbonamenti");
+            return RedirectToAction("TipoAbbonamenti", new { cliente = urlRoute });
         }
 
         [HttpGet("{cliente}/abbonamenti/tipologie/delete/{id}")]
@@ -177,7 +177,7 @@ namespace Web.Controllers
             }
             ViewData["IdCliente"] = idCliente;
             await _tipologicheProxy.DeleteOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento);
-            return RedirectToAction("TipoAbbonamenti");
+            return RedirectToAction("TipoAbbonamenti", new { cliente = urlRoute });
         }
 
         #endregion

@@ -16,7 +16,7 @@ namespace Web.Models
         [Required]
         [MaxLength(100, ErrorMessage = "Nome troppo lungo (max. 100 caratteri)")]
         [Display(Name = "Nome abbonamento")]
-        [Remote("CheckNome", "Abbonamenti", AdditionalFields = "Id")]
+        [Remote("CheckNomeAbbonamento", AdditionalFields = "Id, IdCliente")]
         public string Nome { get; set; }
 
         [Display(Name = "Durata in Mesi")]
@@ -25,7 +25,7 @@ namespace Web.Models
         [Display(Name = "Numero di Ingressi")]
         public short? NumIngressi { get; set; }
 
-        public decimal? Costo { get; set; }
+        public string Costo { get; set; }
 
         [Display(Name = "Livello massimo corsi")]
         public short? MaxLivCorsi { get; set; }

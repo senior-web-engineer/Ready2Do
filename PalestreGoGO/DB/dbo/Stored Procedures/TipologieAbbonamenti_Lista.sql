@@ -19,7 +19,7 @@ BEGIN
 
 	IF @pIdCliente IS NULL
 	BEGIN
-		RAISERROR('Invalid @pidCliente', 16, 0);
+		RAISERROR('Invalid @pIdCliente', 16, 0);
 		RETURN -2;		
 	END
 
@@ -45,7 +45,7 @@ BEGIN
 					   t.Costo,
 					   t.MaxLivCorsi,
 					   t.ValidoDal,
-					   t.ValidoFinoAl
+					   t.ValidoFinoAl,
 					   t.DataCreazione,
 					   t.DataCancellazione
 				FROM TipologieAbbonamenti t'
@@ -69,16 +69,20 @@ BEGIN
 	IF @pPageNumber = 1
 	BEGIN
 		SET @sql_count = 'SELECT @numRecords = COUNT(t.Id) FROM TipologieAbbonamenti t ' + @newLine +  @whereConditions
-		EXEC sp_executesql @sql_count, N'@numRecords int OUTPUT', @numRecords=@pTotalNumRecords
+		EXEC sp_executesql @sql_count, N'@pIdCliente int, @pDatetimeInterest datetime2(2), @pId INT, @numRecords int OUTPUT',
+			 @pIdCliente=@pIdCliente, @pDatetimeInterest= @pDatetimeInterest,@pId=@pId,@numRecords=@pTotalNumRecords
 	END
+	
+	SET @pTotalNumRecords = COALESCE(@pTotalNumRecords, 0)
+
 	--Eseguiamo la query paginata
 	SET @sql = @sql + @newLine + @whereConditions + @newLine +
 			   'ORDER BY ' + COALESCE(@pSortColumn, 'DataCreazione') + ' ' + @sortDirection + ' 
 			    OFFSET @pPageSize * (@pPageNumber - 1) ROWS
 				FETCH NEXT @pPageSize ROWS ONLY';
 				
-	EXEC sp_executesql @sql, N'@pPageSize int, @pPageNumber int, @pIdCliente int, @pDatetimeInterest datetime2(2)', 
-				@pPageSize=@pPageSize, @pPageNumber=@pPageNumber, @pIdCliente=@pIdCliente, @pDatetimeInterest= @pDatetimeInterest
+	EXEC sp_executesql @sql, N'@pPageSize int, @pPageNumber int, @pIdCliente int, @pDatetimeInterest datetime2(2),  @pId INT', 
+				@pPageSize=@pPageSize, @pPageNumber=@pPageNumber, @pIdCliente=@pIdCliente, @pDatetimeInterest= @pDatetimeInterest, @pId =@pId
 
 	RETURN 0
 END

@@ -32,7 +32,8 @@ namespace Web.Models.Mappers
                     Stato = (ClienteUtenteStatoViewModel)(utente is UtenteClienteDetailsDM ? (int)(((UtenteClienteDetailsDM)utente).Stato) : 0),
                     DisplayName = utente.DisplayName,
                     IdCliente = utente.IdCliente,
-                    IdUtente = utente.UserId
+                    IdUtente = utente.UserId,
+                    DataAssociazione = utente.DataAssociazione.Value
                 },
                 Abbonamenti = null,
                 Certificati = null,
@@ -80,6 +81,12 @@ namespace Web.Models.Mappers
             };
         }
 
+        public static UserHeaderViewModel MapToUserHeaderViewModel(this AssociazioneUtenteClienteDM utente)
+        {
+            if (utente == null) return null;
+            return new UserHeaderViewModel();
+
+        }
 
         public static ClienteFollowed MapToClienteFollowed(this ClienteFollowedApiModel cf)
         {

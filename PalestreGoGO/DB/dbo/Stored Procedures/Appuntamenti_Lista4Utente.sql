@@ -20,7 +20,7 @@ BEGIN
 		RETURN -2;		
 	END
 
-	SET @pSortColumn = COALESCE(@pSortColumn, 'DataOraInizio');
+	SET @pSortColumn = COALESCE(@pSortColumn, 'dataorainizioschedules');
 	-- Check colonna di ordinamento (avoid injection)
 	IF LOWER(@pSortColumn) NOT IN (N'dataorainizioschedules', N'dataprenotazioneappuntamenti', N'istruttoreschedules', N'titleschedules',
 									N'nometipologialezione', N'livellotipologialezione', N'nomelocations')
@@ -37,6 +37,7 @@ BEGIN
 	SET @sql = N'
 		SELECT *
 		FROM [dbo].[vAppuntamentiFull] ap
+			INNER JOIN [dbo].[vClientiUtenti] cu ON ap.UserIdAppuntamenti = cu.UserIdClientiUtenti AND ap.IdClienteAppuntamenti = cu.IdClienteClientiUtenti
 		WHERE ap.UserIdAppuntamenti = @pUserId
 	'
 	IF @pIdCliente IS NOT NULL

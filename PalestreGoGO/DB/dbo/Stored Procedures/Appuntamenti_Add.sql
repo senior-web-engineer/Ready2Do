@@ -30,15 +30,18 @@ TipoResult è una stringa che indica il tipo di contenuto JSON
 20190104
 	- Gestione WaitingList
 	- Cambiato formato ritorno, invece di tornare 2 record, ne ritorniamo uno solo con una colonna JSON con i dettagli
+20190311
+	- cambiato ritorno, non torniamo più il dettaglio dell'appuntamento (a prescindere dal tipo) ma solo l'Id e la tipologia
+	  se interessati al dettaglio sarà necessario fare un'ulteriore lettura ma al momento non veniva utilizzato
 */
 CREATE PROCEDURE [dbo].[Appuntamenti_Add]
 	@pIdCliente					INT,
 	@pUserId					VARCHAR(50),
 	@pScheduleId				INT,
 	@pIdAbbonamento				INT = NULL,
-	@pNote						NVARCHAR(1000),
-	@pNominativo				NVARCHAR(200),
-	@pTimeoutManagerPayload		NVARCHAR(MAX),
+	@pNote						NVARCHAR(1000) = NULL,
+	@pNominativo				NVARCHAR(200) = NULL,
+	@pTimeoutManagerPayload		NVARCHAR(MAX) = NULL,
 	@pIdAppuntamento			INT OUTPUT -- valorizzato solo viene preso effettivamente un abbonamento 
 AS
 BEGIN
@@ -102,8 +105,8 @@ BEGIN TRANSACTION
 
 			SET @pIdAppuntamento = SCOPE_IDENTITY();
 			-- Ritorno il tipo di appuntamento
-			SELECT 'AppuntamentoDaConfermare' AS TipoAppuntamento, 
-					[dbo].[internal_AppuntamentoDaConfermare_AsJSON](@pIdAppuntamento) AS [JSON]
+			SELECT 'APPUNTAMENTO_DA_CONFERMARE' AS TipoAppuntamento, @pIdAppuntamento AS Id
+					--[dbo].[internal_AppuntamentoDaConfermare_AsJSON](@pIdAppuntamento) AS [JSON]
 			-- Terminiamo la transazione
 			GOTO FINE_TRANS;
 		END
@@ -164,8 +167,8 @@ BEGIN TRANSACTION
 				SET @pIdAppuntamento = SCOPE_IDENTITY();
 
 				-- Ritorno il tipo di appuntamento
-				SELECT 'AppuntamentoConfermato' AS TipoAppuntamento,
-					[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]
+				SELECT 'APPUNTAMENTO_CONFERMATO' AS TipoAppuntamento, @pIdAppuntamento AS [Id]
+					--[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]
 
 				GOTO FINE_TRANS;
 			END
@@ -187,7 +190,8 @@ BEGIN TRANSACTION
 					SET @idWL = SCOPE_IDENTITY();
 					EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'WLI', -1, @dtOperazione, NULL, @idWL
 
-					SELECT 'WaitingList' AS TipoAppuntamento, [dbo].internal_ListaAttesa_AsJSON(@idWL) AS [JSON]
+					SELECT 'WAITING_LIST' AS TipoAppuntamento, @idWL AS [Id]
+						--[dbo].internal_ListaAttesa_AsJSON(@idWL) AS [JSON]
 	
 					GOTO FINE_TRANS;
 				END
@@ -219,8 +223,8 @@ BEGIN TRANSACTION
 			END
 			
 			-- Ritorno il tipo di appuntamento
-			SELECT 'AppuntamentoConfermato' AS TipoAppuntamento,
-			[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]
+			SELECT 'APPUNTAMENTO_CONFERMATO' AS TipoAppuntamento, @pIdAppuntamento AS [Id]
+			--[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]
 			GOTO FINE_TRANS;
 		END
 		ELSE

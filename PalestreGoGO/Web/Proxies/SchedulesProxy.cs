@@ -73,7 +73,7 @@ namespace Web.Proxies
 
         public async Task TakeAppuntamentoForCurrentUser(int idCliente, NuovoAppuntamentoApiModel appuntamento)
         {
-            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/appuntamenti";
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{appuntamento.IdEvento}/appuntamenti";
             await SendPostRequestAsync(uri, appuntamento);
         }
 
@@ -102,6 +102,12 @@ namespace Web.Proxies
         {
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti/{idAppuntamento}";
             await DeleteRequestAsync(uri);
+        }
+
+        public async Task ConfermaAppuntamentoAsyn(int idCliente, int idSchedule, int idAppuntamento)
+        {
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti/comferma/{idAppuntamento}";
+            await SendPostRequestEmptyAsync(uri, true);
         }
     }
 }

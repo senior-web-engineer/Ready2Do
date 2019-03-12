@@ -19,18 +19,32 @@ namespace PalestreGoGo.DataAccess
         }
 
 
-        public async Task<AppuntamentoBaseDM> TakeAppuntamentoAsync(int idCliente, string userId, int idSchedule, int? idAbbonamento, string note, string nominativo, string payloadTimeoutManager)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="userId"></param>
+        /// <param name="idSchedule"></param>
+        /// <param name="idAbbonamento"></param>
+        /// <param name="note"></param>
+        /// <param name="nominativo"></param>
+        /// <param name="payloadTimeoutManager"></param>
+        /// <returns>
+        /// In base al "tipo di appuntamento" preso ritorna un oggetto diverso.
+        /// Se l'appuntamento preso è confermato (perché l'utente aveva un abbonamento valido da cui attingere) ritorna un AppuntamentoConfermato
+        /// </returns>
+        public async Task<TakeAppuntamentoResult> TakeAppuntamentoAsync(int idCliente, string userId, int idSchedule, int? idAbbonamento, string note, string nominativo, string payloadTimeoutManager)
         {
-            AppuntamentoBaseDM result = null;
+            TakeAppuntamentoResult result = new TakeAppuntamentoResult();
             using (var cn = GetConnection())
             {
                 var retVal = new SqlParameter();
                 retVal.Direction = ParameterDirection.ReturnValue;
-                var parId = new SqlParameter("@pId", SqlDbType.Int);
+                var parId = new SqlParameter("@pIdAppuntamento", SqlDbType.Int);
                 parId.Direction = ParameterDirection.Output;
-                bool isConfermato = false;
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[Appuntamenti_Add]";
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 50).Value = userId;
                 cmd.Parameters.Add("@pScheduleId", SqlDbType.Int).Value = idSchedule;
@@ -45,23 +59,22 @@ namespace PalestreGoGo.DataAccess
                 {
                     if (await dr.ReadAsync())
                     {
-                        isConfermato = dr.GetString(0).Equals("Confermato", StringComparison.InvariantCultureIgnoreCase);
-                        await dr.NextResultAsync();
-                        if (await dr.ReadAsync())
+                        string tipoOggetto = dr.GetString(0).ToUpper();
+                        switch (tipoOggetto)
                         {
-                            var columnsUser = ClientiUtentiRepository.GetColumnsOrdinals(dr, new Dictionary<string, string>()
-                            {
-
-                            });
-                            if (isConfermato)
-                            {
-                                result = await ReadAppuntamentoAsync(dr, GetAppuntamentoColumns(dr));
-                            }
-                            else
-                            {
-                                result = await ReadAppuntamentoDaConfermareAsync(dr, GetAppuntamentoDaConfermareColumns(dr));
-                            }
+                            case "APPUNTAMENTO_CONFERMATO":
+                                result.TipoAppuntamento = TipoAppuntamentoPreso.AppuntamentoConfermato;
+                                break;
+                            case "APPUNTAMENTO_DA_CONFERMARE":
+                                result.TipoAppuntamento = TipoAppuntamentoPreso.AppuntamentoDaConfermare;
+                                break;
+                            case "WAITING_LIST":
+                                result.TipoAppuntamento = TipoAppuntamentoPreso.WaitingList;
+                                break;
+                            default:
+                                throw new ApplicationException("Tipo di appuntamento sconosciuto");
                         }
+                        result.Id = dr.GetInt32(1);
                     }
                 }
             }
@@ -93,6 +106,7 @@ namespace PalestreGoGo.DataAccess
                 retVal.Direction = ParameterDirection.ReturnValue;
                 var cmd = cn.CreateCommand();
                 cmd.CommandText = "[dbo].[AppuntamentiDaConfermare_Delete]";
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
                 cmd.Parameters.Add("@pIdAppuntamentoDaConfermare", SqlDbType.Int).Value = idAppuntamentoDaConfermare;
                 cmd.Parameters.Add(retVal);
@@ -282,7 +296,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
                                                                                         DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                        string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                                        string sortBy = "dataorainizioschedules", bool sortAscending = true,
                                                                                         bool includiCancellati = false)
         {
             return await InternalGetAppuntamentiUtenteAsync(null, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending);
@@ -293,7 +307,7 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<AppuntamentoDM>> GetAppuntamentiUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                                         DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                        string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                                        string sortBy = "dataorainizioschedules", bool sortAscending = true,
                                                                                         bool includiCancellati = false)
         {
             return await InternalGetAppuntamentiUtenteAsync(idCliente, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending);
@@ -301,21 +315,20 @@ namespace PalestreGoGo.DataAccess
 
         public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(string userId, int pageNumber = 1, int pageSize = 25,
                                                                                        DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                       string sortBy = "DataOraInizio", bool sortAscending = true,
-                                                                                       bool includiCancellati = false)
+                                                                                       string sortBy = "DataOraInizioSchedules", bool sortAscending = true,
+                                                                                       bool includiCancellati = false, bool includeExpired = false)
         {
-            return await InternalGetAppuntamentiDaConfermareUtenteAsync(null, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending);
+            return await InternalGetAppuntamentiDaConfermareUtenteAsync(null, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending, includiCancellati, includeExpired);
 
         }
 
 
-
         public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentiDaConfermareUtenteAsync(int idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                                         DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                        string sortBy = "DataOraInizio", bool sortAscending = true,
-                                                                                        bool includiCancellati = false)
+                                                                                        string sortBy = "DataOraInizioSchedules", bool sortAscending = true,
+                                                                                        bool includiCancellati = false, bool includeExpired = false)
         {
-            return await InternalGetAppuntamentiDaConfermareUtenteAsync(idCliente, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending);
+            return await InternalGetAppuntamentiDaConfermareUtenteAsync(idCliente, userId, pageNumber, pageSize, dtInizioSchedule, dtFineSchedule, sortBy, sortAscending, includiCancellati, includeExpired);
         }
 
         public async Task<IEnumerable<WaitListRegistrationDM>> GetWaitListRegistrationsScheduleAsync(int idCliente, int idSchedule, string userId = null, bool
@@ -393,8 +406,9 @@ namespace PalestreGoGo.DataAccess
             result.DataExpiration = dr.GetDateTime(columns["DataExpiration"]);
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
             result.DataEsito = await dr.IsDBNullAsync(columns["DataEsito"]) ? default(DateTime?) : dr.GetDateTime(columns["DataEsito"]);
-            result.IdAppuntamentoConfermato = await dr.IsDBNullAsync(columns["IdAppuntamento"]) ? default(int?) : dr.GetInt32(columns["IdAppuntamento"]);
+            result.Id = await dr.IsDBNullAsync(columns["IdAppuntamento"]) ? default(int?) : dr.GetInt32(columns["IdAppuntamento"]);
             result.MotivoRifiuto = await dr.IsDBNullAsync(columns["MotivoRifiuto"]) ? null : dr.GetString(columns["MotivoRifiuto"]);
+            result.CanBeConfirmed = await dr.IsDBNullAsync(columns["CanBeConfirmed"]) ? default(bool?) : dr.GetBoolean(columns["CanBeConfirmed"]);
             if ((columnsUser?.Count ?? 0) > 0)
             {
                 result.User = await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser);
@@ -413,14 +427,14 @@ namespace PalestreGoGo.DataAccess
             WaitListRegistrationDM result = new WaitListRegistrationDM();
             result.Id = dr.GetInt32(columns["Id"]);
             result.IdCliente = dr.GetInt32(columns["IdCliente"]);
-            result.IdSchedule = dr.GetInt32(columns["ScheduleId"]);
+            result.ScheduleId = dr.GetInt32(columns["ScheduleId"]);
             result.IdAbbonamento = dr.GetInt32(columns["IdAbbonamento"]);
             result.DataCreazione = dr.GetDateTime(columns["DataCreazione"]);
             result.DataScadenza = dr.GetDateTime(columns["DataScadenza"]);
             result.DataConversione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataConversione"]);
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
             result.CausaleCancellazione = await dr.IsDBNullAsync(columns["CausaleCancellazione"]) ? default(byte?) : dr.GetByte(columns["CausaleCancellazione"]);
-            result.IdSchedule = dr.GetInt32(columns["ScheduleId"]);
+            result.ScheduleId = dr.GetInt32(columns["ScheduleId"]);
             if ((columnsUser?.Count ?? 0) > 0)
             {
                 result.User = await ClientiUtentiRepository.ReadUtenteClienteAsync<UtenteClienteDM>(dr, columnsUser);
@@ -466,6 +480,7 @@ namespace PalestreGoGo.DataAccess
             result["DataEsito"] = dr.GetOrdinal(getColumnName("DataEsitoAppuntamentiDaConfermare"));
             result["IdAppuntamento"] = dr.GetOrdinal(getColumnName("IdAppuntamentoAppuntamentiDaConfermare"));
             result["MotivoRifiuto"] = dr.GetOrdinal(getColumnName("MotivoRifiutoAppuntamentiDaConfermare"));
+            result["CanBeConfirmed"] = dr.GetOrdinal(getColumnName("CanBeconfirmedAppuntamentiDaConfermare"));
             return result;
         }
 
@@ -494,7 +509,7 @@ namespace PalestreGoGo.DataAccess
 
         private async Task<IEnumerable<AppuntamentoDM>> InternalGetAppuntamentiUtenteAsync(int? idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                                 DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                string sortBy = "DataOraInizio", bool sortAscending = true,
+                                                                                string sortBy = "dataorainizioschedules", bool sortAscending = true,
                                                                                 bool includiCancellati = false)
         {
             List<AppuntamentoDM> result = new List<AppuntamentoDM>();
@@ -532,8 +547,8 @@ namespace PalestreGoGo.DataAccess
 
         private async Task<IEnumerable<AppuntamentoDaConfermareDM>> InternalGetAppuntamentiDaConfermareUtenteAsync(int? idCliente, string userId, int pageNumber = 1, int pageSize = 25,
                                                                                    DateTime? dtInizioSchedule = null, DateTime? dtFineSchedule = null,
-                                                                                   string sortBy = "DataOraInizio", bool sortAscending = true,
-                                                                                   bool includiCancellati = false)
+                                                                                   string sortBy = "DataOraInizioSchedules", bool sortAscending = true,
+                                                                                   bool includiCancellati = false, bool includeExpired = false)
         {
             List<AppuntamentoDaConfermareDM> result = new List<AppuntamentoDaConfermareDM>();
             using (var cn = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
@@ -546,6 +561,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pScheduleStartDate", SqlDbType.DateTime2).Value = dtInizioSchedule;
                 cmd.Parameters.Add("@pScheduleEndDate", SqlDbType.DateTime2).Value = dtFineSchedule;
                 cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includiCancellati;
+                cmd.Parameters.Add("@pIncludeExpired", SqlDbType.Bit).Value = includeExpired;
                 cmd.Parameters.Add("@pPageSize", SqlDbType.Int).Value = pageSize;
                 cmd.Parameters.Add("@pPageNumber", SqlDbType.Int).Value = pageNumber;
                 cmd.Parameters.Add("@pSortColumn", SqlDbType.VarChar, 50).Value = sortBy;
@@ -567,6 +583,7 @@ namespace PalestreGoGo.DataAccess
                 return result;
             }
         }
+
         #endregion
 
     }

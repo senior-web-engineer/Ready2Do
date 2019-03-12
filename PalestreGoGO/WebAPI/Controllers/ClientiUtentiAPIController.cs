@@ -103,7 +103,7 @@ namespace PalestreGoGo.WebAPI.Controllers
                                                                                                 [FromQuery(Name = "incCert")] bool? includeCertificati = false)
         {
             //Solo i gestori della struttura o gli utenti (solo per se stessi) possono richiamare l'operazione
-            if (!GetCurrentUser().CanManageStructure(idCliente) || !GetCurrentUser().UserId().Equals(userId)) return Forbid();
+            if (!GetCurrentUser().CanManageStructure(idCliente) && !GetCurrentUser().UserId().Equals(userId)) return Forbid();
             DateTime? appuntamentiFrom = includeAppuntamentiFrom.FromIS8601();
             if (!string.IsNullOrEmpty(includeAppuntamentiFrom) && !appuntamentiFrom.HasValue) { return BadRequest(); /* formato data errato*/ }
             DateTime? appuntamentiTo = includeAppuntamentiTo.FromIS8601();

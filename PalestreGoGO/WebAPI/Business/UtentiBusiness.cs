@@ -32,13 +32,14 @@ namespace PalestreGoGo.WebAPI.Business
 
         public async Task<AssociazioneUtenteClienteDM> GetDettagliAssociazionoConCliente(int idCliente, string userId, int? numAbbonamentiToInclude = 0, DateTime? appuntamentiFrom = null,
                                                                                             DateTime? appuntamentiTo = null, bool? includeAppuntamentiDaConfermare = false, 
+                                                                                            bool? includeAppuntamentiDaConfermareExpired = false,
                                                                                             bool? includeCertificati = false)
         {
             AssociazioneUtenteClienteDM result = new AssociazioneUtenteClienteDM();
             result.IdCliente = idCliente;
             result.UtenteCliente = await _clientiUtentiRepo.GetUtenteCliente(idCliente, userId, false);
             //Se l'utente non risulta mai associato o con l'associazione eliminata, non ritorniamo dettagli
-            if (result.UtenteCliente == null || !result.UtenteCliente.DataCancellazione.HasValue)
+            if (result.UtenteCliente == null || result.UtenteCliente.DataCancellazione.HasValue)
             {
                 return result;
             }
@@ -51,7 +52,8 @@ namespace PalestreGoGo.WebAPI.Business
                 result.Appuntamenti = await _appuntamentiRepo.GetAppuntamentiUtenteAsync(idCliente, userId, pageNumber: 1, pageSize: int.MaxValue, dtInizioSchedule: appuntamentiFrom, dtFineSchedule: appuntamentiTo, sortAscending: false);
                 if (includeAppuntamentiDaConfermare.HasValue && includeAppuntamentiDaConfermare.Value)
                 {
-                    result.AppuntamentiDaConfermare = await _appuntamentiRepo.GetAppuntamentiDaConfermareUtenteAsync(idCliente, userId, pageNumber: 1, pageSize: int.MaxValue, dtInizioSchedule: appuntamentiFrom, dtFineSchedule: appuntamentiTo, sortAscending: false);
+                    result.AppuntamentiDaConfermare = await _appuntamentiRepo.GetAppuntamentiDaConfermareUtenteAsync(idCliente, userId, pageNumber: 1, pageSize: int.MaxValue, dtInizioSchedule: appuntamentiFrom, dtFineSchedule: appuntamentiTo, 
+                                                                                                                    sortAscending: false, includeExpired: includeAppuntamentiDaConfermareExpired ?? false);
                 }
             }
             if (includeCertificati.HasValue && includeCertificati.Value)

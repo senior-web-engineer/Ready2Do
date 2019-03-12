@@ -8,7 +8,7 @@
         <br />
         <p>Inizia ad inserirne almeno uno per poterlo poi associare ai tuoi utenti.</p>
         <br />
-        <a asp-action="TipoAbbonamentoNew" asp-controller="Abbonamenti" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+        <a asp-action="TipoAbbonamentoNew" asp-controller="Abbonamenti" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
     </div>
     @*<div class="card-action">
         <a href="#">This is a link</a>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace ready2do.model.common
 {
@@ -10,6 +11,9 @@ namespace ready2do.model.common
         public int ScheduleId { get; set; }
         public DateTime DataCreazione { get; set; }
         public DateTime? DataCancellazione { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public UtenteClienteDM User { get; set; }
 
     }
 }

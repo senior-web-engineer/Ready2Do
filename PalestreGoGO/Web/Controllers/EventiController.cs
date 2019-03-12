@@ -126,72 +126,29 @@ namespace Web.Controllers
             ViewData["IdEvento"] = idEvento;
             ViewData["UserType"] = User.GetUserTypeForCliente(idCliente);
             var vm = new DettaglioEventoViewModel();
-            vm.Schedule = await _schedulesProxy.GetScheduleAsync(idCliente, idEvento);
             if (User.Identity.IsAuthenticated)
             {
-                vm.Appuntamenti = await _schedulesProxy.GetAppuntamentiForEventoAsync(idCliente, idEvento);
-                vm.AppuntamentiDaConfermare = await _schedulesProxy.GetAppuntamentiDaConferamareForEventoAsync(idCliente, idEvento);
-                vm.WaitListRegistrations = await _schedulesProxy.GetWaitListRegistrationsForEventoAsync(idCliente, idEvento);
+                Task[] tasks = new Task[4];
+                tasks[0]= Task.Run(async() => { vm.Schedule = await _schedulesProxy.GetScheduleAsync(idCliente, idEvento); });
+                tasks[1] = Task.Run(async () => { vm.Appuntamenti = await _schedulesProxy.GetAppuntamentiForEventoAsync(idCliente, idEvento); });
+                tasks[2] = Task.Run(async () => { vm.AppuntamentiDaConfermare = await _schedulesProxy.GetAppuntamentiDaConferamareForEventoAsync(idCliente, idEvento); });
+                tasks[3] = Task.Run(async () => { vm.WaitListRegistrations = await _schedulesProxy.GetWaitListRegistrationsForEventoAsync(idCliente, idEvento); });
+                Task.WaitAll(tasks);
+                //vm.Schedule = tasks[0].r //await _schedulesProxy.GetScheduleAsync(idCliente, idEvento);
+                //vm.Appuntamenti = await _schedulesProxy.GetAppuntamentiForEventoAsync(idCliente, idEvento);
+                //vm.AppuntamentiDaConfermare = await _schedulesProxy.GetAppuntamentiDaConferamareForEventoAsync(idCliente, idEvento);
+                //vm.WaitListRegistrations = await _schedulesProxy.GetWaitListRegistrationsForEventoAsync(idCliente, idEvento);
                 ViewData["UserHasAppointment"] = (vm.Appuntamenti?.Any() ?? false) || (vm.AppuntamentiDaConfermare?.Any() ?? false);
                 ViewData["UserInWaitList"] = vm.WaitListRegistrations?.Any() ?? false;
+            }
+            else
+            {
+                vm.Schedule = await _schedulesProxy.GetScheduleAsync(idCliente, idEvento);
             }
             return View("DettaglioEvento", vm);
         }
 
-        ///// <summary>
-        ///// Action che ritorna i dati di un evento in visualizzazione.
-        ///// In base alla tipologia di utente chiamante saranno abilitate o meno le funzioni di registrazioni o di amministrazione
-        ///// </summary>
-        ///// <param name="urlRoute"></param>
-        ///// <param name="idEvento"></param>
-        ///// <returns></returns>
-        //[HttpGet("{cliente}/eventi/{id}")]
-        //[AllowAnonymous] //Visibile anche dagli utenti anonimi
-        //public async Task<IActionResult> ViewEvento([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")] int idEvento)
-        //{
-        //    var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    var userType = User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin();
-        //    ViewData["UserType"] = userType;
-
-        //    return View("ViewEvento");
-        //}
-
-
-
-
-
-        ///// <summary>
-        ///// Se l'utente non è autenticato vedrà solo i dettagli dell'evento senza poter creare/modificare l'appuntamento
-        ///// Se invece l'utente è autenticato può creare un nuovo appuntamento o annullarne uno precedentemente preso.
-        ///// Come verifichiamo che l'utente sia "associato" alla struttura?
-        ///// </summary>
-        ///// <param name="urlRoute"></param>
-        ///// <param name="idEvento"></param>
-        ///// <returns></returns>
-        //[HttpGet("{cliente}/eventi/{idEvento}/appuntamento")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> GetAppuntamentoEvento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
-        //{
-        //    var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    var schedule = await _apiClient.GetScheduleAsync(idCliente, idEvento);
-        //    string accessToken = null;
-        //    if (User.Identity.IsAuthenticated)
-        //    {
-        //        accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    }
-        //    ViewBag.IdCliente = idCliente;
-        //    ViewBag.Cliente = urlRoute;
-        //    ViewBag.IdEvento = idEvento;
-        //    //TODO: Modificare l'API invocata usando quella specifica del cliente per verificare lo stato
-        //    //var followInfo = (await _apiClient.ClientiFollowedByUserAsync(User.UserId(), accessToken)).FirstOrDefault(cf => cf.IdCliente.Equals(idCliente));
-        //    throw new NotImplementedException();
-        //    /*ViewBag.ClienteFollowed = followInfo != null;
-        //    ViewBag.AbbonamentoValido = followInfo?.HasAbbonamentoValido ?? false;
-        //    var appuntamento = await _apiClient.GetAppuntamentoForCurrentUserAsync(idCliente, idEvento, accessToken);
-        //    return View("Appuntamento", appuntamento);
-        //    */
-        //}
-
+      
         #region APPUNTAMENTI PER EVENTO
         [HttpPost("{cliente}/eventi/{idEvento}/appuntamento")]
         public async Task<IActionResult> TakeAppuntamento([FromRoute(Name = "cliente")] string urlRoute, [FromRoute(Name = "idEvento")]int idEvento)
@@ -203,7 +160,7 @@ namespace Web.Controllers
                 IdUtente = User.UserId()
             };
             await _schedulesProxy.TakeAppuntamentoForCurrentUser(idCliente, apiModel);
-            return RedirectToAction("GetAppuntamentoEvento", new { cliente = urlRoute, idEvento = idEvento });
+            return RedirectToAction("DettaglioEvento", new { cliente = urlRoute, id = idEvento });
         }
 
 
@@ -221,9 +178,26 @@ namespace Web.Controllers
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             await _schedulesProxy.DeleteAppuntamentoUserAsync(idCliente, idEvento);
-            return RedirectToAction("DettaglioEvento", new { cliente=urlRoute, idEvento });
+            return RedirectToAction("DettaglioEvento", new { cliente=urlRoute, id=idEvento });
         }
 
+
+        /// <summary>
+        /// Questa action è riservata ai gestori che vogliono confermare un AppuntamentoDaConfermare, dopo che hanno 
+        /// associato un abbonamento all'utente
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <param name="idEvento"></param>
+        /// <returns></returns>
+        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/confirm")]
+        public async Task<IActionResult> ConfermaAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
+                                                            [FromRoute(Name = "idEvento")]int idEvento,
+                                                            [FromRoute(Name = "idAppuntamento")]int idAppuntamento)
+        {
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _schedulesProxy.ConfermaAppuntamentoAsyn(idCliente, idEvento, idAppuntamento);
+            return RedirectToAction("DettaglioEvento", new { cliente = urlRoute, id = idEvento });
+        }
 
         private ScheduleEditViewModel internalBuildViewModel(ScheduleDM apiModel)
         {

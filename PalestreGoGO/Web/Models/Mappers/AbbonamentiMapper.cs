@@ -2,6 +2,7 @@
 using ready2do.model.common;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace Web.Models.Mappers
             if (model == null) return null;
             return new TipologiaAbbonamentoViewModel()
             {
-                Costo = model.Costo,
+                Costo = model.Costo?.ToString(CultureInfo.InvariantCulture),
                 DurataMesi = model.DurataMesi,
                 Id = model.Id,
                 IdCliente = model.IdCliente,
@@ -33,7 +34,7 @@ namespace Web.Models.Mappers
             if (model == null) return null;
             return new TipologiaAbbonamentoDM()
             {
-                Costo = model.Costo,
+                Costo = decimal.Parse(model.Costo, CultureInfo.InvariantCulture),
                 DurataMesi = model.DurataMesi,
                 Id = model.Id,
                 IdCliente = model.IdCliente,

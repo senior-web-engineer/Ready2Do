@@ -9,7 +9,7 @@ namespace PalestreGoGo.DataAccess
 {
     public interface ITipologieAbbonamentiRepository
     {
-        Task<Tuple<IEnumerable<TipologiaAbbonamentoDM>, int>> GetListAsync(int idCliente, int pageSize = 25, int pageNumber = 1, int? id = null,
+        Task<IEnumerable<TipologiaAbbonamentoDM>> GetListAsync(int idCliente, int pageSize = 25, int pageNumber = 1, int? id = null,
                                                                          string sortColumn = "DataCreazione", bool sortAscending = false,
                                                                          bool includiCancellati = false, bool includiNonAttivi = false,
                                                                          DateTime? dataValutazione = null);

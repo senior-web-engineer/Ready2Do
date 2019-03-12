@@ -1,12 +1,12 @@
 ﻿@model IEnumerable<AppuntamentoDM>
 
-@if (Model?.Any() ?? false)
+@if (!Model?.Any() ?? true)
 {
     <div class="row">
-        <div class="col s4 offset-s4">
+        <div class="col s8 offset-s2">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title center"><strong>Ancora nessun iscritto pr l'evento</strong></span>
+                    <span class="card-title center"><strong>Ancora nessun iscritto all'evento</strong></span>
                     <br />
                     <p>Al momento non risultano iscritti all'evento.</p>
                     <br />

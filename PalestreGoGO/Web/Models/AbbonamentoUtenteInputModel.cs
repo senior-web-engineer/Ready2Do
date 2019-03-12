@@ -22,5 +22,10 @@ namespace Web.Models
         public decimal? Importo { get; set; }
         public decimal? ImportoPagato { get; set; }
 
+        /// <summary>
+        /// Se valorizzato a True indica che gli appuntamenti in sospeso (da confermare) devono essere
+        /// confermati utilizzando questo Abbonamento
+        /// </summary>
+        public bool? ConfermaAppuntamenti { get; set; }
     }
 }

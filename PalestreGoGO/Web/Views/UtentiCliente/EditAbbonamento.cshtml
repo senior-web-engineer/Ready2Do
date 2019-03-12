@@ -63,7 +63,17 @@
         </div>
     </div>
 
-
+    @if ((ViewBag.HasAppuntamentiDaConfermare != null) && ViewBag.HasAppuntamentiDaConfermare)
+    {
+        <div class="row">
+            <div class="input-field col s10">
+                <input type="checkbox" class="tooltipped"
+                       data-tooltip="L'utente ha uno o più appuntamenti in attesa di conferma. Selezionando questo check gli appuntamenti saranno confermati automaticamente."
+                       asp-for="ConfermaAppuntamenti" />
+                <label>Conferma Appuntamenti</label>
+            </div>
+        </div>
+    }
     <div class="row">
         <div class="input-field col s10 offset-s1 center">
             <button class="btn waves-effect waves-light" type="submit" name="action">

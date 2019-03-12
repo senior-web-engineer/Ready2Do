@@ -105,15 +105,17 @@ else
                         </a>
                         <ul style="right:38px">
                             <li style="margin-top: 0; margin-right: 2px;">
-                                <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@s.UserInfo.IdUtente" asp-route-id="-1" class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
+                                <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@s.UserInfo.IdUtente" asp-route-id="-1" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"
+                                        class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
 
                                     <i class="material-icons">add</i>
                                 </a>
                             </li>
-                            <li style="margin-top: 0; margin-right: 2px;"><a class="btn-floating btn-small yellow darken-1 tooltipped" data-position="top" data-tooltip="Inserisci certificato"><i class="material-icons">local_hospital</i></a></li>
+                            <li style="margin-top: 0; margin-right: 2px;"><a class="btn-floating btn-small yellow darken-1 tooltipped" data-position="top" data-tooltip="Inserisci certificato">
+                                    <i class="material-icons">local_hospital</i></a></li>
                             <li style="margin-top: 0; margin-right: 2px;">
                                 <a class="btn-floating btn-small yellow darken-1 tooltipped" data-position="top" data-tooltip="Visualizza dettagli Utente"
-                                   asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.UserInfo.IdUtente">
+                                   asp-controller="UtentiCliente" asp-action="GetUtente" asp-route-userId="@s.UserInfo.IdUtente" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])">
                                     <i class="material-icons blue-text">face</i>
                                 </a>
                             </li>
