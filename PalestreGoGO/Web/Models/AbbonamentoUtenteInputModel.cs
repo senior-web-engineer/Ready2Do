@@ -26,6 +26,11 @@ namespace Web.Models
         /// Se valorizzato a True indica che gli appuntamenti in sospeso (da confermare) devono essere
         /// confermati utilizzando questo Abbonamento
         /// </summary>
-        public bool? ConfermaAppuntamenti { get; set; }
+        /// <remarks>
+        /// Non possiamo usare un nullable perché Razor non supporta il binding a questo tipo di dati in un checkbox (2-state control)
+        /// </remarks>
+        public bool ConfermaAppuntamenti { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }

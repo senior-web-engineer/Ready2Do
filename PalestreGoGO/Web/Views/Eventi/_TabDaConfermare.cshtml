@@ -1,4 +1,6 @@
-﻿@model IEnumerable<AppuntamentoDaConfermareDM>
+﻿@using Microsoft.AspNetCore.Http.Extensions;
+
+@model IEnumerable<AppuntamentoDaConfermareDM>
 
 @if (!Model?.Any() ?? true)
 {
@@ -44,17 +46,18 @@ else
                                 @*Se l'utente può essere confermato (perché gli è stato associato un abbonamento nel frattempo) mostriamo la relativa azione*@
                                 @if (a.CanBeConfirmed.HasValue && a.CanBeConfirmed.Value)
                                 {
-                                    <form asp-action="ConfermaAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-idEvento="@a.ScheduleId"
-                                          asp-route-idAppuntamento="@a.Id">
-                                        <button type="submit" class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
-                                            <i class="material-icons">add</i>
+                                    <form asp-action="ConfermaAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-idEvento="@a.ScheduleId" 
+                                            asp-route-idAppuntamento="@a.Id" method="post">
+                                        <button type="submit" class="btn-floating btn-small green tooltipped" data-position="top" data-tooltip="Conferma Appuntamento">
+                                            <i class="material-icons">schedule</i>
                                         </button>
                                     </form>
                                 }
                                 @*..altrimenti mostriamo l'azione per associare l'abbonamento*@
                                 else
                                 {
-                                    <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@a.UserId" asp-route-id="-1" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"
+                                    <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@a.UserId" asp-route-id="-1"
+                                       asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-returnUrl="@Context.Request.GetEncodedUrl()"
                                        class="btn-floating btn-small blue tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
                                         <i class="material-icons">add</i>
                                     </a>
@@ -63,7 +66,7 @@ else
 
                             <li style="margin-top: 0; margin-right: 2px;">
                                 <form asp-action="RifiutaAppuntamento" asp-controller="Eventi" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-idEvento="@a.ScheduleId"
-                                      asp-route-idAppuntamento="@a.Id">
+                                      asp-route-idAppuntamento="@a.Id" method="post">
                                     <button type="submit" class="btn-floating btn-small red tooltipped" data-position="top" data-tooltip="Rifiuta Appuntamento">
                                         <i class="material-icons">cancel</i>
                                     </button>

@@ -191,13 +191,31 @@ namespace Web.Controllers
         /// <returns></returns>
         [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/confirm")]
         public async Task<IActionResult> ConfermaAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
-                                                            [FromRoute(Name = "idEvento")]int idEvento,
-                                                            [FromRoute(Name = "idAppuntamento")]int idAppuntamento)
+                                                              [FromRoute(Name = "idEvento")]int idEvento,
+                                                              [FromRoute(Name = "idAppuntamento")]int idAppuntamento)
         {
             var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
             await _schedulesProxy.ConfermaAppuntamentoAsyn(idCliente, idEvento, idAppuntamento);
             return RedirectToAction("DettaglioEvento", new { cliente = urlRoute, id = idEvento });
         }
+
+        /// <summary>
+        /// Questa action è riservata ai gestori che vogliono rifiutare un AppuntamentoDaConfermare
+        /// </summary>
+        /// <param name="urlRoute"></param>
+        /// <param name="idEvento"></param>
+        /// <param name="idAppuntamento"></param>
+        /// <returns></returns>
+        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/confirm")]
+        public async Task<IActionResult> RifiutaAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
+                                                              [FromRoute(Name = "idEvento")]int idEvento,
+                                                              [FromRoute(Name = "idAppuntamento")]int idAppuntamento)
+        {
+            var idCliente = await _clientsResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _schedulesProxy.RifiutaAppuntamentoAsyn(idCliente, idEvento, idAppuntamento);
+            return RedirectToAction("DettaglioEvento", new { cliente = urlRoute, id = idEvento });
+        }
+
 
         private ScheduleEditViewModel internalBuildViewModel(ScheduleDM apiModel)
         {

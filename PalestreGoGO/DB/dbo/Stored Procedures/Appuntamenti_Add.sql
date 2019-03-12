@@ -145,13 +145,6 @@ BEGIN TRANSACTION
 				RETURN -10;
 			END
 		
-			-- Scaliamo un ingresso dall'abbonamento (se previsti)
-			IF COALESCE(@numIngressiResidui, -1) > 0
-			BEGIN
-				UPDATE AbbonamentiUtenti SET IngressiResidui = IngressiResidui -1 WHERE Id = @idAbbonamento;
-				EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'APP', -1, @dtOperazione, @pScheduleId, NULL
-			END
-
 			-- Decrementiamo i posti disponibili per l'evento (schedule)
 			UPDATE Schedules
 				SET PostiResidui = PostiResidui -1
@@ -166,6 +159,13 @@ BEGIN TRANSACTION
 					VALUES(@pIdCliente, @pUserId, @pScheduleId, @idAbbonamento, @dtOperazione, @pNote, @pNominativo)
 				SET @pIdAppuntamento = SCOPE_IDENTITY();
 
+				-- Scaliamo un ingresso dall'abbonamento (se previsti)
+				IF COALESCE(@numIngressiResidui, -1) > 0
+				BEGIN
+					UPDATE AbbonamentiUtenti SET IngressiResidui = IngressiResidui -1 WHERE Id = @idAbbonamento;
+					EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'APP', -1, @dtOperazione, @pIdAppuntamento, NULL
+				END
+				
 				-- Ritorno il tipo di appuntamento
 				SELECT 'APPUNTAMENTO_CONFERMATO' AS TipoAppuntamento, @pIdAppuntamento AS [Id]
 					--[dbo].[internal_Appuntamento_AsJSON](@pIdAppuntamento) AS [JSON]

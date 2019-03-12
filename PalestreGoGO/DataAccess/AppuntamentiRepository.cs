@@ -406,7 +406,7 @@ namespace PalestreGoGo.DataAccess
             result.DataExpiration = dr.GetDateTime(columns["DataExpiration"]);
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
             result.DataEsito = await dr.IsDBNullAsync(columns["DataEsito"]) ? default(DateTime?) : dr.GetDateTime(columns["DataEsito"]);
-            result.Id = await dr.IsDBNullAsync(columns["IdAppuntamento"]) ? default(int?) : dr.GetInt32(columns["IdAppuntamento"]);
+            result.IdAppuntamento = await dr.IsDBNullAsync(columns["IdAppuntamento"]) ? default(int?) : dr.GetInt32(columns["IdAppuntamento"]);
             result.MotivoRifiuto = await dr.IsDBNullAsync(columns["MotivoRifiuto"]) ? null : dr.GetString(columns["MotivoRifiuto"]);
             result.CanBeConfirmed = await dr.IsDBNullAsync(columns["CanBeConfirmed"]) ? default(bool?) : dr.GetBoolean(columns["CanBeConfirmed"]);
             if ((columnsUser?.Count ?? 0) > 0)

@@ -6,11 +6,12 @@ Le tipologie di transazioni sono:
 - WLD: Cancellazione da una Wait list ==> INCREMENTO
 - CAP: Cancellazione appuntamenti ==> INCREMENTO
 - EDT: Edit manuale dell'abbonamento ==> INCREMENTO o DECREMENTO dipende
+- CNF: Conferma di un appuntamento da confermare ==> DECREMENTO
 */
 CREATE PROCEDURE [dbo].[internal_AbbonamentiUtenti_LogTransazione]
 	@pIdAbbonamento			int = 0,
 	@pTipoTrans				CHAR(3),
-	@pQuantita				int = 1,
+	@pQuantita				int,
 	@pDataOperazione		datetime2,
 	@pIdAppuntamento		INT = NULL,
 	@pIdWL					INT = NULL
@@ -20,7 +21,7 @@ BEGIN
 	SET @pTipoTrans = UPPER(@pTipoTrans)
 	SET @pDataOperazione = COALESCE(@pDataOperazione, SYSDATETIME())
 
-	IF NOT @pTipoTrans IN ('APP', 'WLI', 'WLD', 'CAP', 'EDT')
+	IF NOT @pTipoTrans IN ('APP', 'WLI', 'WLD', 'CAP', 'EDT', 'CNF')
 	BEGIN
 		RAISERROR(N'Tipo transazione [%s] non gestita', 16, 1, @pTipoTrans);
 		RETURN -1

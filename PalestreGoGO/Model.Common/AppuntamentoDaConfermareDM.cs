@@ -5,6 +5,11 @@ namespace ready2do.model.common
 {
     public class AppuntamentoDaConfermareDM : AppuntamentoBaseDM
     {
+        /// <summary>
+        /// Id dell'eventuale appuntamento se confermato
+        /// </summary>
+        public int? IdAppuntamento { get; set; }
+
         public DateTime? DataEsito { get; set; }
         public string MotivoRifiuto { get; set; }
         public DateTime? DataExpiration { get; set; }

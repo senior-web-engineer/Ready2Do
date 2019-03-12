@@ -109,5 +109,11 @@ namespace Web.Proxies
             string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti/comferma/{idAppuntamento}";
             await SendPostRequestEmptyAsync(uri, true);
         }
+
+        public async Task RifiutaAppuntamentoAsyn(int idCliente, int idSchedule, int idAppuntamento)
+        {
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/schedules/{idSchedule}/appuntamenti/rifiuta/{idAppuntamento}";
+            await SendPostRequestEmptyAsync(uri, true);
+        }
     }
 }

@@ -13,10 +13,12 @@
     </div>
 </div>
 <form asp-controller="UtentiCliente" asp-action="SaveAbbonamentoUtente" asp-route-cliente="@ViewBag.UrlRoute"
-      asp-route-userId="@Model.UserId" asp-route-id="@Model.Id" method="post" id="formEditAbbonamento">
+      asp-route-userId="@Model.UserId" asp-route-id="@Model.Id" 
+      method="post" id="formEditAbbonamento">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="IdCliente" />
     <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="ReturnUrl"/>
     <div class="row">
         <div class="input-field col s7 offset-s2">
             <select asp-for="IdTipoAbbonamento" asp-items="@ViewBag.TipologieAbbonamenti" id="IdTipoAbbonamento" disabled="@(Model.Id.HasValue && Model.Id.Value > 0)">

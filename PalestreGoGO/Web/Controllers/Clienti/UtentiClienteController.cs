@@ -142,7 +142,8 @@ namespace Web.Controllers.Clienti
         [HttpGet("{userId}/abbonamenti/{id}")]
         public async Task<IActionResult> EditAbbonamentoUtente([FromRoute(Name = "cliente")]string urlRoute,
                                                               [FromRoute(Name = "userId")]string userId,
-                                                              [FromRoute(Name = "id")]int id)
+                                                              [FromRoute(Name = "id")]int id,
+                                                              [FromQuery(Name ="returnUrl")] string returnUrl)
         {
             //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
             //      oppure se la scelta del tipo avviene nella view
@@ -163,6 +164,7 @@ namespace Web.Controllers.Clienti
             if (id > 0)
             {
                 vm = (await _utentiProxy.GetAbbonamentoAsync(idCliente, id)).MapToViewModel();
+                vm.ReturnUrl = returnUrl;
             }
             else
             {
@@ -170,7 +172,8 @@ namespace Web.Controllers.Clienti
                 {
                     IdCliente = idCliente,
                     UserId = userId,
-                    Id = -1
+                    Id = -1,
+                    ReturnUrl = returnUrl
                 };
             }
             return View("EditAbbonamento", vm);
@@ -207,7 +210,15 @@ namespace Web.Controllers.Clienti
             }
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
             await _utentiProxy.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel());
-            return RedirectToAction("GetUtente", "Clienti", new { cliente = urlRoute, userId, tabId = 0 });
+            //Facciamo il redirect al ReturnUrl se valorizzato E SE LOCALTE, altrimenti per dafault ritorniamo alla lista degli utenti
+            if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+            {
+                return Redirect(model.ReturnUrl);
+            }
+            else
+            {
+                return RedirectToAction("GetUtente", "UtentiCliente", new { cliente = urlRoute, userId= userId, tabId = 0 });
+            }
         }
         #endregion
 
