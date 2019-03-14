@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http.Extensions;
+@using Web.Utils;
 
 @model IEnumerable<AppuntamentoDaConfermareDM>
 
@@ -57,7 +58,7 @@ else
                                 else
                                 {
                                     <a asp-action="EditAbbonamentoUtente" asp-controller="UtentiCliente" asp-route-userId="@a.UserId" asp-route-id="-1"
-                                       asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-returnUrl="@Context.Request.GetEncodedUrl()"
+                                       asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" asp-route-returnUrl="@Context.Request.GetCurrentUrl()"
                                        class="btn-floating btn-small blue tooltipped" data-position="top" data-tooltip="Aggiungi/Modifica abbonamento">
                                         <i class="material-icons">add</i>
                                     </a>

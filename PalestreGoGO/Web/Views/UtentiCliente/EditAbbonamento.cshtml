@@ -68,11 +68,13 @@
     @if ((ViewBag.HasAppuntamentiDaConfermare != null) && ViewBag.HasAppuntamentiDaConfermare)
     {
         <div class="row">
-            <div class="input-field col s10">
-                <input type="checkbox" class="tooltipped"
-                       data-tooltip="L'utente ha uno o più appuntamenti in attesa di conferma. Selezionando questo check gli appuntamenti saranno confermati automaticamente."
-                       asp-for="ConfermaAppuntamenti" />
-                <label>Conferma Appuntamenti</label>
+            <div class="input-field col s8 offset-s2 l3 offset-l2">
+                <label class="tooltipped" data-position="top" 
+                      data-tooltip="L'utente ha uno o più appuntamenti in attesa di conferma. Selezionando questo check gli appuntamenti saranno confermati automaticamente.">
+                    <input type="checkbox"
+                           asp-for="ConfermaAppuntamenti" />
+                    <span>Conferma Appuntamenti</span>
+                </label>
             </div>
         </div>
     }
@@ -122,6 +124,8 @@
         }
 
         $(document).ready(function () {
+            $('.tooltipped').tooltip();
+
             let datetPickerI18n = {
                 months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
                 monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],

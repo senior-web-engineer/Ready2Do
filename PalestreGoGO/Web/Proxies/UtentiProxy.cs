@@ -258,6 +258,20 @@ namespace Web.Proxies
             return await GetRequestAsync<List<AppuntamentoUserApiModel>>(uri);
         }
 
+        /// <summary>
+        /// Invocabile solo dal gestore per confermare tutti gli appuntamenti non confermati per un utente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task ConfermaAppuntamentiUtenteAsync(int idCliente, string userId)
+        {
+            string uri = $"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/users/{userId}/appuntamenti/conferma";
+            await SendPostRequestEmptyAsync(uri, true);
+        }
+
+
+
         #region NOTIFICHE
         public async Task<List<NotificaConTipoApiModel>> GetNotificheForUserAsync(int? idCliente = null)
         {

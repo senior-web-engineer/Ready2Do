@@ -201,7 +201,17 @@ namespace PalestreGoGo.WebAPI.Controllers
                                                               [FromRoute(Name = "id")] int idAppuntamentoDaConfermare)
         {
             //Recuperare l'id del Workflow Run per invocare la terminazione (come avviene l'autorizzazione?)
-            throw new NotImplementedException();
+            int idAppuntamento = await _repositoryAppuntamenti.AppuntamentoDaConfermareConferma(idCliente, idSchedule, idAppuntamentoDaConfermare);
+            return Ok(idAppuntamento);
+        }
+
+        [HttpPost("rifiuta/{id:int}")]
+        public async Task<IActionResult> RifiutaAppuntamento([FromRoute(Name = "idCliente")]int idCliente, [FromRoute(Name = "idSchedule")] int idSchedule,
+                                                              [FromRoute(Name = "id")] int idAppuntamentoDaConfermare, [FromRoute(Name ="motivo")]string motivazione = null)
+        {
+            //Recuperare l'id del Workflow Run per invocare la terminazione (come avviene l'autorizzazione?)
+            await _repositoryAppuntamenti.AppuntamentoDaConfermareRifiuta(idCliente, idSchedule, idAppuntamentoDaConfermare, motivazione);
+            return Ok();
         }
 
 

@@ -189,7 +189,7 @@ namespace Web.Controllers
         /// <param name="urlRoute"></param>
         /// <param name="idEvento"></param>
         /// <returns></returns>
-        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/confirm")]
+        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/conferma")]
         public async Task<IActionResult> ConfermaAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
                                                               [FromRoute(Name = "idEvento")]int idEvento,
                                                               [FromRoute(Name = "idAppuntamento")]int idAppuntamento)
@@ -206,7 +206,7 @@ namespace Web.Controllers
         /// <param name="idEvento"></param>
         /// <param name="idAppuntamento"></param>
         /// <returns></returns>
-        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/confirm")]
+        [HttpPost("{cliente}/eventi/{idEvento:int}/appuntamento/{idAppuntamento:int}/rifiuta")]
         public async Task<IActionResult> RifiutaAppuntamento([FromRoute(Name = "cliente")] string urlRoute,
                                                               [FromRoute(Name = "idEvento")]int idEvento,
                                                               [FromRoute(Name = "idAppuntamento")]int idAppuntamento)

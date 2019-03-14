@@ -29,16 +29,19 @@ namespace Web.Controllers.Clienti
         private readonly UtentiProxy _utentiProxy;
         private readonly TipologicheProxy _tipologicheProxy;
         private readonly ClienteResolverServices _clientiResolver;
+        private readonly SchedulesProxy _schedulesProxy;
 
         public UtentiClienteController(ILogger<UtentiClienteController> logger,
                                          UtentiProxy utentiProxy,
                                          TipologicheProxy tipologicheProxy,
+                                         SchedulesProxy schedulesProxy,
                                          ClienteResolverServices clientiResolver)
         {
             _logger = logger;
             _utentiProxy = utentiProxy;
             _clientiResolver = clientiResolver;
             _tipologicheProxy = tipologicheProxy;
+            _schedulesProxy = schedulesProxy;
         }
 
         [HttpGet()]
@@ -81,48 +84,11 @@ namespace Web.Controllers.Clienti
         }
 
         #region Gestione Abbonamenti Utenti
-        ////TODO: da implementare
-        //[HttpGet("{userId}/abbonamenti/add")]
-        //public async Task<IActionResult> AddAbbonamentoToUser([FromRoute(Name = "cliente")]string urlRoute,
-        //                                                      [FromRoute(Name = "userId")]string userId,
-        //                                                      [FromQuery(Name = "tipoAbb")] int idTipoAbbonamento)
-        //{
-        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-        //    //Verifichiamo che solo gli Admin possano accedere alla pagina di Gestione Abbonamenti
-        //    if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
-        //    {
-        //        return Forbid();
-        //    }
-        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
-        //    var tipoAbbonamento = await _apiClient.GetOneTipologiaAbbonamentoAsync(idCliente, idTipoAbbonamento, accessToken);
-        //    if (tipoAbbonamento == null) { return BadRequest(); }
-
-        //    EditAbbonamentoUtenteInputModel vm = new EditAbbonamentoUtenteInputModel()
-        //    {
-        //        Id = null,
-        //        IdCliente = idCliente,
-        //        IdUtente = userId,
-        //        DataInizioValidita = DateTime.Now,
-        //        IdTipoAbbonamento = idTipoAbbonamento,
-        //        IngressiIniziali = tipoAbbonamento.NumIngressi,
-        //        IngressiResidui = tipoAbbonamento.NumIngressi,
-        //        Scadenza = tipoAbbonamento.DurataMesi.HasValue ? DateTime.Now.AddMonths(tipoAbbonamento.DurataMesi.Value) : (DateTime?)null,
-        //        Importo = tipoAbbonamento?.Costo ?? 0,
-        //    };
-
-        //    ViewBag.IdCliente = idCliente;
-        //    ViewBag.IdUtente = userId;
-        //    ViewBag.ClienteUrl = urlRoute;
-        //    ViewBag.TipologiaAbbonamento = tipoAbbonamento.Nome;
-
-        //    return View("NuovoAbbonamento", vm);
-        //}
-
         [HttpGet("{userId}/abbonamenti/{idAbbonamento}/partial")]
         public async Task<IActionResult> PartialGetAbbonamentoForUser([FromRoute(Name = "cliente")]string urlRoute,
-                                                   [FromRoute(Name = "userId")]string userId,
-                                                   [FromRoute(Name = "idAbbonamento")]int idAbbonamento,
-                                                   [FromQuery(Name = "mode")] string mode)
+                                                     [FromRoute(Name = "userId")]string userId,
+                                                     [FromRoute(Name = "idAbbonamento")]int idAbbonamento,
+                                                     [FromQuery(Name = "mode")] string mode)
         {
             bool isEdit = (!string.IsNullOrWhiteSpace(mode) && mode.Trim().Equals("edit", StringComparison.CurrentCultureIgnoreCase));
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
@@ -143,7 +109,7 @@ namespace Web.Controllers.Clienti
         public async Task<IActionResult> EditAbbonamentoUtente([FromRoute(Name = "cliente")]string urlRoute,
                                                               [FromRoute(Name = "userId")]string userId,
                                                               [FromRoute(Name = "id")]int id,
-                                                              [FromQuery(Name ="returnUrl")] string returnUrl)
+                                                              [FromQuery(Name = "returnUrl")] string returnUrl)
         {
             //TODO: Capire se aggiungere il tipo di abbonamento in querystring e prepopolare i campi a partire dal tipo abbonamento 
             //      oppure se la scelta del tipo avviene nella view
@@ -210,14 +176,19 @@ namespace Web.Controllers.Clienti
             }
             if ((model.IdCliente != idCliente) || (model.UserId != userId)) { return BadRequest(); }
             await _utentiProxy.EditAbbonamentoClienteAsync(idCliente, userId, model.MapToAPIModel());
-            //Facciamo il redirect al ReturnUrl se valorizzato E SE LOCALTE, altrimenti per dafault ritorniamo alla lista degli utenti
-            if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+            //Se flagato il check per la conferma degli appuntamenti procediamo con l'operazione
+            if (model.ConfermaAppuntamenti)
             {
-                return Redirect(model.ReturnUrl);
+                await _utentiProxy.ConfermaAppuntamentiUtenteAsync(idCliente, userId);
+            }
+            //Facciamo il redirect al ReturnUrl se valorizzato E SE LOCALTE, altrimenti per dafault ritorniamo alla lista degli utenti
+            if (!string.IsNullOrWhiteSpace(model.ReturnUrl))
+            {
+                return LocalRedirect(model.ReturnUrl);
             }
             else
             {
-                return RedirectToAction("GetUtente", "UtentiCliente", new { cliente = urlRoute, userId= userId, tabId = 0 });
+                return RedirectToAction("GetUtente", "UtentiCliente", new { cliente = urlRoute, userId = userId, tabId = 0 });
             }
         }
         #endregion

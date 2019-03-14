@@ -238,6 +238,9 @@
     <Build Include="dbo\Stored Procedures\RichiestaRegistrazione_GetLast.sql" />
     <Build Include="dbo\Functions\ExistsAbbonamentoValido.sql" />
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Conferma.sql" />
+    <Build Include="dbo\Stored Procedures\events\internal_AppuntamentoDaConfermare_NotifyConferma.sql" />
+    <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Rifiuta.sql" />
+    <Build Include="dbo\Stored Procedures\events\internal_AppuntamentoDaConfermare_NotifyRifiuto.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />

@@ -17,7 +17,7 @@ BEGIN
 	IF @pIdAbbonamento IS NULL OR @pIdAbbonamento <= 0
 	BEGIN
 		INSERT INTO AbbonamentiUtenti(IdCliente, UserId, IdTipoAbbonamento, DataInizioValidita, Scadenza, IngressiIniziali, IngressiResidui, Importo, ImportoPagato)
-			VALUES(@pIdCliente, @pUserId, @pIdTipoAbbonamento, @pDataInizioValidita, @pScadenza, @pIngressiIniziali, @pIngressiResidui, @pImporto, @pImportoPagato)
+			VALUES(@pIdCliente, @pUserId, @pIdTipoAbbonamento, @pDataInizioValidita, @pScadenza, @pIngressiIniziali, COALESCE(@pIngressiResidui, @pIngressiIniziali), @pImporto, @pImportoPagato)
 		SET @pIdAbbonamento = SCOPE_IDENTITY();
 	END
 	ELSE
@@ -28,7 +28,7 @@ BEGIN
 		SET DataInizioValidita = @pDataInizioValidita,
 			Scadenza = @pScadenza,
 			IngressiIniziali = @pIngressiIniziali,
-			IngressiResidui = @pIngressiResidui,
+			IngressiResidui = COALESCE(@pIngressiResidui, @pIngressiIniziali),
 			Importo = @pImporto,
 			ImportoPagato = @pImportoPagato
 			OUTPUT inserted.Id, deleted.IngressiResidui, inserted.IngressiResidui 

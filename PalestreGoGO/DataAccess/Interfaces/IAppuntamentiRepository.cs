@@ -37,7 +37,7 @@ namespace PalestreGoGo.DataAccess
         /// <returns></returns>
         Task<AppuntamentoDM> GetAppuntamentoForUserAsync(int idCliente, int idSchedule, string userId);
 
-        Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false);
+        Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int? idSchedule, string userId, bool includeDeleted = false, bool includeExpired = false);
 
         Task<AppuntamentoDM> GetAppuntamentoAsync(int idCliente, int idSchedule, int idAppuntamento);
 
@@ -113,6 +113,10 @@ namespace PalestreGoGo.DataAccess
                                                                                  string sortBy = "DataOraInizioSchedules", bool sortAscending = true,
                                                                                  bool includiCancellati = false, bool includeExpired = false);
 
-        Task<IEnumerable<WaitListRegistrationDM>> GetWaitListRegistrationsScheduleAsync(int idCliente, int idSchedule, string userId = null, bool includeConverted = false, bool includeDeleted = false);        
+        Task<IEnumerable<WaitListRegistrationDM>> GetWaitListRegistrationsScheduleAsync(int idCliente, int idSchedule, string userId = null, bool includeConverted = false, bool includeDeleted = false);
+
+        Task AppuntamentoDaConfermareRifiuta(int idCliente, int idSchedule, int idAppuntamentoDaConfermare, string motivo);
+
+        Task<int> AppuntamentoDaConfermareConferma(int idCliente, int idSchedule, int idAppuntamentoDaConfermare);
     }
 }

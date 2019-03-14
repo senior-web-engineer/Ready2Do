@@ -36,7 +36,7 @@ BEGIN
 			RETURN -1
 		END
 
-		IF @expiration < SYSDATETIME
+		IF @expiration < @dataOp
 		BEGIN
 			ROLLBACK;
 			RAISERROR('Impossibile confermare l''appuntamento. Appuntamento scaduto.', 16, 0);
@@ -50,14 +50,15 @@ BEGIN
 			RETURN -3
 		END
 
+
 		-- Recuperiamo l'abbonamento su cui addebitare l'appuntamento		
 		SELECT TOP 1 
 				@idAbbonamento = au.Id,
-				@ingressiResidui = au.IngressiResidui
+				@ingressiResidui = COALESCE(au.IngressiResidui, au.IngressiIniziali)
 		FROM AbbonamentiUtenti au WITH (UPDLOCK)
 			INNER JOIN TipologieAbbonamenti ta WITH (NOLOCK) ON au.IdTipoAbbonamento = ta.Id
 		WHERE au.DataInizioValidita <= SYSDATETIME() -- nel periodo di validità
-		AND au.Scadenza < SYSDATETIME()
+		AND au.Scadenza > SYSDATETIME()
 		AND COALESCE(au.IngressiResidui, 1) > 0 -- con almeno un ingresso residuo se previsti
 		AND au.DataCancellazione IS NULL --non cancellato
 		AND au.IdCliente = @pIdCliente
@@ -97,6 +98,14 @@ BEGIN
 			UPDATE AbbonamentiUtenti SET IngressiResidui = IngressiResidui -1 WHERE Id = @idAbbonamento
 			EXEC [dbo].[internal_AbbonamentiUtenti_LogTransazione] @idAbbonamento, 'APP', -1, @dataOp, @pIdAppuntamento, NULL
 		END
+		
+		--Aggiorniamo l'appuntamento da confermare
+		UPDATE AppuntamentiDaConfermare
+			SET DataEsito = SYSDATETIME(),
+				IdAppuntamento = @pIdAppuntamento
+		WHERE Id = @pIdAppuntamentoDaConf
 
+		-- Generiamo l'evento di notifica
+		EXEC [dbo].[internal_AppuntamentoDaConfermare_NotifyConferma] @pIdCliente, @pIdAppuntamentoDaConf, @pIdSchedule, @pIdAppuntamento, @userId, @idAbbonamento
 	COMMIT
 END

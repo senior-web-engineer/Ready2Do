@@ -268,7 +268,7 @@ namespace PalestreGoGo.DataAccess
             return result;
         }
 
-        public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int idSchedule, string userId, bool includeDeleted = false)
+        public async Task<IEnumerable<AppuntamentoDaConfermareDM>> GetAppuntamentoDaConfermareForUserAsync(int idCliente, int? idSchedule, string userId, bool includeDeleted = false, bool includeExpired = false)
         {
             List<AppuntamentoDaConfermareDM> result = new List<AppuntamentoDaConfermareDM>();
             Dictionary<string, int> columnsAppuntamentoDaConf = null;
@@ -281,6 +281,7 @@ namespace PalestreGoGo.DataAccess
                 cmd.Parameters.Add("@pIdSchedule", SqlDbType.Int).Value = idSchedule;
                 cmd.Parameters.Add("@pUserId", SqlDbType.VarChar, 100).Value = userId;
                 cmd.Parameters.Add("@pIncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
+                cmd.Parameters.Add("@pIncludeExpired", SqlDbType.Bit).Value = includeExpired;
                 await cn.OpenAsync();
                 using (var dr = await cmd.ExecuteReaderAsync())
                 {
@@ -362,6 +363,41 @@ namespace PalestreGoGo.DataAccess
                 }
             }
             return result;
+        }
+
+        public async Task AppuntamentoDaConfermareRifiuta(int idCliente, int idSchedule, int idAppuntamentoDaConfermare, string motivo)
+        {
+            using(var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[AppuntamentiDaConfermare_Rifiuta]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdSchedule", SqlDbType.Int).Value = idSchedule;
+                cmd.Parameters.Add("@pIdAppuntamentoDaConf", SqlDbType.Int).Value = idAppuntamentoDaConfermare;
+                cmd.Parameters.Add("@pMotivo", SqlDbType.VarChar, -1).Value = motivo;
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<int> AppuntamentoDaConfermareConferma(int idCliente, int idSchedule, int idAppuntamentoDaConfermare)
+        {
+            SqlParameter parIdAppuntamento = new SqlParameter("@pIdAppuntamento", SqlDbType.Int);
+            parIdAppuntamento.Direction = ParameterDirection.Output;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[AppuntamentiDaConfermare_Conferma]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add("@pIdSchedule", SqlDbType.Int).Value = idSchedule;
+                cmd.Parameters.Add("@pIdAppuntamentoDaConf", SqlDbType.Int).Value = idAppuntamentoDaConfermare;
+                cmd.Parameters.Add(parIdAppuntamento);
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+            return (int)parIdAppuntamento.Value;
         }
 
 

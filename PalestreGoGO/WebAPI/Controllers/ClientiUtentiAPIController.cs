@@ -195,6 +195,18 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok(result);
         }
 
+        [HttpPost("{userId}/appuntamenti/conferma")]
+        public async Task ConfermaAppuntamentiUtente([FromRoute] int idCliente, [FromRoute(Name = "userId")]string userId)
+        {
+            var appuntamenti = await _appuntamentiRepo.GetAppuntamentoDaConfermareForUserAsync(idCliente, null, userId, includeExpired: false);
+            if (appuntamenti?.Any() ?? false)
+            {
+                foreach (var ap in appuntamenti)
+                {
+                    await _appuntamentiRepo.AppuntamentoDaConfermareConferma(idCliente, ap.ScheduleId, ap.Id.Value);
+                }
+            }
+        }
         #endregion
 
     }
