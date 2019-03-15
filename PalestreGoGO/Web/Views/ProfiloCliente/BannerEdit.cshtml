@@ -81,7 +81,7 @@
 
 <section id="editBanner">
     @*<input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />*@
-    <form asp-controller="ProfiloCliente" asp-action="SaveBanner" method="post" id="formEditBanner">
+    <form asp-controller="ProfiloCliente" asp-action="SaveBanner" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"method="post" id="formEditBanner">
         <input type="hidden" asp-for="IdCliente" />
         <input type="hidden" value="@(Model.ImmagineHome?.Url ?? "")" id="inputUrlImageHome" name="UrlImmagineHome"/>
         <div class="row center">

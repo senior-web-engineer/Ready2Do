@@ -78,7 +78,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("banner")]
-        public async Task<IActionResult> SaveBanner([FromRoute(Name = "cliente")]string urlRoute, ClienteHeaderInputViewModel model)
+        public async Task<IActionResult> SaveBanner([FromRoute(Name = "cliente")]string urlRoute, [FromForm] ClienteHeaderInputViewModel model)
         {
             int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
             if (!User.GetUserTypeForCliente(idCliente).IsAtLeastAdmin())
