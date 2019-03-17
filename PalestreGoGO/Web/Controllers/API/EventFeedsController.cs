@@ -15,6 +15,7 @@ using Web.Models;
 using Web.Models.Mappers;
 using Web.Models.Utils;
 using Web.Proxies;
+using Web.Services;
 using Web.Utils;
 
 namespace Web.Controllers.API
@@ -25,14 +26,17 @@ namespace Web.Controllers.API
         private readonly AppConfig _appConfig;
         private readonly ILogger<BlobUploadController> _logger;
         private readonly SchedulesProxy _schedulesProxy;
+        private readonly ClienteResolverServices _clienteResolver;
 
         public EventFeedsController(ILogger<BlobUploadController> logger,
                                     IOptions<AppConfig> apiOptions,
+                                    ClienteResolverServices clienteResolver,
                                     SchedulesProxy schedulesProxy)
         {
             _logger = logger;
             _appConfig = apiOptions.Value;
             _schedulesProxy = schedulesProxy;
+            _clienteResolver = clienteResolver;
         }
 
 
@@ -63,41 +67,8 @@ namespace Web.Controllers.API
             {
                 return BadRequest();
             }
-
-            if (!HttpContext.Request.Headers.ContainsKey(Constants.CUSTOM_HEADER_TOKEN_AUTH))
-            {
-                return BadRequest();
-            }
-            var header = HttpContext.Request.Headers[Constants.CUSTOM_HEADER_TOKEN_AUTH];
-            var headerValue = header.FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(headerValue))
-            {
-                _logger.LogWarning("Unauthorized access to GetEvents(...)");
-                return Unauthorized();
-            }
-            try
-            {
-                string json = SecurityUtils.DecryptStringFromBytes_Aes(Convert.FromBase64String(headerValue), Encoding.UTF8.GetBytes(_appConfig.EncryptKey));
-                token = JsonConvert.DeserializeObject<AuthTokenModel>(json);
-            }
-            catch (Exception exc)
-            {
-                _logger.LogError(exc, "Errore durante decodifica del token.");
-                return Unauthorized();
-            }
-            if (token == null || !clientRoute.Equals(token.ClientRoute))
-            {
-                _logger.LogWarning("Unauthorized access to GetEvents(...)");
-                return Unauthorized();
-            }
-
-            if (DateTime.Now.Subtract(token.CreationTime).TotalMinutes > _appConfig.AuthTokenDuration)
-            {
-                _logger.LogWarning("SASToken scaduto. {0}", token);
-                return Unauthorized();
-            }
-            //var cliente = await WebAPIClient.GetClienteAsync(clientRoute, _appConfig.WebAPI.BaseAddress);
-            var schedules = await _schedulesProxy.GetSchedulesAsync(token.IdCliente, startDate.Value, endDate.Value, idLocationNullable);
+            int idCliente = await _clienteResolver.GetIdClienteFromRouteAsync(clientRoute);
+            var schedules = await _schedulesProxy.GetSchedulesAsync(idCliente, startDate.Value, endDate.Value, idLocationNullable);
             var result = schedules.MapToSchedulerEventViewModel();
 
             return Ok(result);

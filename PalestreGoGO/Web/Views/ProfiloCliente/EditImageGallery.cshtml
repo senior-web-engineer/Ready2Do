@@ -86,6 +86,7 @@
         var lastZoom = 1;
         var imageLoaded = 0;
         var inputFile;
+        var originalFileName;
 
         function selectFile() {
             inputFile.trigger('click');
@@ -156,13 +157,13 @@
                 var offCanvas = document.createElement('canvas');
 
                 img.onload = function (e) {
-                    if (img.width > 1920) {
-                        offCanvas.width = 1920;
-                        offCanvas.height = img.height * 1920 / img.width;
+                    if (img.width > 1024) {
+                        offCanvas.width = 1024;
+                        offCanvas.height = img.height * 1024 / img.width;
                         pica().resize(img, offCanvas, {
                             quality: 3,
-                            alpha: true,
-                            unsharpAmount: 75
+                            alpha: false,
+                            unsharpAmount: 0
                         }).then(function () {
                             imgLoad.src = offCanvas.toDataURL();
                             buildCropper(imgLoad)
@@ -178,6 +179,7 @@
                 $('#txtUpload').hide();
                 console.log("End Readere.OnLoad:" + (Date.now() - start));
             }
+            originalFileName = file.name;
             reader.readAsDataURL(file);
             console.log("End handleImageLoad:" + (Date.now() - start));
         }
@@ -264,8 +266,11 @@
                 let canvas = cropper.getCroppedCanvas();
                 if (canvas) {
                     canvas.toBlob((blob) => {
+                        console.log("Upload blob to Azure");
+                        var blobName = blob.name + '.' + originalFileName.split('.').pop();
+                        console.log(blob);
                         uploader.reset();
-                        uploader.addFiles([blob]);
+                        uploader.addFiles([{ blob: blob, name: blobName }]);
                     })
                 } else {
                     alert("Nulla di cui fare l'upload !?");
