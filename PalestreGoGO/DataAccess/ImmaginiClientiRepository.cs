@@ -76,7 +76,7 @@ namespace PalestreGoGo.DataAccess
             result.Url = dr.GetString(columns["Url"]);
             result.ThumbnailUrl = await dr.IsDBNullAsync(columns["ThumbnailUrl"]) ? null : dr.GetString(columns["ThumbnailUrl"]);
             result.Descrizione = await dr.IsDBNullAsync(columns["Descrizione"]) ? null : dr.GetString(columns["Descrizione"]);
-            result.Id = dr.GetInt32(columns["Ordinamento"]);
+            result.Ordinamento = dr.GetInt32(columns["Ordinamento"]);
             result.DataCancellazione = await dr.IsDBNullAsync(columns["DataCancellazione"]) ? default(DateTime?) : dr.GetDateTime(columns["DataCancellazione"]);
             return result;
         }

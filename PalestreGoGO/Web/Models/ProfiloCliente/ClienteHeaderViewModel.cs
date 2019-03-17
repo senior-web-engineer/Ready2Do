@@ -9,6 +9,6 @@ namespace Web.Models
     public class ClienteHeaderViewModel
     {
         public int IdCliente { get; set; }
-        public ImmagineClienteDM ImmagineHome { get; set; }
+        public ImmagineClienteDM ImmagineHome { get; set; }        
     }
 }

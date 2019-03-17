@@ -9850,6 +9850,50 @@ main.r2d-nav-padding {
 .r2d-calendar-container {
   padding-top: 12px; }
 
+.r2d-gallery-thumb-box {
+  height: 190px;
+  width: 310px;
+  /*overflow: hidden;*/
+  text-align: center;
+  display: inline-block;
+  /*background-color: #fff;*/
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  margin: 12px; }
+
+.r2d-gallery-thumb-img {
+  max-height: 150px;
+  max-width: 270px;
+  /* Per centrarla orizzontalmente */
+  display: block;
+  margin: auto; }
+
+.r2g-gallery-image-container {
+  width: 540px;
+  min-height: 300px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #cccbca;
+  margin: auto;
+  vertical-align: middle; }
+
+.r2g-gallery-image-uploadtext {
+  vertical-align: middle;
+  line-height: 300px;
+  /*Stessa altezza di r2g-gallery-image-container.min-heght così da centrare verticalmente il testo*/ }
+
+.r2d-gallery-image-edit {
+  max-width: 100%; }
+
+@media screen and (max-width: 992px) {
+  .r2g-gallery-image-container {
+    width: 270px;
+    height: 150px;
+    border-style: solid;
+    border-color: #cccbca; } }
+
 .r2d-swiper-image {
   max-width: 711px;
   max-height: 400px; }

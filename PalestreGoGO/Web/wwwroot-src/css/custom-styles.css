@@ -1,8 +1,4 @@
 ﻿/* Link di registrazione nella NavBar*/
-/*.cs_navitem-registration {
-    color: red;
-    font-weight: 500;
-}*/
 
 #navLinkRegistration {
     color: red;
@@ -55,33 +51,5 @@
     width: 80%;
     height: 70px;
     background-color: yellow;
-}
-
-
-/******************** GALLERY EDIT **************************/
-
-.gallery_item_container {
-    display: inline;
-}
-
-.thumb_container {
-    height: 120px;
-    width: 120px;
-    overflow: hidden;
-    text-align: center;
-}
-
-.thumb_image {
-    max-height: 120px;
-    max-width: 120px;
-    /* Per centrarla orizzontalmente */
-    display: block;
-    margin: auto;
-}
-
-.valign_helper {
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
 }
 

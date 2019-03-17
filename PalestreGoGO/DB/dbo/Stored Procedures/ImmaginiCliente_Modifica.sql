@@ -3,10 +3,10 @@
 	@pIdImmagine		INT,
 	--@pIdTipoImmagine	INT, --Il TipoDiImmagine non è modificabile
 	@pNome				NVARCHAR(100),
-	@pAlt				NVARCHAR(100),
+	@pAlt				NVARCHAR(100) = NULL,
 	@pUrl				NVARCHAR(1000),
-	@pThumbnailUrl		NVARCHAR(1000),
-	@pDescrizione		NVARCHAR(1000),
+	@pThumbnailUrl		NVARCHAR(1000) = NULL,
+	@pDescrizione		NVARCHAR(1000) = NULL,
 	@pOrdinamento		INT
 AS
 BEGIN

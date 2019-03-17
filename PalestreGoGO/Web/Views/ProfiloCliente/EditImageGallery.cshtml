@@ -1,0 +1,312 @@
+﻿@model ImmagineClienteDM;
+@{
+    Layout = "_LayoutClienti";
+}
+
+@section Header{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.1/cropper.min.css" integrity="sha256-SyWqODkStAbrafgJ9K8twjULP7yL6yTRZKoFGjDYybI=" crossorigin="anonymous" />
+
+    <style>
+        /*.r2g-gallery-image-container {
+            max-width: 600px;
+        }
+
+        .r2d-gallery-image-edit {
+            max-width: 100%;
+        }*/
+    </style>
+}
+
+<form asp-action="SaveImageGallery" asp-controller="ProfiloCliente" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" id="frmSaveImageGallery">
+    <input type="hidden" value="@Model.Url" id="hidUrlImage" name="Url" />
+    <input type="hidden" value="@Model.IdTipoImmagine" id="hidIdTipoImg" name="IdTipoImmagine" />
+    <input type="file" id="idFileInput" style="display:none" />
+
+    <div class="row">
+        <div class="col s10 offset-1 m8 offset-m2">
+            <div class="center">
+                <div class="r2g-gallery-image-container" id="imgDropArea">
+                    <img id="imgLoaded" src="" class="r2d-gallery-image-edit" />
+                    <span id="txtUpload" class="r2g-gallery-image-uploadtext">Trascina l'immagine qui oppura <a href="#" id="lnkSelectFile">selezionane una...</a></span>
+                </div>
+                <div class="r2d-gallery-imageedit-toolbar-container">
+                    <button type="button" id="btnCropStart" class="btn tooltipped" data-position="bottom" data-tooltip="Ritaglia"><i class="material-icons">crop</i></button>
+                    <button type="button" id="btnZoomIn" class="btn tooltipped" data-position="bottom" data-tooltip="Zoom In"><i class="material-icons">zoom_in</i></button>
+                    <button type="button" id="btnZoomOut" class="btn tooltipped" data-position="bottom" data-tooltip="Zoom Out"><i class="material-icons">zoom_out</i></button>
+                    <button type="button" id="btnRotateLeft" class="btn tooltipped" data-position="bottom" data-tooltip="Ruota di 90° a sinistra"><i class="material-icons">rotate_left</i></button>
+                    <button type="button" id="btnRotateRight" class="btn tooltipped" data-position="bottom" data-tooltip="Ruota di 90° a destra"><i class="material-icons">rotate_right</i></button>
+                    <button type="button" id="btnDelete" class="btn tooltipped red" data-position="bottom" data-tooltip="Elimina immagine caricata"><i class="material-icons">delete</i></button>
+                    <button type="button" id="btnUpload" class="btn tooltipped " style="margin-left:25px;" data-position="bottom" data-tooltip="Carica Immagine"><i class="material-icons">file_upload</i></button>
+                </div>
+                @*<input type="button" id="btnInfo" class="btn" value="GetImageInfo" />*@
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input type="text" class="validate" asp-for="Nome">
+            <label>Titolo</label>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1 m8 offset-m2">
+                <textarea class="materialize-textarea" asp-for="Descrizione"></textarea>
+                <label for="textarea1">Descrizone</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s10 offset-s1 m8 offset-m2">
+                <input type="text" class="validate" asp-for="Alt">
+                <label>Testo alternativo (alt)</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s2 offset-s1 m1 offset-m2">
+                <input type="number" class="validate" asp-for="Ordinamento">
+                <label>Ordinamento</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <button class="btn" type="button" id="btnSubmit"><i class="material-icons">submmit</i>Salva</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js"
+            integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.1/cropper.min.js" integrity="sha256-+PQmsBomnsT/06XEdk7ibt/9We4DX+VKzJsw/+DCzc0=" crossorigin="anonymous"></script>
+    <script src="~/js/pica.min.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js"
+            integrity="sha256-CeBz6ph2imsCxljJfaQYaMRiRYRtW/TP5kH7REY3qvQ=" crossorigin="anonymous"></script>
+
+    <script>
+        var cropper;
+        var lastZoom = 1;
+        var imageLoaded = 0;
+        var inputFile;
+
+        function selectFile() {
+            inputFile.trigger('click');
+            return false;
+        }
+
+
+        function handleToolbarButtons(imageLoaded, cropStarted) {
+            if (!imageLoaded) {
+                $('#btnCropStart').prop('disabled', true);
+                $('#btnZoomIn').prop('disabled', true);
+                $('#btnZoomOut').prop('disabled', true);
+                $('#btnDelete').prop('disabled', true);
+                $('#btnRotateLeft').prop('disabled', true);
+                $('#btnRotateRight').prop('disabled', true);
+            } else {
+                $('#btnCropStart').prop('disabled', false);
+                $('#btnZoomIn').prop('disabled', false);
+                $('#btnZoomOut').prop('disabled', false);
+                $('#btnDelete').prop('disabled', false);
+                $('#btnRotateLeft').prop('disabled', false);
+                $('#btnRotateRight').prop('disabled', false);
+            }
+        }
+
+        function buildCropper(imgLoad) {
+            var start = Date.now();
+            if (cropper) { cropper.destroy(); }
+            console.log("Build Cropper: " + (Date.now() - start));
+            cropper = new Cropper(imgLoad, {
+                initialAspectRatio: 16 / 9,
+                aspectRatio: 16 / 9,
+                autoCrop: false,
+                zoomOnWheel: false,
+                ready: function () {
+                    console.log("Cropper ready");
+                    $('#btnZoomIn').on('click', function () { cropper.zoom(0.1); });
+                    $('#btnZoomOut').on('click', function () { cropper.zoom(-0.1); });
+                    $('#btnRotateLeft').on('click', function () { cropper.rotate(-90); });
+                    $('#btnRotateRight').on('click', function () { cropper.rotate(90); });
+                    $('#btnCropStart').on('click', function () {
+                        let cropperStarted = $(this).attr('data-cropper-started');
+                        console.log("btnCropStart clicked. cropperStarted = " + cropperStarted);
+                        if (cropperStarted) {
+                            $(this).attr('data-cropper-started', "");
+                            cropper.clear();
+                            console.log("Clear Crop");
+                        }
+                        else {
+                            $(this).attr('data-cropper-started', 1);
+                            cropper.crop();
+                            console.log("Enable Crop");
+                        }
+                    });
+                }
+            });
+            console.log("Crop Builded [in " + (Date.now() - start) + " ms]");
+        }
+
+        function handleImageLoad(file) {
+            var start = Date.now();
+            var imgLoad = document.getElementById('imgLoaded');
+            var reader = new FileReader();
+
+            reader.onload = function (f) {
+                console.log("Begin OnLoad:" + (Date.now() - start));
+                var img = new Image();
+                var offCanvas = document.createElement('canvas');
+
+                img.onload = function (e) {
+                    if (img.width > 1920) {
+                        offCanvas.width = 1920;
+                        offCanvas.height = img.height * 1920 / img.width;
+                        pica().resize(img, offCanvas, {
+                            quality: 3,
+                            alpha: true,
+                            unsharpAmount: 75
+                        }).then(function () {
+                            imgLoad.src = offCanvas.toDataURL();
+                            buildCropper(imgLoad)
+                        });
+                    } else {
+                        imgLoad.src = img.src;
+                        buildCropper(imgLoad)
+
+                    }
+                    console.log("Fine Img.OnLoad " + (Date.now() - start));
+                }
+                img.src = f.target.result;
+                $('#txtUpload').hide();
+                console.log("End Readere.OnLoad:" + (Date.now() - start));
+            }
+            reader.readAsDataURL(file);
+            console.log("End handleImageLoad:" + (Date.now() - start));
+        }
+
+        $(document).ready(function () {
+            inputFile = $('#idFileInput');
+            inputFile.on('change', function (e) {
+                //TODO: aggiungere controllo sul tipo di immagine ed evantualmente sulla dimensione
+                if (e.target.files) {
+                    handleImageLoad(e.target.files[0]);
+                }
+            });
+
+            $('#lnkSelectFile').on('click', function () {
+                selectFile();
+                return false;
+            })
+
+            $('#btnUpload').on('click', selectFile);
+            $('#btnDelete').on('click', function () {
+                console.log("Destroy cropper and image...")
+                if (cropper) {
+                    $('#btnZoomIn').off('click');
+                    $('#btnZoomOut').off('click');
+                    $('#btnRotateLeft').off('click');
+                    $('#btnRotateRight').off('click');
+                    $('#btnCropStart').off('click');
+                    $('#btnCropStart').attr('data-cropper-started', 0);
+                    cropper.destroy();
+                    cropper = null;
+                }
+                document.getElementById('imgLoaded').src = "";
+                $('#txtUpload').show();
+                console.log("btnDelete.Click() finished.")
+            });
+
+            //$('#btnInfo').on('click', function (e) {
+            //    let cropper = $('#imgLoaded').data('cropper');
+            //    if (cropper) {
+            //        var imgData = cropper.getImageData();
+            //        var cropBox = cropper.getCropBoxData();
+            //        console.log(imgData);
+            //        console.log(cropBox);
+            //    }
+            //});
+
+            $("#imgDropArea").on('dragenter', function (e) {
+                e.preventDefault();
+                $(this).css('border', '#39b311 2px dashed');
+                $(this).css('background', '#f1ffef');
+            });
+
+            $("#imgDropArea").on('dragover', function (e) {
+                e.preventDefault();
+            });
+
+            $("#imgDropArea").on('drop', function (e) {
+                $(this).css('border', '#07c6f1 2px dashed');
+                $(this).css('background', '#FFF');
+                e.preventDefault();
+                var files = e.originalEvent.dataTransfer.files;
+                if (!files || files.length != 1) {
+                    alert("Trascinare solo un file.")
+                }
+                handleImageLoad(files[0]);
+            });
+
+            $('#btnSubmit').on('click', function () {
+                if (!cropper) {
+                    alert("Nessuna immagine selezionata");
+                    return false;
+                }
+                var cropBoxData = cropper.getCropBoxData();
+                //Se non è stato fatto il crop manualmente, lo simuliamo ma prendiamo tutta l'immagine
+                //Ci serve fare comunque il crop per ottenere un blob di cui fare l'upload
+                if (!cropBoxData || cropBoxData.width == 0 || cropBoxData.height == 0) {
+                    cropper.setCropBoxData({
+                        left: 0,
+                        top: 0,
+                        width: imgLoad.width,
+                        height: imgLoad.height
+                    });
+                }
+                let canvas = cropper.getCroppedCanvas();
+                if (canvas) {
+                    canvas.toBlob((blob) => {
+                        uploader.reset();
+                        uploader.addFiles([blob]);
+                    })
+                } else {
+                    alert("Nulla di cui fare l'upload !?");
+                }
+            })
+                   //Upload Image
+            var uploader = new qq.azure.FineUploaderBasic({
+                autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+                multiple: false,
+                cors: {
+                    allowXdr: false,
+                    expected: true,
+                    sendCredentials: false
+                },
+                request: {
+                    endpoint: "@ViewBag.ContainerUrl"
+                },
+                signature: {
+                    endpoint: "/api/fileupload",
+                    customHeaders: {
+                        "@(Constants.CUSTOM_HEADER_CLIENT_ROUTE)": "@(ViewContext.RouteData.Values["cliente"])"
+                    }
+                },
+                callbacks: {
+                    onComplete: function uploadComplete(id, name, response, xhr) {
+                        let containerUrl = "@ViewBag.ContainerUrl";
+                        if (response.success === true) {
+                            let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
+                            $('#hidUrlImage').val(fullUrl);
+                            $("#frmSaveImageGallery").submit();
+                        }
+                        else {
+                            let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
+                            console.log(message);
+                            alert(message);
+                        }
+                    }
+                }
+
+            });
+
+        });
+    </script>
+}

@@ -220,56 +220,7 @@ namespace Web.Controllers
             return View(vm);
         }
 
-        [HttpGet("{cliente}/gallery")]
-        public async Task<IActionResult> GalleryEdit([FromRoute(Name = "cliente")]string urlRoute)
-        {
-            var cliente = await _clienteProxy.GetClienteAsync(urlRoute);
-            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
-            if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin()) { return Forbid(); }
-            ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.Id.Value, cliente.StorageContainer, _appConfig.EncryptKey);
-            ViewData["IdCliente"] = cliente.Id.Value;
-            var vm = new GalleryEditViewModel();
-            vm.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
-                                                _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
-                                                cliente.StorageContainer);
-            var immagini = await _clienteProxy.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
-            if (immagini != null)
-            {
-                foreach (var img in immagini)
-                {
-                    vm.Images.Add(img);
-                }
-            }
-            return View("Gallery", vm);
-        }
-
-        [HttpDelete("{cliente}/gallery/delete/{imageId}")]
-        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "imageId")]int imageId)
-        {
-            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
-            var userType = User.GetUserTypeForCliente(idCliente);
-            if (!userType.IsAtLeastAdmin())
-            {
-                return Forbid();
-            }
-            var imgDeleted = await _clienteProxy.DeleteImmagineGalleryAsync(idCliente, imageId);
-            //Cancelliamo i files da Azure
-            if (imgDeleted != null)
-            {
-                if (!string.IsNullOrEmpty(imgDeleted.Url) && (imgDeleted.Url.Contains(_appConfig.Azure.Storage.BlobStorageBaseUrl)))
-                {
-                    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, imgDeleted.Url);
-                }
-                if (!string.IsNullOrEmpty(imgDeleted.ThumbnailUrl) && (imgDeleted.ThumbnailUrl.Contains(_appConfig.Azure.Storage.BlobStorageBaseUrl)))
-                {
-                    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, imgDeleted.ThumbnailUrl);
-                }
-            }
-            return await GalleryEdit(urlRoute);
-        }
-
-
+       
         //[HttpGet("{cliente}/profilo")]
         //public async Task<IActionResult> ProfileEdit([FromRoute(Name = "cliente")]string urlRoute)
         //{

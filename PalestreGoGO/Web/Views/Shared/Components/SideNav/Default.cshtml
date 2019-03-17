@@ -16,7 +16,7 @@
         <li>
             <ul id="navMenuDatiStruttura" class="collapsible collapsible-accordion">
                 <li>
-                    <a class="r2d-text-bold collapsible-header waves-effect">Modifica Dati Struttura</a>
+                    <a class="r2d-text-bold collapsible-header waves-effect">Dati Struttura</a>
                     <div class="collapsible-body">
                         <ul>
                             <li class="@(Model.CurrentController.Equals("profilocliente") && Model.CurrentAction.Equals("getanagrafica") ? "active" : "")">
@@ -34,6 +34,10 @@
                                     Orario Apertura
                                 </a>
                             </li>
+                            <li class="@(Model.CurrentController.Equals("clienti") && Model.CurrentAction.Equals("galleryedit")  ? "active" : "")">
+                                <a lass="r2d-sidenav-item" asp-action="GalleryEdit" asp-controller="ProfiloCliente" asp-route-cliente="@Model.ClienteRoute">Galleria Immagini</a>
+                            </li>
+
                         </ul>
                     </div>
                 </li>
@@ -41,9 +45,6 @@
         </li>
         <li class="@(Model.CurrentController.Equals("scheduler") ? "active" : "")">
             <a class="r2d-text-bold" asp-action="Index" asp-controller="Scheduler" asp-route-cliente="@Model.ClienteRoute">Calendari</a>
-        </li>
-        <li class="@(Model.CurrentController.Equals("clienti") && Model.CurrentAction.Equals("galleryedit")  ? "active" : "")">
-            <a asp-controller="Clienti" asp-action="GalleryEdit" class="r2d-text-bold" asp-route-cliente="@Model.ClienteRoute">Galleria Immagini</a>
         </li>
         <li class="@(Model.CurrentController.Equals("sale") ? "active" : "")">
             <a class="r2d-text-bold " asp-action="ListaSale" asp-controller="Sale" asp-route-cliente="@Model.ClienteRoute">Sale e Trainer</a>

@@ -153,6 +153,9 @@
     <Content Update="Views\Eventi\_TabIscritti.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\ProfiloCliente\EditImageGallery.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\ProfiloCliente\BannerEdit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

@@ -52,10 +52,12 @@ namespace PalestreGoGo.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddImageCliente([FromRoute(Name = "idCliente")] int idCliente, ImmagineClienteInputDM immagine)
+        public async Task<IActionResult> AddImageCliente([FromRoute(Name = "idCliente")] int idCliente, [FromBody] ImmagineClienteInputDM immagine)
         {
+            if(immagine == null) { return BadRequest(); }
+            if(immagine.IdCliente != idCliente) { return BadRequest(); }
             var idImage = await _immaginiRepository.AddImageAsync(idCliente, immagine);
-            return CreatedAtAction("GetImageCliente", new { idImage = idImage }, immagine);
+            return Ok(idImage);
         }
 
         [HttpPut("{idImage:int}")]

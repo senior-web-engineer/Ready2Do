@@ -83,6 +83,7 @@
     @*<input id="fileSelect" type="file" accept="image/*" style="display:none" onchange="handleFiles(this.files)" />*@
     <form asp-controller="ProfiloCliente" asp-action="SaveBanner" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])"method="post" id="formEditBanner">
         <input type="hidden" asp-for="IdCliente" />
+        <input type="hidden" value="@(Model.ImmagineHome.Id)" name="IdImmagine"/>
         <input type="hidden" value="@(Model.ImmagineHome?.Url ?? "")" id="inputUrlImageHome" name="UrlImmagineHome"/>
         <div class="row center">
             <h3>Modifica banner</h3>
@@ -118,17 +119,7 @@
                 </div>
             </div>
         </div>
-        <!-- PREVIEW -->
-        @*<div class="row valign-wrapper">
-                <div class="col s2 offset-s1">
-                    <span class="r2d-label">Anteprima</span>
-                </div>
-                <div class="col s8">
-                    <div class="docs-preview clearfix">
-                        <div class="img-preview preview-lg"></div>
-                    </div>
-                </div>
-            </div>*@
+      
 
         <div class="row">
             <div class="input-field col s10 offset-s1 center ">
@@ -140,17 +131,6 @@
         </div>
     </form>
 </section>
-
-<!-- Secondo banner pubblicitario -->
-@*<section id="banner2">
-        <div class="container">
-            <div class="row center-align">
-                <div class="adsbanner_container">
-                    <img src="~/img/placeholders/google/leaderboard_728x90.png" />
-                </div>
-            </div>
-        </div>
-    </section>*@
 
 
 @section Scripts{
@@ -219,7 +199,7 @@
                 signature: {
                     endpoint: "/api/fileupload",
                     customHeaders: {
-                        "X-PalestreGoGO-AUTHToken": "@Html.Raw(ViewBag.SASToken)"
+                        "@(Constants.CUSTOM_HEADER_CLIENT_ROUTE)": "@(ViewContext.RouteData.Values["cliente"])"
                     }
                 },
                 callbacks: {
@@ -228,7 +208,7 @@
                         if (response.success === true) {
                             let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
                             $('#inputUrlImageHome').val(fullUrl);
-                            $("form:first").submit();
+                            $("#formEditBanner").submit();
                             //document.getElementById('urlImageHome').value = fullUrl;
                             //document.getElementById('imgHeroEdit').src = fullUrl;
                             //document.getElementById('idImageHome').value = -1;

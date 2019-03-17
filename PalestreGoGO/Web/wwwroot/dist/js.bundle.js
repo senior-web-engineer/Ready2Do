@@ -1,7 +1,66 @@
 var EntryPoint =
 /******/ (function(modules) { // webpackBootstrap
+/******/ 	// install a JSONP callback for chunk loading
+/******/ 	function webpackJsonpCallback(data) {
+/******/ 		var chunkIds = data[0];
+/******/ 		var moreModules = data[1];
+/******/ 		var executeModules = data[2];
+/******/
+/******/ 		// add "moreModules" to the modules object,
+/******/ 		// then flag all "chunkIds" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0, resolves = [];
+/******/ 		for(;i < chunkIds.length; i++) {
+/******/ 			chunkId = chunkIds[i];
+/******/ 			if(installedChunks[chunkId]) {
+/******/ 				resolves.push(installedChunks[chunkId][0]);
+/******/ 			}
+/******/ 			installedChunks[chunkId] = 0;
+/******/ 		}
+/******/ 		for(moduleId in moreModules) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				modules[moduleId] = moreModules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
+/******/
+/******/ 		while(resolves.length) {
+/******/ 			resolves.shift()();
+/******/ 		}
+/******/
+/******/ 		// add entry modules from loaded chunk to deferred list
+/******/ 		deferredModules.push.apply(deferredModules, executeModules || []);
+/******/
+/******/ 		// run deferred modules when all chunks ready
+/******/ 		return checkDeferredModules();
+/******/ 	};
+/******/ 	function checkDeferredModules() {
+/******/ 		var result;
+/******/ 		for(var i = 0; i < deferredModules.length; i++) {
+/******/ 			var deferredModule = deferredModules[i];
+/******/ 			var fulfilled = true;
+/******/ 			for(var j = 1; j < deferredModule.length; j++) {
+/******/ 				var depId = deferredModule[j];
+/******/ 				if(installedChunks[depId] !== 0) fulfilled = false;
+/******/ 			}
+/******/ 			if(fulfilled) {
+/******/ 				deferredModules.splice(i--, 1);
+/******/ 				result = __webpack_require__(__webpack_require__.s = deferredModule[0]);
+/******/ 			}
+/******/ 		}
+/******/ 		return result;
+/******/ 	}
+/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
+/******/
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// Promise = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		"js": 0
+/******/ 	};
+/******/
+/******/ 	var deferredModules = [];
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -80,9 +139,18 @@ var EntryPoint =
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/ 	var jsonpArray = window["webpackJsonpEntryPoint"] = window["webpackJsonpEntryPoint"] || [];
+/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
+/******/ 	jsonpArray.push = webpackJsonpCallback;
+/******/ 	jsonpArray = jsonpArray.slice();
+/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
+/******/ 	var parentJsonpFunction = oldJsonpFunction;
 /******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./wwwroot-src/app.js");
+/******/
+/******/ 	// add entry module to deferred list
+/******/ 	deferredModules.push(["./wwwroot-src/app.js","vendors~js"]);
+/******/ 	// run deferred modules when ready
+/******/ 	return checkDeferredModules();
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -91,11 +159,11 @@ var EntryPoint =
 /*!****************************!*\
   !*** ./wwwroot-src/app.js ***!
   \****************************/
-/*! exports provided: r2dEditEvento */
+/*! exports provided: r2dEditEvento, pica, Pica */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./materialize-src/sass/materialize.scss */ \"./wwwroot-src/materialize-src/sass/materialize.scss\");\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/global-format.scss */ \"./wwwroot-src/css/global-format.scss\");\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./css/clienti.scss */ \"./wwwroot-src/css/clienti.scss\");\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _js_r2do_EditEvento__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/r2do.EditEvento */ \"./wwwroot-src/js/r2do.EditEvento.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"r2dEditEvento\", function() { return _js_r2do_EditEvento__WEBPACK_IMPORTED_MODULE_3__[\"r2dEditEvento\"]; });\n\n/* harmony import */ var _js_r2do_RegistrazioneCliente__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/r2do.RegistrazioneCliente */ \"./wwwroot-src/js/r2do.RegistrazioneCliente.js\");\n\n\n\n\n\n\n__webpack_require__(/*! ./js/ready2do */ \"./wwwroot-src/js/ready2do.js\");\n\n\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/app.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"pica\", function() { return pica; });\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./materialize-src/sass/materialize.scss */ \"./wwwroot-src/materialize-src/sass/materialize.scss\");\n/* harmony import */ var _materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_materialize_src_sass_materialize_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/global-format.scss */ \"./wwwroot-src/css/global-format.scss\");\n/* harmony import */ var _css_global_format_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_global_format_scss__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./css/clienti.scss */ \"./wwwroot-src/css/clienti.scss\");\n/* harmony import */ var _css_clienti_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_clienti_scss__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var pica___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! pica/ */ \"./node_modules/pica/dist/pica.js\");\n/* harmony import */ var pica___WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(pica___WEBPACK_IMPORTED_MODULE_3__);\n/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, \"Pica\", function() { return pica___WEBPACK_IMPORTED_MODULE_3___default.a; });\n/* harmony import */ var _js_r2do_EditEvento__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/r2do.EditEvento */ \"./wwwroot-src/js/r2do.EditEvento.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"r2dEditEvento\", function() { return _js_r2do_EditEvento__WEBPACK_IMPORTED_MODULE_4__[\"r2dEditEvento\"]; });\n\n/* harmony import */ var _js_r2do_RegistrazioneCliente__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/r2do.RegistrazioneCliente */ \"./wwwroot-src/js/r2do.RegistrazioneCliente.js\");\n\n\n\n\n\n\n\n__webpack_require__(/*! ./js/ready2do */ \"./wwwroot-src/js/ready2do.js\");\n\nvar pica = pica___WEBPACK_IMPORTED_MODULE_3___default()();\nconsole.log(\"pica is:\" + pica);\n\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/app.js?");
 
 /***/ }),
 
@@ -176,6 +244,17 @@ eval("//Modulo parent (empty)\nvar ready2do = function () {\n  return {};\n}();\
 /***/ (function(module, exports, __webpack_require__) {
 
 eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack://EntryPoint/./wwwroot-src/materialize-src/sass/materialize.scss?");
+
+/***/ }),
+
+/***/ 0:
+/*!***********************!*\
+  !*** vertx (ignored) ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("/* (ignored) */\n\n//# sourceURL=webpack://EntryPoint/vertx_(ignored)?");
 
 /***/ })
 

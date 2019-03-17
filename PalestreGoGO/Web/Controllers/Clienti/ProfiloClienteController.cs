@@ -88,14 +88,16 @@ namespace Web.Controllers
             ViewData["IdCliente"] = idCliente;
             var image = new ImmagineClienteInputDM()
             {
+                Id = model.IdImmagine,
+                IdTipoImmagine = (int)TipoImmagineDM.Sfondo,
                 Url = model.UrlImmagineHome,
-                Nome = "Image Header"
+                Nome = "Image Header",
+                IdCliente = idCliente
             };
             await _apiClient.ClienteSalvaBanner(idCliente, image);
-            return RedirectToAction("GetBanner");
+            return RedirectToAction("GetBanner", new { cliente = urlRoute });
         }
         #endregion
-
 
         #region GESTIONE ANAGRAFICA
         [HttpGet]
@@ -186,6 +188,98 @@ namespace Web.Controllers
         }
         #endregion
 
+        #region GESTIONE GALLERY
+        [HttpGet("gallery")]
+        public async Task<IActionResult> GalleryEdit([FromRoute(Name = "cliente")]string urlRoute)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            //Verifichiamo che solo gli Admin possano accedere alla pagina di Edit Profilo
+            if (!User.GetUserTypeForCliente(cliente.Id.Value).IsAtLeastAdmin()) { return Forbid(); }
+            //ViewData["SASToken"] = SecurityUtils.GenerateSASAuthenticationToken(cliente.Id.Value, cliente.StorageContainer, _appConfig.EncryptKey);
+            ViewData["IdCliente"] = cliente.Id.Value;
+            var vm = new GalleryEditViewModel();
+            vm.ContainerUrl = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+                                                _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+                                                cliente.StorageContainer);
+            var immagini = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
+            if (immagini != null)
+            {
+                foreach (var img in immagini)
+                {
+                    vm.Images.Add(img);
+                }
+            }
+            return View("Gallery", vm);
+        }
 
+        [HttpGet("gallery/{id:int}")]
+        public async Task<IActionResult> EditImageGallery([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")]int idImage)
+        {
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            ViewData["IdCliente"] = cliente.Id;
+            ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+                                   _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+                                  cliente.StorageContainer);
+            ImmagineClienteDM vm;
+            if(idImage > 0)
+            {
+                vm = await _apiClient.GetImmagineClienteAsync(cliente.Id.Value, idImage);
+            }
+            else
+            {
+                vm = new ImmagineClienteDM()
+                {
+                    IdTipoImmagine = (int)TipoImmagineDM.Gallery,
+                    Ordinamento = -1 //Lo impostiamo a -1 e sarà valorizzato in fase di salvataggio
+                };
+            }
+            return View("EditImageGallery", vm);
+        }
+
+        [HttpPost("gallery")]
+        public async Task<IActionResult> SaveImageGallery([FromRoute(Name = "cliente")]string urlRoute, ImmagineClienteDM immagine)
+        {
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            if (!ModelState.IsValid)
+            {
+                var cliente = await _apiClient.GetClienteAsync(urlRoute);
+                ViewData["IdCliente"] = cliente.Id;
+                ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+                                       _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+                                      cliente.StorageContainer);
+                return View("EditImageGallery", immagine);
+            }
+            immagine.IdCliente = idCliente;
+            await _apiClient.GallerySalvaImmagine(idCliente, immagine);
+            return RedirectToAction("GalleryEdit", new { cliente=urlRoute});
+        }
+
+        [HttpDelete("gallery/delete/{imageId}")]
+        public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "imageId")]int imageId)
+        {
+            //var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var userType = User.GetUserTypeForCliente(idCliente);
+            if (!userType.IsAtLeastAdmin())
+            {
+                return Forbid();
+            }
+            var imgDeleted = await _apiClient.DeleteImmagineGalleryAsync(idCliente, imageId);
+            //Cancelliamo i files da Azure
+            if (imgDeleted != null)
+            {
+                if (!string.IsNullOrEmpty(imgDeleted.Url) && (imgDeleted.Url.Contains(_appConfig.Azure.Storage.BlobStorageBaseUrl)))
+                {
+                    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, imgDeleted.Url);
+                }
+                if (!string.IsNullOrEmpty(imgDeleted.ThumbnailUrl) && (imgDeleted.ThumbnailUrl.Contains(_appConfig.Azure.Storage.BlobStorageBaseUrl)))
+                {
+                    await AzureStorageUtils.DeleteBlobAsync(_appConfig.Azure, imgDeleted.ThumbnailUrl);
+                }
+            }
+            return await GalleryEdit(urlRoute);
+        }
+
+        #endregion
     }
 }

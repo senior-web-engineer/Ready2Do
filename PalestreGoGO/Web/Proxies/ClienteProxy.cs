@@ -59,7 +59,7 @@ namespace Web.Proxies
         {
             if (banner.IdTipoImmagine != (int)TipoImmagineDM.Sfondo) { throw new ArgumentException(nameof(banner)); }
             if (!banner.Id.HasValue) { throw new ArgumentException(nameof(banner)); }
-            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti{idCliente:int}/images", banner, true);
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{banner.Id}", banner, true);
         }
 
         public async Task GallerySalvaImmagine(int idCliente, ImmagineClienteInputDM image)
@@ -86,6 +86,12 @@ namespace Web.Proxies
                 var responseString = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ImmagineClienteDM>(responseString);
             }
+        }
+
+        public async Task<ImmagineClienteDM> GetImmagineClienteAsync(int idCliente, int idImmagine, bool sendAuthToken = true)
+        {
+            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/{idImmagine}");
+            return await GetRequestAsync<ImmagineClienteDM>(uri, sendAuthToken);
         }
 
         public async Task<IEnumerable<ImmagineClienteDM>> GetImmaginiClienteAsync(int idCliente, TipoImmagineDM tipoImmagini, bool sendAuthToken = true)

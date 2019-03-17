@@ -35,7 +35,8 @@ namespace Web
 
         public const string ROLE_GLOBAL_ADMIN = "global_admin";
 
-        public const string CUSTOM_HEADER_TOKEN_AUTH = "X-PalestreGoGO-AUTHToken";
+        public const string CUSTOM_HEADER_TOKEN_AUTH = "X-R2DO-AUTHToken";
+        public const string CUSTOM_HEADER_CLIENT_ROUTE = "X-R2DO-ClienteRoute";
 
 
         public readonly static Regex COORDINATE_REGEX = new Regex(@"^\(([0-9]+\.[0-9]+)[, ]+([0-9]+\.[0-9]+)\)$");

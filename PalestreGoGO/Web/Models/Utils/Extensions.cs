@@ -47,5 +47,25 @@ namespace Web.Models.Utils
             if ((fine.HasValue) && (!max.HasValue || (max.Value < fine.Value))) { max = fine; }
         }
 
+        public static string AsString(this GiornoAperturaDM giorno)
+        {
+            if (giorno == null) return null;
+            switch (giorno.TipoOrario)
+            {
+                case TipoOrarioAperturaDM.Chiuso:
+                    return "Chiuso";
+                case TipoOrarioAperturaDM.Continuato:
+                    return $"Dalle {giorno.Mattina?.Inizio?.ToString(@"hh\:mm") ?? "-"} alle {giorno.Pomeriggio?.Fine?.ToString(@"hh\:mm") ?? "-"}";
+                case TipoOrarioAperturaDM.Mattina:
+                    return $"Dalle {giorno.Mattina?.Inizio?.ToString(@"hh\:mm") ?? "-"} alle {giorno.Pomeriggio?.Fine?.ToString(@"hh\:mm") ?? "-"}";
+                case TipoOrarioAperturaDM.Pomeriggio:
+                    return $"Dalle {giorno.Pomeriggio?.Inizio?.ToString(@"hh\:mm") ?? "-"} alle {giorno.Pomeriggio?.Fine?.ToString(@"hh\:mm") ?? "-"}";
+                case TipoOrarioAperturaDM.Spezzato:
+                    return $"Dalle {giorno.Mattina?.Inizio?.ToString(@"hh\:mm") ?? "-"} alle {giorno.Mattina?.Fine?.ToString(@"hh\:mm") ?? "-"} e dalle {giorno.Pomeriggio?.Inizio?.ToString(@"hh\:mm") ?? "-"} alle {giorno.Pomeriggio?.Fine?.ToString(@"hh\:mm") ?? "-"}";
+                default:
+                    return "--";
+            }
+            
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿@model ClienteHomeViewModel;
+﻿@using Web.Models.Utils;
+
+@model ClienteHomeViewModel;
 @{
     ViewData["Title"] = Model.Nome;
     Layout = "_LayoutClienti";
@@ -62,9 +64,9 @@
                 @if (Model.OrarioApertura != null)
                 {
                     <div><h6>Orario Apertura</h6></div>
-                <div>Len-Ven: @Model.OrarioApertura.LunVen?.ToString()</div>
-                <div>Sabato: @Model.OrarioApertura.Sabato?.ToString()</div>
-                <div>Domenica: @Model.OrarioApertura.Domenica?.ToString()</div>
+                <div>Len-Ven: @Model.OrarioApertura.LunVen?.AsString()</div>
+                <div>Sabato: @Model.OrarioApertura.Sabato?.AsString()</div>
+                <div>Domenica: @Model.OrarioApertura.Domenica?.AsString()</div>
                 <div class="divider"></div>
                 }
                 <div>Telefono: @Model.NumTelefono</div>
