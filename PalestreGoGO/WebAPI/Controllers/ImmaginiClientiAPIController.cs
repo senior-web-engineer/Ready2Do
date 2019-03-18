@@ -82,5 +82,21 @@ namespace PalestreGoGo.WebAPI.Controllers
             ImmagineClienteDM deleted = await _immaginiRepository.DeleteImageAsync(idCliente, idImage);
             return Ok(deleted);
         }
+
+        /// <summary>
+        /// Cambia l'ordinamento di un set (gallery) di immagini per il cliente
+        /// </summary>
+        /// <param name="idCliente">identificativo del cliente</param>
+        /// <param name="newOrder">array di Id di imamgini nell'ordine desiderato</param>
+        /// <returns></returns>
+        [HttpPut("order")]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ImmagineClienteDM>> ChangeImagesOrder([FromRoute(Name = "idCliente")] int idCliente, [FromBody]int[] newOrder)
+        {
+            if (!User.CanManageStructure(idCliente)) { return Forbid(); }
+            await _immaginiRepository.ChangeImagesOrder(idCliente, newOrder);
+            return Ok();
+        }
     }
 }

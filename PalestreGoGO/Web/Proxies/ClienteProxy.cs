@@ -74,6 +74,11 @@ namespace Web.Proxies
             }
         }
 
+        public async Task GalleryChangeOrder(int idCliente, int[] newOrder)
+        {
+            await SendPutRequestAsync($"{_appConfig.WebAPI.BaseAddress}api/clienti/{idCliente}/images/order", newOrder, true);
+        }
+
         public async Task<ImmagineClienteDM> DeleteImmagineGalleryAsync(int idCliente, int idImage)
         {
             //Facciamo una DELETE custom perchè ci serve l'url ritornato (eccezionalmente) per poter cancellare il file dallo Storage

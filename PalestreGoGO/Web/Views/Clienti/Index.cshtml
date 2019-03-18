@@ -87,7 +87,7 @@
         <div class="col s10 l8 offset-s1 offset-l2">
             <div class="swiper-container">
                 <div class="swiper-wrapper">
-                    @foreach (var i in Model.Images)
+                    @foreach (var i in Model.Images.OrderBy(img=>img.Ordinamento))
                     {
                         <div class="swiper-slide center">
                             <img class="r2d-swiper-image center" src="@i.Url" alt="@i.Alt">

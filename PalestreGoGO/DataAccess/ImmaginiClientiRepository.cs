@@ -220,5 +220,31 @@ namespace PalestreGoGo.DataAccess
             _logger.LogDebug($"End GetImages(idCliente:{idCliente}, tipo:{tipo}, includeDeleted:{includeDeleted}). Num. Items Returned: {result?.Count ?? 0}");
             return result;
         }
+
+        public async Task ChangeImagesOrder(int idCliente, int[] newOrder)
+        {
+            _logger.LogDebug($"Begin ChangeImagesOrder(idCliente:{idCliente} ....)");
+            DataTable dtOrdinamento = new DataTable();
+            dtOrdinamento.Columns.Add("Id", typeof(int));
+            dtOrdinamento.Columns.Add("Order", typeof(int));
+            for(int idx = 0; idx < newOrder.Length; idx++)
+            {
+                dtOrdinamento.Rows.Add(newOrder[idx], idx);
+            }
+            SqlParameter parNewOrdinamento = new SqlParameter("@pOrdinamento", SqlDbType.Structured);
+            parNewOrdinamento.Value = dtOrdinamento;
+            using (var cn = GetConnection())
+            {
+                var cmd = cn.CreateCommand();
+                cmd.CommandText = "[dbo].[ImmaginiCliente_OrderSave]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@pIdCliente", SqlDbType.Int).Value = idCliente;
+                cmd.Parameters.Add(parNewOrdinamento);
+
+                await cn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            }
+            _logger.LogDebug($"End ChangeImagesOrder(idCliente:{idCliente}....)");
+        }
     }
 }

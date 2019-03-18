@@ -14,5 +14,7 @@ namespace PalestreGoGo.DataAccess
         Task UpdateImageAsync(int idCliente, ImmagineClienteInputDM immagine);
         Task<ImmagineClienteDM> GetImage(int idCliente, int idImmagine, bool includeDeleted = false);
         Task<IEnumerable<ImmagineClienteDM>> GetImages(int idCliente, TipoImmagineDM? tipo = null, bool includeDeleted = false);
+
+        Task ChangeImagesOrder(int idCliente, int[]newOrder);
     }
 }

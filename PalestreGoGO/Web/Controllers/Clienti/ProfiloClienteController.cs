@@ -204,7 +204,7 @@ namespace Web.Controllers
             var immagini = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
             if (immagini != null)
             {
-                foreach (var img in immagini)
+                foreach (var img in immagini.OrderBy(img=>img.Ordinamento))
                 {
                     vm.Images.Add(img);
                 }
@@ -280,6 +280,13 @@ namespace Web.Controllers
             return await GalleryEdit(urlRoute);
         }
 
+        [HttpPost("gallery/order")]
+        public async Task<IActionResult> ChangeImageGalleryOrder([FromRoute(Name = "cliente")]string urlRoute, [FromBody]int[] newOrder)
+        {
+            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            await _apiClient.GalleryChangeOrder(idCliente, newOrder);
+            return Ok();
+        }
         #endregion
     }
 }

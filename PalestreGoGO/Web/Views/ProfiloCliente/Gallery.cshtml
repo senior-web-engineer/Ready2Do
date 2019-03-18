@@ -56,7 +56,7 @@
                 <div class="r2d-gallery-thumb-container" id="gridGallery">
                     @for (int idx = 0; idx < Model.Images.Count; idx++)
                     {
-                        <div class="r2d-gallery-thumb-box">
+                        <div class="r2d-gallery-thumb-box" data-id="@Model.Images[idx].Id">
                             <img class="r2d-gallery-thumb-img" id='@string.Format("galleryImg-{0}", idx)' src='@(Model.Images[idx].Url ?? "/img/no-image-available.png")'
                                  onclick="chooseImage(this, @idx, @(Model.Images[idx].Id ))" alt="Immagine @(@idx)" />
                         </div>
@@ -131,7 +131,44 @@
         document.addEventListener("DOMContentLoaded", function (event) {
 
             var sortable = new Sortable(document.getElementById('gridGallery'), {
-
+                dataIdAttr: 'data-id',
+                onEnd: function (/**Event*/evt) {
+                    console.log("sortable.onEnd")
+                    var itemEl = evt.item;  // dragged HTMLElement
+                    console.log(itemEl);
+                    evt.to;    // target list
+                    console.log(evt.to);
+                    evt.from;  // previous list
+                    console.log(evt.from);
+                    evt.oldIndex;  // element's old index within old parent
+                    console.log(evt.oldIndex);
+                    evt.newIndex;  // element's new index within new parent
+                    console.log(evt.newIndex);
+                    evt.clone // the clone element
+                    console.log(evt.clone);
+                    evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+                    console.log(evt.pullMode);
+                    console.log(sortable.toArray());
+                },
+                store: {
+                    set: function (sortable) {
+                        console.log("Save new image order to DB...");
+                        var url = '@(Url.Action("ChangeImageGalleryOrder", "ProfiloCliente",new { cliente= ViewContext.RouteData.Values["cliente"]}))'
+                        console.log("url target: " + url);
+                        $.ajax({
+                            method: "POST",
+                            contentType: 'application/json',
+                            data: JSON.stringify(sortable.toArray()),
+                            url: url,
+                            success: function (data, textStatus, jqXHR) {
+                                console.log("Salvataggio nuovo ordinamento terminato con successo. Status:" + textStatus);
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log("Errore durante il salvataggio del nuovo ordinamento. Errore:" + errorThrown);
+                            }
+                        });
+                    }
+                }
             });
            //Init Uploader
             @*uploader = new qq.azure.FineUploaderBasic({

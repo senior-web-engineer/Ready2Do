@@ -13,5 +13,6 @@
 
 	CONSTRAINT PK_ClientiImmagini PRIMARY KEY (Id),
 	CONSTRAINT FK_ClientiImmagini_Clienti FOREIGN KEY (IdCliente) REFERENCES [dbo].[Clienti]([Id]),
-	CONSTRAINT FK_ClientiImmagini_TipologiaImmagini FOREIGN KEY (IdTipoImmagine) REFERENCES [dbo].[TipologieImmagini]([Id])
+	CONSTRAINT FK_ClientiImmagini_TipologiaImmagini FOREIGN KEY (IdTipoImmagine) REFERENCES [dbo].[TipologieImmagini]([Id]),
+	
 )

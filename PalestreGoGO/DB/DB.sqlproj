@@ -241,6 +241,8 @@
     <Build Include="dbo\Stored Procedures\events\internal_AppuntamentoDaConfermare_NotifyConferma.sql" />
     <Build Include="dbo\Stored Procedures\AppuntamentiDaConfermare_Rifiuta.sql" />
     <Build Include="dbo\Stored Procedures\events\internal_AppuntamentoDaConfermare_NotifyRifiuto.sql" />
+    <Build Include="dbo\Types\udtListOfIntWithOrder.sql" />
+    <Build Include="dbo\Stored Procedures\ImmaginiCliente_OrderSave.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DB.LOCAL.publish.xml" />
