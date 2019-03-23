@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using Web.Configuration;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Web.Utils
 {
@@ -45,6 +46,16 @@ namespace Web.Utils
             var credentials = new StorageCredentials(config.Storage.AccountName, config.Storage.AccountKey);
             CloudBlockBlob blob = new CloudBlockBlob(new Uri(blobUri), credentials);
             await blob.DeleteIfExistsAsync();
+        }
+
+        public static async Task<string> SaveBlobAsync(AzureConfig config, string containerName, string fileName, Stream blobStream)
+        {
+            var credentials = new StorageCredentials(config.Storage.AccountName, config.Storage.AccountKey);
+            CloudBlobClient client = new CloudBlobClient(new Uri(config.Storage.BlobStorageBaseUrl), credentials);
+            var contRef = client.GetContainerReference(containerName);
+            var blockBlob = contRef.GetBlockBlobReference(fileName);
+            await blockBlob.UploadFromStreamAsync(blobStream);
+            return blockBlob.Uri.ToString();
         }
     }
 }

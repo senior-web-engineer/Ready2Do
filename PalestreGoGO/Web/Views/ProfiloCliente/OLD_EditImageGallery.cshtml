@@ -7,27 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.1/cropper.min.css" integrity="sha256-SyWqODkStAbrafgJ9K8twjULP7yL6yTRZKoFGjDYybI=" crossorigin="anonymous" />
 
     <style>
-        .main-loader {
-            top: 0px;
-            left: 0px;
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-            background-color: rgba(255, 255, 255, 0.5);
+        /*.r2g-gallery-image-container {
+            max-width: 600px;
         }
+
+        .r2d-gallery-image-edit {
+            max-width: 100%;
+        }*/
     </style>
 }
 
 <form asp-action="SaveImageGallery" asp-controller="ProfiloCliente" asp-route-cliente="@(ViewContext.RouteData.Values["cliente"])" id="frmSaveImageGallery">
-    <input type="hidden" value="@Model.Id" id="hidId" name="Id" />
-    <input type="hidden" value="@Model.IdCliente" id="hidIdCliente" name="IdCliente" />
     <input type="hidden" value="@Model.Url" id="hidUrlImage" name="Url" />
     <input type="hidden" value="@Model.IdTipoImmagine" id="hidIdTipoImg" name="IdTipoImmagine" />
-    <input type="file" id="idFileInput" style="display:none" name="selectedFile" />
+    <input type="file" id="idFileInput" style="display:none" name="selectedFile"/>
 
     <div class="row">
         <div class="col s10 offset-1 m8 offset-m2">
@@ -51,24 +44,24 @@
     </div>
     <div class="row">
         <div class="input-field col s10 offset-s1 m8 offset-m2">
-            <input type="text" class="validate" asp-for="Nome" id="inputNome">
+            <input type="text" class="validate" asp-for="Nome">
             <label>Titolo</label>
         </div>
         <div class="row">
             <div class="input-field col s10 offset-s1 m8 offset-m2">
-                <textarea class="materialize-textarea" asp-for="Descrizione" id="inputDescrizione"></textarea>
+                <textarea class="materialize-textarea" asp-for="Descrizione"></textarea>
                 <label for="textarea1">Descrizone</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s10 offset-s1 m8 offset-m2">
-                <input type="text" class="validate" asp-for="Alt" id="inputAlt">
+                <input type="text" class="validate" asp-for="Alt">
                 <label>Testo alternativo (alt)</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s2 offset-s1 m1 offset-m2">
-                <input type="number" class="validate" asp-for="Ordinamento" id="inputOrdinamento">
+                <input type="number" class="validate" asp-for="Ordinamento">
                 <label>Ordinamento</label>
             </div>
         </div>
@@ -80,24 +73,9 @@
     </div>
 </form>
 
-<div class="main-loader" style="display:none">
-    <div class="preloader-wrapper big active">
-        <div class="spinner-layer spinner-blue-only">
-            <div class="circle-clipper left">
-                <div class="circle"></div>
-            </div>
-            <div class="gap-patch">
-                <div class="circle"></div>
-            </div>
-            <div class="circle-clipper right">
-                <div class="circle"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-uploader/5.16.2/azure.fine-uploader/azure.fine-uploader.core.min.js" integrity="sha256-ac1yakq7ikaLh6tHHGNOc6x9HtO92LQzQPKX8S1iQf4=" crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.1/cropper.min.js" integrity="sha256-+PQmsBomnsT/06XEdk7ibt/9We4DX+VKzJsw/+DCzc0=" crossorigin="anonymous"></script>
     <script src="~/js/pica.min.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js"
@@ -109,7 +87,6 @@
         var imageLoaded = 0;
         var inputFile;
         var originalFileName;
-        var aspectRatio = 1024 / 400;
 
         function selectFile() {
             inputFile.trigger('click');
@@ -140,8 +117,8 @@
             if (cropper) { cropper.destroy(); }
             console.log("Build Cropper: " + (Date.now() - start));
             cropper = new Cropper(imgLoad, {
-                initialAspectRatio: aspectRatio,
-                aspectRatio: aspectRatio,
+                initialAspectRatio: 16 / 9,
+                aspectRatio: 16 / 9,
                 autoCrop: false,
                 zoomOnWheel: false,
                 ready: function () {
@@ -179,7 +156,7 @@
                 var img = new Image();
                 var offCanvas = document.createElement('canvas');
 
-                img.onload = function (e) {                    
+                img.onload = function (e) {
                     if (img.width > 1024) {
                         offCanvas.width = 1024;
                         offCanvas.height = img.height * 1024 / img.width;
@@ -271,7 +248,6 @@
             });
 
             $('#btnSubmit').on('click', function () {
-                $('.main-loader').show();
                 if (!cropper) {
                     alert("Nessuna immagine selezionata");
                     return false;
@@ -290,41 +266,53 @@
                 let canvas = cropper.getCroppedCanvas();
                 if (canvas) {
                     canvas.toBlob((blob) => {
-                        console.log("Submit form");
-                        var formData = new FormData();
-                        formData.append("id", $('#hidId').val());
-                        formData.append("idCliente", $('#hidIdCliente').val());
-                        formData.append("url", $('#hidUrlImage').val());
-                        formData.append("idTipoImmagine", $('#hidIdTipoImg').val());
-                        formData.append("nome", $('#inputNome').val());
-                        formData.append("alt", $('#inputAlt').val());
-                        formData.append("descrizione", $('#inputDescrizione').val());
-                        formData.append("ordinamento", $('#inputOrdinamento').val());
-                        formData.append("Image", blob, originalFileName);
+                        console.log("Upload blob to Azure");
+                        var blobName = blob.name + '.' + originalFileName.split('.').pop();
                         console.log(blob);
-                        console.log(formData);
-                        $.ajax({
-                            url: '@(Url.Action(action:"SaveImageGallery", controller:"ProfiloCliente",values:new {cliente = ViewContext.RouteData.Values["cliente"] }))',
-                            method: 'POST',
-                            processData: false,
-                            contentType: false,
-                            data: formData,
-                            success: function (data, textStatus, jqXHR) {
-                                console.log('Immagine salvata correttamente sul server.')
-                                //Utiliziamo il replace invece di href per simulare il redirect HTTP ed evitare problemi con il back del browser
-                                window.location.replace('@(Url.Action(action:"GalleryEdit", controller: "ProfiloCliente", values: new { cliente = ViewContext.RouteData.Values["cliente"] }))');
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                console.log("Errore durante il salvataggio dell'immagine. TestStatus:" + textStatus + " - errorThrown: " + errorThrown);
-                                alert("Errore durante il salvataggio dell'immagine");
-                                $('.main-loader').hide();
-                            }
-                        });
+                        uploader.reset();
+                        uploader.addFiles([{ blob: blob, name: blobName }]);
                     })
                 } else {
                     alert("Nulla di cui fare l'upload !?");
                 }
             })
+                   //Upload Image
+            var uploader = new qq.azure.FineUploaderBasic({
+                autoUpload: true, //Carica il file sul server appena aggiunto all'uploader
+                multiple: false,
+                cors: {
+                    allowXdr: false,
+                    expected: true,
+                    sendCredentials: false
+                },
+                request: {
+                    endpoint: "@ViewBag.ContainerUrl"
+                },
+                signature: {
+                    endpoint: "/api/fileupload",
+                    customHeaders: {
+                        "@(Constants.CUSTOM_HEADER_CLIENT_ROUTE)": "@(ViewContext.RouteData.Values["cliente"])"
+                    }
+                },
+                callbacks: {
+                    onComplete: function uploadComplete(id, name, response, xhr) {
+                        let containerUrl = "@ViewBag.ContainerUrl";
+                        if (response.success === true) {
+                            let fullUrl = containerUrl + '/' + uploader.getBlobName(id);
+                            console.log("image uploaded at: " + fullUrl);
+                            $('#hidUrlImage').val(fullUrl);
+                            $("#frmSaveImageGallery").submit();
+                        }
+                        else {
+                            let mesage = "Errore durante l'upload del file [" + name + "]. Error:" + xhr.responseText
+                            console.log(message);
+                            alert(message);
+                        }
+                    }
+                }
+
+            });
+
         });
     </script>
 }

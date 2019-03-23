@@ -26,6 +26,7 @@ using System.Net;
 using Web.Models.Mappers;
 using ready2do.model.common;
 using Web.Proxies;
+using System.IO;
 
 namespace Web.Controllers
 {
@@ -33,10 +34,13 @@ namespace Web.Controllers
     [Route("/{cliente}/profilo")]
     public class ProfiloClienteController : Controller
     {
+        private const int RESIZE_THRESHOLD = 1024 * 1024 * 400; //400KB
+
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;
         private readonly ClienteProxy _apiClient;
         private readonly ClienteResolverServices _clientiResolver;
+            
 
         public ProfiloClienteController(ILogger<AccountController> logger,
                                  IOptions<AppConfig> apiOptions,
@@ -204,7 +208,7 @@ namespace Web.Controllers
             var immagini = await _apiClient.GetImmaginiClienteAsync(cliente.Id.Value, TipoImmagineDM.Gallery);
             if (immagini != null)
             {
-                foreach (var img in immagini.OrderBy(img=>img.Ordinamento))
+                foreach (var img in immagini.OrderBy(img => img.Ordinamento))
                 {
                     vm.Images.Add(img);
                 }
@@ -213,7 +217,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("gallery/{id:int}")]
-        public async Task<IActionResult> EditImageGallery([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name ="id")]int idImage)
+        public async Task<IActionResult> EditImageGallery([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "id")]int idImage)
         {
             var cliente = await _apiClient.GetClienteAsync(urlRoute);
             ViewData["IdCliente"] = cliente.Id;
@@ -221,7 +225,7 @@ namespace Web.Controllers
                                    _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                   cliente.StorageContainer);
             ImmagineClienteDM vm;
-            if(idImage > 0)
+            if (idImage > 0)
             {
                 vm = await _apiClient.GetImmagineClienteAsync(cliente.Id.Value, idImage);
             }
@@ -237,22 +241,69 @@ namespace Web.Controllers
         }
 
         [HttpPost("gallery")]
-        public async Task<IActionResult> SaveImageGallery([FromRoute(Name = "cliente")]string urlRoute, ImmagineClienteDM immagine)
+        public async Task<IActionResult> SaveImageGallery([FromRoute(Name = "cliente")]string urlRoute, [FromForm]ImmagineGalleryVM immagine)
         {
-            int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+            var cliente = await _apiClient.GetClienteAsync(urlRoute);
+            string url;
+            Stream stream;
             if (!ModelState.IsValid)
             {
-                var cliente = await _apiClient.GetClienteAsync(urlRoute);
                 ViewData["IdCliente"] = cliente.Id;
                 ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
                                        _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
                                       cliente.StorageContainer);
                 return View("EditImageGallery", immagine);
             }
-            immagine.IdCliente = idCliente;
-            await _apiClient.GallerySalvaImmagine(idCliente, immagine);
-            return RedirectToAction("GalleryEdit", new { cliente=urlRoute});
+            if ((immagine.Image != null) && (immagine.Image.Length > 0))
+            {
+                //TODO: parametrizzare la soglia oltre la quale ricomprimere l'immagine
+                if(immagine.Image.Length > RESIZE_THRESHOLD)
+                {
+                    stream = ImagesUtils.ResizeImage(immagine.Image.OpenReadStream());
+                }
+                else
+                {
+                    stream = immagine.Image.OpenReadStream();
+                }
+                string fileName = string.Format("{0}.jpg", Guid.NewGuid().ToString());
+                url = await AzureStorageUtils.SaveBlobAsync(_appConfig.Azure, cliente.StorageContainer, fileName, stream);
+            }
+            else if (!string.IsNullOrWhiteSpace(immagine.Url)) { url = immagine.Url; }
+            else { return BadRequest(); }
+            ImmagineClienteDM dm = new ImmagineClienteDM()
+            {
+                Alt = immagine.Alt,
+                Descrizione = immagine.Descrizione,
+                Id = immagine.Id,
+                IdCliente = cliente.Id.Value,
+                IdTipoImmagine = (int)TipoImmagineDM.Gallery,
+                Ordinamento = immagine.Ordinamento,
+                Nome = immagine.Nome,
+                Url = url
+            };
+            await _apiClient.GallerySalvaImmagine(cliente.Id.Value, dm);
+            return RedirectToAction("GalleryEdit", new { cliente = urlRoute });
         }
+
+        //[HttpPost("gallery")]
+        //public async Task<IActionResult> SaveImageGallery([FromRoute(Name = "cliente")]string urlRoute, ImmagineClienteDM immagine)
+        //{
+        //    int idCliente = await _clientiResolver.GetIdClienteFromRouteAsync(urlRoute);
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var cliente = await _apiClient.GetClienteAsync(urlRoute);
+        //        ViewData["IdCliente"] = cliente.Id;
+        //        ViewData["ContainerUrl"] = string.Format("{0}{1}{2}", _appConfig.Azure.Storage.BlobStorageBaseUrl,
+        //                               _appConfig.Azure.Storage.BlobStorageBaseUrl.EndsWith("/") ? "" : "/",
+        //                              cliente.StorageContainer);
+        //        return View("EditImageGallery", immagine);
+        //    }
+        //    immagine.IdCliente = idCliente;
+        //    await _apiClient.GallerySalvaImmagine(idCliente, immagine);
+        //    return RedirectToAction("GalleryEdit", new { cliente = urlRoute });
+        //}
+
+
 
         [HttpDelete("gallery/delete/{imageId}")]
         public async Task<IActionResult> DeleteImage([FromRoute(Name = "cliente")]string urlRoute, [FromRoute(Name = "imageId")]int imageId)

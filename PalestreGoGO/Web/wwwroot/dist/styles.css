@@ -9870,15 +9870,6 @@ main.r2d-nav-padding {
   display: block;
   margin: auto; }
 
-.r2g-gallery-image-container {
-  width: 540px;
-  min-height: 300px;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #cccbca;
-  margin: auto;
-  vertical-align: middle; }
-
 .r2g-gallery-image-uploadtext {
   vertical-align: middle;
   line-height: 300px;
@@ -9887,10 +9878,19 @@ main.r2d-nav-padding {
 .r2d-gallery-image-edit {
   max-width: 100%; }
 
+.r2g-gallery-image-container {
+  width: 512px;
+  height: 200px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #cccbca;
+  margin: auto;
+  vertical-align: middle; }
+
 @media screen and (max-width: 992px) {
   .r2g-gallery-image-container {
-    width: 270px;
-    height: 150px;
+    width: 256px;
+    height: 100px;
     border-style: solid;
     border-color: #cccbca; } }
 
