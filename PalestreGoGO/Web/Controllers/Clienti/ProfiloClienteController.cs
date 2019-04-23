@@ -34,7 +34,7 @@ namespace Web.Controllers
     [Route("/{cliente}/profilo")]
     public class ProfiloClienteController : Controller
     {
-        private const int RESIZE_THRESHOLD = 1024 * 1024 * 400; //400KB
+        private const int RESIZE_THRESHOLD = 1024 * 100; //100KB
 
         private readonly ILogger<AccountController> _logger;
         private readonly AppConfig _appConfig;

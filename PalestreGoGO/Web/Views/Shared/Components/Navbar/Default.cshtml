@@ -1,16 +1,9 @@
 ﻿@model Web.Models.ViewComponents.NavbarViewModel;
 
-<div class="navbar-fixed">
     <!-- NAVBAR -->
-    <nav>
+    <nav class="r2d-navbar-fixed">
         <div class="nav-wrapper">
-            <a href="#!" class="brand-logo r2d-nav-logo">
-                <img srcset="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H56.png 144w,
-                   https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_NoBorder_H64.png 164w"
-                     sizes="(max-width: 600px) 144px,
-            164px"
-                     src="https://stgready2do.blob.core.windows.net/images/Logo_Small_Pink_H64.png">
-            </a>
+            <a href="#!" class="brand-logo r2d-nav-logo"><img src="~/img/logo_140h.png"></a>
             <ul class="right r2d-nav-menu">
                 @if (Model.UserIsAuthenticated)
                 {
@@ -52,16 +45,19 @@
                 }
                 else
                 {
-                    <li>
-                        <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl" class="waves-effect waves-light btn pink accent-2">Accedi</a>
+                    <li>                        
+                        <div>
+                            <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl" class="waves-effect btn r2d-nav-btn-login">Accedi</a>
+                        </div>
                     </li>
                 }
             </ul>
         </div>
     </nav>
 
-</div>
+<div class="r2d-nav-menu-bar">
 
+</div>
 <!-- TODO: Gestire le notifiche tramite PartialView separata-->
 <div id="dropdownNotifiche" class="dropdown-content notifications" tabindex="0" style="">
     @if (Model.UserIsAuthenticated)

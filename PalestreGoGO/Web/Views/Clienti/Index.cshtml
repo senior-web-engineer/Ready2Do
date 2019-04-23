@@ -19,34 +19,12 @@
 }
 <section id="clientHeroes" class="">
     <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
+        <div class="col s12">
             <div class="clientHeroes text-center" style="background-image: url('@Model.ImmagineHome.Url'); background-size:cover;">
                 @*<h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>*@
             </div>
         </div>
     </div>
-
-    @*@if (ViewBag.UtenteNormale)
-        {
-            <div class="row right-align">
-                @if (ViewBag.IsFollowing)
-                {
-                    <form asp-action="RemoveAssociazioneUserToCliente" asp-controller="Clienti" method="post">
-                        <button class="btn waves-effect waves-light medium" type="submit" name="action">
-                            <i class="Large material-icons">favorite</i> Unfollow
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-action="AddAssociazioneUserToCliente" asp-controller="Clienti" method="post">
-                        <button class="btn waves-effect waves-light medium" type="submit" name="action">
-                            <i class="Large material-icons">favorite_border</i> Follow
-                        </button>
-                    </form>
-                }
-            </div>
-        }*@
 </section>
 
 <section id="descCliente" class="padding-top-10 mt-10">

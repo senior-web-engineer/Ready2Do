@@ -6,6 +6,7 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = {
+    //watch: true,
     entry: {
         js: './wwwroot-src/app.js'
         //,materialize: './wwwroot-src/materialize.js'

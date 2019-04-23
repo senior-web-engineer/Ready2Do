@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModel", "DataModel\DataModel.csproj", "{3C53DD5C-71BA-4E36-A65A-F5FE9AD16A21}"
 EndProject
@@ -52,7 +52,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Func.NotificationHand
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Func.WaitingListExpiration", "Azure.Serverless\Azure.Func.WaitingListExpiration\Azure.Func.WaitingListExpiration.csproj", "{37DCBF45-FD91-4418-8950-465C14415719}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Func.SendAccountConfirmationEmail", "Azure.Serverless\Azure.Func.SendAccountConfirmationEmail\Azure.Func.SendAccountConfirmationEmail.csproj", "{D083935C-C5FC-4E63-BEBD-1C738B0F5553}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Func.SendAccountConfirmationEmail", "Azure.Serverless\Azure.Func.SendAccountConfirmationEmail\Azure.Func.SendAccountConfirmationEmail.csproj", "{D083935C-C5FC-4E63-BEBD-1C738B0F5553}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomPages", "CustomPages", "{3ADAECC6-5269-4816-934B-CB96091728E6}"
+	ProjectSection(SolutionItems) = preProject
+		B2C\CustomPages\r2do.css = B2C\CustomPages\r2do.css
+		B2C\CustomPages\SigninSignup.html = B2C\CustomPages\SigninSignup.html
+		B2C\CustomPages\SigninSignupLocalizedResources.it.json = B2C\CustomPages\SigninSignupLocalizedResources.it.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -167,6 +174,7 @@ Global
 		{51FDC804-ABAF-4595-BC42-72027BD5A5B2} = {BB47548A-D289-4535-A8B7-536A42F2CC23}
 		{37DCBF45-FD91-4418-8950-465C14415719} = {BB47548A-D289-4535-A8B7-536A42F2CC23}
 		{D083935C-C5FC-4E63-BEBD-1C738B0F5553} = {BB47548A-D289-4535-A8B7-536A42F2CC23}
+		{3ADAECC6-5269-4816-934B-CB96091728E6} = {CE751FE9-471C-406C-876E-8BD1DC12490D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A8513D0-18D0-4389-8361-A77E68BFE9C2}

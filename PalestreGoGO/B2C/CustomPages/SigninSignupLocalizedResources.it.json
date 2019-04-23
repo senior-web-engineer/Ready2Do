@@ -1,0 +1,354 @@
+{
+  "LocalizedStrings": [
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "AmazonExchange",
+      "Override": false,
+      "Value": "Amazon"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "FacebookExchange",
+      "Override": false,
+      "Value": "Facebook"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "GoogleExchange",
+      "Override": false,
+      "Value": "Google"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "LinkedInExchange",
+      "Override": false,
+      "Value": "LinkedIn"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "MicrosoftAccountExchange",
+      "Override": false,
+      "Value": "Microsoft"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "SignInWithLogonEmailExchange",
+      "Override": false,
+      "Value": "Account locale"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "SignInWithLogonNameExchange",
+      "Override": false,
+      "Value": "Account locale"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "SignUpWithLogonEmailExchange",
+      "Override": false,
+      "Value": "Indirizzo di posta elettronica"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "SignUpWithLogonNameExchange",
+      "Override": false,
+      "Value": "ID utente"
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "AADRequestsThrottled",
+      "Override": false,
+      "Value": "Sono presenti troppe richieste al momento. Attendere qualche minuto e riprovare."
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "DefaultMessage",
+      "Override": false,
+      "Value": "Il nome utente o la password non è valida."
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfClaimsPrincipalDoesNotExist",
+      "Override": false,
+      "Value": "L'account non è stato trovato."
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfInvalidPassword",
+      "Override": false,
+      "Value": "La password non è corretta."
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfOldPasswordUsed",
+      "Override": false,
+      "Value": "È stata usata una password non aggiornata."
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfUserAccountDisabled",
+      "Override": false,
+      "Value": "L'account è stato bloccato. Contattare il supporto tecnico per sbloccarlo, quindi riprovare."
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfUserAccountLocked",
+      "Override": false,
+      "Value": "L'account è stato temporaneamente bloccato per impedirne l'uso non autorizzato. Riprovare più tardi."
+    },
+    {
+      "ElementType": "InputValidation",
+      "ElementId": "CustomPassword",
+      "StringId": "CharacterClasses",
+      "Override": false,
+      "Value": "La password deve contenere almeno {0} dei tipi di caratteri seguenti:"
+    },
+    {
+      "ElementType": "InputValidation",
+      "ElementId": "CustomPassword",
+      "StringId": "CharacterClassesAll",
+      "Override": false,
+      "Value": "La password deve soddisfare tutti i requisiti seguenti:"
+    },
+    {
+      "ElementType": "InputValidation",
+      "ElementId": "StrongPassword",
+      "StringId": "CharacterClasses",
+      "Override": false,
+      "Value": "La password deve contenere almeno {0} dei tipi di caratteri seguenti:"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "AllowedAADCharacters",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "È stato specificato un carattere non valido."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "DateRange",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La data deve essere compresa tra {0} e {1}."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "DateRangeBetween1905AndToday",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La data deve essere compresa tra 01-01-1905 e oggi."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "DisallowedWhitespace",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La password non deve iniziare o terminare con uno spazio vuoto."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "ExactLength",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La lunghezza della password deve essere esattamente di {0} caratteri."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "IsLengthBetween8And64",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La password deve essere compresa tra 8 e 64 caratteri."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "LengthRange",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La password deve avere una lunghezza compresa tra {0} e {1} caratteri."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Lowercase",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "una lettera minuscola"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Number",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "un numero"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "PIN",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "La password può contenere solo numeri."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Symbol",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "un simbolo"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Uppercase",
+      "StringId": "HelpText",
+      "Override": false,
+      "Value": "una lettera maiuscola"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "button_signin",
+      "Override": false,
+      "Value": "Accedi"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "cancel_message",
+      "Override": false,
+      "Value": "L'utente ha dimenticato la password"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "createaccount_intro",
+      "Override": true,
+      "Value": "Non sei ancora iscritto?"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "createaccount_link",
+      "Override": true,
+      "Value": "Crea un Account"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "divider_title",
+      "Override": false,
+      "Value": "OPPURE"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "email_pattern",
+      "Override": false,
+      "Value": "^[a-zA-Z0-9.!#$%&’*'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "forgotpassword_link",
+      "Override": false,
+      "Value": "Password dimenticata?"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "invalid_email",
+      "Override": false,
+      "Value": "Immettere un indirizzo di posta elettronica valido"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "invalid_password",
+      "Override": false,
+      "Value": "La password immessa non presenta il formato previsto."
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "local_intro_email",
+      "Override": true,
+      "Value": "Inserisci email e password per accedere"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "local_intro_username",
+      "Override": false,
+      "Value": "Accedere con il nome utente"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "logonIdentifier_email",
+      "Override": true,
+      "Value": "Email"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "logonIdentifier_username",
+      "Override": false,
+      "Value": "Nome utente"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "password",
+      "Override": false,
+      "Value": "Password"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "requiredField_email",
+      "Override": false,
+      "Value": "Immettere l'indirizzo di posta elettronica"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "requiredField_password",
+      "Override": false,
+      "Value": "Immettere la password"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "requiredField_username",
+      "Override": false,
+      "Value": "Immettere il nome utente"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "social_intro",
+      "Override": true,
+      "Value": "Oppure accedi con un account social"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "unknown_error",
+      "Override": false,
+      "Value": "Non è possibile effettuare l'accesso. Riprovare più tardi."
+    }
+  ]
+}

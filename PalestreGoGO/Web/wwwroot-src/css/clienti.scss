@@ -1,13 +1,17 @@
-﻿@import "components/variables";
-@import "components/common";
-@import "components/banners";
-@import "components/notifiche";
-@import "components/sidenav";
-@import "components/navbar";
-@import "components/calendar";
-@import "components/gallery";
+﻿@import "components/r2d-variables";
+@import "components/r2d-common";
+@import "components/r2d-container";
+@import "components/r2d-banners";
+@import "components/r2d-notifiche";
+@import "components/r2d-sidenav";
+@import "components/r2d-navbar";
+@import "components/r2d-calendar";
+@import "components/r2d-gallery";
 
 
+body{
+background-color:#f2eeee;
+}
 
 .r2d-swiper-image {
     max-width: 711px;

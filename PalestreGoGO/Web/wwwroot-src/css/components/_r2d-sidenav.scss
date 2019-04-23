@@ -1,0 +1,47 @@
+﻿
+main.r2d-no-padding {
+    padding-left: 0;
+}
+
+main.r2d-nav-padding {
+    padding-left: $sidenav-width;
+}
+
+@media #{$medium-and-down} {
+    header, main, footer {
+        padding-left: 0;
+    }
+
+    main.r2d-nav-padding {
+        padding-left: 0;
+    }
+}
+
+/* La sidenav deve essere sotto la navbar*/
+.sidenav-fixed {
+    top: $navbar-height-mobile + 2px;
+}
+
+@media #{$medium-and-up}{
+    .sidenav-fixed {
+        top: $navbar-height+ 2px;
+    }
+}
+
+.r2d-sidenav-topspacer {
+    height: 3rem;
+}
+
+/* Ridefiniamo lo stile degli item della sidenav*/
+/* utiliziamo una maggiore specificità (3 classi) per fare l'override del padding di default*/
+.sidenav-fixed .collapsible .collapsible-header {
+    padding-left: 32px;
+}
+
+.sidenav .collapsible-body li a, .sidenav.fixed .collapsible-body li a .r2d-sidenav-item {
+    padding-left: 42px;
+}
+
+.r2d-sidenav-item {
+    
+}

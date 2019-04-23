@@ -1,0 +1,70 @@
+﻿/*Ridifiniamo la navbar custom basata su quella di materialize*/
+.r2d-navbar-fixed {
+        position: fixed;
+        height: $navbar-height-mobile;
+        z-index: 997;
+        nav {
+            position: fixed;
+        }
+    @media #{$medium-and-up} {
+        nav.nav-extended .nav-wrapper {
+            min-height: $navbar-height;
+        }
+
+        nav, nav .nav-wrapper i, nav a.sidenav-trigger, nav a.sidenav-trigger i {
+            height: $navbar-height;
+            line-height: $navbar-line-height;
+        }
+
+        .navbar-fixed {
+            height: $navbar-height;
+        }
+    }
+}
+
+.r2d-navbar {
+    margin-top: 20px;
+}
+
+.r2d-navbar-scrolled {
+    margin-top: 20px;
+    max-height: $navbar-scrolled-height;
+}
+
+.r2d-navbar-login-btn {
+}
+
+
+.r2d-nav-logo {
+    padding-left: 3% !important;
+}
+
+.r2d-nav-menu {
+    padding-right: 5%;
+}
+
+.r2d-nav-badge {
+    position: relative;
+    top: 50%;
+}
+
+.r2d-notification-box {
+    max-width: 300px;
+}
+
+.r2d-container nav {
+    max-width: 1024px;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+
+.r2d-nav-btn-login {
+    position: absolute;
+    margin: 0px;
+    height: 30px;
+    bottom: 10px;
+    right: 10px;
+    background-color: $r2d-green;
+}

@@ -1,1 +1,25 @@
-﻿$primary-color: #565656;
+﻿$primary-color: #ffffff;
+
+/* NAVBAR CUSTOMIZATION */
+$navbar-height: 140px;
+
+/*Custom per ridurre la navbar on scroll*/
+$navbar-scrolled-height: 80px;
+
+$navbar-height-mobile: 120px; /* Verificarla*/
+
+/*
+    Media Query Ranges
+  --------------------------
+  Utiliziamo 4 breakpoints anche se i layout reali sono 3:
+    W < 768px : mobile devices
+    768 <= W <= 1023px : tablets
+    1024 <= W <= 1279px: desktop (layout a 1024 con sidenav collassata)
+    W >= 1280px : Xl => large desktop, layout a 1024 con sidenav aperta per default
+*/
+$small-screen: 768px !default;
+$medium-screen: 1024px !default;
+$large-screen:  1280px !default;
+$small-screen-up: ($small-screen +1) !default;
+$medium-screen-up: ($medium-screen +1) !default;
+$large-screen-up: ($large-screen +1) !default;

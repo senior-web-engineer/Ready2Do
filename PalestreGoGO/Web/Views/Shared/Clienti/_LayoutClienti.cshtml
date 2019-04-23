@@ -35,12 +35,14 @@
     <header>
         @if (ViewData.ContainsKey("IdCliente"))
         {
+        <div class="r2d-container">
             <vc:navbar id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:navbar>
-            <vc:side-nav id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:side-nav>
+        </div>
+        <vc:side-nav id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:side-nav>
         }
     </header>
-    <main class="@(ViewData.ContainsKey("IdCliente") && User.CanViewSidebar((int)ViewData["IdCliente"]) ? "r2d-nav-padding " : "r2d-no-padding ")">
-        <div class="container-fluid">
+    <main>
+        <div class="r2d-container">
             <div class="row">
                 <!-- Primo banner pubblicitario -->
                 <partial name="_Banner_Leaderboard" />

@@ -1,0 +1,39 @@
+﻿/* CUSTOMIZZAZIONE CALENDARIO FULLCALENDAR*/
+.fc-time-grid .fc-slats td {
+    height: 3em;
+}
+
+.fc-time-grid .fc-slats td {
+    height: 3em;
+}
+
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* half width of the spinner gif */
+    margin-top: -50px; /* half height of the spinner gif */
+    text-align: center;
+    z-index: 1234;
+    overflow: auto;
+    width: 100px; /* width of the spinner gif */
+    height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
+
+.fc-header-toolbar h2 {
+    font-size: 1.5rem;
+}
+
+.fc-day-header {
+    font-size: 0.8rem;
+}
+
+.fc-axis {
+    font-size: 0.8rem;
+}
+
+
+/*classe utilizzata nella home del cliente dal div che contiente i calendari all'interno del tabl*/
+.r2d-calendar-container{
+    padding-top: 12px;
+}

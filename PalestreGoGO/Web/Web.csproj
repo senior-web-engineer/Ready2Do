@@ -31,8 +31,8 @@
     <Content Include="wwwroot-src\app.js" />
     <Content Include="wwwroot-src\css\clienti.scss" />
     <Content Include="wwwroot-src\css\custom-styles.css" />
-    <Content Include="wwwroot-src\css\intro.css" />
-    <Content Include="wwwroot-src\css\style.css" />
+    <Content Include="wwwroot-src\css\EXCLUDE_intro.css_EXCL" />
+    <Content Include="wwwroot-src\css\EXCLUDE_style.css_EXCL" />
     <Content Include="wwwroot-src\materialize-src\js\anime.min.js" />
     <Content Include="wwwroot-src\materialize-src\js\autocomplete.js" />
     <Content Include="wwwroot-src\materialize-src\js\bin\materialize.js" />
