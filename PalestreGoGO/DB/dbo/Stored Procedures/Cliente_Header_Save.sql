@@ -15,7 +15,7 @@ BEGIN
 	DECLARE @idImage INT;
 
 	UPDATE CI 
-		SET Url = @pHeaderImageUrl
+		SET [Url] = @pHeaderImageUrl
 		OUTPUT inserted.Id INTO @tblOut(Id)
 	FROM ClientiImmagini ci 
 		INNER JOIN TipologieImmagini ti ON ci.IdTipoImmagine = ti.Id
@@ -34,7 +34,7 @@ BEGIN
 	END
 
 	--Ritorniamo l'immagine
-	SELECT IdCliente, IdTipoImmagine, Nome, Alt, Url, Descrizione, Ordinamento
+	SELECT IdCliente, IdTipoImmagine, Nome, Alt, [Url], Descrizione, Ordinamento
 	FROM ClientiImmagini
 	WHERE Id = @idImage
 

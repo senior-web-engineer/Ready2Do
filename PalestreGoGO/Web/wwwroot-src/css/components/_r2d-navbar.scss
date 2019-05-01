@@ -1,27 +1,43 @@
 ﻿/*Ridifiniamo la navbar custom basata su quella di materialize*/
+/*
+    Dimensioni NavBar:
+    ScreenWidth < 768           --->  350 px
+    768 <= ScreenWidth < 1280   --->  728 px
+    ScreenWidth >= 1280         ---> 1024 px
+*/
+
+/*Lo stile "base" è quello mobile */
 .r2d-navbar-fixed {
+    position: fixed;
+    height: $r2d-navbar-height-mobile;
+    z-index: 997;
+    width: 350px;
+    /*nav {
         position: fixed;
-        height: $navbar-height-mobile;
-        z-index: 997;
-        nav {
-            position: fixed;
-        }
-    @media #{$medium-and-up} {
+    }*/
+    @media #{$r2d-medium-and-up} {
+        height: $r2d-navbar-height-tablet;
+        margin-top: 20px;
+
         nav.nav-extended .nav-wrapper {
-            min-height: $navbar-height;
+            min-height: $r2d-navbar-height;
         }
 
         nav, nav .nav-wrapper i, nav a.sidenav-trigger, nav a.sidenav-trigger i {
-            height: $navbar-height;
-            line-height: $navbar-line-height;
-        }
-
-        .navbar-fixed {
-            height: $navbar-height;
+            height: $r2d-navbar-height;
+            line-height: $r2d-navbar-line-height;
         }
     }
+
+    @media #{$r2d-large-and-up} {
+        height: $r2d-navbar-height-desktop;
+        margin-top: 20px;
+    }
+
+
 }
 
+/*
 .r2d-navbar {
     margin-top: 20px;
 }
@@ -68,3 +84,5 @@
     right: 10px;
     background-color: $r2d-green;
 }
+
+*/

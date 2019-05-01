@@ -80,6 +80,17 @@ namespace PalestreGoGo.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpGet("isconfirmed/{userEmail}")]
+        public async Task<IActionResult> AccounutIsConfermato([FromRoute]string userEmail)
+        {
+            if (!User.Email().Equals(userEmail, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return BadRequest();
+            }
+            var azUser = await _userManagementService.GetUserByIdAsync(User.UserId());            
+            return Ok(!string.IsNullOrWhiteSpace(azUser.EmailConfirmedOn));
+        }
+
         /// <summary>
         /// Conferma l'email dell'utente.
         /// Se invocato da un CLIENTE ritorna l'URL della struttura

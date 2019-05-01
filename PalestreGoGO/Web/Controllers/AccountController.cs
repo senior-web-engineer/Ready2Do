@@ -108,7 +108,15 @@ namespace Web.Controllers
             await HttpContext.SignOutAsync(Constants.OpenIdConnectAuthenticationScheme, props);
         }
 
-        
+        [HttpGet]
+        [Route("reset-password")]
+        public IActionResult ResetPassword(string returnUrl = null)
+        {
+            var redirectUrl = returnUrl ?? Url.Action(nameof(HomeController.Index), "Home");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            properties.Items[Constants.B2CPolicy] = _policies.ResetPasswordPolicy;
+            return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+        }
 
         //[HttpGet]
         //public IActionResult UtenteEditProfile(string redirectUrl)

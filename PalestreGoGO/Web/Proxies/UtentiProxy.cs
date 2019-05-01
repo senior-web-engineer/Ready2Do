@@ -75,11 +75,7 @@ namespace Web.Proxies
         }
 
         public async Task<bool> IsAccountConfirmedAsync (string email){
-            Uri uri = new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/isconfirmed/{email}");
-            using (var response = await SendRequestAsync<UserConfirmationResultAPIModel>(HttpMethod.Post, uri, null, false))
-            {
-                return JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
-            }
+            return await GetRequestAsync<bool>(new Uri($"{_appConfig.WebAPI.BaseAddress}api/utenti/isconfirmed/{email}"), true);
         }
 
         public async Task SendNewConfirmEmail(string email)

@@ -200,7 +200,7 @@ namespace Web.Authentication
                 else if (context.ProtocolMessage.ErrorDescription.StartsWith("AADB2C90118")) // forgot password
                 {
                     context.HandleResponse();
-                    context.Response.Redirect("/Account/ResetPassword");
+                    context.Response.Redirect("/accounts/reset-password");
                 }
             }
             return Task.CompletedTask;

@@ -9,3 +9,31 @@
 /* VARIABILI READY2DO */
 $r2d-magenta: #E31F4F;
 $r2d-green: #89C443;
+
+/*Utiliziamo 3 breakpoint 
+    ScreenWidth < 768           --->  MOBILE
+    768 <= ScreenWidth < 1280   --->  TABLET
+    ScreenWidth >= 1280         --->  DESKTOP
+*/
+
+
+$r2d-medium-and-up: $medium-and-up ;
+$r2d-large-and-up: $large-and-up;
+
+$r2d-navbar-height-mobile: $navbar-height-mobile;
+
+$r2d-navbar-height: 140px;
+$r2d-navbar-line-height: $navbar-line-height;
+
+/* ============= NAVBAR ============
+    Dimensioni NavBar:
+    ScreenWidth < 768           --->  350 px
+    768 <= ScreenWidth < 1280   --->  728 px
+    ScreenWidth >= 1280         ---> 1024 px
+*/
+$r2d-navbar-height-mobile: 140px;
+$r2d-navbar-height-tablet: 140px;
+$r2d-navbar-height-desktop: 140px;
+
+$r2d-navbar-min-width-mobile: 360px;
+//$r2d-navbar-max-width-mobile: 

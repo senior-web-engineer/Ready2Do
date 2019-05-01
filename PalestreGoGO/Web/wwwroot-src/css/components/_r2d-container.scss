@@ -1,20 +1,19 @@
 ﻿/* 
   Definiamo una classe contaneir nostra larga sempre il 100% 
-  Il default è riferito alla versione mobile*/
+  Il default è riferito alla versione mobile */
 .r2d-container {
     margin: 0 auto;
-    max-width: 350px;
-    width: 100%;
-
+    min-width: 360px;
+    width: calc(100% -10px); //Nella versione mobile lasciamo 5px per parte
     @media #{$medium-and-up} {
-        max-width: 728px;
+        width: 728px;
     }
 
     @media #{$large-and-up} {
-        max-width: 1024px;
+        width: 1024px;
+        //max-width: calc(100% 1024px - ;
     }
-
-    @media #{$extra-large-and-up} {
-        max-width: 1024px;
-    }
+    /*@media #{$extra-large-and-up} {
+        min-width: 1024px;
+    }*/
 }

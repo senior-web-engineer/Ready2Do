@@ -4,6 +4,9 @@
 	NOTA:
 	Il parametro @pCorrelationId serve quando si tratta di Richieste relativi a Clienti, in questo caso dobbiamo correlare la richiesta con il Cliente
 	per poter cambiare lo stato del Cliente quando viene completata la richiesta.
+    ~~~~~~~~~ HISTORY ~~~~~~~~~
+	20190501: Rilassiamo il controllo sull'esistenza di una precedente richiesta già confermata come workaround per l'esistenza di utenti diversi 
+			  con la stessa email (social e locali)
 */
 CREATE PROCEDURE [dbo].[RichiestaRegistrazione_Add]
 	@pUsername			VARCHAR(500),
@@ -33,15 +36,6 @@ BEGIN
 		WHERE Username = @pUsername
 	ORDER BY DataRichiesta DESC
 
-		--AND Expiration > SYSDATETIME()
-		--AND DataCancellazione IS NULL
-	
-	IF @dataConferma IS NOT NULL
-	BEGIN
-		RAISERROR ('Utente già confermato', 16, 0);
-		RETURN -1;
-	END
-
 	-- Se abbiamo trovato una richiesta ancora valida, ritorniamo il codice
 	IF @dataCancellazione IS NULL AND @dataExpirtation > SYSDATETIME()
 	BEGIN
@@ -65,10 +59,24 @@ BEGIN
 		) WITH (col VARCHAR(MAX))
 
 		-- Inseriamo una richiesta SOLO se non ce n'è una già valida
-		INSERT INTO RichiesteRegistrazione(CorrelationId, UserCode, Username, Expiration, Refereer)
-			SELECT @pCorrelationId, @pUserCode, @pUsername, @pExpiration, @pRefereer
-				WHERE NOT EXISTS(SELECT * FROM RichiesteRegistrazione 
-								WHERE Username = @pUsername AND DataCancellazione IS NULL AND Expiration > @dataOperazione )
+		MERGE RichiesteRegistrazione T
+		USING ( SELECT @pCorrelationId, 
+					  @pUserCode, 
+					  @pUsername, 
+					  @pExpiration, 
+					  @pRefereer) AS S(CorrelationId, UserCode, Username, Expiration, Refereer)
+			 ON T.UserName = S.UserName
+		WHEN MATCHED AND T.DataCancellazione IS NULL 
+				THEN UPDATE SET T.Expiration = S.Expiration,
+							    T.CorrelationId = S.CorrelationId,
+								T.UserCode = S.UserCode
+		WHEN NOT MATCHED BY TARGET THEN INSERT (CorrelationId, UserCode, Username, Expiration, Refereer)
+										VALUES (CorrelationId, UserCode, Username, Expiration, Refereer);
+
+		--INSERT INTO RichiesteRegistrazione(CorrelationId, UserCode, Username, Expiration, Refereer)
+		--	SELECT @pCorrelationId, @pUserCode, @pUsername, @pExpiration, @pRefereer
+		--		WHERE NOT EXISTS(SELECT * FROM RichiesteRegistrazione 
+		--						WHERE Username = @pUsername AND DataCancellazione IS NULL AND Expiration > @dataOperazione )
 	
 		IF @@ROWCOUNT = 0
 		BEGIN
