@@ -7,34 +7,54 @@
 */
 
 /*Lo stile "base" è quello mobile */
+nav{
+    box-shadow: initial;
+}
+
 .r2d-navbar-fixed {
     position: fixed;
+    top: 0;
     height: $r2d-navbar-height-mobile;
     z-index: 997;
     width: 350px;
+    background-color: $r2d-color-body-bg;
     /*nav {
         position: fixed;
     }*/
     @media #{$r2d-medium-and-up} {
         height: $r2d-navbar-height-tablet;
-        margin-top: 20px;
+        //padding-top: 20px;
+        width: 768px;
 
-        nav.nav-extended .nav-wrapper {
+        /*nav.nav-extended .nav-wrapper {
             min-height: $r2d-navbar-height;
         }
 
         nav, nav .nav-wrapper i, nav a.sidenav-trigger, nav a.sidenav-trigger i {
             height: $r2d-navbar-height;
             line-height: $r2d-navbar-line-height;
-        }
+        }*/
     }
 
     @media #{$r2d-large-and-up} {
         height: $r2d-navbar-height-desktop;
-        margin-top: 20px;
+        //padding-top: 20px;
+        width: 1024px;
+    }
+}
+
+.r2d-nav-wrapper {
+    height: $r2d-navbar-height-mobile;
+    margin-top: 20px;
+    background-color: $r2d-color-navbar-bg;
+
+    @media #{$r2d-medium-and-up} {
+        height: $r2d-navbar-height-tablet;
     }
 
-
+    @media #{$r2d-large-and-up} {
+        height: $r2d-navbar-height-desktop;
+    }
 }
 
 /*

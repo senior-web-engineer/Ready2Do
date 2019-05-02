@@ -35,10 +35,8 @@
     <header>
         @if (ViewData.ContainsKey("IdCliente"))
         {
-        <div class="r2d-container">
             <vc:navbar id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:navbar>
-        </div>
-        <vc:side-nav id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:side-nav>
+            <vc:side-nav id-cliente-corrente="@((int)ViewData["IdCliente"])"></vc:side-nav>
         }
     </header>
     <main>

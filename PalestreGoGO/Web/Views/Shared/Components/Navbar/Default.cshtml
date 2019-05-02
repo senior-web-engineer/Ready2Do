@@ -1,93 +1,95 @@
 ﻿@model Web.Models.ViewComponents.NavbarViewModel;
 
-    <!-- NAVBAR -->
-    <nav class="r2d-navbar-fixed">
-        <div class="nav-wrapper">
-            <a href="#!" class="brand-logo r2d-nav-logo"><img src="~/img/logo_140h.png"></a>
-            <ul class="right r2d-nav-menu">
-                @if (Model.UserIsAuthenticated)
-                {
-                    <!-- FOLLOW / UNFOLLOW-->
-                    if (Model.UserCanFollow)
+    <div class="r2d-container">
+        <!-- NAVBAR -->
+        <nav class="r2d-navbar-fixed">
+            <div class="r2d-nav-wrapper">
+                <a href="#!" class="brand-logo r2d-nav-logo"><img src="~/img/logo_140h.png"></a>
+                <ul class="right r2d-nav-menu">
+                    @if (Model.UserIsAuthenticated)
                     {
-                    <li>
-                        @if (!Model.UserIsFollowingCliente.HasValue || !Model.UserIsFollowingCliente.Value)
+                        <!-- FOLLOW / UNFOLLOW-->
+                        if (Model.UserCanFollow)
                         {
-                            <form id="frmNavAssociaCliente" asp-action="AssociaToCliente" asp-controller="Users" asp-route-idCliente="@Model.IdClienteCorrente" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                                <a class="waves-effect waves-light btn pink" onclick="navSubmitForm(event,'frmNavAssociaCliente'); return false;"><i class="material-icons left">favorite_border</i>Follow</a>
-                            </form>
+                            <li>
+                                @if (!Model.UserIsFollowingCliente.HasValue || !Model.UserIsFollowingCliente.Value)
+                                {
+                                    <form id="frmNavAssociaCliente" asp-action="AssociaToCliente" asp-controller="Users" asp-route-idCliente="@Model.IdClienteCorrente" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                        <a class="waves-effect waves-light btn pink" onclick="navSubmitForm(event,'frmNavAssociaCliente'); return false;"><i class="material-icons left">favorite_border</i>Follow</a>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form id="frmNavRemoveAssociazioneCliente" asp-action="RemoveAssociazioneToCliente" asp-controller="Users" asp-route-idCliente="@Model.IdClienteCorrente" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                        <a class="waves-effect waves-light btn pink" onclick="navSubmitForm(event,'frmNavRemoveAssociazioneCliente'); return false;"><i class="material-icons left">favorite</i>Unfollow</a>
+                                    </form>
+                                }
+                            </li>
                         }
-                        else
-                        {
-                            <form id="frmNavRemoveAssociazioneCliente" asp-action="RemoveAssociazioneToCliente" asp-controller="Users" asp-route-idCliente="@Model.IdClienteCorrente" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                                <a class="waves-effect waves-light btn pink" onclick="navSubmitForm(event,'frmNavRemoveAssociazioneCliente'); return false;"><i class="material-icons left">favorite</i>Unfollow</a>
-                            </form>
-                        }
-                    </li>
-                    }
-                    <!-- PROFILO -->
-                    <li>
-                        <a id="ddTrgAccount" href="#!" data-target="dropdownAccount" class="dropdown-trigger waves-effect">
-                            <i class='material-icons large'>account_circle</i>
-                        </a>
-                    </li>
-                    <!-- NOTIFICHE -->
-                    <li>
-                        <a id="ddTrgNotifiche" href="#!" data-target="dropdownNotifiche" class="dropdown-trigger waves-effect pulse new">
-                            <i class='material-icons large'>@(Model.NumNotifichePresenti > 0 ? "notifications_active" : "notifications_none")</i>
-                        </a>
-                        @*@if (Model.NumNotifichePresenti > 0)
+                        <!-- PROFILO -->
+                        <li>
+                            <a id="ddTrgAccount" href="#!" data-target="dropdownAccount" class="dropdown-trigger waves-effect">
+                                <i class='material-icons large'>account_circle</i>
+                            </a>
+                        </li>
+                        <!-- NOTIFICHE -->
+                        <li>
+                            <a id="ddTrgNotifiche" href="#!" data-target="dropdownNotifiche" class="dropdown-trigger waves-effect pulse new">
+                                <i class='material-icons large'>@(Model.NumNotifichePresenti > 0 ? "notifications_active" : "notifications_none")</i>
+                            </a>
+                            @*@if (Model.NumNotifichePresenti > 0)
                             {
                                 <span class="r2d-nav-badge @(Model.NumNuovNotifichePresenti> 0 ? "new ": "")badge">@Model.NumNotifichePresenti</span>
                             }*@
-                    </li>
-                    <!-- FINE NOTIFICHE -->
-                }
-                else
-                {
-                    <li>                        
-                        <div>
-                            <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl" class="waves-effect btn r2d-nav-btn-login">Accedi</a>
-                        </div>
-                    </li>
-                }
-            </ul>
+                        </li>
+                        <!-- FINE NOTIFICHE -->
+                    }
+                    else
+                    {
+                        <li>
+                            <div>
+                                <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl" class="waves-effect btn r2d-nav-btn-login">Accedi</a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+
+        <div class="r2d-nav-menu-bar">
+
         </div>
-    </nav>
+        <!-- TODO: Gestire le notifiche tramite PartialView separata-->
+        <div id="dropdownNotifiche" class="dropdown-content notifications" tabindex="0" style="">
+            @if (Model.UserIsAuthenticated)
+            {
+                <!-- Il contenuto verrà caricato tramite chiamata ajax all'open-->
+                <vc:notifiche id-cliente="@Model.IdClienteCorrente" notifiche="@Model.Notifiche"></vc:notifiche>
+            }
+        </div>
 
-<div class="r2d-nav-menu-bar">
-
-</div>
-<!-- TODO: Gestire le notifiche tramite PartialView separata-->
-<div id="dropdownNotifiche" class="dropdown-content notifications" tabindex="0" style="">
-    @if (Model.UserIsAuthenticated)
-    {
-        <!-- Il contenuto verrà caricato tramite chiamata ajax all'open-->
-        <vc:notifiche id-cliente="@Model.IdClienteCorrente" notifiche="@Model.Notifiche"></vc:notifiche>
-    }
-</div>
-
-<div id="dropdownAccount" class="dropdown-content" tabindex="0" style="">
-    <div>
-        <ul>
-            <li>
-                <a asp-action="EditProfilo" asp-controller="Users">
-                    <i class="material-icons small">account_box</i>
-                    Profilo
-                </a>
-            </li>
-            <li class="divider"></li>
-            <li>
-                <a asp-route="logout" asp-route-returnUrl="@Model.ReturnUrl">
-                    <i class="material-icons small">exit_to_app</i>
-                    Logout
-                </a>
-            </li>
-        </ul>
+        <div id="dropdownAccount" class="dropdown-content" tabindex="0" style="">
+            <div>
+                <ul>
+                    <li>
+                        <a asp-action="EditProfilo" asp-controller="Users">
+                            <i class="material-icons small">account_box</i>
+                            Profilo
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a asp-route="logout" asp-route-returnUrl="@Model.ReturnUrl">
+                            <i class="material-icons small">exit_to_app</i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
+    <script>
     document.addEventListener('DOMContentLoaded', function () {
         var ddNotifiche = document.getElementById('ddTrgNotifiche');
         M.Dropdown.init(ddNotifiche, {
@@ -112,4 +114,4 @@
                 elem.html(data);
             });
     }*@
-</script>
+    </script>

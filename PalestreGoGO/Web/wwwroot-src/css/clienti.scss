@@ -9,8 +9,13 @@
 @import "components/r2d-gallery";
 
 
-body{
-background-color:#f2eeee;
+body {
+    background-color: $r2d-color-body-bg;
+}
+
+main {
+    margin-top: $r2d-navbar-height + 40px;
+
 }
 
 .r2d-swiper-image {

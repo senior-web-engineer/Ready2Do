@@ -9,6 +9,8 @@
 /* VARIABILI READY2DO */
 $r2d-magenta: #E31F4F;
 $r2d-green: #89C443;
+$r2d-color-body-bg: #f2eeee;
+$r2d-color-navbar-bg: #ffffff;
 
 /*Utiliziamo 3 breakpoint 
     ScreenWidth < 768           --->  MOBILE
@@ -31,9 +33,9 @@ $r2d-navbar-line-height: $navbar-line-height;
     768 <= ScreenWidth < 1280   --->  728 px
     ScreenWidth >= 1280         ---> 1024 px
 */
-$r2d-navbar-height-mobile: 140px;
-$r2d-navbar-height-tablet: 140px;
-$r2d-navbar-height-desktop: 140px;
+$r2d-navbar-height-mobile: $r2d-navbar-height;
+$r2d-navbar-height-tablet: $r2d-navbar-height;
+$r2d-navbar-height-desktop: $r2d-navbar-height;
 
 $r2d-navbar-min-width-mobile: 360px;
 //$r2d-navbar-max-width-mobile: 
