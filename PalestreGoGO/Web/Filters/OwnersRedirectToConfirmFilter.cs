@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Authentication;
 using Web.Proxies;
 using Web.Utils;
 
@@ -49,9 +52,24 @@ namespace Web.Filters
                     //RiVerifichiamo se l'utente ha confermato l'email interrogando B2C
                     //Questo controllo ulteriore serve per gestire il caso in cui l'utente verifichi l'email in un'altra sessione (browser)
                     //In questo scenario l'utente resta loggato nella sessione corrente ma non viene recepita la conferma dell'email fino al login successivo
-                    if (!_utentiProxy.IsAccountConfirmedAsync(context.HttpContext.User.Email()).Result)
+                    try
                     {
-                        context.Result = new RedirectToActionResult("MailToConfirm", "Account", null);
+                        if (!_utentiProxy.IsAccountConfirmedAsync(context.HttpContext.User.Email()).Result)
+                        {
+                            context.Result = new RedirectToActionResult("MailToConfirm", "Account", null);
+                        }
+                    }catch(AggregateException aexc)
+                    {
+                        if (aexc.Flatten().InnerExceptions.Any(e => e is ReauthenticationRequiredException))
+                        {
+                            Log.Error("ReauthenticationRequiredException detected in redirectToConfrimFilter, return challenge");
+                            context.Result = new ChallengeResult(Constants.OpenIdConnectAuthenticationScheme,
+                                               new AuthenticationProperties(new Dictionary<string, string> {
+                                                { Constants.B2CPolicy, _configuration.GetValue<string>("Authentication:AzureAdB2C:Policies:SignInOrSignUpPolicy")} })
+                                               {
+                                                   RedirectUri = context.HttpContext.Request.Path
+                                               });
+                        }
                     }
                 }
             }

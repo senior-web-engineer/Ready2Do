@@ -71,7 +71,7 @@ namespace PalestreGoGo.DataAccess
                                                                                 IDictionary<string, int> columnsTipoNotifiche = null)
         {
             NotificaConTipoDM result = new NotificaConTipoDM();
-            result.Id = reader.GetInt32(columns["Id"]);
+            result.Id = reader.GetInt64(columns["Id"]);
             result.IdTipo = reader.GetInt32(columns["IdTipo"]);
             result.UserId = reader.GetString(columns["UserId"]);
             result.IdCliente = await reader.IsDBNullAsync(columns["IdCliente"]) ? default(int?) : reader.GetInt32(columns["IdCliente"]);

@@ -30,9 +30,9 @@ namespace Web
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
             .UseConfiguration(GetConfiguration(args))
+            .UseApplicationInsights() // Enable Application Insights
             .UseSerilog((ctx, cfg) => cfg.ReadFrom.ConfigurationSection(ctx.Configuration.GetSection("Serilog")).Enrich.FromLogContext())
             .UseStartup<Startup>()
-            .UseApplicationInsights() // Enable Application Insights
             .Build();
     }
 }

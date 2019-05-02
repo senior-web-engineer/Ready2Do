@@ -1,0 +1,25 @@
+/* STICKY FOOTER */
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+ /*FIXED SIDENAV*/
+  main {
+    padding-left: 300px;
+  }
+
+  @media only screen and (max-width : 992px) {
+    main{
+      padding-left: 0;
+    }
+  }
+  
+  ul.sidenav-fixed{
+      top: 66px; 
+      height: calc(100% - 222px);
+  }
