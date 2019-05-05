@@ -1,11 +1,35 @@
-﻿/* CUSTOMIZZAZIONE CALENDARIO FULLCALENDAR*/
-.fc-time-grid .fc-slats td {
-    height: 3em;
+﻿.rd2-cal-header-dayname {
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    font-weight: 300;
 }
 
-.fc-time-grid .fc-slats td {
-    height: 3em;
+.rd2-cal-header-daynum {
+    margin: 0 auto;
+    font-size: 1.1rem;
+    font-weight: 300;
+    height: 30px;
+    margin-bottom: 3px;
 }
+
+.rd2-cal-header-daynum-current {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    background-color: #0c5ceb;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+}
+
+
+/* CUSTOMIZZAZIONE CALENDARIO FULLCALENDAR*/
+//ALTEZZA SLOT CALENDARIO
+.fc-time-grid .fc-slats td {
+    height: 3rem;
+}
+
+
 
 .spinner {
     position: fixed;
@@ -34,6 +58,6 @@
 
 
 /*classe utilizzata nella home del cliente dal div che contiente i calendari all'interno del tabl*/
-.r2d-calendar-container{
+.r2d-calendar-container {
     padding-top: 12px;
 }

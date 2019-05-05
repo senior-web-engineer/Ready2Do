@@ -8172,6 +8172,12 @@ input[type=range]::-ms-thumb {
     768 <= ScreenWidth < 1280   --->  728 px
     ScreenWidth >= 1280         ---> 1024 px
 */
+.r2d-bgcontent {
+  background-color: #ffffff; }
+
+.row .col.r2d-nopadding-col {
+  padding: 0; }
+
 .r2d-margin-top-neg-20 {
   margin-top: -20px; }
 
@@ -8349,12 +8355,30 @@ nav {
 }
 
 */
+.rd2-cal-header-dayname {
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  font-weight: 300; }
+
+.rd2-cal-header-daynum {
+  margin: 0 auto;
+  font-size: 1.1rem;
+  font-weight: 300;
+  height: 30px;
+  margin-bottom: 3px; }
+
+.rd2-cal-header-daynum-current {
+  width: 30px;
+  height: 30px;
+  color: #fff;
+  background-color: #0c5ceb;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px; }
+
 /* CUSTOMIZZAZIONE CALENDARIO FULLCALENDAR*/
 .fc-time-grid .fc-slats td {
-  height: 3em; }
-
-.fc-time-grid .fc-slats td {
-  height: 3em; }
+  height: 3rem; }
 
 .spinner {
   position: fixed;
@@ -8429,12 +8453,63 @@ nav {
     border-style: solid;
     border-color: #cccbca; } }
 
+/*html{
+    font-size: 14px;
+}*/
 body {
   background-color: #f2eeee; }
 
 main {
   margin-top: 180px; }
 
+.r2d-clearfix {
+  content: "";
+  display: table;
+  clear: both; }
+
+/* Stili pagina HomeStruttura*/
+.r2d-client-heroimg-container {
+  float: left;
+  width: 320px;
+  background-color: #f2eeee;
+  margin-right: 20px; }
+
+.r2d-client-heroimg {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto; }
+
+.r2d-client-herodesc-container {
+  min-height: 300px; }
+
+.r2d-client-hero-nome {
+  font-size: 2rem;
+  font-weight: 700;
+  display: block; }
+
+.r2d-client-hero-desc {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  display: block; }
+
+#r2d-carousel {
+  height: 400px;
+  perspective: none; }
+
+.r2d-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  display: block; }
+
+.r2d-whereweare-container {
+  display: flex; }
+
+.r2d-whereweare-right-container {
+  margin-left: 15px;
+  padding-left: 10px; }
+
+/* STILI DA RIVEDERE PER EFFETTIVO UTILIZZO */
 .r2d-swiper-image {
   max-width: 711px;
   max-height: 400px; }
@@ -8526,11 +8601,11 @@ main {
 .menuzord-menu > li > a {
   line-height: 30px; }
 
-.clientHeroes {
-  min-height: 160px;
-  max-height: 160px;
-  height: 160px; }
-
+/*.clientHeroes {
+    min-height: 160px;
+    max-height: 160px;
+    height: 160px;
+}*/
 .gallery_item_container {
   display: inline; }
 

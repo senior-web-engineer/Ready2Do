@@ -21,6 +21,7 @@ using Web.Models.Mappers;
 using Web.Proxies;
 using Web.Services;
 using Web.Utils;
+using Web.Models.Utils;
 
 namespace Web.Controllers
 {
@@ -183,6 +184,9 @@ namespace Web.Controllers
             ViewData["IdCliente"] = cliente.Id;
             vm.DataMinima = DateTime.Now.ToString("yyyy-MM-dd");
             vm.DataMassima = DateTime.Now.AddMonths(2).ToString("yyyy-MM-dd");
+            vm.OrarioApertura.GetMinMax(out TimeSpan? min, out TimeSpan? max);
+            vm.OrarioMassimo = max?.ToString("hh:mm:ss") ?? "24:00:00";
+            vm.OrarioMinimo= min?.ToString("hh:mm:ss") ?? "24:00:00";
             return View(vm);
         }
 
@@ -217,6 +221,9 @@ namespace Web.Controllers
             ViewData["IdCliente"] = cliente.Id;
             vm.DataMinima = DateTime.Now.ToString("yyyy-MM-dd");
             vm.DataMassima = DateTime.Now.AddMonths(2).ToString("yyyy-MM-dd");
+            vm.OrarioApertura.GetMinMax(out TimeSpan? min, out TimeSpan? max);
+            vm.OrarioMassimo = max?.ToString(@"hh\:mm\:ss") ?? "24:00:00";
+            vm.OrarioMinimo = min?.ToString(@"hh\:mm\:ss") ?? "24:00:00";
             return View(vm);
         }
 

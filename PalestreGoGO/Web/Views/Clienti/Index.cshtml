@@ -17,86 +17,54 @@
     </environment>
 
 }
-<section id="clientHeroes" class="">
+<div class="r2d-container">
     <div class="row">
-        <div class="col s12">
-            <div class="clientHeroes text-center" style="background-image: url('@Model.ImmagineHome.Url'); background-size:cover;">
-                @*<h2 class="section-title text-uppercase">@Model.RagioneSociale</h2>*@
+        <!-- Primo banner pubblicitario -->
+        <partial name="_Banner_Leaderboard" />
+    </div>
+
+    <section id="clientHeroes">
+        <div class="row r2d-bgcontent">
+            <div class="col s12 r2d-clearfix r2d-nopadding-col">
+                @*Hero Image*@
+                <div class="r2d-client-heroimg-container">
+                    <img class="r2d-client-heroimg" src="@Model.ImmagineHome.Url" />
+                    @*<div class="r2d-client-heroimg" style="background-image: url('@Model.ImmagineHome.Url'); background-size:cover;">
+                        </div>*@
+                </div>
+                @*Descrizione*@
+                <div class="r2d-client-herodesc-container">
+                    <span class="r2d-client-hero-nome">@Model.Nome</span>
+                    <span class="r2d-client-hero-desc">
+                        @Model.Descrizione
+                        @*@Model.Descrizione.Substring(0, 30);*@
+                        @*@Model.Descrizione*@
+                    </span>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section id="descCliente" class="padding-top-10 mt-10">
-    <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
-            <h3>@Model.Nome</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col s6 l5 offset-s1 offset-l2">
-            <p>@Model.Descrizione</p>
-        </div>
-        <div class="col s4 l3">
-            <div class="r2d-box-info-right" style="display:flex; flex-direction:column">
-                @if (Model.OrarioApertura != null)
-                {
-                    <div><h6>Orario Apertura</h6></div>
-                <div>Len-Ven: @Model.OrarioApertura.LunVen?.AsString()</div>
-                <div>Sabato: @Model.OrarioApertura.Sabato?.AsString()</div>
-                <div>Domenica: @Model.OrarioApertura.Domenica?.AsString()</div>
-                <div class="divider"></div>
-                }
-                <div>Telefono: @Model.NumTelefono</div>
-                <div>Email: @Model.Email</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<div class="row">
-    <div class="col s10 l8 offset-s1 offset-l2">
-        <div class="divider"></div>
-    </div>
-</div>
-
-<section id="slideshow" class="r2d-slideshow">
-    <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
-            <div class="swiper-container">
-                <div class="swiper-wrapper">
-                    @foreach (var i in Model.Images.OrderBy(img=>img.Ordinamento))
+    <section id="slideshow" class="r2d-slideshow">
+        <div class="row r2d-bgcontent">
+            <div class="col s12 r2d-nopadding-col">
+                <div id="r2d-carousel" class="carousel carousel-slider">
+                    @foreach (var i in Model.Images.OrderBy(img => img.Ordinamento))
                     {
-                        <div class="swiper-slide center">
-                            <img class="r2d-swiper-image center" src="@i.Url" alt="@i.Alt">
-                        </div>
+                        <a class="carousel-item"><img src="@i.Url" alt="@i.Alt" /></a>
                     }
                 </div>
-                <!-- Add Pagination -->
-                <div class="swiper-pagination"></div>
-                <!-- Add Arrows -->
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<div class="row">
-    <div class="col s10 l8 offset-s1 offset-l2">
-        <div class="divider"></div>
-    </div>
-</div>
-
-
-<section id="calendars">
     <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
-            <h6 class="r2d-section-title">I nostri corsi</h6>
-        </div>
+        <!-- Secondo banner pubblicitario -->
+        <partial name="_Banner_Leaderboard" />
     </div>
-    <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
+
+    <section id="calendars">
+        <div class="row r2d-bgcontent">
             @if (Model.Locations != null && Model.Locations.Count > 0)
             {
                 <!-- TABS SALE-->
@@ -120,37 +88,46 @@
             }
             else
             {
-                <h4><a asp-controller="Clienti" asp-action="SalaNew">Configurare</a> almeno una Sala per poter iniziare ad inserire gli eventi.</h4>
+                <span>Al momento non sono stati schedulati eventi.</span>
             }
-        </div>
-    </div>
-</section>
 
-<div class="row">
-    <div class="col s10 l8 offset-s1 offset-l2">
-        <div class="divider"></div>
+        </div>
+    </section>
+
+    <section id="whereare">
+        <div class="row">
+            <div class="r2d-whereweare-container">
+                <div class="r2d-whereweare-map-box">
+                    <a target="_blank" href="@Html.Raw(Model.ExternalGoogleMapUrl)">
+                        <img class="responsive-img r2d-whereweare-map" src="@Model.GoogleStaticMapUrl" />
+                    </a>
+                </div>
+                <div class="r2d-whereweare-right-container r2d-bgcontent">
+                    <div class="r2d-whereweare-orari-container">
+                        @if (Model.OrarioApertura != null)
+                        {
+                            <div class="r2d-section-title">Orario Apertura</div>
+                            <div>Len-Ven: @Model.OrarioApertura.LunVen?.AsString()</div>
+                            <div>Sabato: @Model.OrarioApertura.Sabato?.AsString()</div>
+                            <div>Domenica: @Model.OrarioApertura.Domenica?.AsString()</div>
+                        }
+                    </div>
+                    <div>
+                        <div class="r2d-section-title">Contatti</div>
+                        <div>Indirizzo: @Model.Indrizzo</div>
+                        <div>Telefono: @Model.NumTelefono</div>
+                        <div>Email: @Model.Email</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="row">
+        <!-- Terzo banner pubblicitario -->
+        <partial name="_Banner_Leaderboard" />
     </div>
 </div>
-
-<section id="whereare">
-    <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
-            <h6 class="r2d-section-title">Dove siamo</h6>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
-            <a target="_blank" href="@Html.Raw(Model.ExternalGoogleMapUrl)">
-                <img class="responsive-img" src="@Model.GoogleStaticMapUrl" />
-            </a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col s10 l8 offset-s1 offset-l2">
-            <p>@Model.Indrizzo</p>
-        </div>
-    </div>
-</section>
 
 @section Scripts{
     <environment include="Development">
@@ -196,19 +173,13 @@
                 onShow: onTabShow
             });
 
-            var carouselElem = document.getElementById('carousel');
-            var instances = M.Carousel.init(carouselElem, { fullWidth: true });
+            var carouselElem = document.getElementById('r2d-carousel');
+            var instances = M.Carousel.init(carouselElem,{
+                //fullWidth: true,
+                indicators: true
+            });
 
-            //jQuery("#slider1").revolution({
-            //    sliderType: "standard",
-            //    sliderLayout: "auto",
-            //    delay: 4000,
-            //    navigation: {
-            //        arrows: { enable: true }
-            //    },
-            //    gridwidth: 1230,
-            //    gridheight: 720
-            //});
+
              @foreach (var s in Model.Locations)
              {
                 <text>
@@ -223,13 +194,31 @@
                 defaultView: "agendaWeek",
                 slotDuration: "01:00:00",
                 slotLabelInterval: "01:00",
+                minTime: '@Model.OrarioMinimo',
+                maxTime: '@Model.OrarioMassimo',
                 agendaEventMinHeight: 30,
-                nowIndicator: true,
+                nowIndicator: false,
                 allDaySlot: false,
                 contentHeight: "auto",
                 validRange: {
                     start: '@Model.DataMinima',
                     end: '@Model.DataMassima'
+                },
+                views: {
+                    week: {
+
+                    }
+                },
+                columnHeaderHtml: function (date) {
+                    console.log("Inside columnHeaderHtml - date:" + date);
+                    var m = moment(date);
+                    var result = "<div class='rd2-cal-header-dayname'>" + m.format("ddd") + "</div><div class='rd2-cal-header-daynum"
+                    //Per il giorno corrente applichiamo una classe speciale
+                    if (m.isSame(new Date(),'day')) {
+                        result += " rd2-cal-header-daynum-current"
+                    }
+                    result += "'>" + m.format("D") + "</div>";
+                    return result;
                 },
                 events: {
                     url: '@Html.Raw(Model.EventsBaseUrl + "feeds")',

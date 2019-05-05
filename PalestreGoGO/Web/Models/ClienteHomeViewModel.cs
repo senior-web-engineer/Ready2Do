@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Models.Utils;
 
 namespace Web.Models
 {
@@ -41,5 +42,7 @@ namespace Web.Models
         public string DataMinima { get; set; }
         public string DataMassima { get; set; }
 
+        public string OrarioMinimo { get; set; }
+        public string OrarioMassimo { get; set; }
     }
 }

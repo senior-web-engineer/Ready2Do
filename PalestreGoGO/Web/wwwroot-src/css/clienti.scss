@@ -8,6 +8,9 @@
 @import "components/r2d-calendar";
 @import "components/r2d-gallery";
 
+/*html{
+    font-size: 14px;
+}*/
 
 body {
     background-color: $r2d-color-body-bg;
@@ -15,9 +18,82 @@ body {
 
 main {
     margin-top: $r2d-navbar-height + 40px;
+}
+
+
+//from: https://css-tricks.com/snippets/css/clear-fix/
+.r2d-clearfix {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Stili pagina HomeStruttura*/
+.r2d-client-heroimg-container {
+    float: left;
+    width: 320px;
+    background-color: $r2d-color-body-bg;
+    margin-right: 20px; //Per spaziare il testo della descrizione
+}
+
+
+.r2d-client-heroimg {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.r2d-client-herodesc-container {
+    min-height: 300px;
+}
+
+.r2d-client-hero-nome {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.r2d-client-hero-desc {
+    margin-top: 25px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    display: block;
+}
+
+#r2d-carousel {
+    height: 400px;
+    perspective: none;
+}
+
+.r2d-section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.r2d-whereweare-container{
+    display:flex;
+}
+
+.r2d-whereweare-map-box{
 
 }
 
+.r2d-whereweare-map {
+}
+
+.r2d-whereweare-right-container {
+    margin-left: 15px;
+    padding-left: 10px;
+}
+
+.r2d-whereweare-orari-container{
+
+}
+
+
+
+/* STILI DA RIVEDERE PER EFFETTIVO UTILIZZO */
 .r2d-swiper-image {
     max-width: 711px;
     max-height: 400px;
@@ -48,7 +124,7 @@ main {
 }
 
 
-.r2d-slideshow{
+.r2d-slideshow {
     padding-top: 30px;
 }
 
@@ -66,13 +142,13 @@ main {
     position: relative;
 }
 
-    .image_edit_container:hover .hero_edit_image {
-        opacity: 0.3;
-    }
+.image_edit_container:hover .hero_edit_image {
+    opacity: 0.3;
+}
 
-    .image_edit_container:hover .image_edit_btn {
-        opacity: 1;
-    }
+.image_edit_container:hover .image_edit_btn {
+    opacity: 1;
+}
 
 .hero_edit_image {
     opacity: 1;
@@ -126,11 +202,11 @@ main {
     line-height: 30px;
 }
 
-.clientHeroes {
+/*.clientHeroes {
     min-height: 160px;
     max-height: 160px;
     height: 160px;
-}
+}*/
 
 
 .gallery_item_container {

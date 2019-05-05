@@ -19,7 +19,6 @@
     <link rel="apple-touch-icon-precomposed" href="~/img/ico/apple-touch-icon-57-precomposed.png">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link href="~/dist/styles.css" rel="stylesheet" />
     <!-- Materialize Icons-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Application Insights Javascript instrumentation-->
@@ -29,7 +28,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 
     @RenderSection("Header", required: false)
-
+    @*I CSS custom li importiamo per ultimi così da sovrascrivere le eventuali classi predefinite*@
+    <link href="~/dist/styles.css" rel="stylesheet" />
 </head>
 <body>
     <header>
@@ -40,24 +40,7 @@
         }
     </header>
     <main>
-        <div class="r2d-container">
-            <div class="row">
-                <!-- Primo banner pubblicitario -->
-                <partial name="_Banner_Leaderboard" />
-            </div>
-            <div class="row">
-                @*<div class="col s12 m9 l8 xl7 offset-xl1">*@
-                @RenderBody()
-                @*</div>
-                    <div class="col hide-on-small-and-down m2 l3 xl3 offset-m1">
-                            <partial name="_Banner_MezzaPagina" />
-                    </div>*@
-            </div>
-            <div class="row">
-                <!-- Secondo banner pubblicitario -->
-                <partial name="_Banner_Leaderboard" />
-            </div>
-        </div>
+        @RenderBody()
     </main>
 
     <environment exclude="Development">

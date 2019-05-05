@@ -18,7 +18,7 @@ namespace Web.Utils
 
         public static string GetStaticMapUrl(string nomeMarker, double latitudine, double longitudine, string key)
         {
-            return $"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Clabel:{WebUtility.UrlEncode(nomeMarker)}%7C{latitudine},{longitudine}&size=640x250&scale=2&maptype=roadmap&zoom=15&key={key}";
+            return $"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Clabel:{WebUtility.UrlEncode(nomeMarker)}%7C{latitudine},{longitudine}&size=670x400&scale=1&maptype=roadmap&zoom=14&key={key}";
         }
 
         public static string GetExternalMapUrl(double latitudine, double longitudine)
