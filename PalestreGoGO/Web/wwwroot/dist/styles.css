@@ -2041,7 +2041,7 @@ a {
   box-shadow: none !important; }
 
 /* 2dp elevation modified*/
-.z-depth-1, nav, .card-panel, .card, .toast, .btn, .btn-large, .btn-small, .btn-floating, .dropdown-content, .collapsible, .sidenav {
+.z-depth-1, .card-panel, .card, .toast, .btn, .btn-large, .btn-small, .btn-floating, .dropdown-content, .collapsible, .sidenav {
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2); }
 
 .z-depth-1-half, .btn:hover, .btn-large:hover, .btn-small:hover, .btn-floating:hover {
@@ -3152,141 +3152,8 @@ table span.badge {
       .row .col.push-xl12 {
         left: 100%; } }
 
-nav {
-  color: #fff;
-  background-color: #ffffff;
-  width: 100%;
-  height: 120px;
-  line-height: 120px; }
-  nav.nav-extended {
-    height: auto; }
-    nav.nav-extended .nav-wrapper {
-      min-height: 120px;
-      height: auto; }
-    nav.nav-extended .nav-content {
-      position: relative;
-      line-height: normal; }
-  nav a {
-    color: #fff; }
-  nav i,
-  nav [class^="mdi-"], nav [class*="mdi-"],
-  nav i.material-icons {
-    display: block;
-    font-size: 24px;
-    height: 120px;
-    line-height: 120px; }
-  nav .nav-wrapper {
-    position: relative;
-    height: 100%; }
-  @media only screen and (min-width: 1025px) {
-    nav a.sidenav-trigger {
-      display: none; } }
-  nav .sidenav-trigger {
-    float: left;
-    position: relative;
-    z-index: 1;
-    height: 120px;
-    margin: 0 18px; }
-    nav .sidenav-trigger i {
-      height: 120px;
-      line-height: 120px; }
-  nav .brand-logo {
-    position: absolute;
-    color: #fff;
-    display: inline-block;
-    font-size: 2.1rem;
-    padding: 0; }
-    nav .brand-logo.center {
-      left: 50%;
-      transform: translateX(-50%); }
-    @media only screen and (max-width: 1024px) {
-      nav .brand-logo {
-        left: 50%;
-        transform: translateX(-50%); }
-        nav .brand-logo.left, nav .brand-logo.right {
-          padding: 0;
-          transform: none; }
-        nav .brand-logo.left {
-          left: 0.5rem; }
-        nav .brand-logo.right {
-          right: 0.5rem;
-          left: auto; } }
-    nav .brand-logo.right {
-      right: 0.5rem;
-      padding: 0; }
-    nav .brand-logo i,
-    nav .brand-logo [class^="mdi-"], nav .brand-logo [class*="mdi-"],
-    nav .brand-logo i.material-icons {
-      float: left;
-      margin-right: 15px; }
-  nav .nav-title {
-    display: inline-block;
-    font-size: 32px;
-    padding: 28px 0; }
-  nav ul {
-    margin: 0; }
-    nav ul li {
-      transition: background-color .3s;
-      float: left;
-      padding: 0; }
-      nav ul li.active {
-        background-color: rgba(0, 0, 0, 0.1); }
-    nav ul a {
-      transition: background-color .3s;
-      font-size: 1rem;
-      color: #fff;
-      display: block;
-      padding: 0 15px;
-      cursor: pointer; }
-      nav ul a.btn, nav ul a.btn-large, nav ul a.btn-small, nav ul a.btn-large, nav ul a.btn-flat, nav ul a.btn-floating {
-        margin-top: -2px;
-        margin-left: 15px;
-        margin-right: 15px; }
-        nav ul a.btn > .material-icons, nav ul a.btn-large > .material-icons, nav ul a.btn-small > .material-icons, nav ul a.btn-large > .material-icons, nav ul a.btn-flat > .material-icons, nav ul a.btn-floating > .material-icons {
-          height: inherit;
-          line-height: inherit; }
-      nav ul a:hover {
-        background-color: rgba(0, 0, 0, 0.1); }
-    nav ul.left {
-      float: left; }
-  nav form {
-    height: 100%; }
-  nav .input-field {
-    margin: 0;
-    height: 100%; }
-    nav .input-field input {
-      height: 100%;
-      font-size: 1.2rem;
-      border: none;
-      padding-left: 2rem; }
-      nav .input-field input:focus, nav .input-field input[type=text]:valid, nav .input-field input[type=password]:valid, nav .input-field input[type=email]:valid, nav .input-field input[type=url]:valid, nav .input-field input[type=date]:valid {
-        border: none;
-        box-shadow: none; }
-    nav .input-field label {
-      top: 0;
-      left: 0; }
-      nav .input-field label i {
-        color: rgba(255, 255, 255, 0.7);
-        transition: color .3s; }
-      nav .input-field label.active i {
-        color: #fff; }
-
-.navbar-fixed {
-  position: relative;
-  height: 120px;
-  z-index: 997; }
-  .navbar-fixed nav {
-    position: fixed; }
-
-@media only screen and (min-width: 769px) {
-  nav.nav-extended .nav-wrapper {
-    min-height: 140px; }
-  nav, nav .nav-wrapper i, nav a.sidenav-trigger, nav a.sidenav-trigger i {
-    height: 140px;
-    line-height: 140px; }
-  .navbar-fixed {
-    height: 140px; } }
-
+/*Utiliziamo dei css custom per la navbar*/
+/*@import "components/navbar";*/
 a {
   text-decoration: none; }
 
@@ -8178,6 +8045,12 @@ input[type=range]::-ms-thumb {
 .row .col.r2d-nopadding-col {
   padding: 0; }
 
+/*Proprietà comuni buttons*/
+.r2d-nav-btn-login {
+  text-decoration: none;
+  text-align: center;
+  letter-spacing: 0.5px; }
+
 .r2d-margin-top-neg-20 {
   margin-top: -20px; }
 
@@ -8274,7 +8147,7 @@ nav {
   height: 140px;
   z-index: 997;
   width: 350px;
-  background-color: #f2eeee;
+  background-color: #eeeeee;
   /*nav {
         position: fixed;
     }*/ }
@@ -8298,13 +8171,27 @@ nav {
 .r2d-nav-wrapper {
   height: 140px;
   margin-top: 20px;
-  background-color: #ffffff; }
+  background-color: #ffffff;
+  display: flex; }
   @media only screen and (min-width: 769px) {
     .r2d-nav-wrapper {
       height: 140px; } }
   @media only screen and (min-width: 1025px) {
     .r2d-nav-wrapper {
       height: 140px; } }
+
+.r2d-nav-menu {
+  margin-left: auto;
+  align-self: flex-end;
+  margin-bottom: 5px; }
+
+.r2d-nav-btn-login {
+  position: absolute;
+  margin: 0px;
+  height: 30px;
+  bottom: 10px;
+  right: 10px;
+  background-color: #89C443; }
 
 /*
 .r2d-navbar {
@@ -8345,14 +8232,6 @@ nav {
 }
 
 
-.r2d-nav-btn-login {
-    position: absolute;
-    margin: 0px;
-    height: 30px;
-    bottom: 10px;
-    right: 10px;
-    background-color: $r2d-green;
-}
 
 */
 .rd2-cal-header-dayname {
@@ -8457,24 +8336,22 @@ nav {
     font-size: 14px;
 }*/
 body {
-  background-color: #f2eeee; }
+  background-color: #eeeeee; }
 
 main {
   margin-top: 180px; }
 
-.r2d-clearfix {
-  content: "";
-  display: table;
-  clear: both; }
-
 /* Stili pagina HomeStruttura*/
-.r2d-client-heroimg-container {
-  float: left;
-  width: 320px;
-  background-color: #f2eeee;
-  margin-right: 20px; }
+.r2d-hero-container {
+  display: flex; }
 
-.r2d-client-heroimg {
+.r2d-heroimg-container {
+  background-color: #eeeeee;
+  margin-right: 20px;
+  height: 300px;
+  align-self: flex-start; }
+
+.r2d-heroimg {
   width: 300px;
   height: 300px;
   margin: 0 auto; }

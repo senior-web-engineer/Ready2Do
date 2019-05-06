@@ -21,23 +21,20 @@ main {
 }
 
 
-//from: https://css-tricks.com/snippets/css/clear-fix/
-.r2d-clearfix {
-    content: "";
-    display: table;
-    clear: both;
+/* Stili pagina HomeStruttura*/
+.r2d-hero-container {
+    display: flex;
 }
 
-/* Stili pagina HomeStruttura*/
-.r2d-client-heroimg-container {
-    float: left;
-    width: 320px;
+.r2d-heroimg-container {
     background-color: $r2d-color-body-bg;
     margin-right: 20px; //Per spaziare il testo della descrizione
+    height: 300px;
+    align-self: flex-start;
 }
 
 
-.r2d-client-heroimg {
+.r2d-heroimg {
     width: 300px;
     height: 300px;
     margin: 0 auto;
@@ -71,12 +68,11 @@ main {
     display: block;
 }
 
-.r2d-whereweare-container{
-    display:flex;
+.r2d-whereweare-container {
+    display: flex;
 }
 
-.r2d-whereweare-map-box{
-
+.r2d-whereweare-map-box {
 }
 
 .r2d-whereweare-map {
@@ -87,8 +83,7 @@ main {
     padding-left: 10px;
 }
 
-.r2d-whereweare-orari-container{
-
+.r2d-whereweare-orari-container {
 }
 
 

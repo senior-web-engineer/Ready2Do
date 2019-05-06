@@ -47,7 +47,7 @@ nav{
     height: $r2d-navbar-height-mobile;
     margin-top: 20px;
     background-color: $r2d-color-navbar-bg;
-
+    display: flex;
     @media #{$r2d-medium-and-up} {
         height: $r2d-navbar-height-tablet;
     }
@@ -56,6 +56,24 @@ nav{
         height: $r2d-navbar-height-desktop;
     }
 }
+
+
+.r2d-nav-menu{
+    margin-left: auto;
+    align-self: flex-end;
+    margin-bottom: 5px;
+}
+
+.r2d-nav-btn-login {
+    @extend %r2d-button-shared;
+    position: absolute;
+    margin: 0px;
+    height: 30px;
+    bottom: 10px;
+    right: 10px;
+    background-color: $r2d-green;
+}
+
 
 /*
 .r2d-navbar {
@@ -96,13 +114,5 @@ nav{
 }
 
 
-.r2d-nav-btn-login {
-    position: absolute;
-    margin: 0px;
-    height: 30px;
-    bottom: 10px;
-    right: 10px;
-    background-color: $r2d-green;
-}
 
 */

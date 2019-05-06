@@ -24,21 +24,20 @@
     </div>
 
     <section id="clientHeroes">
-        <div class="row r2d-bgcontent">
-            <div class="col s12 r2d-clearfix r2d-nopadding-col">
+        <div class="row">
+            <div class="r2d-hero-container">
                 @*Hero Image*@
-                <div class="r2d-client-heroimg-container">
-                    <img class="r2d-client-heroimg" src="@Model.ImmagineHome.Url" />
-                    @*<div class="r2d-client-heroimg" style="background-image: url('@Model.ImmagineHome.Url'); background-size:cover;">
-                        </div>*@
+                <div class="r2d-heroimg-container">
+                    <img class="r2d-heroimg" src="@Model.ImmagineHome.Url" />
                 </div>
                 @*Descrizione*@
-                <div class="r2d-client-herodesc-container">
+                <div class="r2d-herodesc-container r2d-bgcontent">
                     <span class="r2d-client-hero-nome">@Model.Nome</span>
                     <span class="r2d-client-hero-desc">
                         @Model.Descrizione
-                        @*@Model.Descrizione.Substring(0, 30);*@
-                        @*@Model.Descrizione*@
+                        @Model.Descrizione.Substring(0, 30);
+                        @Model.Descrizione
+                        @Model.Descrizione
                     </span>
                 </div>
             </div>
