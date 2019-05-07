@@ -29,7 +29,7 @@
 
     @RenderSection("Header", required: false)
     @*I CSS custom li importiamo per ultimi così da sovrascrivere le eventuali classi predefinite*@
-    <link href="~/dist/styles.css" rel="stylesheet" />
+    <link href="~/dist/styles.css" rel="stylesheet" asp-append-version="true" />
 </head>
 <body>
     <header>
